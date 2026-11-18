@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-18",
+  "scope": "Isolated Windows PowerShell 5.1 packaging smoke test, not a new release",
+  "powershell_filename_decode": "PASS (UTF-8 BOM)",
+  "historical_v0_2_demo_present": false,
+  "required_v0_16_demo_present": true,
+  "zip_crc": "PASS",
+  "unique_case_insensitive_paths": "PASS",
+  "archive_matches_complete_output_folder": "PASS",
+  "quick_start_matches_source": "PASS",
+  "files": 158,
+  "zip_bytes": 20464470,
+  "zip_sha256": "183ed78c430c6ab021c168c6ca819a55c9f2bbd92d9dca5aa997014ee2a0ab7f"
+}

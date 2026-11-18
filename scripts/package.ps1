@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $projectText = Get-Content -LiteralPath (Join-Path $projectRoot 'CMakeLists.txt') -Raw
 $version = [regex]::Match($projectText, 'project\(Anyvoc VERSION ([0-9.]+)').Groups[1].Value
