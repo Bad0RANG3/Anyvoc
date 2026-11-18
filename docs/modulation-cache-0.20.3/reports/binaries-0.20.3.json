@@ -1,0 +1,178 @@
+{
+  "status": "PASS",
+  "version": "0.20.3",
+  "binary_count": 8,
+  "binaries": [
+    {
+      "role": "Standalone",
+      "path": "build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe",
+      "bytes": 9680896,
+      "sha256": "7e6efbb891062906af73f3f295c200876a56e05bbdc255621e556c633c446167",
+      "pe_machine": "0x8664",
+      "expected_version": "0.20.3",
+      "file_version": "0.20.3",
+      "product_version": "0.20.3",
+      "fixed_file_version": "0.20.3.0",
+      "fixed_product_version": "0.0.0.0",
+      "fixed_product_version_scope": "Recorded only: JUCE RC emits FILEVERSION and both version strings, but omits PRODUCTVERSION; its zero fixed-product value is not a version-validity field.",
+      "localized_versions": [
+        {
+          "language": 1033,
+          "codepage": 1252,
+          "FileVersion": "0.20.3",
+          "ProductVersion": "0.20.3"
+        }
+      ]
+    },
+    {
+      "role": "VST3",
+      "path": "build/Anyvoc_artefacts/Release/VST3/Anyvoc.vst3/Contents/x86_64-win/Anyvoc.vst3",
+      "bytes": 10219520,
+      "sha256": "3a0d8ccad91462996f6d9ea41cfee64cfe42ce45f5cb4072dca3ee1459cbd84e",
+      "pe_machine": "0x8664",
+      "expected_version": "0.20.3",
+      "file_version": "0.20.3",
+      "product_version": "0.20.3",
+      "fixed_file_version": "0.20.3.0",
+      "fixed_product_version": "0.0.0.0",
+      "fixed_product_version_scope": "Recorded only: JUCE RC emits FILEVERSION and both version strings, but omits PRODUCTVERSION; its zero fixed-product value is not a version-validity field.",
+      "localized_versions": [
+        {
+          "language": 1033,
+          "codepage": 1252,
+          "FileVersion": "0.20.3",
+          "ProductVersion": "0.20.3"
+        }
+      ]
+    },
+    {
+      "role": "EngineTests",
+      "path": "build/AnyvocEngineTests_artefacts/Release/AnyvocEngineTests.exe",
+      "bytes": 9177600,
+      "sha256": "d03387e5073cc24b5e30e9aa15249d3dc552c86e0f576da8e72ea18b8b69352c",
+      "pe_machine": "0x8664",
+      "expected_version": "0.20.3",
+      "file_version": "0.20.3",
+      "product_version": "0.20.3",
+      "fixed_file_version": "0.20.3.0",
+      "fixed_product_version": "0.0.0.0",
+      "fixed_product_version_scope": "Recorded only: JUCE RC emits FILEVERSION and both version strings, but omits PRODUCTVERSION; its zero fixed-product value is not a version-validity field.",
+      "localized_versions": [
+        {
+          "language": 1033,
+          "codepage": 1252,
+          "FileVersion": "0.20.3",
+          "ProductVersion": "0.20.3"
+        }
+      ]
+    },
+    {
+      "role": "ProcessorTests",
+      "path": "build/AnyvocProcessorTests_artefacts/Release/AnyvocProcessorTests.exe",
+      "bytes": 10964480,
+      "sha256": "010439dce5ce4f42a737b2ddecedf4b315b4651883976b299d66a20a928c9612",
+      "pe_machine": "0x8664",
+      "expected_version": "0.20.3",
+      "file_version": "0.20.3",
+      "product_version": "0.20.3",
+      "fixed_file_version": "0.20.3.0",
+      "fixed_product_version": "0.0.0.0",
+      "fixed_product_version_scope": "Recorded only: JUCE RC emits FILEVERSION and both version strings, but omits PRODUCTVERSION; its zero fixed-product value is not a version-validity field.",
+      "localized_versions": [
+        {
+          "language": 1033,
+          "codepage": 1252,
+          "FileVersion": "0.20.3",
+          "ProductVersion": "0.20.3"
+        }
+      ]
+    },
+    {
+      "role": "WavetableTests",
+      "path": "build/AnyvocWavetableTests_artefacts/Release/AnyvocWavetableTests.exe",
+      "bytes": 8406016,
+      "sha256": "66c8d02f63f4a51b9ebf3a8fdf83c73fce361ef808bcf47fce4f8de62648c47e",
+      "pe_machine": "0x8664",
+      "expected_version": "0.20.3",
+      "file_version": "0.20.3",
+      "product_version": "0.20.3",
+      "fixed_file_version": "0.20.3.0",
+      "fixed_product_version": "0.0.0.0",
+      "fixed_product_version_scope": "Recorded only: JUCE RC emits FILEVERSION and both version strings, but omits PRODUCTVERSION; its zero fixed-product value is not a version-validity field.",
+      "localized_versions": [
+        {
+          "language": 1033,
+          "codepage": 1252,
+          "FileVersion": "0.20.3",
+          "ProductVersion": "0.20.3"
+        }
+      ]
+    },
+    {
+      "role": "PresetLibraryTests",
+      "path": "build/AnyvocPresetLibraryTests_artefacts/Release/AnyvocPresetLibraryTests.exe",
+      "bytes": 1190400,
+      "sha256": "953ec748cc508e703254c5a41384eb0b5c3d02b48f280f684970b6b2c9d29be7",
+      "pe_machine": "0x8664",
+      "expected_version": "0.20.3",
+      "file_version": "0.20.3",
+      "product_version": "0.20.3",
+      "fixed_file_version": "0.20.3.0",
+      "fixed_product_version": "0.0.0.0",
+      "fixed_product_version_scope": "Recorded only: JUCE RC emits FILEVERSION and both version strings, but omits PRODUCTVERSION; its zero fixed-product value is not a version-validity field.",
+      "localized_versions": [
+        {
+          "language": 1033,
+          "codepage": 1252,
+          "FileVersion": "0.20.3",
+          "ProductVersion": "0.20.3"
+        }
+      ]
+    },
+    {
+      "role": "RealtimeProbe",
+      "path": "build/AnyvocRealtimeProbe_artefacts/Release/AnyvocRealtimeProbe.exe",
+      "bytes": 9796096,
+      "sha256": "2f23e61165a36ef9b70f0e2e4e25a1e7ab32742ce98e7e7ef515937a399c1e0e",
+      "pe_machine": "0x8664",
+      "expected_version": "0.20.3",
+      "file_version": "0.20.3",
+      "product_version": "0.20.3",
+      "fixed_file_version": "0.20.3.0",
+      "fixed_product_version": "0.0.0.0",
+      "fixed_product_version_scope": "Recorded only: JUCE RC emits FILEVERSION and both version strings, but omits PRODUCTVERSION; its zero fixed-product value is not a version-validity field.",
+      "localized_versions": [
+        {
+          "language": 1033,
+          "codepage": 1252,
+          "FileVersion": "0.20.3",
+          "ProductVersion": "0.20.3"
+        }
+      ]
+    },
+    {
+      "role": "pluginval",
+      "path": "tools/pluginval/pluginval.exe",
+      "bytes": 5909504,
+      "sha256": "f4ac5c31c5544a434f73e686b816861d92c22ae849d69ad693681cbc9522fcd8",
+      "pe_machine": "0x8664",
+      "expected_version": "1.0.4",
+      "file_version": "1.0.4",
+      "product_version": "1.0.4",
+      "fixed_file_version": "1.0.4.0",
+      "fixed_product_version": "0.0.0.0",
+      "fixed_product_version_scope": "Recorded only: JUCE RC emits FILEVERSION and both version strings, but omits PRODUCTVERSION; its zero fixed-product value is not a version-validity field.",
+      "localized_versions": [
+        {
+          "language": 1033,
+          "codepage": 1252,
+          "FileVersion": "1.0.4",
+          "ProductVersion": "1.0.4"
+        }
+      ]
+    }
+  ],
+  "scope": "PE identity and version resources only; no executable was launched.",
+  "checked_utc": "2026-11-18T11:06:37.990377+00:00",
+  "verifier_sha256": "89f46097f80504416c0f850865f98ab7786cd100a551966ba37c05f2d3743326"
+}

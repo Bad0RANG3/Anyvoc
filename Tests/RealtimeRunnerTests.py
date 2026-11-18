@@ -211,6 +211,16 @@ class RealtimeRunnerTests(unittest.TestCase):
         self.assertEqual({p.name for p in self.output.iterdir()}, {"suite-manifest.json"})
 
     def test_competing_runner_cannot_enter_after_atomic_reservation(self):
+        # The runner resolves its output path. A Windows TEMP junction (as on
+        # some CI machines) therefore need not have the fixture's spelling.
+        # Exercise a noncanonical alias on every platform, without requiring
+        # junction/symlink privileges, so this hook cannot silently miss it.
+        component = self.root / "unresolved-component"
+        component.mkdir()
+        self.output = component / ".." / self.output.name
+        self.manifest_path = self.output / "suite-manifest.json"
+        canonical_manifest = self.manifest_path.resolve()
+        self.assertNotEqual(self.manifest_path, canonical_manifest)
         original_open = Path.open
         contender_attempted = False
         owner = self
@@ -218,7 +228,7 @@ class RealtimeRunnerTests(unittest.TestCase):
         def open_then_contend(path, mode="r", *args, **kwargs):
             nonlocal contender_attempted
             stream = original_open(path, mode, *args, **kwargs)
-            if path == owner.manifest_path and mode == "x" and not contender_attempted:
+            if mode == "x" and not contender_attempted and path.resolve() == canonical_manifest:
                 contender_attempted = True
                 # The actual exclusive create has succeeded, but its first
                 # byte has not been written. Deterministically schedule a

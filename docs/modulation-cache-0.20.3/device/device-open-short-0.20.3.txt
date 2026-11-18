@@ -1,0 +1,1 @@
+INVALID measurement: Device initialisation failed: Couldn't open the output device!

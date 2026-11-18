@@ -1,0 +1,7 @@
+PASS Macro demo: stereo 24-bit PCM, 48000 Hz, 20.000 seconds
+Overall RMS=0.013233501, peak=0.047289729; full-scale=0
+Segments 0/1 difference RMS=0.003614645
+Segments 1/2 difference RMS=0.002561561
+Segments 2/3 difference RMS=0.001428569
+Legacy byte-identical=True; SHA-256=3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920
+Report: D:\Anyvoc\build\validation-cache-optimization\audio-analysis-0.20.3.json

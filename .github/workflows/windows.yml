@@ -39,6 +39,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Profiler help failed' }
           python scripts/analyze_realtime_probe.py --self-test --output build/realtime-probe-analyzer-self-test.json
           if ($LASTEXITCODE -ne 0) { throw 'Profiler analyzer self-test failed' }
+          python scripts/compare-cache-regression.py --self-test --output build/cache-comparator-self-test.json
+          if ($LASTEXITCODE -ne 0) { throw 'Cache audio comparator self-test failed' }
           python Tests/RealtimeRunnerTests.py 2>&1 | Tee-Object -FilePath build/realtime-runner-tests.txt
           if ($LASTEXITCODE -ne 0) { throw 'Profiler runner tests failed' }
       - name: Keep test evidence
@@ -50,5 +52,6 @@ jobs:
             build/Testing/Temporary/
             build/test-results.xml
             build/realtime-probe-analyzer-self-test.json
+            build/cache-comparator-self-test.json
             build/realtime-runner-tests.txt
           if-no-files-found: warn

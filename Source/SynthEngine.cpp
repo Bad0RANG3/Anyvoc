@@ -836,6 +836,11 @@ public:
     void reset()
     {
         for (auto& voice : voices) voice = Voice {};
+        for (auto& route : modulationRoutes)
+        {
+            route.primary.invalidate();
+            route.auxiliary.invalidate();
+        }
         clearMonoNotes();
         modeTails.fill (StereoSignal {});
         modeTailRemaining = 0;
@@ -1223,13 +1228,8 @@ public:
         {
             const auto& route = target.routes[index];
             if (! route.enabled || route.source == 0 || route.destination == 0) continue;
-            auto& preparedRoute = modulationRoutes[activeModulationRoutes++];
-            if (preparedRoute.index != index)
-            {
-                preparedRoute.primary.valid = false;
-                preparedRoute.auxiliary.valid = false;
-            }
-            preparedRoute.index = index;
+            modulationRouteOrder[activeModulationRoutes++] = index;
+            auto& preparedRoute = modulationRoutes[index];
             preparedRoute.primary.prepare (route.source, route.polarity, route.curve);
             preparedRoute.auxiliary.prepare (route.auxSource, route.auxPolarity, route.auxCurve);
         }
@@ -1281,7 +1281,7 @@ public:
         { return target.routes[index].amount != 0.0f || smooth.routes[index].amount != 0.0f; };
         for (size_t r = 0; r < activeModulationRoutes; ++r)
         {
-            const auto index = modulationRoutes[r].index;
+            const auto index = modulationRouteOrder[r];
             const int destination = lfoIndexForPhaseDestination (target.routes[index].destination);
             if (destination >= 0 && hasAmount (index) && target.lfoShape[static_cast<size_t> (destination)] != 4
                 && ! isChaosLfoShape (target.lfoShape[static_cast<size_t> (destination)]))
@@ -1313,7 +1313,7 @@ public:
         for (size_t pass = 0; pass < lfoCount + macroCount; ++pass)
             for (size_t r = 0; r < activeModulationRoutes; ++r)
             {
-                const auto index = modulationRoutes[r].index;
+                const auto index = modulationRouteOrder[r];
                 const auto& route = target.routes[index];
                 if (! hasAmount (index)) continue;
                 const int destination = lfoIndexForPhaseDestination (route.destination);
@@ -1331,7 +1331,7 @@ public:
         unsigned nextMacroControlMask = 0;
         for (size_t r = 0; r < activeModulationRoutes; ++r)
         {
-            const auto index = modulationRoutes[r].index;
+            const auto index = modulationRouteOrder[r];
             const auto& route = target.routes[index];
             if (! hasAmount (index) || (! fastSource (route.source) && ! fastSource (route.auxSource))) continue;
             unsigned mask = 0;
@@ -1361,17 +1361,17 @@ public:
         // unrelated legacy sums retain physical-slot order, even if an unused
         // macro graph is present. Exact descriptor duplicates are ordered by
         // their block-start smoothed amount; equal-target IIRs never cross.
-        std::sort (modulationRoutes.begin(), modulationRoutes.begin() + activeModulationRoutes,
-            [&] (const auto& a, const auto& b)
+        std::sort (modulationRouteOrder.begin(), modulationRouteOrder.begin() + activeModulationRoutes,
+            [&] (size_t a, size_t b)
             {
-                const auto& x = target.routes[a.index]; const auto& y = target.routes[b.index];
+                const auto& x = target.routes[a]; const auto& y = target.routes[b];
                 if (x.destination != y.destination) return x.destination < y.destination;
-                if (! canonicalDestinations[static_cast<size_t> (x.destination)]) return a.index < b.index;
+                if (! canonicalDestinations[static_cast<size_t> (x.destination)]) return a < b;
                 const auto xKey = std::tie (x.source, x.auxSource, x.polarity, x.auxPolarity, x.curve, x.auxCurve, x.amount);
                 const auto yKey = std::tie (y.source, y.auxSource, y.polarity, y.auxPolarity, y.curve, y.auxCurve, y.amount);
                 if (xKey != yKey) return xKey < yKey;
-                const float xAmount = smooth.routes[a.index].amount, yAmount = smooth.routes[b.index].amount;
-                return xAmount != yAmount ? xAmount < yAmount : a.index < b.index;
+                const float xAmount = smooth.routes[a].amount, yAmount = smooth.routes[b].amount;
+                return xAmount != yAmount ? xAmount < yAmount : a < b;
             });
     }
 
@@ -1978,8 +1978,9 @@ public:
         smoothParameters();
         const auto globalLfo = nextLfos();
         left = right = 0.0f;
-        for (auto& v : voices)
+        for (size_t voiceIndex = 0; voiceIndex < voices.size(); ++voiceIndex)
         {
+            auto& v = voices[voiceIndex];
             if (! v.active) continue;
             if (target.voiceMode != 0)
             {
@@ -2026,13 +2027,14 @@ public:
             std::array<float, modulationDestinations> mod {};
             for (size_t r = 0; r < activeModulationRoutes; ++r)
             {
-                auto& preparedRoute = modulationRoutes[r];
-                const auto& route = target.routes[preparedRoute.index];
-                const float amount = smooth.routes[preparedRoute.index].amount;
+                const auto index = modulationRouteOrder[r];
+                auto& preparedRoute = modulationRoutes[index];
+                const auto& route = target.routes[index];
+                const float amount = smooth.routes[index].amount;
                 if (amount == 0.0f) continue;
-                float value = preparedRoute.primary.value (sources[static_cast<size_t> (route.source)]);
+                float value = preparedRoute.primary.value (sources[static_cast<size_t> (route.source)], voiceIndex);
                 if (route.auxSource != 0)
-                    value *= preparedRoute.auxiliary.value (sources[static_cast<size_t> (route.auxSource)]);
+                    value *= preparedRoute.auxiliary.value (sources[static_cast<size_t> (route.auxSource)], voiceIndex);
                 mod[static_cast<size_t> (route.destination)] += value * amount;
             }
             // All sources above read the preceding sample's phase offsets.
@@ -2233,38 +2235,80 @@ public:
     SynthSettings target, smooth;
     struct CachedModulationSource
     {
+        struct VoiceMemo
+        {
+            float input = 0.0f, output = 0.0f;
+            bool valid = false;
+        };
         ModulationSourceTransform transform;
         int source = 0, polarity = 0;
         float curve = 0, previousInput = 0, previousOutput = 0;
         bool valid = false;
+        std::array<VoiceMemo, voiceCount> voiceMemos {};
+
+        void invalidate()
+        {
+            valid = false;
+            for (auto& memo : voiceMemos) memo.valid = false;
+        }
 
         void prepare (int nextSource, int nextPolarity, float nextCurve)
         {
             if (source == nextSource && polarity == nextPolarity && curve == nextCurve) return;
             source = nextSource; polarity = nextPolarity; curve = nextCurve;
             transform = prepareModulationSource (source, polarity, curve);
-            valid = false;
+            invalidate();
         }
 
-        float value (float raw)
+        float value (float raw, size_t voiceIndex)
         {
             // No approximation: equal inputs to the same descriptor have exactly
             // equal outputs. Retain the sign of zero for signed curve evaluation.
             if (! transform.curved) return transformModulationSource (raw, transform);
+            // Keep the original shared hit first: Free LFOs and other common
+            // changing sources still evaluate pow only once across the voices.
             if (valid && raw == previousInput
                 && (raw != 0.0f || std::signbit (raw) == std::signbit (previousInput))) return previousOutput;
+            auto& memo = voiceMemos[voiceIndex];
             previousInput = raw;
-            previousOutput = transformModulationSource (raw, transform);
+            if (memo.valid && raw == memo.input
+                && (raw != 0.0f || std::signbit (raw) == std::signbit (memo.input)))
+                previousOutput = memo.output;
+            else
+            {
+                previousOutput = transformModulationSource (raw, transform);
+                memo = { raw, previousOutput, true };
+            }
             valid = true;
             return previousOutput;
         }
     };
     struct PreparedModulationRoute
     {
-        size_t index = 0;
         CachedModulationSource primary, auxiliary;
     };
+    // Cache entries belong to physical slots; sorting only the indices keeps
+    // descriptors and exact memoised values intact across block preparation.
+    // These are pure raw-input/descriptor memos, not voice history: voice reuse
+    // is safe, including steal/legato, when both values and zero signs match.
     std::array<PreparedModulationRoute, modulationRouteCount> modulationRoutes {};
+    std::array<size_t, modulationRouteCount> modulationRouteOrder {};
+    // Account for ABI padding using the previous shared-only storage layout.
+    struct SharedOnlyModulationCacheLayout
+    {
+        struct Source
+        {
+            ModulationSourceTransform transform;
+            int source, polarity;
+            float curve, previousInput, previousOutput;
+            bool valid;
+        };
+        size_t index;
+        Source primary, auxiliary;
+    };
+    static_assert (sizeof (modulationRoutes) + sizeof (modulationRouteOrder)
+                   <= sizeof (std::array<SharedOnlyModulationCacheLayout, modulationRouteCount>) + 16 * 1024,
+                   "Exact per-voice modulation caching must add at most 16 KiB");
     size_t activeModulationRoutes = 0;
     std::array<bool, lfoCount> phaseModulatedLfos {};
     std::array<bool, macroCount> modulatedMacros {};

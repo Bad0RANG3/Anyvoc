@@ -72,3 +72,14 @@ docs/test-results-github-ci-0.20.2.xml -text -whitespace
 
 # Preserve the post-release device measurements and their recorded input hashes.
 docs/realtime-probe-0.20.2/** -text -whitespace
+
+# Preserve all five profiler-CI artifact members and the failed-step log exactly.
+docs/realtime-ci-0.20.2-LastTest.log -text -whitespace
+docs/realtime-ci-0.20.2-test-results.xml -text -whitespace
+docs/realtime-ci-0.20.2-CTestCostData.txt -text -whitespace
+docs/realtime-ci-0.20.2-analyzer-self-test.json -text -whitespace
+docs/realtime-ci-0.20.2-runner-tests.txt -text -whitespace
+docs/realtime-ci-0.20.2-failed-step.txt -text -whitespace
+
+# Preserve the complete 0.20.3 modulation-cache evidence and source snapshots.
+docs/modulation-cache-0.20.3/** -text -whitespace

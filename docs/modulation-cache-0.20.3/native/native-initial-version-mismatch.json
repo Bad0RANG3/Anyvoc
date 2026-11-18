@@ -1,0 +1,12 @@
+{
+  "status": "FAIL",
+  "scope": "First native candidate smoke: footer version",
+  "observed_footer": "0.20.2",
+  "expected_build_version": "0.20.3",
+  "window_id": 23924954,
+  "completed_utc": "2026-11-18T10:55:07.6171469Z",
+  "cause": "Source/PluginEditor.cpp hardcoded version",
+  "correction": "Read JucePlugin_VersionString from build definitions",
+  "application_closed": true,
+  "settings_restored": true
+}

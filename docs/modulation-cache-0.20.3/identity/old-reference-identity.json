@@ -1,0 +1,17 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "3F38BB7D6C2EE3EF57B3364E1510FAB18597A074F1A7471A69D552C73006A4BC",
+    "Path": "D:\\Anyvoc\\build\\validation-baseline\\AnyvocEngineTests-v0.20.2-cache-reference.exe"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "1F68ED79B6B30531032A19656362F7F9A50FA8CB7C4E1F3960F9727203437917",
+    "Path": "D:\\Anyvoc\\Source\\SynthEngine.cpp"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "9FE4E478CA1981EC846079E19C5BFBDE1F380859260F29F577511C07B9F1A083",
+    "Path": "D:\\Anyvoc\\Tests\\EngineTests.cpp"
+  }
+]

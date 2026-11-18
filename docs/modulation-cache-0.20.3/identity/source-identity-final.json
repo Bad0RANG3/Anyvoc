@@ -1,0 +1,22 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "45B74235F10C26FC0EA0577B1A116B715F0138E68B9F7AF292BE5645BE94136F",
+    "Path": "D:\\Anyvoc\\Source\\SynthEngine.cpp"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "9FE4E478CA1981EC846079E19C5BFBDE1F380859260F29F577511C07B9F1A083",
+    "Path": "D:\\Anyvoc\\Tests\\EngineTests.cpp"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "22D473A82FF175559EA4634CDA94B40A86203A700F85AF71BA83360CDA00FC13",
+    "Path": "D:\\Anyvoc\\scripts\\compare-cache-regression.py"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "330D27C3C470F84C8C431DD045D3B9BDE2A8FBA112D39C5ECE0CC5100BFCBE98",
+    "Path": "D:\\Anyvoc\\Tests\\RealtimeRunnerTests.py"
+  }
+]

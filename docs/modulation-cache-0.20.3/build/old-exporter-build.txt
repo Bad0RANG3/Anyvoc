@@ -1,0 +1,7 @@
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Generating AnyvocEngineTests_artefacts/JuceLibraryCode/AnyvocEngineTests_resources.rc
+  AnyvocEngineTests_rc_lib.vcxproj -> D:\Anyvoc\build\AnyvocEngineTests_rc_lib.dir\Release\AnyvocEngineTests_rc_lib.lib
+  EngineTests.cpp
+  AnyvocEngineTests.vcxproj -> D:\Anyvoc\build\AnyvocEngineTests_artefacts\Release\AnyvocEngineTests.exe

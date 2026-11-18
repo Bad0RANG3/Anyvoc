@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "scope": "Synthetic comparator controls only; no DSP render",
+  "passed": 12,
+  "checks": [
+    "synthetic exact pair",
+    "missing file rejected",
+    "one audio byte rejected",
+    "NaN rejected",
+    "truncation rejected",
+    "silent audio rejected",
+    "manifest-only edit rejected",
+    "reported RMS rejected",
+    "block sequence rejected",
+    "unsafe filename rejected",
+    "duplicate case rejected",
+    "extra file rejected"
+  ]
+}

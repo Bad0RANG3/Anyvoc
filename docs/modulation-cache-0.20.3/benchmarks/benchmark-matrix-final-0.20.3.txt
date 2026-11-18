@@ -1,0 +1,18 @@
+Matrix benchmark: Release; 48 kHz; 16 sustained voices; 256-sample blocks; one wavetable oscillator, unison 1; filters/effects off; 10 audio seconds per run; 3 rounds; staggered onsets and distinct velocities; includes setSettings once per block; excludes construction/warmup. Last case uses note-triggered LFOs and per-voice envelope/velocity aux.
+ROUND 1 0 routes: wall=0.802175s, wall/audio=0.080218
+ROUND 1 8 legacy routes: wall=1.048618s, wall/audio=0.104862
+ROUND 1 32 curved routes + curved aux: wall=1.957035s, wall/audio=0.195704
+ROUND 1 32 per-voice curved routes + curved aux: wall=4.781210s, wall/audio=0.478121
+ROUND 2 8 legacy routes: wall=1.031599s, wall/audio=0.103160
+ROUND 2 32 curved routes + curved aux: wall=1.954268s, wall/audio=0.195427
+ROUND 2 32 per-voice curved routes + curved aux: wall=4.791706s, wall/audio=0.479171
+ROUND 2 0 routes: wall=0.802548s, wall/audio=0.080255
+ROUND 3 32 curved routes + curved aux: wall=1.937396s, wall/audio=0.193740
+ROUND 3 32 per-voice curved routes + curved aux: wall=4.878814s, wall/audio=0.487881
+ROUND 3 0 routes: wall=0.830618s, wall/audio=0.083062
+ROUND 3 8 legacy routes: wall=1.086925s, wall/audio=0.108692
+MEDIAN 0 routes: wall=0.802548s, wall/audio=0.080255, real-time throughput=12.460309x
+MEDIAN 8 legacy routes: wall=1.048618s, wall/audio=0.104862, real-time throughput=9.536358x
+MEDIAN 32 curved routes + curved aux: wall=1.954268s, wall/audio=0.195427, real-time throughput=5.117006x
+MEDIAN 32 per-voice curved routes + curved aux: wall=4.791706s, wall/audio=0.479171, real-time throughput=2.086939x
+CHECKSUM 0.204156

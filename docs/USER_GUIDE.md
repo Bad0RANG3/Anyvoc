@@ -1,18 +1,16 @@
-# Anyvoc 0.20.2 使用手册
+# Anyvoc 0.20.3 候选版使用手册
 
-这是一个原创 Windows 64 位合成器，提供 VST3 插件和可独立运行的程序，优先面向 FL Studio 的调音体验。它不是 Serum 2，不兼容 Serum 预设，也不承诺声音或功能完全一致。
+这是一个原创 Windows 64 位合成器，提供 VST3 插件和可独立运行的程序。它不兼容 Serum 预设，也不承诺声音或功能完全等价。当前优先完善独立版体验，FL Studio 等 DAW 须另行实测。
 
-本页说明 **0.20.2** 的多通道琶音器、PLAY 入门页、独立路由 COPY 和既有完整编辑功能。仍为 **1,256 个宿主参数、schema 14、28 个工厂音色**，与 0.20.1 的定义和顺序相同。本版分别记录每个 MIDI 通道的重复按键、力度和踏板，生成音符保留来源通道。**本机自动检查、限定原生启动检查以及 Windows／完整源码包逐文件校验已通过，本地 0.20.2 包可用。** [完整四套测试](ctest-0.20.2-final.txt)共 220 组（75／129／10／6）通过，用时 204.40 秒；[pluginval strictness 5](pluginval-0.20.2.txt)通过，seed 为 `0x63446cc`。完整范围见 [0.20.2 记录](VALIDATION-0.20.2.md)。GitHub 未上传二进制或 Release 附件；真人听音、外接 MIDI 和 DAW 仍待实测。
+本轮精确缓存优化保留原调制公式、1,256 个宿主参数、schema 14 和 28 个工厂音色；多通道琶音器、PLAY、COPY 与完整编辑功能继续沿用。最终完整 **220 组通过，218.75 秒**，27 例原始浮点音频与修改前真实参考逐字节一致；最终 pluginval strictness 5 PASS，seed `0x481d1f1`，四份最终演示与冻结 0.20.2 ZIP 全字节一致，宏独立分析 PASS。全部范围见[0.20.3 验证记录](VALIDATION-0.20.3.md)。
 
-[0.20.1 验收](VALIDATION-0.20.1.md)及其[原生启动检查](native-smoke-0.20.1.json)、0.20 的 [PLAY](ui-play-native-0.20.json)、[COPY](native-copy-0.20.json)、[真实采样重启恢复](NATIVE_RESTART-0.20.md)均是旧版记录，不能作为 0.20.2 复测通过的证据。0.20.1 的启动检查只观察了 INIT、屏幕 C4、EV 和输出表，不包含外部多通道 MIDI 或踏板输入。
+**当前仍是候选版，原生演奏与正式实时复测受阻。** 已观察到真实窗口、0.20.3 页脚、PLAY 和 INIT Pure Canvas，但输出设备无法打开，屏幕 C4 没有电平／EV 活动。新旧两版探针同样打不开设备，用户已确认同期有其他程序独占声卡。待其释放后重验；目前不能认定设备已恢复或根因已隔离，也不能归因于缓存改动。程序已关闭、原设置恢复；没有真人听音、外接 MIDI 或 DAW 验收。候选包与新提交 CI 尚待验，不能称整体通过。
 
-[0.20.2 本轮原生启动检查](native-smoke-0.20.2.json)已实际启动独立版，确认 PLAY 与版本号、INIT、屏幕 C4 的 EV latest voice 和绿色输出表，松键后回到 idle base。程序退出后恢复原用户设置，前后哈希相同。该检查没有真人听音或录取播放 PCM，也没有外接多通道 MIDI／重复按键／踏板输入、SAVE／重启／LOAD、DAW 或最小窗口复测。
-
-旧版本的验收、失败修复与未测范围保存在 [0.19](VALIDATION-0.19.md)、[0.18](VALIDATION-0.18.md)、[0.17](VALIDATION-0.17.md)、[0.16](VALIDATION-0.16.md)独立记录中；[0.19 云端 CI](GITHUB_CI-0.19.md)只对应当时提交。旧发行包保持原样，这些证据不自动变成本轮验收。
+已交付的 `dist/Anyvoc-0.20.2-Windows/Anyvoc.exe` 与旧 ZIP 保持冻结，见[0.20.2 历史记录](VALIDATION-0.20.2.md)；目录保留不表示当前设备故障已经解决。0.20.2 当时的绿色电平、0.20 的 [PLAY](ui-play-native-0.20.json)、[COPY](native-copy-0.20.json)和[采样重启恢复](NATIVE_RESTART-0.20.md)均不作为本轮原生通过的证据。GitHub 尚无二进制 Release 附件；[63a8192 CI 失败](GITHUB-CI-REALTIME-0.20.2.md)也与本轮新提交分开记录。
 
 ## 先听到声音
 
-1. 0.20.2 的本地入口为 `dist/Anyvoc-0.20.2-Windows/Anyvoc.exe`，不需要启动 DAW。使用 Windows ZIP 时先完整解压，再运行其中的 `Anyvoc.exe`，不要在压缩包内启动；自行构建的入口为 `build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe`。先确认右下角版本为 0.20.2；冻结的 0.20.1 及更早包不包含本次多通道与重复按键修复。
+1. 当前候选自行构建入口为 `build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe`，页脚应为 0.20.3；候选包尚待校验。已交付旧版入口为 `dist/Anyvoc-0.20.2-Windows/Anyvoc.exe`。收到 Windows ZIP 后请完整解压，再运行其中的 `Anyvoc.exe`，不要在压缩包内启动。以下是正常操作步骤，不代表当前声卡受阻项已经通过。
 2. 默认打开 **PLAY**。点 **CHOOSE A SOUND** 或顶部音色名称，搜索 `Northern Lights` 或 `Neon Skyline`，双击结果加载。
 3. 用鼠标按底部钢琴键。独立版的 Options / Audio settings 可选择输出设备，推荐 44.1 或 48 kHz、256 或 512 samples。
 4. 没声音时先检查电脑音量、输出设备、MASTER 和振荡器 LEVEL。PANIC 可以停止卡住的音符和效果尾音。

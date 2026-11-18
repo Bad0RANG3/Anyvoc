@@ -1,0 +1,26 @@
+{
+  "status": "PARTIAL_AUDIO_NOT_ACCEPTED",
+  "completed_utc": "2026-11-18T11:03:06.3768498Z",
+  "executable": "build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe",
+  "executable_sha256": "7e6efbb891062906af73f3f295c200876a56e05bbdc255621e556c633c446167",
+  "pid": 228100,
+  "window_id": 7471282,
+  "observations": [
+    "PLAY startup visible",
+    "Footer 0.20.3 visible after build-version binding fix",
+    "INIT loads Init / Pure Canvas",
+    "Screen C4 short clicks/drag did not show meter or latest voice",
+    "Release temporarily set to 3.0000002384 seconds; still no activity",
+    "Audio/MIDI dialog: Windows Audio; Output << none >>",
+    "Selecting speakers NICEHCK HiFi Audio returns Could not open output device"
+  ],
+  "audio_device_error": "Couldn't open the output device!",
+  "external_audio_not_recorded": true,
+  "audio_not_listened": true,
+  "no_external_midi_or_daw_check": true,
+  "application_closed": true,
+  "settings_restored_sha256": "5000f1074d6b885621afabb357a32e2ba2050f8661ad38c3fb92bc520674ab7e",
+  "scope": "Native GUI partial; device open failed; no successful keyboard audio or realtime conclusion",
+  "old_probe_also_failed": true,
+  "driver_cause_not_determined": true
+}

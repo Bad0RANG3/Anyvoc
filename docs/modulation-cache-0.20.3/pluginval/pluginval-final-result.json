@@ -1,0 +1,12 @@
+﻿{
+    "status":  "PASS",
+    "started_utc":  "2026-11-18T11:02:57.3820923Z",
+    "completed_utc":  "2026-11-18T11:03:02.5895690Z",
+    "exit_code":  0,
+    "seed":  "0x481d1f1",
+    "arguments":  "--strictness-level 5 --validate \"D:\\Anyvoc\\build\\Anyvoc_artefacts\\Release\\VST3\\Anyvoc.vst3\"",
+    "validator":  "D:\\Anyvoc\\tools\\pluginval\\pluginval.exe",
+    "bundle":  "D:\\Anyvoc\\build\\Anyvoc_artefacts\\Release\\VST3\\Anyvoc.vst3",
+    "stdout":  "D:\\Anyvoc\\build\\validation-cache-optimization\\pluginval-final-0.20.3.txt",
+    "stderr":  "D:\\Anyvoc\\build\\validation-cache-optimization\\pluginval-final-0.20.3-stderr.txt"
+}

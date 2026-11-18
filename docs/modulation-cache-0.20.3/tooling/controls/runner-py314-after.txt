@@ -1,0 +1,6 @@
+python= 3.14.8 (tags/v3.14.8:8e6e75d, Sep 30 2026, 18:19:33) [MSC v.1944 64 bit (AMD64)]
+temp= 'D:\\Anyvoc\\build\\validation-cache-optimization\\runner-temp-alias'
+resolved= 'D:\\Anyvoc\\build\\validation-cache-optimization\\runner-temp-real'
+equal= False
+No suitable Python runtime found
+Pass --list (-0) to see all detected environments on your machine

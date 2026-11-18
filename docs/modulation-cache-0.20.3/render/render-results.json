@@ -1,0 +1,46 @@
+﻿[
+    {
+        "name":  "legacy",
+        "renderer":  "D:\\Anyvoc\\build\\AnyvocProcessorTests_artefacts\\Release\\AnyvocProcessorTests.exe",
+        "renderer_sha256":  "010439dce5ce4f42a737b2ddecedf4b315b4651883976b299d66a20a928c9612",
+        "flag":  "--demo",
+        "output":  "D:\\Anyvoc\\build\\validation-cache-optimization\\final-render\\Anyvoc-v0.20.3-Legacy.wav",
+        "log":  "D:\\Anyvoc\\build\\validation-cache-optimization\\final-render\\render-legacy.txt",
+        "started_utc":  "2026-11-18T11:03:03.9571080Z",
+        "finished_utc":  "2026-11-18T11:03:04.6984205Z",
+        "exit_code":  0
+    },
+    {
+        "name":  "motion",
+        "renderer":  "D:\\Anyvoc\\build\\AnyvocProcessorTests_artefacts\\Release\\AnyvocProcessorTests.exe",
+        "renderer_sha256":  "010439dce5ce4f42a737b2ddecedf4b315b4651883976b299d66a20a928c9612",
+        "flag":  "--lfo-motion-demo",
+        "output":  "D:\\Anyvoc\\build\\validation-cache-optimization\\final-render\\Anyvoc-v0.20.3-Motion.wav",
+        "log":  "D:\\Anyvoc\\build\\validation-cache-optimization\\final-render\\render-motion.txt",
+        "started_utc":  "2026-11-18T11:03:04.7462442Z",
+        "finished_utc":  "2026-11-18T11:03:05.4132242Z",
+        "exit_code":  0
+    },
+    {
+        "name":  "chaos",
+        "renderer":  "D:\\Anyvoc\\build\\AnyvocProcessorTests_artefacts\\Release\\AnyvocProcessorTests.exe",
+        "renderer_sha256":  "010439dce5ce4f42a737b2ddecedf4b315b4651883976b299d66a20a928c9612",
+        "flag":  "--chaos-demo",
+        "output":  "D:\\Anyvoc\\build\\validation-cache-optimization\\final-render\\Anyvoc-v0.20.3-Chaos.wav",
+        "log":  "D:\\Anyvoc\\build\\validation-cache-optimization\\final-render\\render-chaos.txt",
+        "started_utc":  "2026-11-18T11:03:05.4207321Z",
+        "finished_utc":  "2026-11-18T11:03:05.8865053Z",
+        "exit_code":  0
+    },
+    {
+        "name":  "macro",
+        "renderer":  "D:\\Anyvoc\\build\\AnyvocProcessorTests_artefacts\\Release\\AnyvocProcessorTests.exe",
+        "renderer_sha256":  "010439dce5ce4f42a737b2ddecedf4b315b4651883976b299d66a20a928c9612",
+        "flag":  "--macro-demo",
+        "output":  "D:\\Anyvoc\\build\\validation-cache-optimization\\final-render\\Anyvoc-v0.20.3-Macro.wav",
+        "log":  "D:\\Anyvoc\\build\\validation-cache-optimization\\final-render\\render-macro.txt",
+        "started_utc":  "2026-11-18T11:03:05.8880091Z",
+        "finished_utc":  "2026-11-18T11:03:06.5824055Z",
+        "exit_code":  0
+    }
+]

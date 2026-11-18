@@ -1,0 +1,22 @@
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  AnyvocEngineTests_rc_lib.vcxproj -> D:\Anyvoc\build\AnyvocEngineTests_rc_lib.dir\Release\AnyvocEngineTests_rc_lib.lib
+  AnyvocRealtimeProbe_rc_lib.vcxproj -> D:\Anyvoc\build\AnyvocRealtimeProbe_rc_lib.dir\Release\AnyvocRealtimeProbe_rc_lib.lib
+  AnyvocProcessorTests_rc_lib.vcxproj -> D:\Anyvoc\build\AnyvocProcessorTests_rc_lib.dir\Release\AnyvocProcessorTests_rc_lib.lib
+  Anyvoc_rc_lib.vcxproj -> D:\Anyvoc\build\Anyvoc_rc_lib.dir\Release\Anyvoc_rc_lib.lib
+  AnyvocPresetLibraryTests_rc_lib.vcxproj -> D:\Anyvoc\build\AnyvocPresetLibraryTests_rc_lib.dir\Release\AnyvocPresetLibraryTests_rc_lib.lib
+  AnyvocWavetableTests_rc_lib.vcxproj -> D:\Anyvoc\build\AnyvocWavetableTests_rc_lib.dir\Release\AnyvocWavetableTests_rc_lib.lib
+  Anyvoc_vst3_helper.vcxproj -> D:\Anyvoc\build\Release\Anyvoc_vst3_helper.exe
+  PluginEditor.cpp
+  Anyvoc.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Anyvoc_SharedCode.lib
+    正在创建库 D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.lib 和对象 D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.exp
+  Anyvoc_VST3.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\VST3\Anyvoc.vst3\Contents\x86_64-win\Anyvoc.vst3
+  removing moduleinfo.json
+  creating D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.vst3
+  AnyvocEngineTests.vcxproj -> D:\Anyvoc\build\AnyvocEngineTests_artefacts\Release\AnyvocEngineTests.exe
+  AnyvocPresetLibraryTests.vcxproj -> D:\Anyvoc\build\AnyvocPresetLibraryTests_artefacts\Release\AnyvocPresetLibraryTests.exe
+  Anyvoc_Standalone.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Standalone\Anyvoc.exe
+  AnyvocRealtimeProbe.vcxproj -> D:\Anyvoc\build\AnyvocRealtimeProbe_artefacts\Release\AnyvocRealtimeProbe.exe
+  AnyvocWavetableTests.vcxproj -> D:\Anyvoc\build\AnyvocWavetableTests_artefacts\Release\AnyvocWavetableTests.exe
+  AnyvocProcessorTests.vcxproj -> D:\Anyvoc\build\AnyvocProcessorTests_artefacts\Release\AnyvocProcessorTests.exe

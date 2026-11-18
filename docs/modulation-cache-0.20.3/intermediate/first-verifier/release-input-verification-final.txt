@@ -1,0 +1,3 @@
+binaries: FAIL
+source-compatibility: PASS
+demo-compatibility: FAIL

@@ -1,0 +1,13 @@
+{
+  "recorded_utc": "2026-11-18T11:09:54.3564866Z",
+  "source": "User reply in this project chat",
+  "user_report": "A program is currently using the sound card exclusively",
+  "exclusive_program_not_closed_by_agent": true,
+  "after_release_retest_performed": false,
+  "scope": "Reported environment condition; not an isolated causality test or valid realtime capture",
+  "retained_invalid_reports": [
+    "device-open-short-0.20.3.json",
+    "device-open-short-0.20.2.json",
+    "device-open-old-defaults.json"
+  ]
+}

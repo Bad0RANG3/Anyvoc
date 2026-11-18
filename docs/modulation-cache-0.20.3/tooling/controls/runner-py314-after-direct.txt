@@ -1,0 +1,16 @@
+python= 3.14.8 (tags/v3.14.8:8e6e75d, Sep 30 2026, 18:19:33) [MSC v.1944 64 bit (AMD64)]
+temp= 'D:\\Anyvoc\\build\\validation-cache-optimization\\runner-temp-alias'
+resolved= 'D:\\Anyvoc\\build\\validation-cache-optimization\\runner-temp-real'
+equal= False
+test_competing_runner_cannot_enter_after_atomic_reservation (__main__.RealtimeRunnerTests.test_competing_runner_cannot_enter_after_atomic_reservation) ... ok
+test_complete_suite_preserves_each_case_and_artifact (__main__.RealtimeRunnerTests.test_complete_suite_preserves_each_case_and_artifact) ... ok
+test_executable_replaced_between_cases_is_rejected_before_launch (__main__.RealtimeRunnerTests.test_executable_replaced_between_cases_is_rejected_before_launch) ... ok
+test_executable_replaced_during_capture_invalidates_success_reply (__main__.RealtimeRunnerTests.test_executable_replaced_during_capture_invalidates_success_reply) ... ok
+test_existing_suite_is_untouched_and_never_launches (__main__.RealtimeRunnerTests.test_existing_suite_is_untouched_and_never_launches) ... ok
+test_launch_oserror_keeps_failed_run_and_created_logs (__main__.RealtimeRunnerTests.test_launch_oserror_keeps_failed_run_and_created_logs) ... ok
+test_timeout_keeps_failed_run_and_partial_artifacts (__main__.RealtimeRunnerTests.test_timeout_keeps_failed_run_and_partial_artifacts) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.125s
+
+OK

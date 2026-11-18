@@ -1,0 +1,217 @@
+{
+  "status": "PASS",
+  "baseline_commit": "63a8192c126ae7dc751110df3d93512dcb5e6550",
+  "source_file_count": 17,
+  "raw_changed_files": [
+    "Source/PluginEditor.cpp",
+    "Source/SynthEngine.cpp"
+  ],
+  "lf_changed_files": [
+    "Source/PluginEditor.cpp",
+    "Source/SynthEngine.cpp"
+  ],
+  "allowed_changed_files": [
+    "Source/PluginEditor.cpp",
+    "Source/SynthEngine.cpp"
+  ],
+  "files": [
+    {
+      "path": "Source/ChaosLfoModel.h",
+      "baseline_bytes": 5551,
+      "current_bytes": 5551,
+      "baseline_sha256": "ab86808e750242675560b63fbb3f2582e09da531f8cbd0713937aa7e3aaed760",
+      "current_sha256": "ab86808e750242675560b63fbb3f2582e09da531f8cbd0713937aa7e3aaed760",
+      "baseline_lf_sha256": "ab86808e750242675560b63fbb3f2582e09da531f8cbd0713937aa7e3aaed760",
+      "current_lf_sha256": "ab86808e750242675560b63fbb3f2582e09da531f8cbd0713937aa7e3aaed760",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/EnvelopeModel.h",
+      "baseline_bytes": 2406,
+      "current_bytes": 2406,
+      "baseline_sha256": "bfd2fbff74879847f8d7bbc4428456b1b4d2b33b8d4d05e8069d9b08c139ef5f",
+      "current_sha256": "bfd2fbff74879847f8d7bbc4428456b1b4d2b33b8d4d05e8069d9b08c139ef5f",
+      "baseline_lf_sha256": "bfd2fbff74879847f8d7bbc4428456b1b4d2b33b8d4d05e8069d9b08c139ef5f",
+      "current_lf_sha256": "bfd2fbff74879847f8d7bbc4428456b1b4d2b33b8d4d05e8069d9b08c139ef5f",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/LfoCurveDocument.cpp",
+      "baseline_bytes": 13250,
+      "current_bytes": 13250,
+      "baseline_sha256": "9493955958762b154af417245fb3405e7b9e72bf28072269a281d28208a87d2f",
+      "current_sha256": "9493955958762b154af417245fb3405e7b9e72bf28072269a281d28208a87d2f",
+      "baseline_lf_sha256": "9493955958762b154af417245fb3405e7b9e72bf28072269a281d28208a87d2f",
+      "current_lf_sha256": "9493955958762b154af417245fb3405e7b9e72bf28072269a281d28208a87d2f",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/LfoCurveDocument.h",
+      "baseline_bytes": 2999,
+      "current_bytes": 2999,
+      "baseline_sha256": "3776f35d3c6b4b5c26620307e4e8f7eb855a0768e6ee030cca64e724923b7576",
+      "current_sha256": "3776f35d3c6b4b5c26620307e4e8f7eb855a0768e6ee030cca64e724923b7576",
+      "baseline_lf_sha256": "3776f35d3c6b4b5c26620307e4e8f7eb855a0768e6ee030cca64e724923b7576",
+      "current_lf_sha256": "3776f35d3c6b4b5c26620307e4e8f7eb855a0768e6ee030cca64e724923b7576",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/LfoModel.h",
+      "baseline_bytes": 1605,
+      "current_bytes": 1605,
+      "baseline_sha256": "78c28454083260eea5c313b64c81aec11c82080e556acf0e20701976cd5bd71e",
+      "current_sha256": "78c28454083260eea5c313b64c81aec11c82080e556acf0e20701976cd5bd71e",
+      "baseline_lf_sha256": "78c28454083260eea5c313b64c81aec11c82080e556acf0e20701976cd5bd71e",
+      "current_lf_sha256": "78c28454083260eea5c313b64c81aec11c82080e556acf0e20701976cd5bd71e",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/ModulationRoute.h",
+      "baseline_bytes": 5802,
+      "current_bytes": 5802,
+      "baseline_sha256": "97756e999cb37ba498096c25a14ea855a5e78156306902e6fe81d75ffa6f802a",
+      "current_sha256": "97756e999cb37ba498096c25a14ea855a5e78156306902e6fe81d75ffa6f802a",
+      "baseline_lf_sha256": "97756e999cb37ba498096c25a14ea855a5e78156306902e6fe81d75ffa6f802a",
+      "current_lf_sha256": "97756e999cb37ba498096c25a14ea855a5e78156306902e6fe81d75ffa6f802a",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/ModulationView.h",
+      "baseline_bytes": 2529,
+      "current_bytes": 2529,
+      "baseline_sha256": "2078efc485b12d192067d5d5ca588ce87491cce888a15c773dab8cf29e86e07c",
+      "current_sha256": "2078efc485b12d192067d5d5ca588ce87491cce888a15c773dab8cf29e86e07c",
+      "baseline_lf_sha256": "2078efc485b12d192067d5d5ca588ce87491cce888a15c773dab8cf29e86e07c",
+      "current_lf_sha256": "2078efc485b12d192067d5d5ca588ce87491cce888a15c773dab8cf29e86e07c",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/PluginEditor.cpp",
+      "baseline_bytes": 399352,
+      "current_bytes": 399371,
+      "baseline_sha256": "0e2d35b614e159f5ee60fd8edf29ef7999769cd3d664fb4b212fd81fba48ee24",
+      "current_sha256": "cdf2c15418890b8c069c6f8bb49c04eb4937a76c65746908010fc05791c7bbcc",
+      "baseline_lf_sha256": "0e2d35b614e159f5ee60fd8edf29ef7999769cd3d664fb4b212fd81fba48ee24",
+      "current_lf_sha256": "cdf2c15418890b8c069c6f8bb49c04eb4937a76c65746908010fc05791c7bbcc",
+      "byte_identical": false,
+      "lf_identical": false
+    },
+    {
+      "path": "Source/PluginEditor.h",
+      "baseline_bytes": 1320,
+      "current_bytes": 1320,
+      "baseline_sha256": "2b98b7d3d766165f2118b10969dd46670dacf22f16865531b3fa0329a5a548d7",
+      "current_sha256": "2b98b7d3d766165f2118b10969dd46670dacf22f16865531b3fa0329a5a548d7",
+      "baseline_lf_sha256": "2b98b7d3d766165f2118b10969dd46670dacf22f16865531b3fa0329a5a548d7",
+      "current_lf_sha256": "2b98b7d3d766165f2118b10969dd46670dacf22f16865531b3fa0329a5a548d7",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/PluginProcessor.cpp",
+      "baseline_bytes": 128957,
+      "current_bytes": 128957,
+      "baseline_sha256": "6848e06d7f21bde8d738b5da9aba3f45b86abbe93842469eabc2cb7683d47eb3",
+      "current_sha256": "6848e06d7f21bde8d738b5da9aba3f45b86abbe93842469eabc2cb7683d47eb3",
+      "baseline_lf_sha256": "6848e06d7f21bde8d738b5da9aba3f45b86abbe93842469eabc2cb7683d47eb3",
+      "current_lf_sha256": "6848e06d7f21bde8d738b5da9aba3f45b86abbe93842469eabc2cb7683d47eb3",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/PluginProcessor.h",
+      "baseline_bytes": 11579,
+      "current_bytes": 11579,
+      "baseline_sha256": "dee12afeed094732e158e552d89a91b0529d2896f18fbc090d039f384f1fa902",
+      "current_sha256": "dee12afeed094732e158e552d89a91b0529d2896f18fbc090d039f384f1fa902",
+      "baseline_lf_sha256": "dee12afeed094732e158e552d89a91b0529d2896f18fbc090d039f384f1fa902",
+      "current_lf_sha256": "dee12afeed094732e158e552d89a91b0529d2896f18fbc090d039f384f1fa902",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/PresetLibrary.cpp",
+      "baseline_bytes": 18700,
+      "current_bytes": 18700,
+      "baseline_sha256": "71461c681c94f197405bf072dfda501f585edd2b0a8770eb8535858664214149",
+      "current_sha256": "71461c681c94f197405bf072dfda501f585edd2b0a8770eb8535858664214149",
+      "baseline_lf_sha256": "71461c681c94f197405bf072dfda501f585edd2b0a8770eb8535858664214149",
+      "current_lf_sha256": "71461c681c94f197405bf072dfda501f585edd2b0a8770eb8535858664214149",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/PresetLibrary.h",
+      "baseline_bytes": 1641,
+      "current_bytes": 1641,
+      "baseline_sha256": "1f2839dd2bc62fa3a4d6aaaa3d27e72cc940a2f86e57584cf98e1867e88b5d66",
+      "current_sha256": "1f2839dd2bc62fa3a4d6aaaa3d27e72cc940a2f86e57584cf98e1867e88b5d66",
+      "baseline_lf_sha256": "1f2839dd2bc62fa3a4d6aaaa3d27e72cc940a2f86e57584cf98e1867e88b5d66",
+      "current_lf_sha256": "1f2839dd2bc62fa3a4d6aaaa3d27e72cc940a2f86e57584cf98e1867e88b5d66",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/SynthEngine.cpp",
+      "baseline_bytes": 132394,
+      "current_bytes": 134311,
+      "baseline_sha256": "1f68ed79b6b30531032a19656362f7f9a50fa8cb7c4e1f3960f9727203437917",
+      "current_sha256": "45b74235f10c26fc0ea0577b1a116b715f0138e68b9f7af292be5645be94136f",
+      "baseline_lf_sha256": "1f68ed79b6b30531032a19656362f7f9a50fa8cb7c4e1f3960f9727203437917",
+      "current_lf_sha256": "45b74235f10c26fc0ea0577b1a116b715f0138e68b9f7af292be5645be94136f",
+      "byte_identical": false,
+      "lf_identical": false
+    },
+    {
+      "path": "Source/SynthEngine.h",
+      "baseline_bytes": 7955,
+      "current_bytes": 7955,
+      "baseline_sha256": "598a3be7ed90acd7cface7df7548609c764798041f590c6785d644c52f9d558c",
+      "current_sha256": "598a3be7ed90acd7cface7df7548609c764798041f590c6785d644c52f9d558c",
+      "baseline_lf_sha256": "598a3be7ed90acd7cface7df7548609c764798041f590c6785d644c52f9d558c",
+      "current_lf_sha256": "598a3be7ed90acd7cface7df7548609c764798041f590c6785d644c52f9d558c",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/WavetableDocument.cpp",
+      "baseline_bytes": 18831,
+      "current_bytes": 18831,
+      "baseline_sha256": "c22900e5b3ec7b221f0c95be7846a12158d7357240230735a4cd8533ed3b5115",
+      "current_sha256": "c22900e5b3ec7b221f0c95be7846a12158d7357240230735a4cd8533ed3b5115",
+      "baseline_lf_sha256": "c22900e5b3ec7b221f0c95be7846a12158d7357240230735a4cd8533ed3b5115",
+      "current_lf_sha256": "c22900e5b3ec7b221f0c95be7846a12158d7357240230735a4cd8533ed3b5115",
+      "byte_identical": true,
+      "lf_identical": true
+    },
+    {
+      "path": "Source/WavetableDocument.h",
+      "baseline_bytes": 2737,
+      "current_bytes": 2737,
+      "baseline_sha256": "6a3fb47a7e9b8227b83d9b0ca138e8f7edfe60be69b1047465c54702f4eb632e",
+      "current_sha256": "6a3fb47a7e9b8227b83d9b0ca138e8f7edfe60be69b1047465c54702f4eb632e",
+      "baseline_lf_sha256": "6a3fb47a7e9b8227b83d9b0ca138e8f7edfe60be69b1047465c54702f4eb632e",
+      "current_lf_sha256": "6a3fb47a7e9b8227b83d9b0ca138e8f7edfe60be69b1047465c54702f4eb632e",
+      "byte_identical": true,
+      "lf_identical": true
+    }
+  ],
+  "editor_version_display_fix": {
+    "path": "Source/PluginEditor.cpp",
+    "before": "        drawText (g, \"ANYVOC  /  0.20.2\", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);",
+    "after": "        drawText (g, \"ANYVOC  /  \" JucePlugin_VersionString, { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);",
+    "exact_replacement_verified": true,
+    "all_remaining_bytes_identical": true
+  },
+  "normalization": "CRLF and standalone CR converted to LF; raw equality checked separately.",
+  "scope": "All production Source .cpp/.h bytes. Only the exact Editor footer replacement and SynthEngine cache implementation may differ; no semantic-equivalence claim for the latter.",
+  "checked_utc": "2026-11-18T11:06:38.584186+00:00",
+  "verifier_sha256": "89f46097f80504416c0f850865f98ab7786cd100a551966ba37c05f2d3743326"
+}

@@ -1,0 +1,247 @@
+{
+  "scope": "Failed cloud run for the exact released profiler/tooling commit: build and 220 CTest groups passed, analyzer 20 passed, runner 6 passed/1 failed. Excludes local device captures and subsequent cache optimization.",
+  "evidence_consistency_verified": true,
+  "overall_ci_success": false,
+  "recorded_utc": "2026-11-18T10:47:10.319103+00:00",
+  "commit": "63a8192c126ae7dc751110df3d93512dcb5e6550",
+  "run": {
+    "id": 44286216206,
+    "html_url": "https://github.com/Bad0RANG3/Anyvoc/actions/runs/44286216206",
+    "head_sha": "63a8192c126ae7dc751110df3d93512dcb5e6550",
+    "event": "push",
+    "head_branch": "main",
+    "run_attempt": 1,
+    "created_at": "2026-11-18T10:31:28Z",
+    "updated_at": "2026-11-18T10:44:32Z",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "job": {
+    "id": 134739448543,
+    "html_url": "https://github.com/Bad0RANG3/Anyvoc/actions/runs/44286216206/job/134739448543",
+    "name": "windows",
+    "labels": [
+      "windows-2022"
+    ],
+    "started_at": "2026-11-18T10:31:31Z",
+    "completed_at": "2026-11-18T10:44:32Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-11-18T10:31:32Z",
+        "completed_at": "2026-11-18T10:31:32Z"
+      },
+      {
+        "name": "Checkout source and pinned JUCE",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-11-18T10:31:32Z",
+        "completed_at": "2026-11-18T10:31:49Z"
+      },
+      {
+        "name": "Verify dependency",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-18T10:31:49Z",
+        "completed_at": "2026-11-18T10:31:49Z"
+      },
+      {
+        "name": "Configure",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-11-18T10:31:49Z",
+        "completed_at": "2026-11-18T10:33:25Z"
+      },
+      {
+        "name": "Build Release",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-11-18T10:33:25Z",
+        "completed_at": "2026-11-18T10:41:24Z"
+      },
+      {
+        "name": "Run all four test suites",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-11-18T10:41:24Z",
+        "completed_at": "2026-11-18T10:44:26Z"
+      },
+      {
+        "name": "Check profiler tooling without opening an audio device",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 7,
+        "started_at": "2026-11-18T10:44:26Z",
+        "completed_at": "2026-11-18T10:44:29Z"
+      },
+      {
+        "name": "Keep test evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-11-18T10:44:29Z",
+        "completed_at": "2026-11-18T10:44:30Z"
+      },
+      {
+        "name": "Post Checkout source and pinned JUCE",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-11-18T10:44:30Z",
+        "completed_at": "2026-11-18T10:44:31Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-11-18T10:44:31Z",
+        "completed_at": "2026-11-18T10:44:31Z"
+      }
+    ]
+  },
+  "artifact": {
+    "id": 14420570954,
+    "name": "windows-test-evidence",
+    "bytes": 10508,
+    "created_at": "2026-11-18T10:44:29Z",
+    "expired": false,
+    "sha256": "139693cef1564060596bbd0b404242a3dbe419f8ea3a8aa6f34bb4f7c8c298f0",
+    "github_api_digest": "sha256:139693cef1564060596bbd0b404242a3dbe419f8ea3a8aa6f34bb4f7c8c298f0",
+    "digest_matches": true,
+    "zip_crc_valid": true,
+    "safe_unique_paths": true,
+    "exact_member_set": [
+      "Testing/Temporary/CTestCostData.txt",
+      "Testing/Temporary/LastTest.log",
+      "realtime-probe-analyzer-self-test.json",
+      "realtime-runner-tests.txt",
+      "test-results.xml"
+    ]
+  },
+  "junit": {
+    "programs": 4,
+    "failures": 0,
+    "disabled": 0,
+    "skipped": 0,
+    "reported_root_seconds": 181.0,
+    "case_seconds_total": 181.68790380000002
+  },
+  "complete_log": {
+    "pass": 220,
+    "fail": 0,
+    "ctest_passed_programs": 4,
+    "count_source": "Untruncated LastTest.log; truncated JUnit output is not used to count internal test groups."
+  },
+  "programs": [
+    {
+      "name": "EngineTests",
+      "complete_log_pass": 75,
+      "complete_log_fail": 0,
+      "junit_seconds": 8.38822,
+      "junit_status": "run",
+      "junit_output_truncated": true,
+      "junit_visible_pass_lines": 22
+    },
+    {
+      "name": "ProcessorTests",
+      "complete_log_pass": 129,
+      "complete_log_fail": 0,
+      "junit_seconds": 172.62,
+      "junit_status": "run",
+      "junit_output_truncated": true,
+      "junit_visible_pass_lines": 18
+    },
+    {
+      "name": "WavetableTests",
+      "complete_log_pass": 10,
+      "complete_log_fail": 0,
+      "junit_seconds": 0.0564108,
+      "junit_status": "run",
+      "junit_output_truncated": false,
+      "junit_visible_pass_lines": 10
+    },
+    {
+      "name": "PresetLibraryTests",
+      "complete_log_pass": 6,
+      "complete_log_fail": 0,
+      "junit_seconds": 0.623273,
+      "junit_status": "run",
+      "junit_output_truncated": false,
+      "junit_visible_pass_lines": 6
+    }
+  ],
+  "profiler_tooling": {
+    "probe_help_succeeded_before_failure": true,
+    "analyzer_self_tests": {
+      "pass": 20,
+      "fail": 0,
+      "scope": "Synthetic script validation only; no audio device or production DSP was run"
+    },
+    "runner_tests": {
+      "pass": 6,
+      "fail": 1,
+      "failing_case": "test_competing_runner_cannot_enter_after_atomic_reservation",
+      "failure": "AssertionError: contender_attempted was False; Runner must reserve before starting any capture",
+      "seconds": 0.144,
+      "scope": "Temporary fake executable and simulated children; no audio device or production DSP run."
+    },
+    "counted_with_ctest": false,
+    "device_opened": false
+  },
+  "raw_evidence": [
+    {
+      "repository_path": "docs/realtime-ci-0.20.2-CTestCostData.txt",
+      "artifact_path": "Testing/Temporary/CTestCostData.txt",
+      "bytes": 112,
+      "sha256": "6c3470d39f788f9ad3763e417c41433a672a488bcece36c1b552edd4f3aa445a"
+    },
+    {
+      "repository_path": "docs/realtime-ci-0.20.2-LastTest.log",
+      "artifact_path": "Testing/Temporary/LastTest.log",
+      "bytes": 20054,
+      "sha256": "ce821de0f63b379d4e11c32e47fb2a7ac37671ef9522864ebfa9abea10a1f6bd"
+    },
+    {
+      "repository_path": "docs/realtime-ci-0.20.2-test-results.xml",
+      "artifact_path": "test-results.xml",
+      "bytes": 4162,
+      "sha256": "84cfe9597731b2bc8ae2d65c5670f6a159c2d39c3b71e641c2d44b087b5fb803"
+    },
+    {
+      "repository_path": "docs/realtime-ci-0.20.2-analyzer-self-test.json",
+      "artifact_path": "realtime-probe-analyzer-self-test.json",
+      "bytes": 4241,
+      "sha256": "686b7300c6533879ad2fb55d3d216fb5b7dc4dcbdb10143132d2112ea742eccb"
+    },
+    {
+      "repository_path": "docs/realtime-ci-0.20.2-runner-tests.txt",
+      "artifact_path": "realtime-runner-tests.txt",
+      "bytes": 1849,
+      "sha256": "bfa002790dc23c17cf5b7b9886881525ae7e7d365da515edd2e96a363848ec34"
+    }
+  ],
+  "limitations": [
+    "The 220 internal CTest groups, 20 analyzer self-tests and 7 runner checks are distinct counts.",
+    "This workflow compiles the opt-in actual-device probe but runs only --help and non-device tooling checks.",
+    "No cloud device timing, pluginval, native UI, listening, external MIDI, DAW or allocation conclusion.",
+    "This CI run failed. The successful subsets do not override that conclusion and do not validate subsequent curve-cache changes.",
+    "No frozen release archive or original 205-file local-device archive was changed."
+  ],
+  "failed_step_log": {
+    "repository_path": "docs/realtime-ci-0.20.2-failed-step.txt",
+    "source": "gh run view 44286216206 --repo Bad0RANG3/Anyvoc --log-failed",
+    "bytes": 9815,
+    "sha256": "051c05d19505e5ee89c316197e21d7ab72b808807a6ddcb44e612153f52c5844"
+  }
+}

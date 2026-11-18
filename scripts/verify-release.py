@@ -81,6 +81,15 @@ FEATURE_POLICIES = {
                     "Source/PluginProcessor.h", "Source/PluginProcessor.cpp",
                     "Source/PluginEditor.cpp"),
     },
+    "0.20.3": {
+        "demos": (MOTION_DEMO, CHAOS_DEMO, MACRO_DEMO),
+        "headers": ("Source/ModulationRoute.h", "Source/EnvelopeModel.h",
+                    "Source/LfoModel.h", "Source/ChaosLfoModel.h",
+                    "Source/LfoCurveDocument.h", "Source/LfoCurveDocument.cpp",
+                    "Source/PluginProcessor.h", "Source/PluginProcessor.cpp",
+                    "Source/PluginEditor.cpp", "Source/SynthEngine.cpp",
+                    "Tests/EngineTests.cpp", "scripts/compare-cache-regression.py"),
+    },
 }
 CHUNK_SIZE = 1024 * 1024
 

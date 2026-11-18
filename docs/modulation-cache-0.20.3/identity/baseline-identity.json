@@ -1,0 +1,21 @@
+{
+  "sourceCommit": "63a8192c126ae7dc751110df3d93512dcb5e6550",
+  "capturedUtc": "2026-11-18T10:34:21.5702288Z",
+  "files": [
+    {
+      "path": "build/validation-baseline/AnyvocRealtimeProbe-v0.20.2.exe",
+      "bytes": 9798144,
+      "sha256": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027"
+    },
+    {
+      "path": "build/validation-baseline/AnyvocEngineTests-v0.20.2.exe",
+      "bytes": 9144832,
+      "sha256": "b5bdd7d8de02d822bdf67e2ef6315cbe28de5e6849961eed0226d1e5adf6f43f"
+    },
+    {
+      "path": "build/validation-cache-optimization/reference-source/SynthEngine.cpp",
+      "bytes": 132394,
+      "sha256": "1f68ed79b6b30531032a19656362f7f9a50fa8cb7c4e1f3960f9727203437917"
+    }
+  ]
+}

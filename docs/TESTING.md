@@ -1,74 +1,31 @@
 # Anyvoc 测试与验收指南
 
-本指南针对 **0.20.2 / Windows x64 / VST3 与独立版**。本轮修复 ARP 多通道按键与踏板所有权，完整合同见[琶音器约定](ARPEGGIATOR.md)。七组新增回归的首次修复后定向运行已 **7／7 通过**；随后完整四套测试 **220＝75／129／10／6 全部通过，204.40 秒**。pluginval、音频对比、有限范围原生 smoke 及本机发行包校验已通过；这些证据各自保留适用范围。[本版验证记录](VALIDATION-0.20.2.md)汇总实际结果；操作与复现见[用户指南](USER_GUIDE.md)和[构建指南](BUILDING.md)。
+本指南针对 **0.20.3 候选版 / Windows x64 / VST3 与独立版**。本轮是[精确曲率缓存优化](MODULATION_CACHE.md)，保留 1,256 参数、schema 14 和 28 预设。**完整自动回归已通过，原生演奏与真实声卡测量仍受阻；不能称整版验收通过。** 结果见[本版验证](VALIDATION-0.20.3.md)，操作与构建分别见[用户指南](USER_GUIDE.md)和[构建指南](BUILDING.md)。
 
-“测试通过”只适用于记录中的版本、硬件、设置和步骤。自动化测试、pluginval、界面截图、真人听音、DAW 工程重开是不同证据，不能互相替代，也不能证明与 Serum 2 声音等价。
+自动测试、pluginval、静态图片、原生输出、听音及 DAW 工程重开是不同证据，不能互相替代，也不能证明 Serum 2 等价。
 
 ## 1. 当前证据与结果
 
-### 0.20.2：本机交付校验通过
+| 项目 | 0.20.3 当前结果与边界 |
+| --- | --- |
+| 最终构建／全套 | Release 重建及 **220／220 通过，218.75 秒**；Engine 75／4.9647 秒，Processor 129／212.997 秒，Wavetable 10／0.0901167 秒，PresetLibrary 6／0.687141 秒。JUnit 套件和 CTest 总墙钟分别记录，不用四舍五入后的分项反推总时间。 |
+| 精确缓存回归 | 最终 27 例 raw float32／manifest 与修改前真实 EXE 一致，812,592 样本、3,250,368 音频字节每侧；比较器 12 项合成自检另计。 |
+| pluginval | 最终 strictness 5 **PASS**，seed `0x481d1f1`；UI 页脚修复前的结果单独保留，不混作最终模块。 |
+| 四份固定演示 | 最终新渲染与冻结 0.20.2 ZIP 四份成员全字节一致，宏独立分析 PASS。 |
+| 原生／声卡 | 确认 PLAY、0.20.3 页脚、INIT Pure Canvas；输出 none，选择设备报无法打开。C4 未见电平／EV，不能记演奏通过。退出后设置恢复。新旧探针均失败，正式六负载三轮采集未执行完成。 |
+| 性能 | 最终 EXE 离线基准已完成，汇总见版本报告；保留旧路线变慢，不等于所有路径加速或设备回调准时。 |
+| 候选包／CI | 包待创建／逐文件校验；新提交 CI 尚未触发。[旧 63a8192 CI](GITHUB-CI-REALTIME-0.20.2.md)的 runner 失败与本地 junction 修复分别记录，不改写旧 failure。 |
 
-| 检查 | 当前状态与通过要求 |
-|---|---|
-| 旧逻辑失败证据 | 前五组新增 `Arp ownership` 回归在冻结旧生产逻辑下 **5／5 失败**，[原始日志](processor-0.20.2-ownership-before.txt)保留；后两组属于新增时序与生命周期覆盖，不冒称已参与这轮红例。 |
-| 修复后定向／完整自动测试 | [七组定向首次运行全部通过](processor-0.20.2-ownership-after.txt)，未改 fixture，逐样本严格相等断言保留。随后 [Release 构建](build-0.20.2-release.txt)和[完整四套测试](ctest-0.20.2-final.txt)通过：**220／220，204.40 秒**；Engine 75／10.02 秒，Processor 129／193.67 秒，Wavetable 10／0.08 秒，PresetLibrary 6／0.63 秒。[逐组日志](test-details-0.20.2-final.txt)、[JUnit](ctest-0.20.2-final.xml)独立保留。 |
-| 参数／状态／预设 | 保持 **1256／schema14／28**；[参数与工厂预设源码定义核对](source-compatibility-0.20.2.json)和本轮完整兼容回归通过，原参数定义、顺序不变。 |
-| pluginval／二进制 | [实际 0.20.2 模块 strictness 5：SUCCESS](pluginval-0.20.2.txt)，退出码 0，seed `0x63446cc`。[二进制记录](binaries-0.20.2.json)包含当前生产与四个测试程序的版本、大小与 SHA，六个当前 PE 均为 0.20.2；历史 renderer／pluginval 工具另列。 |
-| 音频／预览 | [四份 0.20.2 新渲染与冻结 0.20.1 ZIP 成员逐字节一致](demo-compatibility-0.20.2.json)；真实留存 0.20.1 EXE 另行新渲染 Legacy，也逐字节一致。[独立宏分析 PASS](audio-analysis-0.20.2.json)，显式 current `0.20.2`／baseline `0.20.1`。本轮未记录重新生成 92 张预览；历史截图不改称本轮结果。 |
-| 原生 smoke | [0.20.2 限定检查通过](native-smoke-0.20.2.json)：真实启动 PLAY／页脚、INIT、屏幕 C4 绿色电平与 EV latest voice，松键后 idle／电平熄灭。测试进程已退出，原设置恢复且 SHA 相同。未做外接 MIDI、实际多通道／重复键／踏板控制器输入、SAVE／重启／LOAD、真人听音、DAW、最小尺寸／DPI 巡检或回调峰值测量。 |
-| 发行包 | Windows／完整源码包首轮校验通过：CRC、安全唯一路径、精确集合、逐文件内容、二进制版本及必需演示均通过。当前入口 `dist/Anyvoc-0.20.2-Windows/Anyvoc.exe`；包外 `dist/Anyvoc-0.20.2-PackageVerification.json` 为最终权威记录。文档或其他输入更新后须重新打包逐文件复验。 |
-| 云端 | [0.20.2 的 2acc71db CI](GITHUB-CI-0.20.2.md)已通过 220 组，JUnit 合计 179.53 秒；不覆盖之后新增的回调探针。历史 [0.20.1 f37169e9 CI](GITHUB-CI-0.20.1.md)为 213 组，仅覆盖其提交。 |
+原字节证据保留在[专项归档](modulation-cache-0.20.3/README.md)，具体文件和适用范围由[版本报告](VALIDATION-0.20.3.md)索引。用户确认同期有其他程序独占声卡；释放设备后的重测尚未执行，不能视为根因隔离验证完成，也不能把两个版本都失败解释为缓存改动导致或修好了它。
 
-### 0.20.1：已交付历史结果，不是本轮结果
+| 历史版本 | 独立证据 |
+| --- | --- |
+| 0.20.2 | [ARP 红绿回归、220 组及限定原生／包验收](VALIDATION-0.20.2.md)、[2acc71db CI](GITHUB-CI-0.20.2.md)、[18 次设备记录](REALTIME-0.20.2.md)。冻结目录仍可用，不表示现在设备能够打开。 |
+| 0.20.1 | [CC121 修复、213 组及限定原生](VALIDATION-0.20.1.md)、[指定 CI](GITHUB-CI-0.20.1.md)。 |
+| 0.20 | [PLAY／COPY、首次 fixture 失败、诊断与最终 210 组](VALIDATION-0.20.md)、[实际重启采样恢复](NATIVE_RESTART-0.20.md)、[指定 CI](GITHUB-CI-0.20.md)。 |
+| 0.19／0.18／0.17／0.16 | [0.19](VALIDATION-0.19.md)、[0.18](VALIDATION-0.18.md)、[0.17](VALIDATION-0.17.md)、[0.16](VALIDATION-0.16.md)各自保留原始失败、修复、声音和原生范围。 |
 
-| 检查 | 当前状态与通过要求 |
-|---|---|
-| 构建与全套测试 | **213／213 通过，199.66 秒**；[CTest](ctest-0.20.1-final.txt)、[逐组日志](test-details-0.20.1-final.txt)、[JUnit](ctest-0.20.1-final.xml)。Engine 75／5.44 秒，Processor 122／193.51 秒，Wavetable 10／0.08 秒，PresetLibrary 6／0.63 秒，四套零失败。 |
-| 新增回归 | 三组 ARP CC121 测试均通过：释放踏板锁存并保留有限 release；保留实按键与后续踏板周期；向引擎传递弯音／调制轮复位。实测范围见下方用例，不代表所有 ARP 或 MIDI 情况均已验证。 |
-| 参数／状态／预设 | **1256／schema14／28** 和原有映射保持；本轮完整兼容回归通过。 |
-| pluginval | [strictness 5：SUCCESS](pluginval-0.20.1.txt)，退出码 0，seed `0x3e22679`，实际 0.20.1 模块；[二进制记录](binaries-0.20.1.json)。 |
-| 音频 | [四份新渲染与冻结 0.20 ZIP 成员逐字节一致](demo-compatibility-0.20.1.json)；[独立宏分析 PASS](audio-analysis-0.20.1.json)，明确 current `0.20.1`、baseline `0.20.0`。未使用留存 0.20 测试程序重新渲染旧参照。 |
-| 发行包 | Windows／完整源码包校验通过：CRC、安全唯一路径、精确文件集合、逐文件内容、当前文档及 0.20.1 二进制版本一致。独立版入口 `dist/Anyvoc-0.20.1-Windows/Anyvoc.exe`；权威记录为包外 `dist/Anyvoc-0.20.1-PackageVerification.json`，不将 ZIP 哈希写入包内。 |
-| 原生启动／演奏 | [0.20.1 限定检查通过](native-smoke-0.20.1.json)：新程序 PLAY／版本显示、INIT、屏幕 C4 绿色输出与 EV latest voice，松键后 idle／电平熄灭；退出并恢复原设置哈希。未做当前版本 SAVE／重启／LOAD、原生 CC121、外接 MIDI、真人听音或 DAW。 |
-| 云端 | [0.20.1 f37169e9 的 213 组通过](GITHUB-CI-0.20.1.md)：运行 `44273076006`，四套 JUnit 合计约 168.78 秒，构建与原始附件已核对；不覆盖 0.20.2。 |
-
-[真实 0.20 独立版重启核对](NATIVE_RESTART-0.20.md)已通过：SAVE→退出→原素材离线→重启→INIT→LOAD→再 SAVE，1256 个参数实际值和内嵌 WAV 字节一致，96000 帧 PCM 转换精确匹配。它仅覆盖记录中的一个样本及两路调制；不改称为 0.20.1 检查，也不是播放音频捕获或真人听音。
-
-### 0.20：已交付历史结果，不是本轮结果
-
-| 检查 | 当前状态 | 证据与范围 |
-|---|---|---|
-| 生产构建 | 已通过 | Standalone／VST3 已构建；首次 private 成员访问编译失败及修复后的日志均保留 |
-| 最终完整自动测试 | **210／210 通过，198.69 秒** | [CTest](ctest-0.20-final.txt)、[逐组日志](test-details-0.20-final.txt)、[JUnit](ctest-0.20-final.xml)：Engine 75／4.85 秒，Processor 119／193.14 秒，Wavetable 10／0.06 秒，PresetLibrary 6／0.63 秒 |
-| 首轮失败与 COPY 定向修复 | 首轮 **209 PASS／1 FAIL**；定向 **1／1 通过** | [首轮日志](ctest-0.20-initial.txt)与[修复复测](processor-0.20-copy-fix-2.txt)独立保留；12 个通知边界与销毁／导航／自动化场景的严格断言保留，随后已执行上面的最终四套全量运行 |
-| 参数／状态／预设 | 源码核对与该版回归通过 | [源码兼容记录](source-compatibility-0.20.json)：相对冻结 0.19 的参数和工厂片段相同，仍为 1256／schema14／28；运行时状态与路由另由自动测试检查 |
-| pluginval | **strictness 5：SUCCESS** | 0.20.0 模块，seed `0x7910988`；若之后生产代码变化，需重新验证相应产物 |
-| 音频 | 0.20 渲染及独立分析通过 | 0.20 Legacy／Motion／Chaos／Macro 四 WAV 与冻结 0.19 包对应成员逐字节相同；Legacy 另与真实留存 0.19 测试程序新渲染比较 |
-| PLAY 原生操作 | 限定范围通过 | [原生记录](ui-play-native-0.20.json)：默认 PLAY、Filter A 旁通、跨页参数／Undo、BPM 包络显示、Lab 打开时拖放、最小窗口、C4 绿色输出、音色浏览入口 |
-| COPY 原生操作 | 限定范围通过 | [记录](native-copy-0.20.json)：列表、详情、旋钮菜单三入口；单 Undo／Redo、独立副本、四条匹配行 Remove-all 与一次 Undo；最小尺寸 |
-| 预览 | 生成 **92 张**，人工查看 **6 张** | [生成日志](preview-0.20-initial.txt)；PLAY 默认／小、Synth 默认、Matrix-detail／expanded／last-page 小尺寸无观察到的裁切；其余 86 张未声称逐张查看 |
-| 包校验 | **本机 Windows／完整源码包通过** | 文件集合、逐文件内容、当前文档与 0.20.0 二进制一致；最终报告为包外 `dist/Anyvoc-0.20.0-PackageVerification.json`，不把 ZIP 哈希写回包内 |
-| 云端 CI | **beecbc09 的 210 组通过** | [运行与原始证据](GITHUB-CI-0.20.md)，四套合计约 174.62 秒；该结果不覆盖后续 0.20.1 修复提交 |
-| 真人听音／外接 MIDI／DAW | 该版未完成验收 | 绿色电平不是听音证据；pluginval 不替代宿主扫描、自动化或工程重开 |
-
-上述 **0.20** 构建、测试、pluginval、音频报告和原生记录已归档到 `docs/`，索引见 [VALIDATION-0.20.md](VALIDATION-0.20.md)。[首次生产构建失败](build-0.20-production.txt)、[修复构建](build-0.20-production-fix.txt)、[PLAY 构建](build-0.20-play-production.txt)、[首轮测试明细](test-details-0.20-initial.txt)及[最终明细](test-details-0.20-final.txt)分别保留。历史 WAV 和留存旧版本程序在被 Git 忽略的 `build/validation-baseline/`，首次克隆不自带；0.20.1 当时没有可用的 0.20 ProcessorTests EXE，本轮已有真实 0.20.1 测试程序作参照。
-
-COPY UI 的[第一次诊断](processor-0.20-copy-diagnostic-1.txt)在 editor 销毁的 begin 回调中，参数精确检查已通过，但监听器报告 starts=2、ends=1、active=0。测试 probe 晚于 GUI listener 注册；JUCE 逆序通知期间 editor 移除较早 listener，使 probe 再被通知一次。将 probe 提前注册后保留原计数断言；[第二次诊断](processor-0.20-copy-diagnostic-2.txt)发现切到 SYNTH 后用仅找可见组件的助手查隐藏矩阵，改为提前保存 SafePointer 并继续验证取消。[测试目标重建](build-0.20-copy-fix-2.txt)和[定向复测](processor-0.20-copy-fix-2.txt)通过后，最终四套再次全部通过。生产代码没有因这项 fixture 修复而变化。
-
-完整路由发布的验收必须在操作**中途**运行真实音频回调。覆盖 copy、单行／按目标批量清空、move、Undo／Redo、宿主嵌套恢复、实际通知值及持续用户手势；要求发布未完成时使用之前的完整图，结束后才接收最终实际图。旋钮连续编辑的每个值仍应进入后续音频块。协议只覆盖 [ROUTE_PUBLICATION.md](ROUTE_PUBLICATION.md)列出的路由操作，不扩张到整个音色、素材或宿主分别发送的自动化事件。不能把方法返回后的单次 render 冒充中途并发验证。
-
-[PLAY 原生检查](ui-play-native-0.20.json)确认界面与引擎活动，音色入口只检查浏览器打开，未加载另一音色。[COPY 原生检查](native-copy-0.20.json)确认三入口、独立修改、Undo／Redo、最小布局和四行批量清空；深度值设置包含 UI Automation，不冒充全部鼠标拖动。两场均使用记录中的相同 0.20 二进制，测试进程已退出，原设置恢复且哈希一致。未原生手工核对 COPY 全 19 字段、满表、最后页导航或宿主回调中断；这两场当时也未做真人听音、外接 MIDI、DAW、完整音色保存／重启／恢复或所有编辑器全部尺寸。后补的独立重启会话单列在上面的专门报告中；其余未测范围不因自动测试覆盖部分路径而改写为原生通过。
-
-### 历史记录单独归档
-
-| 版本 | 本机验收与失败／修复历史 | 云端或补充证据 |
-|---|---|---|
-| 0.19 | [完整验收](VALIDATION-0.19.md)：sanitizer 首轮失败、Phase 链生产修复、UI 文字补测、首次包输入不一致和最终限定原生范围 | [指定提交 CI](GITHUB_CI-0.19.md)；[原生 SAVE→INIT→LOAD](native-0.19.json)未覆盖进程重启／DAW |
-| 0.18 | [完整验收](VALIDATION-0.18.md)：测试辅助代码编译失败及修正、曲线工具模型／集成测试、真实 `.anycurve` 文件操作；系统剪贴板等未测项保留 | [指定提交 CI](GITHUB_CI-0.18.md) |
-| 0.17 | [完整验收](VALIDATION-0.17.md)：首轮失败、Chaos 标签／模式快照修复和各轮原始记录；短音后保持不冒充原生完整名义周期测试 | [指定提交 CI](GITHUB_CI-0.17.md) |
-| 0.16 | [完整验收](VALIDATION-0.16.md)：首轮四个 Processor 失败、生产参数与 fixture 修复及定向复测 | [GitHub 整理全量复测](ctest-github-handoff-0.16.txt)及[明细](test-details-github-handoff-0.16.txt) |
-
-历史报告不重写为本轮结果；冻结的 **0.20.1 及更早** ZIP、包内文档和校验值保持原样。本文后续表格是检查标准，除非第 1 节或对应版本报告给出证据，否则不能勾为已执行。
+冻结的 0.20.2 及更早包不改写。下面是可复现方法及检查标准；未有当前版本证据的项目不能因为写在清单里就勾选通过。路由组合编辑仍须在操作中途运行真实音频验证完整发布，合同见 [ROUTE_PUBLICATION.md](ROUTE_PUBLICATION.md)；不能把返回后的 render 冒充并发边界测试。
 
 ## 2. 准备与构建
 
@@ -87,10 +44,10 @@ COPY UI 的[第一次诊断](processor-0.20-copy-diagnostic-1.txt)在 editor 销
 ```powershell
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Get-Location).Path
-$runDir = Join-Path $repoRoot ('build/acceptance/0.20.2-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+$runDir = Join-Path $repoRoot ('build/acceptance/0.20.3-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Force -Path $runDir | Out-Null
-if (!(Select-String -LiteralPath CMakeLists.txt -Pattern '^project\(Anyvoc VERSION 0\.20\.2 ' -Quiet)) {
-    throw 'Check out the intended 0.20.2 commit before validation.'
+if (!(Select-String -LiteralPath CMakeLists.txt -Pattern '^project\(Anyvoc VERSION 0\.20\.3 ' -Quiet)) {
+    throw 'Check out the intended 0.20.3 commit before validation.'
 }
 git rev-parse HEAD | Set-Content (Join-Path $runDir 'commit.txt')
 git status --short | Set-Content (Join-Path $runDir 'worktree.txt')
@@ -106,7 +63,7 @@ Copy-Item -LiteralPath build/Testing/Temporary/LastTest.log -Destination (Join-P
 if ($testExit -ne 0) { throw 'CTest failed; retain the failed log before retrying' }
 ```
 
-**通过标准：**构建退出码 0；CTest 四个目标全部通过；0.20.2 的 75／129／10／6 组分别汇总零失败，共 220 组。本轮已达到该标准，实际日志见第 1 节；后续代码改动须验证对应新构建，不能沿用本轮结果。测试组数只能随有评审的测试变更调整，不能删除失败项保持绿色。保留警告，区分既有与新增警告。排查单套失败可运行 `ctest --test-dir build -C Release -R '^ProcessorTests$' --output-on-failure`，但须注明定向复测并保留初始失败日志。
+**通过标准：**构建退出码 0；CTest 四个目标全部通过；0.20.3 的 75／129／10／6 组分别汇总零失败，共 220 组。本轮已达到该标准，实际日志见第 1 节；后续代码改动须验证对应新构建，不能沿用本轮结果。测试组数只能随有评审的测试变更调整，不能删除失败项保持绿色。保留警告，区分既有与新增警告。排查单套失败可运行 `ctest --test-dir build -C Release -R '^ProcessorTests$' --output-on-failure`，但须注明定向复测并保留初始失败日志。
 
 ## 3. 可重现预览与 WAV 演示
 
@@ -116,13 +73,13 @@ if ($testExit -ne 0) { throw 'CTest failed; retain the failed log before retryin
 $processorTests = Join-Path $repoRoot 'build/AnyvocProcessorTests_artefacts/Release/AnyvocProcessorTests.exe'
 & $processorTests --preview (Join-Path $runDir 'images')
 if ($LASTEXITCODE -ne 0) { throw 'Preview generation failed' }
-& $processorTests --lfo-motion-demo (Join-Path $runDir 'Anyvoc-v0.20.2-Motion.wav')
+& $processorTests --lfo-motion-demo (Join-Path $runDir 'Anyvoc-v0.20.3-Motion.wav')
 if ($LASTEXITCODE -ne 0) { throw 'LFO motion render failed' }
-& $processorTests --chaos-demo (Join-Path $runDir 'Anyvoc-v0.20.2-Chaos.wav')
+& $processorTests --chaos-demo (Join-Path $runDir 'Anyvoc-v0.20.3-Chaos.wav')
 if ($LASTEXITCODE -ne 0) { throw 'Chaos render failed' }
-& $processorTests --macro-demo (Join-Path $runDir 'Anyvoc-v0.20.2-Macro.wav')
+& $processorTests --macro-demo (Join-Path $runDir 'Anyvoc-v0.20.3-Macro.wav')
 if ($LASTEXITCODE -ne 0) { throw 'Macro render failed' }
-& $processorTests --demo (Join-Path $runDir 'Anyvoc-v0.20.2-Legacy.wav')
+& $processorTests --demo (Join-Path $runDir 'Anyvoc-v0.20.3-Legacy.wav')
 if ($LASTEXITCODE -ne 0) { throw 'Legacy render failed' }
 ```
 
@@ -143,7 +100,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Legacy render failed' }
 
 **预览通过标准：**当前版本应生成 92 张 PNG，以本次日志核对；至少回归检查 `Play.png`／`Play-small.png`，以及矩阵、详情与上下文菜单布局。正常 1120×760、最小 1008×684 下，PLAY 三张卡、完整页面入口、矩阵 COPY／EDIT／X、宏 EV、bank、琴键与输出不得裁切。保留其他页、Curve Tools、Chaos、Swing／Motion／Audio／Phase Routing 的回归检查；运行读数必须来自真实音频快照。记录具体查看的图片，不能把全部生成写成全部人工检查，截图也不替代拖动、焦点、文件对话框或 MIDI。
 
-Motion／Chaos／Macro 沿用 `Anyvoc-v0.16-Lfo-Motion-Demo.wav`、`Anyvoc-v0.17-Chaos-Demo.wav`、`Anyvoc-v0.19-Macro-Demo.wav` 的包内名称，三个文件内容均须由 **0.20.2 程序重新渲染**。上面在独立 `$runDir` 生成本轮四份 WAV。本次四份实际新渲染已与冻结 0.20.1 ZIP 逐字节一致，Legacy 另与真实旧 EXE 新渲染一致，独立宏分析也通过，证据见第 1 节；输出不得覆盖 0.20.1 及更早证据或发行目录。
+Motion／Chaos／Macro 沿用 `Anyvoc-v0.16-Lfo-Motion-Demo.wav`、`Anyvoc-v0.17-Chaos-Demo.wav`、`Anyvoc-v0.19-Macro-Demo.wav` 的包内名称，内容必须由 **0.20.3 程序重新渲染**。最终四份渲染与冻结 0.20.2 ZIP 逐字节一致，宏独立分析 PASS，具体状态见第 1 节；不得覆盖 0.20.2 及更早证据或发行目录。
 
 **音频通过标准：**命令退出 0，长度/声道/采样率/位深符合约定，无意外静音或 PCM 满幅样本。三个必需演示均为 960,000 帧、48 kHz、24-bit、双声道。Chaos 两段各 10 秒，第 9 秒松键；宏演示四段各 5 秒，每段第 4 秒松键；均用 20 ms 淡入、100 ms 淡出。宏四段使用同一 Prism Handle 基础、C4、力度 0.75、保存 Macro1=0.4 和 master=0.42，固定增益，不逐段归一化。第 0/1 段只增加一条 LFO1 输入路由；后两段更改了明确的路由组合，不能称为单变量对照。LFO1 为 Trigger Triangle 0.4 Hz、Unipolar、Amount 0.4；Pan 路由的 LFO2 为 1.2 Hz、Amount 0.65；末段 Macro8 base=0.1，Macro1→8 为 0.5、Macro8→1 为 0.2。
 
@@ -151,28 +108,28 @@ Motion／Chaos／Macro 沿用 `Anyvoc-v0.16-Lfo-Motion-Demo.wav`、`Anyvoc-v0.17
 
 旧行为要求逐字节一致时，明确区分“真实旧程序新渲染”和“冻结发行包的原文件”。本轮可使用下述任一可追溯来源，但必须分别记录，不能混称；当前版本必须实际重新渲染。若声音变化是明确修复，记录差异原因与受影响预设，不能盲目更新基线消除失败。
 
-本轮有真实留存的 `build/validation-baseline/AnyvocProcessorTests-v0.20.1.exe`，SHA-256 为 `be79d16b9359880b05a7c690a702741ba201dfe1b39c2a376b1acbb1ae0018de`，同名 `.json` 记录其来源。也可使用冻结 `dist/Anyvoc-0.20.1-Windows-x64.zip` 的四份 WAV；须先核对原外置报告，再只读提取并比较。不能把其他版本或当前程序改名充当基线。
+本轮固定演示使用冻结 `dist/Anyvoc-0.20.2-Windows-x64.zip` 的四份 WAV 作参照，先核对原包外报告再只读提取。缓存专项另有真实旧 EngineTests 导出器，其角色和 27 例 raw float32 复现见[缓存合同](MODULATION_CACHE.md)；不要混同 Processor 演示程序，也不能把当前 EXE 改名冒充旧版。
 
-先令 `$renderDir = $runDir`，执行[构建指南](BUILDING.md)第 3.2 节的 ZIP 核验、提取与四文件比较；该段会生成 `$referenceDir`，指向本次目录下的 `reference-0.20.1`。没有可追溯旧 ZIP／报告时记为未测，不能借用旧版通过记录。随后独立分析本轮文件：
+先令 `$renderDir = $runDir`，执行[构建指南](BUILDING.md)第 3.2 节的 ZIP 核验、提取与四文件比较；该段会生成 `$referenceDir`，指向本次目录下的 `reference-0.20.2`。没有可追溯旧 ZIP／报告时记为未测，不能借用旧版通过记录。随后独立分析本轮文件：
 
 ```powershell
 python scripts/analyze-chaos-demo.py `
-    --version 0.20.2 `
-    --demo (Join-Path $runDir 'Anyvoc-v0.20.2-Chaos.wav') `
+    --version 0.20.3 `
+    --demo (Join-Path $runDir 'Anyvoc-v0.20.3-Chaos.wav') `
     --legacy-before (Join-Path $referenceDir 'Anyvoc-Demo.wav') `
-    --legacy-after (Join-Path $runDir 'Anyvoc-v0.20.2-Legacy.wav') `
-    --output (Join-Path $runDir 'chaos-audio-analysis-0.20.2.json')
+    --legacy-after (Join-Path $runDir 'Anyvoc-v0.20.3-Legacy.wav') `
+    --output (Join-Path $runDir 'chaos-audio-analysis-0.20.3.json')
 if ($LASTEXITCODE -ne 0) { throw 'Independent Chaos analysis failed' }
 python scripts/analyze-macro-demo.py `
-    --version 0.20.2 --baseline-version 0.20.1 `
-    --demo (Join-Path $runDir 'Anyvoc-v0.20.2-Macro.wav') `
+    --version 0.20.3 --baseline-version 0.20.2 `
+    --demo (Join-Path $runDir 'Anyvoc-v0.20.3-Macro.wav') `
     --legacy-before (Join-Path $referenceDir 'Anyvoc-Demo.wav') `
-    --legacy-after (Join-Path $runDir 'Anyvoc-v0.20.2-Legacy.wav') `
-    --output (Join-Path $runDir 'audio-analysis-0.20.2.json')
+    --legacy-after (Join-Path $runDir 'Anyvoc-v0.20.3-Legacy.wav') `
+    --output (Join-Path $runDir 'audio-analysis-0.20.3.json')
 if ($LASTEXITCODE -ne 0) { throw 'Independent macro analysis failed' }
 ```
 
-上面 `--legacy-before` 是冻结包成员；若改用留存 0.20.1 EXE 的新渲染，按[构建指南](BUILDING.md)第 3.2 节核对程序哈希并另存报告，仍显式指定 `--version 0.20.2 --baseline-version 0.20.1`。本轮两种来源都已实际比较通过，见第 1 节；两种来源仍不能互相改写，其他提交须按实际新渲染重新验证。
+上面 `--legacy-before` 是冻结 0.20.2 包成员，标签必须显式为 `--version 0.20.3 --baseline-version 0.20.2`，并保留 ZIP 来源／哈希。若另有真实旧 EXE 新渲染，则另存程序身份与报告；本轮不声称已经执行这种额外来源。
 
 **分析通过标准：**两脚本退出 0，两个 JSON 的 `status` 为 `PASS`；格式与完整 PCM 长度正确；各段 RMS 大于 0.001、各规定对照的解码样本不完全相同、无达到 PCM 满幅的样本；旧演示逐字节及 SHA-256 一致。宏脚本只复用通用 WAV 解码、RMS 和哈希运算，不导入合成器代码或生成期望音频；它能独立说明文件中的信号和差异，不能单靠段落不同证明逐样宏反馈算法正确。算法与接线由独立 Engine/Processor 参考测试另行核验。
 
@@ -248,7 +205,7 @@ Get-Content -LiteralPath (Join-Path $validationDir 'pluginval-stderr.txt')
 
 ### PLAY、COPY 与按目标清空回归
 
-以下是逐项记录的操作标准；[PLAY 原生记录](ui-play-native-0.20.json)和 [COPY 原生记录](native-copy-0.20.json)仅证明 0.20 当时的限定范围，不证明当前 0.20.2 已执行表中各项。尤其全字段、满表、最后页与宿主中断不能从这两场原生操作推断通过。
+以下是逐项记录的操作标准；[PLAY 原生记录](ui-play-native-0.20.json)和 [COPY 原生记录](native-copy-0.20.json)仅证明 0.20 当时的限定范围，不证明当前 0.20.3 已执行表中各项。尤其全字段、满表、最后页与宿主中断不能从这两场原生操作推断通过。
 
 | ID | 操作 | 预期／失败判定 |
 |---|---|---|
@@ -282,7 +239,7 @@ Get-Content -LiteralPath (Join-Path $validationDir 'pluginval-stderr.txt')
 
 ### 曲线工具专项人工用例
 
-以下是保留的曲线工具操作标准；0.18 的有限原生记录见第 1 节历史部分，不能据此把 0.20.2 整行勾选为通过。先备份用户设置，在测试实例打开 LFO Lab→TOOLS，至少检查 LFO1 与 LFO10；使用独立临时 `.anycurve` / `.anyvoc` 文件。固定 33 点、选区与文件的完整定义见 [LFO_CURVE_TOOLS.md](LFO_CURVE_TOOLS.md)。
+以下是保留的曲线工具操作标准；0.18 的有限原生记录见第 1 节历史部分，不能据此把 0.20.3 整行勾选为通过。先备份用户设置，在测试实例打开 LFO Lab→TOOLS，至少检查 LFO1 与 LFO10；使用独立临时 `.anycurve` / `.anyvoc` 文件。固定 33 点、选区与文件的完整定义见 [LFO_CURVE_TOOLS.md](LFO_CURVE_TOOLS.md)。
 
 | ID | 操作 | 预期 / 失败判定 |
 |---|---|---|
@@ -349,7 +306,11 @@ Get-Content -LiteralPath (Join-Path $validationDir 'pluginval-stderr.txt')
 
 建议预热后每项持续演奏至少 60 秒、重复三次，报告平均值、峰值、掉音/underrun 次数和测量工具。宿主 DSP 百分比与任务管理器 CPU 百分比要分开记录。音频回调时间若有测量，报告最坏块；块期限为 `缓冲样本数 / 采样率`，例如 48 kHz、256 样本约 5.33 ms。平均离线渲染时间不能证明所有音频块都按时完成。
 
+本轮 0.20.3 与真实旧 0.20.2 探针都报告输出设备无法打开，因此尚无有效新回调测量。用户确认有其他程序独占声卡，待其释放后再验证设备并执行六负载各三轮；不能将启动失败的 JSON 记为性能样本。
+
 开发源码中的 [AnyvocRealtimeProbe](REALTIME_PROFILING.md)可在真实 WASAPI 共享回调中静音测量六种固定负载，并输出完整参数及逐块 CSV；默认不构建。独立 Python 分析器重算分位、峰值、完整性和超预算块数。仅输出 WASAPI 的原生 xrun 返回 -1，必须记为不支持；manager 耗时估计和入口间隔不能代替驱动掉音计数。这些额外工具不增加四套 CTest 的内部组数，也不补成 UI／DAW／真人听音验收。
+
+缓存专项的 27 例独立声音比较、两侧源码／EXE 身份、矩阵／宏离线基准复现见[缓存合同](MODULATION_CACHE.md)。最终 0.20.3 数据须与修改前基线区分，并保留所有变慢场景。
 
 Chaos 的可复现离线基准入口如下。它不属于当前 75 组 EngineTests，退出 0 只说明基准完成且测试音频未意外静音，没有内置“实时性能通过”阈值。[0.17 基准记录](benchmark-chaos-0.17.txt)仅对应当时产物，不能作为本轮新测量。
 
@@ -380,9 +341,9 @@ if ($LASTEXITCODE -ne 0) { throw 'Macro benchmark failed to complete' }
 |---|---|---|
 | 版本一致 | 源码提交、构建日志、两个二进制 FileVersion 与 SHA-256 | 版本不符、混用旧模块、未构建的功能混入文档 |
 | 回归 | 四套测试零失败、失败后的修复与复测记录 | 未解释失败、删除断言、无依据放宽容差 |
-| 参数兼容 | 0.20.2 完整保留 0.20.1 的 **1256** 参数定义和顺序，不追加参数；其中前 1192 对应 0.18；旧 33 点仍为 **0.01** 步长 | 以工具精度为由改宿主范围、重排/重用 ID 或改变旧映射 |
+| 参数兼容 | 0.20.3 完整保留 0.20.2 的 **1256** 参数定义和顺序，不追加参数；其中前 1192 对应 0.18；旧 33 点仍为 **0.01** 步长 | 以工具精度为由改宿主范围、重排/重用 ID 或改变旧映射 |
 | 状态兼容 | schema14 必需全部参数；schema1–13 缺少宏目标尾参数时补 false/0；未来 schema15 和损坏/重复/缺失当前字段原子拒绝；`.anyvoc`/工程保留整条 19 字段路由、素材与声音 | 损坏状态部分覆盖声音、旧内嵌素材丢失，或把 `.anycurve` 混同完整音色 |
-| 工厂与默认声音 | 0.19 的 28 个工厂预设及序号不变；本轮四个 demo 需与冻结 **0.20.1 Windows ZIP** 的原始成员逐字节比较；可另用真实旧 EXE 新渲染 Legacy，保留各自来源及结果 | 静音、重排旧预设、用当前 WAV 假作旧基线或无说明更新基线 |
+| 工厂与默认声音 | 0.19 的 28 个工厂预设及序号不变；本轮四个 demo 需与冻结 **0.20.2 Windows ZIP** 的原始成员逐字节比较；可另用真实旧 EXE 新渲染 Legacy，保留各自来源及结果 | 静音、重排旧预设、用当前 WAV 假作旧基线或无说明更新基线 |
 | ARP 所有权 | 七组独立手写 MIDI 音频参考、旧逻辑失败及修复后全套证据；跨通道踏板、重复键、局部控制器和时序／生命周期均符合[合同](ARPEGGIATOR.md) | 通道串扰、提前松键、Gate 被踏板吞掉、清错通道、取消后幽灵音或只用两个相同错误实现互相对比 |
 | 宏目标与有效值 | 保留全部八宏独立声音参考、主/AUX 一致快照、生命周期、reset pending、路由与回调回归；原生与性能结果分开 | 用 UI 本地计算代替实际快照、EV 写回 base/历史、旧声部泄漏 |
 | 路由发布／复制 | 19 字段默认空槽、Off/None/旁通草稿、满表、单步 Undo、来源／目的冲突、隐藏／销毁 UI；真实音频在复制／移动／批量删除／嵌套恢复的通知中运行 | 覆盖草稿、COPY 去重、半次组合编辑被音频采用、取消后继续覆盖宿主，或把仅操作结束后的 render 当并发证明 |
@@ -393,15 +354,15 @@ if ($LASTEXITCODE -ne 0) { throw 'Macro benchmark failed to complete' }
 | 音频/UI | 演示检查、最小尺寸、真实独立版操作；DAW范围另记 | 用截图替代交互，用电平替代听音，用 pluginval 替代 DAW |
 | 发布包 | ZIP CRC、无重复/越界路径、精确文件集合、逐文件字节匹配、许可证、版本/hash、必需演示 | 漏文件、旧二进制、新源码混入旧版、损坏压缩包 |
 
-构建、演示和文档冻结后才打包：
+构建、演示和文档冻结后再生成候选包，并披露当前原生／设备受阻状态：
 
 ```powershell
 # 使用第 3 节已经渲染并审核的本轮文件；这里只更新 dist 根级暂存名。
 New-Item -ItemType Directory -Force -Path (Join-Path $repoRoot 'dist') | Out-Null
-Copy-Item -LiteralPath (Join-Path $runDir 'Anyvoc-v0.20.2-Legacy.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-Demo.wav') -Force
-Copy-Item -LiteralPath (Join-Path $runDir 'Anyvoc-v0.20.2-Motion.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-v0.16-Lfo-Motion-Demo.wav') -Force
-Copy-Item -LiteralPath (Join-Path $runDir 'Anyvoc-v0.20.2-Chaos.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-v0.17-Chaos-Demo.wav') -Force
-Copy-Item -LiteralPath (Join-Path $runDir 'Anyvoc-v0.20.2-Macro.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-v0.19-Macro-Demo.wav') -Force
+Copy-Item -LiteralPath (Join-Path $runDir 'Anyvoc-v0.20.3-Legacy.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-Demo.wav') -Force
+Copy-Item -LiteralPath (Join-Path $runDir 'Anyvoc-v0.20.3-Motion.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-v0.16-Lfo-Motion-Demo.wav') -Force
+Copy-Item -LiteralPath (Join-Path $runDir 'Anyvoc-v0.20.3-Chaos.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-v0.17-Chaos-Demo.wav') -Force
+Copy-Item -LiteralPath (Join-Path $runDir 'Anyvoc-v0.20.3-Macro.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-v0.19-Macro-Demo.wav') -Force
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1
 if ($LASTEXITCODE -ne 0) { throw 'Windows packaging failed' }
 python ./scripts/package-source.py
@@ -410,11 +371,11 @@ python ./scripts/verify-release.py
 if ($LASTEXITCODE -ne 0) { throw 'Release package verification failed' }
 ```
 
-Windows 打包脚本会检查二进制版本。0.20.2 必须包含 `Anyvoc-v0.16-Lfo-Motion-Demo.wav`、`Anyvoc-v0.17-Chaos-Demo.wav`、`Anyvoc-v0.19-Macro-Demo.wav` 三份演示；旧名字仅是资产约定，内容来自当前 0.20.2 重渲染。其他历史演示只在已有时收录。先完成音频检查，不能用空文件满足存在性要求。同版本打包会覆盖 ZIP 并更新输出目录；本轮使用独立 0.20.2 路径，既有候选需先归档避免残留。**已交付的 0.20.1 及更早发行目录、ZIP 和历史报告保持冻结**。本轮两包首轮逐文件校验已通过，最终状态以本版外置报告为准；输入更新后须重新打包复验。完整解压 Windows ZIP 后运行包根目录的 `Anyvoc.exe`。
+Windows 打包脚本会检查二进制版本。0.20.3 必须包含 `Anyvoc-v0.16-Lfo-Motion-Demo.wav`、`Anyvoc-v0.17-Chaos-Demo.wav`、`Anyvoc-v0.19-Macro-Demo.wav` 三份演示；旧名字仅是资产约定，内容来自当前 0.20.3 重渲染。其他历史演示仅在已有时收录，不能用空文件满足要求。同版本打包会覆盖 ZIP 并更新输出目录，本轮只用独立 0.20.3 候选路径，已有候选先归档；**冻结的 0.20.2 及更早目录、ZIP 和历史报告不覆盖**。当前候选包待创建／核验，包通过也不代表受阻的原生演奏及实时测量已经通过。
 
 [发布包校验脚本](../scripts/verify-release.py) 从 CMake 读取版本，核对两个 ZIP 的 CRC、Windows 安全且唯一的路径、精确文件集合与每个文件的原始字节；同时核对解压目录、两个产物与构建目录的四个 FileVersion、二进制哈希及三个必需演示的完整 20 秒/48 kHz/24-bit/双声道 PCM。源码包必须包含 `.gitattributes`、`.gitmodules`、`.github/`、Chaos 模型、`LfoCurveDocument.h/.cpp` 及固定 JUCE 源码/许可。脚本不替代 CTest、pluginval、听音或性能测试；未知将来版本不会自动获得某个新功能已验收的结论。
 
-**包校验通过标准：**脚本退出 0，包外 `dist/Anyvoc-0.20.2-PackageVerification.json` 的 CRC、安全唯一路径、精确集合、逐文件匹配全部通过，版本一致，三个必需 demo 均有格式及哈希记录。本轮两包首轮校验已达到该标准；实际结果、文件数、大小与哈希以最终外置报告为准，不把 ZIP 哈希写入包内文档。报告不放入 ZIP，避免包含自身哈希。可单独运行 `python scripts/verify-release.py --self-test-paths` 检查路径逻辑，但这不是发行包验收。公开脚本可复现，不要求另写临时校验工具。
+**包校验通过标准：**脚本退出 0，包外 `dist/Anyvoc-0.20.3-PackageVerification.json` 的 CRC、安全唯一路径、精确集合、逐文件匹配全部通过，版本一致，三个必需 demo 有完整格式及哈希记录。本候选尚待达到该标准；不把 ZIP 哈希写入包内文档，报告在 ZIP 外避免自引用。`python scripts/verify-release.py --self-test-paths` 只验证路径逻辑，不是包验收。
 
 文档修改后重新打包会改变 ZIP 哈希；重新核对对应文件及包报告。若没有改变声音/生产代码，不需要为了文档重跑所有 DSP，但不得继续引用旧包哈希作为新包的校验值。
 

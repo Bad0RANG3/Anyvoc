@@ -9,6 +9,7 @@
 #include <chrono>
 #include <complex>
 #include <cstring>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <iomanip>
@@ -4518,9 +4519,207 @@ int benchmarkMacroTargets()
     return 0;
 }
 
+// Frozen old/new regression input: no quantisation, normalisation, timing, or
+// engine-version fields in the files. Compare matching files byte-for-byte.
+SynthSettings cacheRegressionSettings (int profile)
+{
+    auto s = cleanSettings();
+    s.osc[0].level = .1f; s.osc[1].level = .04f; s.osc[2].level = .025f;
+    for (auto& osc : s.osc) { osc.position = .37f; osc.warpMode[0] = 1; osc.warpAmount[0] = .2f; }
+    s.filterEnabled = s.filter2Enabled = true; s.cutoff = 1700; s.filter2Cutoff = 3200;
+    s.resonance = .23f; s.filter2Resonance = .17f;
+    s.amp = { .001f, .003f, .8f, .008f }; s.filter = { .004f, .007f, .35f, .011f };
+    s.extraEnvelopes[0] = { .002f, .013f, .6f, .009f };
+    s.extraEnvelopes[1] = { .008f, .003f, .2f, .017f };
+    s.macros = { 0, .125f, .25f, .5f, .625f, .75f, .875f, 1 };
+    for (size_t i = 0; i < anyvoc::lfoCount; ++i)
+    {
+        s.lfoMode[i] = i == 0 ? 0 : i == 7 ? 2 : 1;
+        s.lfoShape[i] = static_cast<int> (i % 6); s.lfoRate[i] = 3.0f + static_cast<float> (i);
+        s.lfoAudioRateEnabled[i] = i == 0 || i == 9;
+        s.lfoAudioRateHz[i] = i == 0 ? 997.0f : 211.0f;
+        s.lfoInterpolation[i] = 1;
+        for (size_t p = 0; p < 33; ++p) s.lfoPoints[i][p] = static_cast<float> (p % 5) * .5f - 1;
+    }
+    s.lfoSync[4] = s.lfoFollowSwing[4] = true; s.swingAmount = .375f;
+    constexpr int destinations[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+    constexpr int constants[] { 4, 5, 6, 7, 8, 9, 21, 22, 23, 24 };
+    constexpr float curves[] { -1, -.75f, -.25f, 0, .25f, .75f, 1 };
+    for (int r = 0; r < 32; ++r)
+    {
+        auto& route = s.routes[static_cast<size_t> (r)];
+        route = { profile == 1 ? constants[r % 10] : 1 + r % 24,
+                  destinations[r % 18], r % 2 == 0 ? .0375f : -.025f };
+        route.auxSource = profile == 1 ? constants[(r + 3) % 10] : 1 + (r * 7 + 11) % 24;
+        route.polarity = r % 3; route.auxPolarity = (r + 1) % 3;
+        route.curve = curves[r % 7]; route.auxCurve = curves[(r + 2) % 7];
+        if (profile == 2)
+        {
+            route.source = r % 3 == 0 ? anyvoc::lfoSourceId (r % 10) : anyvoc::macroSourceId (r % 8);
+            route.destination = r < 24 ? 28 + (r * 3 + 1) % 8 : r < 28 ? 18 + r % 10 : 7;
+            route.auxSource = r % 2 == 0 ? 4 : anyvoc::macroSourceId ((r + 2) % 8);
+            route.amount = r % 2 == 0 ? .15f : -.15f;
+        }
+    }
+    if (profile == 1) { s.routes[31].source = anyvoc::lfoSourceId (5); s.routes[31].auxSource = 4; }
+    s.routes[30] = s.routes[29]; s.routes[30].amount = -.125f;
+    return s;
+}
+
+int renderCacheRegression (const juce::File& directory)
+{
+    static_assert (sizeof (float) == 4 && std::numeric_limits<float>::is_iec559, "IEEE754 float32 required");
+    require (directory.getParentDirectory().createDirectory().wasOk(), "Cannot create export parent");
+    require (std::filesystem::create_directory (std::filesystem::path (directory.getFullPathName().toWideCharPointer())),
+             "Export directory must be new; existing reference files are never replaced");
+    const auto object = [] { return juce::var (new juce::DynamicObject()); };
+    const auto put = [] (juce::var& value, const char* key, const juce::var& field)
+    { value.getDynamicObject()->setProperty (key, field); };
+    auto manifest = object(); put (manifest, "fixture_version", 1);
+    put (manifest, "format", "IEEE754 float32 little-endian; interleaved L,R; no header; no quantisation");
+    put (manifest, "comparison", "Match file names, byte counts and every byte using the same frozen fixture source and toolchain");
+    put (manifest, "duration_per_case_seconds", .24); put (manifest, "total_audio_seconds", 6.48);
+    put (manifest, "coverage", "24 primary/AUX sources; constant/held and changing curves; per-voice and shared LFOs; macro/phase feedback; edits and in-flight permutation; lifecycle/reset/prepare");
+    constexpr int edits[] { 0, 317, 354, 521, 733, 997, 1034, 1103, 1201, 1301, 1338, 1559,
+                            3511, 4099, 4673, 5471, 6311, 7207, 7244, 8191, 9001 };
+    constexpr const char* actions[] { "initial", "amount targets; duplicate descriptors converge", "rotate seven rows during smoothing",
+        "primary/AUX curves and polarities", "swap primary/AUX; AUX None", "eight amount targets to zero",
+        "bypass/source Off/destination Off", "edit bypassed transform", "reenable bypassed transform",
+        "clear routes", "restore routes", "macro one-ULP and endpoint changes",
+        "reset; render empty and positive blocks without setSettings", "prepare same rate/block; render empty and positive blocks without setSettings", "Mono retrigger", "Legato", "Poly",
+        "identity curves", "restore nonlinear curves", "reverse route order", "restore initial settings and reset" };
+    juce::Array<juce::var> changes, cases, midiDescription;
+    for (size_t i = 0; i < std::size (edits); ++i)
+    { auto item = object(); put (item, "sample", edits[i]); put (item, "action", actions[i]); changes.add (item); }
+    put (manifest, "settings_changes", changes);
+    put (manifest, "zero_length_blocks", "At every settings-change sample; MIDI exactly at that sample is delivered once in the empty render, before the next positive block");
+    std::vector<Event> events;
+    for (int onset : { 0, 3511, 4099, 6311, 9001 })
+        for (int voice = 0; voice < 16; ++voice)
+            events.push_back ({ onset + voice * 17, juce::MidiMessage::noteOn (1 + voice % 2, 48 + voice,
+                               static_cast<juce::uint8> (32 + voice * 6)) });
+    const std::vector<Event> extra {
+        { 301, juce::MidiMessage::controllerEvent (1, 1, 35) }, { 509, juce::MidiMessage::controllerEvent (2, 1, 101) },
+        { 1777, juce::MidiMessage::noteOn (1, 84, .7f) }, { 1781, juce::MidiMessage::noteOn (2, 86, .4f) },
+        { 2003, juce::MidiMessage::controllerEvent (1, 120, 0) }, { 2017, juce::MidiMessage::noteOn (1, 72, .9f) },
+        { 2333, juce::MidiMessage::controllerEvent (2, 64, 127) }, { 2399, juce::MidiMessage::noteOff (2, 63) },
+        { 2551, juce::MidiMessage::controllerEvent (2, 121, 0) }, { 2657, juce::MidiMessage::controllerEvent (2, 123, 0) },
+        { 4673, juce::MidiMessage::noteOn (1, 60, .6f) }, { 4801, juce::MidiMessage::noteOn (2, 67, .9f) },
+        { 4901, juce::MidiMessage::noteOff (2, 67) }, { 4903, juce::MidiMessage::noteOn (1, 60, .3f) },
+        { 5009, juce::MidiMessage::noteOff (1, 60) }, { 5113, juce::MidiMessage::noteOff (1, 60) },
+        { 5471, juce::MidiMessage::noteOn (1, 60, .5f) }, { 5557, juce::MidiMessage::noteOn (2, 72, .85f) },
+        { 5663, juce::MidiMessage::noteOff (2, 72) }, { 5789, juce::MidiMessage::controllerEvent (1, 123, 0) }
+    };
+    events.insert (events.end(), extra.begin(), extra.end());
+    std::stable_sort (events.begin(), events.end(), [] (const Event& a, const Event& b) { return a.sample < b.sample; });
+    for (const auto& event : events)
+    { auto item = object(); put (item, "sample", event.sample);
+      put (item, "midi_hex", juce::String::toHexString (event.message.getRawData(), event.message.getRawDataSize())); midiDescription.add (item); }
+    put (manifest, "midi_events", midiDescription);
+    constexpr const char* profiles[] { "all-sources", "constant-and-held", "macro-phase-feedback" };
+    for (double rate : { 44100.0, 48000.0, 96000.0 })
+        for (int blockSize : { 127, 256, 511 })
+            for (int profile = 0; profile < 3; ++profile)
+            {
+                auto initial = cacheRegressionSettings (profile), settings = initial;
+                SynthEngine engine; engine.setSettings (settings); engine.prepare (rate, blockSize);
+                const int frames = static_cast<int> (std::lround (rate * .24));
+                juce::AudioBuffer<float> audio (2, frames); audio.clear();
+                juce::Array<juce::var> blocks; size_t edit = 0;
+                for (int start = 0; start < frames;)
+                {
+                    const bool emptyFirst = edit < std::size (edits) && start == edits[edit];
+                    if (emptyFirst)
+                    {
+                        switch (start)
+                        {
+                            case 317: for (auto& r : settings.routes) r.amount *= -.5f;
+                                settings.routes[29].amount = settings.routes[30].amount = .125f; break;
+                            case 354: std::rotate (settings.routes.begin(), settings.routes.begin() + 7, settings.routes.end()); break;
+                            case 521: for (auto& r : settings.routes) { r.curve = -r.curve;
+                                r.auxCurve = std::nextafter (r.auxCurve, 0.0f); r.polarity = (r.polarity + 1) % 3;
+                                r.auxPolarity = (r.auxPolarity + 2) % 3; } break;
+                            case 733: for (auto& r : settings.routes) std::swap (r.source, r.auxSource);
+                                settings.routes[0].auxSource = 0; break;
+                            case 997: for (size_t r = 0; r < 8; ++r) settings.routes[r].amount = 0; break;
+                            case 1034: settings.routes[0].enabled = false; settings.routes[1].source = 0;
+                                settings.routes[2].destination = 0; break;
+                            case 1103: settings.routes[0].source = 4; settings.routes[0].curve = .25f;
+                                settings.routes[0].auxSource = 7; settings.routes[0].auxCurve = -.25f; break;
+                            case 1201: settings.routes[0].enabled = true; settings.routes[0].amount = .125f; break;
+                            case 1301: settings.routes = {}; break;
+                            case 1338: settings.routes = initial.routes; break;
+                            case 1559: settings.macros[3] = std::nextafter (.5f, 1.0f);
+                                settings.macros[0] = 1; settings.macros[7] = 0; break;
+                            case 3511: engine.reset(); break;
+                            case 4099: engine.prepare (rate, blockSize); break;
+                            case 4673: settings.voiceMode = 1; break;
+                            case 5471: settings.voiceMode = 2; break;
+                            case 6311: settings.voiceMode = 0; break;
+                            case 7207: for (auto& r : settings.routes) r.curve = r.auxCurve = 0; break;
+                            case 7244: for (size_t r = 0; r < 32; ++r) { settings.routes[r].curve = initial.routes[r].curve;
+                                settings.routes[r].auxCurve = initial.routes[r].auxCurve; } break;
+                            case 8191: std::reverse (settings.routes.begin(), settings.routes.end()); break;
+                            case 9001: settings = initial; engine.setSettings (settings); engine.reset(); break;
+                            default: break;
+                        }
+                        ++edit;
+                    }
+                    // Reset/prepare must retain the prepared route descriptors without rebuilding them.
+                    if (start != 3511 && start != 4099) engine.setSettings (settings);
+                    engine.setTransport (135, start / rate * 2.25, true, true);
+                    if (emptyFirst)
+                    {
+                        juce::AudioBuffer<float> empty (2, 0); juce::MidiBuffer midi;
+                        for (const auto& event : events) if (event.sample == start) midi.addEvent (event.message, 0);
+                        engine.render (empty, midi);
+                        blocks.add (juce::var (juce::Array<juce::var> { start, 0 }));
+                    }
+                    int length = std::min (blockSize, frames - start);
+                    if (edit < std::size (edits)) length = std::min (length, edits[edit] - start);
+                    juce::AudioBuffer<float> block (2, length); block.clear(); juce::MidiBuffer midi;
+                    for (const auto& event : events)
+                        if (event.sample >= start && event.sample < start + length && !(emptyFirst && event.sample == start))
+                            midi.addEvent (event.message, event.sample - start);
+                    engine.render (block, midi);
+                    for (int ch = 0; ch < 2; ++ch) audio.copyFrom (ch, start, block, ch, 0, length);
+                    blocks.add (juce::var (juce::Array<juce::var> { start, length })); start += length;
+                }
+                const auto stats = inspect (audio); require (stats.rms > 1.0e-6, "Cache regression fixture was silent");
+                std::vector<juce::uint32> bits (static_cast<size_t> (frames) * 2);
+                for (int n = 0; n < frames; ++n) for (int ch = 0; ch < 2; ++ch)
+                { const float sample = audio.getSample (ch, n); juce::uint32 raw;
+                  std::memcpy (&raw, &sample, sizeof (raw)); bits[static_cast<size_t> (n) * 2 + ch] = juce::ByteOrder::swapIfBigEndian (raw); }
+                const auto name = juce::String (profiles[profile]) + "-" + juce::String (static_cast<int> (rate))
+                                + "-" + juce::String (blockSize) + ".f32le";
+                auto stream = directory.getChildFile (name).createOutputStream();
+                require (stream != nullptr && stream->openedOk() && stream->write (bits.data(), bits.size() * sizeof (bits[0])),
+                         "Cannot write raw float fixture");
+                stream->flush(); require (stream->getStatus().wasOk(), "Raw float flush failed");
+                auto item = object(); put (item, "file", name); put (item, "profile", profiles[profile]);
+                put (item, "sample_rate", rate); put (item, "nominal_block", blockSize); put (item, "channels", 2);
+                put (item, "frames", frames); put (item, "bytes", static_cast<juce::int64> (bits.size() * sizeof (bits[0])));
+                put (item, "rms", stats.rms); put (item, "peak", stats.peak); put (item, "render_blocks", blocks); cases.add (item);
+                std::cout << "CACHE REGRESSION " << name << ": " << frames << " frames\n";
+            }
+    put (manifest, "cases", cases); put (manifest, "complete", true);
+    require (directory.getChildFile ("manifest.json").replaceWithText (juce::JSON::toString (manifest, false)), "Cannot write fixture manifest");
+    std::cout << "CACHE REGRESSION COMPLETE: " << cases.size() << " files, 6.48 audio seconds\n";
+    return 0;
+}
+
 int main (int argc, char* argv[])
 {
     juce::ScopedJuceInitialiser_GUI initialiseJuce;
+    if (argc > 1 && std::string (argv[1]) == "--render-cache-regression")
+        try
+        {
+            require (argc == 3 && juce::File::isAbsolutePath (juce::String::fromUTF8 (argv[2])),
+                     "Usage: --render-cache-regression ABSOLUTE_NEW_DIRECTORY");
+            return renderCacheRegression (juce::File (juce::String::fromUTF8 (argv[2])));
+        }
+        catch (const std::exception& error)
+        { std::cerr << "FAIL Cache regression export: " << error.what() << '\n'; return 1; }
     if (argc > 1 && std::string (argv[1]) == "--benchmark-macros")
         try { return benchmarkMacroTargets(); }
         catch (const std::exception& error)

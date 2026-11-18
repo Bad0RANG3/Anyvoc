@@ -1,0 +1,55 @@
+windows	Check profiler tooling without opening an audio device	﻿2026-11-18T10:44:26.7420025Z ##[group]Run & build/AnyvocRealtimeProbe_artefacts/Release/AnyvocRealtimeProbe.exe --help
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.7420831Z ^[[36;1m& build/AnyvocRealtimeProbe_artefacts/Release/AnyvocRealtimeProbe.exe --help^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.7421301Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw 'Profiler help failed' }^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.7421829Z ^[[36;1mpython scripts/analyze_realtime_probe.py --self-test --output build/realtime-probe-analyzer-self-test.json^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.7422365Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw 'Profiler analyzer self-test failed' }^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.7422869Z ^[[36;1mpython Tests/RealtimeRunnerTests.py 2>&1 | Tee-Object -FilePath build/realtime-runner-tests.txt^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.7423348Z ^[[36;1mif ($LASTEXITCODE -ne 0) { throw 'Profiler runner tests failed' }^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.7452826Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.7453157Z ##[endgroup]
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9466367Z AnyvocRealtimeProbe - developer-only silent WASAPI shared callback measurement
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9467362Z   --list                       List shared output endpoints/rates/buffers; no stream opened
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9467972Z   --case baseline|unison|matrix|chaos|chaos-rossler|granular  (default baseline)
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9468541Z   --seconds N                  Measured audio seconds, 0.1..3600 (default 60)
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9469042Z   --warmup N                   Excluded warmup seconds, 0..60 (default 3)
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9469566Z   --sample-rate N              Requested Hz, or 0 for device default (default 48000)
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9470171Z   --buffer-size N              Requested frames, or 0 for default (default 256)
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9470733Z   --output ABSBASE             Required absolute basename; writes ABSBASE.json/.csv
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9471401Z   --help
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9471499Z 
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9471716Z One case per invocation. Fixed 16-voice fixture; no external MIDI/input, editor,
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9472416Z user settings, or audible test output. Existing result files are never overwritten.
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9473046Z An atomic ABSBASE.capture-lock directory reserves the output namespace; a stale
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9473475Z lock after a crash is rejected. Use a new basename for every attempt.
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9473885Z Warmup/measurement round up to whole actual device blocks; raw CSV keeps both.
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9474332Z Exit 0 means a complete valid measurement, even when deadlines were exceeded.
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9474765Z Exit 1 means invalid/error; exit 2 means invalid CLI. Native driver xruns may be
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:26.9475223Z unsupported; callback overruns and scheduling gaps do not prove audible dropouts.
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:28.2744022Z PASS: self-test
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:28.2744949Z Report: D:\a\Anyvoc\Anyvoc\build\realtime-probe-analyzer-self-test.json
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1439006Z ^[[31;1mtest_competing_runner_cannot_enter_after_atomic_reservation (__main__.RealtimeRunnerTests.test_competing_runner_cannot_enter_after_atomic_reservation) ... FAIL^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1448678Z ^[[31;1mtest_complete_suite_preserves_each_case_and_artifact (__main__.RealtimeRunnerTests.test_complete_suite_preserves_each_case_and_artifact) ... ok^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1641801Z ^[[31;1mtest_executable_replaced_between_cases_is_rejected_before_launch (__main__.RealtimeRunnerTests.test_executable_replaced_between_cases_is_rejected_before_launch) ... ok^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1648197Z ^[[31;1mtest_executable_replaced_during_capture_invalidates_success_reply (__main__.RealtimeRunnerTests.test_executable_replaced_during_capture_invalidates_success_reply) ... ok^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1656211Z ^[[31;1mtest_existing_suite_is_untouched_and_never_launches (__main__.RealtimeRunnerTests.test_existing_suite_is_untouched_and_never_launches) ... ok^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1661426Z ^[[31;1mtest_launch_oserror_keeps_failed_run_and_created_logs (__main__.RealtimeRunnerTests.test_launch_oserror_keeps_failed_run_and_created_logs) ... ok^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1667202Z ^[[31;1mtest_timeout_keeps_failed_run_and_partial_artifacts (__main__.RealtimeRunnerTests.test_timeout_keeps_failed_run_and_partial_artifacts) ... ok^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1680971Z ^[[31;1m^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1686436Z ^[[31;1m======================================================================^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1692273Z ^[[31;1mFAIL: test_competing_runner_cannot_enter_after_atomic_reservation (__main__.RealtimeRunnerTests.test_competing_runner_cannot_enter_after_atomic_reservation)^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1697459Z ^[[31;1m----------------------------------------------------------------------^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1712391Z ^[[31;1mTraceback (most recent call last):^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1718303Z ^[[31;1m  File "D:\a\Anyvoc\Anyvoc\Tests\RealtimeRunnerTests.py", line 238, in test_competing_runner_cannot_enter_after_atomic_reservation^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1723731Z ^[[31;1m    self.assertTrue(contender_attempted, "Runner must reserve before starting any capture")^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1729771Z ^[[31;1mAssertionError: False is not true : Runner must reserve before starting any capture^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1734811Z ^[[31;1m^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1740375Z ^[[31;1m----------------------------------------------------------------------^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1751984Z ^[[31;1mRan 7 tests in 0.144s^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1757372Z ^[[31;1m^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.1762819Z ^[[31;1mFAILED (failures=1)^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.2680126Z ^[[31;1mException: ^[[0mD:\a\_temp\fb20f949-d472-4630-a015-d37dc35480cf.ps1:7^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.2680852Z ^[[31;1m^[[0m^[[36;1mLine |^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.2681467Z ^[[31;1m^[[0m^[[36;1m^[[36;1m   7 | ^[[0m if ($LASTEXITCODE -ne 0) { ^[[36;1mthrow 'Profiler runner tests failed'^[[0m }^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.2682210Z ^[[31;1m^[[0m^[[36;1m^[[36;1m^[[0m^[[36;1m^[[0m^[[36;1m     | ^[[31;1m                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.2682923Z ^[[31;1m^[[0m^[[36;1m^[[36;1m^[[0m^[[36;1m^[[0m^[[36;1m^[[31;1m^[[31;1m^[[36;1m     | ^[[31;1mProfiler runner tests failed^[[0m
+windows	Check profiler tooling without opening an audio device	2026-11-18T10:44:29.3109901Z ##[error]Process completed with exit code 1.

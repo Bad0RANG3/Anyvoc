@@ -1,0 +1,468 @@
+{
+  "status": "PASS",
+  "failures": [],
+  "first_difference": null,
+  "inputs": {
+    "reference": {
+      "path": "D:\\Anyvoc\\build\\validation-cache-optimization\\old-reference",
+      "valid": true,
+      "files": {
+        "all-sources-44100-127.f32le": {
+          "bytes": 84672,
+          "sha256": "612a58a1fdbfbf45e74b6b46f485693258f7633c497b4836e901ff4fd98c8e49",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.01906522295452863,
+          "measured_peak": 0.08785166591405869
+        },
+        "all-sources-44100-256.f32le": {
+          "bytes": 84672,
+          "sha256": "612a58a1fdbfbf45e74b6b46f485693258f7633c497b4836e901ff4fd98c8e49",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.01906522295452863,
+          "measured_peak": 0.08785166591405869
+        },
+        "all-sources-44100-511.f32le": {
+          "bytes": 84672,
+          "sha256": "612a58a1fdbfbf45e74b6b46f485693258f7633c497b4836e901ff4fd98c8e49",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.01906522295452863,
+          "measured_peak": 0.08785166591405869
+        },
+        "all-sources-48000-127.f32le": {
+          "bytes": 92160,
+          "sha256": "64ed604a0cfebbd6818b7cdc812063cc6cfbb18e3e48f3b36b6e5deabefb948b",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.01893055506498615,
+          "measured_peak": 0.08397143334150314
+        },
+        "all-sources-48000-256.f32le": {
+          "bytes": 92160,
+          "sha256": "64ed604a0cfebbd6818b7cdc812063cc6cfbb18e3e48f3b36b6e5deabefb948b",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.01893055506498615,
+          "measured_peak": 0.08397143334150314
+        },
+        "all-sources-48000-511.f32le": {
+          "bytes": 92160,
+          "sha256": "64ed604a0cfebbd6818b7cdc812063cc6cfbb18e3e48f3b36b6e5deabefb948b",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.01893055506498615,
+          "measured_peak": 0.08397143334150314
+        },
+        "all-sources-96000-127.f32le": {
+          "bytes": 184320,
+          "sha256": "33dd3bf1cd07568a32c0d0b53432fe14478ef3d6ade1ff008040ad95fe466399",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.01985116913523649,
+          "measured_peak": 0.10421184450387955
+        },
+        "all-sources-96000-256.f32le": {
+          "bytes": 184320,
+          "sha256": "33dd3bf1cd07568a32c0d0b53432fe14478ef3d6ade1ff008040ad95fe466399",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.01985116913523649,
+          "measured_peak": 0.10421184450387955
+        },
+        "all-sources-96000-511.f32le": {
+          "bytes": 184320,
+          "sha256": "33dd3bf1cd07568a32c0d0b53432fe14478ef3d6ade1ff008040ad95fe466399",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.01985116913523649,
+          "measured_peak": 0.10421184450387955
+        },
+        "constant-and-held-44100-127.f32le": {
+          "bytes": 84672,
+          "sha256": "5f29950a682e8b368c139c1f16edfe6f8e3d9ed6b0d500e5266042f32078fdcb",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.018725805003605198,
+          "measured_peak": 0.08260542899370193
+        },
+        "constant-and-held-44100-256.f32le": {
+          "bytes": 84672,
+          "sha256": "5f29950a682e8b368c139c1f16edfe6f8e3d9ed6b0d500e5266042f32078fdcb",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.018725805003605198,
+          "measured_peak": 0.08260542899370193
+        },
+        "constant-and-held-44100-511.f32le": {
+          "bytes": 84672,
+          "sha256": "5f29950a682e8b368c139c1f16edfe6f8e3d9ed6b0d500e5266042f32078fdcb",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.018725805003605198,
+          "measured_peak": 0.08260542899370193
+        },
+        "constant-and-held-48000-127.f32le": {
+          "bytes": 92160,
+          "sha256": "d52f4e73471bc8b4b3ae38540d9ac1ed801a9510b5a4516819f516d260624ff1",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018677456698832695,
+          "measured_peak": 0.08184555172920227
+        },
+        "constant-and-held-48000-256.f32le": {
+          "bytes": 92160,
+          "sha256": "d52f4e73471bc8b4b3ae38540d9ac1ed801a9510b5a4516819f516d260624ff1",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018677456698832695,
+          "measured_peak": 0.08184555172920227
+        },
+        "constant-and-held-48000-511.f32le": {
+          "bytes": 92160,
+          "sha256": "d52f4e73471bc8b4b3ae38540d9ac1ed801a9510b5a4516819f516d260624ff1",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018677456698832695,
+          "measured_peak": 0.08184555172920227
+        },
+        "constant-and-held-96000-127.f32le": {
+          "bytes": 184320,
+          "sha256": "0964b5fd0b3768c627956c96423e7ef9e1351aa87584a4ba498d805fc5d29170",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019272979280757104,
+          "measured_peak": 0.09683922678232193
+        },
+        "constant-and-held-96000-256.f32le": {
+          "bytes": 184320,
+          "sha256": "0964b5fd0b3768c627956c96423e7ef9e1351aa87584a4ba498d805fc5d29170",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019272979280757104,
+          "measured_peak": 0.09683922678232193
+        },
+        "constant-and-held-96000-511.f32le": {
+          "bytes": 184320,
+          "sha256": "0964b5fd0b3768c627956c96423e7ef9e1351aa87584a4ba498d805fc5d29170",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019272979280757104,
+          "measured_peak": 0.09683922678232193
+        },
+        "macro-phase-feedback-44100-127.f32le": {
+          "bytes": 84672,
+          "sha256": "b4a3179549b71b2d6ff307c720c09a7b8fd8a94ac89608c4caff8accfa75b015",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.0189310761811242,
+          "measured_peak": 0.08951806277036667
+        },
+        "macro-phase-feedback-44100-256.f32le": {
+          "bytes": 84672,
+          "sha256": "b4a3179549b71b2d6ff307c720c09a7b8fd8a94ac89608c4caff8accfa75b015",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.0189310761811242,
+          "measured_peak": 0.08951806277036667
+        },
+        "macro-phase-feedback-44100-511.f32le": {
+          "bytes": 84672,
+          "sha256": "b4a3179549b71b2d6ff307c720c09a7b8fd8a94ac89608c4caff8accfa75b015",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.0189310761811242,
+          "measured_peak": 0.08951806277036667
+        },
+        "macro-phase-feedback-48000-127.f32le": {
+          "bytes": 92160,
+          "sha256": "62880ac318a6c305b67e4326d0f25ec51a4dd009fbc661034f22b0831108acd3",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018823043788144117,
+          "measured_peak": 0.08909770101308823
+        },
+        "macro-phase-feedback-48000-256.f32le": {
+          "bytes": 92160,
+          "sha256": "62880ac318a6c305b67e4326d0f25ec51a4dd009fbc661034f22b0831108acd3",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018823043788144117,
+          "measured_peak": 0.08909770101308823
+        },
+        "macro-phase-feedback-48000-511.f32le": {
+          "bytes": 92160,
+          "sha256": "62880ac318a6c305b67e4326d0f25ec51a4dd009fbc661034f22b0831108acd3",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018823043788144117,
+          "measured_peak": 0.08909770101308823
+        },
+        "macro-phase-feedback-96000-127.f32le": {
+          "bytes": 184320,
+          "sha256": "82c7ff05a5af683456269eea7614b8d37fb6dbd774912adfc38356293dfbdb79",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019432551843482873,
+          "measured_peak": 0.10908365994691849
+        },
+        "macro-phase-feedback-96000-256.f32le": {
+          "bytes": 184320,
+          "sha256": "82c7ff05a5af683456269eea7614b8d37fb6dbd774912adfc38356293dfbdb79",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019432551843482873,
+          "measured_peak": 0.10908365994691849
+        },
+        "macro-phase-feedback-96000-511.f32le": {
+          "bytes": 184320,
+          "sha256": "82c7ff05a5af683456269eea7614b8d37fb6dbd774912adfc38356293dfbdb79",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019432551843482873,
+          "measured_peak": 0.10908365994691849
+        },
+        "manifest.json": {
+          "bytes": 169055,
+          "sha256": "9dabe4ead856e9febff52f7518047c4e1b98d655e83b97e245d9db9bdf147866"
+        }
+      },
+      "total_frames": 406296,
+      "total_samples": 812592,
+      "audio_bytes": 3250368
+    },
+    "candidate": {
+      "path": "D:\\Anyvoc\\build\\validation-cache-optimization\\release-0.20.3-reference",
+      "valid": true,
+      "files": {
+        "all-sources-44100-127.f32le": {
+          "bytes": 84672,
+          "sha256": "612a58a1fdbfbf45e74b6b46f485693258f7633c497b4836e901ff4fd98c8e49",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.01906522295452863,
+          "measured_peak": 0.08785166591405869
+        },
+        "all-sources-44100-256.f32le": {
+          "bytes": 84672,
+          "sha256": "612a58a1fdbfbf45e74b6b46f485693258f7633c497b4836e901ff4fd98c8e49",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.01906522295452863,
+          "measured_peak": 0.08785166591405869
+        },
+        "all-sources-44100-511.f32le": {
+          "bytes": 84672,
+          "sha256": "612a58a1fdbfbf45e74b6b46f485693258f7633c497b4836e901ff4fd98c8e49",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.01906522295452863,
+          "measured_peak": 0.08785166591405869
+        },
+        "all-sources-48000-127.f32le": {
+          "bytes": 92160,
+          "sha256": "64ed604a0cfebbd6818b7cdc812063cc6cfbb18e3e48f3b36b6e5deabefb948b",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.01893055506498615,
+          "measured_peak": 0.08397143334150314
+        },
+        "all-sources-48000-256.f32le": {
+          "bytes": 92160,
+          "sha256": "64ed604a0cfebbd6818b7cdc812063cc6cfbb18e3e48f3b36b6e5deabefb948b",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.01893055506498615,
+          "measured_peak": 0.08397143334150314
+        },
+        "all-sources-48000-511.f32le": {
+          "bytes": 92160,
+          "sha256": "64ed604a0cfebbd6818b7cdc812063cc6cfbb18e3e48f3b36b6e5deabefb948b",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.01893055506498615,
+          "measured_peak": 0.08397143334150314
+        },
+        "all-sources-96000-127.f32le": {
+          "bytes": 184320,
+          "sha256": "33dd3bf1cd07568a32c0d0b53432fe14478ef3d6ade1ff008040ad95fe466399",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.01985116913523649,
+          "measured_peak": 0.10421184450387955
+        },
+        "all-sources-96000-256.f32le": {
+          "bytes": 184320,
+          "sha256": "33dd3bf1cd07568a32c0d0b53432fe14478ef3d6ade1ff008040ad95fe466399",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.01985116913523649,
+          "measured_peak": 0.10421184450387955
+        },
+        "all-sources-96000-511.f32le": {
+          "bytes": 184320,
+          "sha256": "33dd3bf1cd07568a32c0d0b53432fe14478ef3d6ade1ff008040ad95fe466399",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.01985116913523649,
+          "measured_peak": 0.10421184450387955
+        },
+        "constant-and-held-44100-127.f32le": {
+          "bytes": 84672,
+          "sha256": "5f29950a682e8b368c139c1f16edfe6f8e3d9ed6b0d500e5266042f32078fdcb",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.018725805003605198,
+          "measured_peak": 0.08260542899370193
+        },
+        "constant-and-held-44100-256.f32le": {
+          "bytes": 84672,
+          "sha256": "5f29950a682e8b368c139c1f16edfe6f8e3d9ed6b0d500e5266042f32078fdcb",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.018725805003605198,
+          "measured_peak": 0.08260542899370193
+        },
+        "constant-and-held-44100-511.f32le": {
+          "bytes": 84672,
+          "sha256": "5f29950a682e8b368c139c1f16edfe6f8e3d9ed6b0d500e5266042f32078fdcb",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.018725805003605198,
+          "measured_peak": 0.08260542899370193
+        },
+        "constant-and-held-48000-127.f32le": {
+          "bytes": 92160,
+          "sha256": "d52f4e73471bc8b4b3ae38540d9ac1ed801a9510b5a4516819f516d260624ff1",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018677456698832695,
+          "measured_peak": 0.08184555172920227
+        },
+        "constant-and-held-48000-256.f32le": {
+          "bytes": 92160,
+          "sha256": "d52f4e73471bc8b4b3ae38540d9ac1ed801a9510b5a4516819f516d260624ff1",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018677456698832695,
+          "measured_peak": 0.08184555172920227
+        },
+        "constant-and-held-48000-511.f32le": {
+          "bytes": 92160,
+          "sha256": "d52f4e73471bc8b4b3ae38540d9ac1ed801a9510b5a4516819f516d260624ff1",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018677456698832695,
+          "measured_peak": 0.08184555172920227
+        },
+        "constant-and-held-96000-127.f32le": {
+          "bytes": 184320,
+          "sha256": "0964b5fd0b3768c627956c96423e7ef9e1351aa87584a4ba498d805fc5d29170",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019272979280757104,
+          "measured_peak": 0.09683922678232193
+        },
+        "constant-and-held-96000-256.f32le": {
+          "bytes": 184320,
+          "sha256": "0964b5fd0b3768c627956c96423e7ef9e1351aa87584a4ba498d805fc5d29170",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019272979280757104,
+          "measured_peak": 0.09683922678232193
+        },
+        "constant-and-held-96000-511.f32le": {
+          "bytes": 184320,
+          "sha256": "0964b5fd0b3768c627956c96423e7ef9e1351aa87584a4ba498d805fc5d29170",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019272979280757104,
+          "measured_peak": 0.09683922678232193
+        },
+        "macro-phase-feedback-44100-127.f32le": {
+          "bytes": 84672,
+          "sha256": "b4a3179549b71b2d6ff307c720c09a7b8fd8a94ac89608c4caff8accfa75b015",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.0189310761811242,
+          "measured_peak": 0.08951806277036667
+        },
+        "macro-phase-feedback-44100-256.f32le": {
+          "bytes": 84672,
+          "sha256": "b4a3179549b71b2d6ff307c720c09a7b8fd8a94ac89608c4caff8accfa75b015",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.0189310761811242,
+          "measured_peak": 0.08951806277036667
+        },
+        "macro-phase-feedback-44100-511.f32le": {
+          "bytes": 84672,
+          "sha256": "b4a3179549b71b2d6ff307c720c09a7b8fd8a94ac89608c4caff8accfa75b015",
+          "frames": 10584,
+          "samples": 21168,
+          "measured_rms": 0.0189310761811242,
+          "measured_peak": 0.08951806277036667
+        },
+        "macro-phase-feedback-48000-127.f32le": {
+          "bytes": 92160,
+          "sha256": "62880ac318a6c305b67e4326d0f25ec51a4dd009fbc661034f22b0831108acd3",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018823043788144117,
+          "measured_peak": 0.08909770101308823
+        },
+        "macro-phase-feedback-48000-256.f32le": {
+          "bytes": 92160,
+          "sha256": "62880ac318a6c305b67e4326d0f25ec51a4dd009fbc661034f22b0831108acd3",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018823043788144117,
+          "measured_peak": 0.08909770101308823
+        },
+        "macro-phase-feedback-48000-511.f32le": {
+          "bytes": 92160,
+          "sha256": "62880ac318a6c305b67e4326d0f25ec51a4dd009fbc661034f22b0831108acd3",
+          "frames": 11520,
+          "samples": 23040,
+          "measured_rms": 0.018823043788144117,
+          "measured_peak": 0.08909770101308823
+        },
+        "macro-phase-feedback-96000-127.f32le": {
+          "bytes": 184320,
+          "sha256": "82c7ff05a5af683456269eea7614b8d37fb6dbd774912adfc38356293dfbdb79",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019432551843482873,
+          "measured_peak": 0.10908365994691849
+        },
+        "macro-phase-feedback-96000-256.f32le": {
+          "bytes": 184320,
+          "sha256": "82c7ff05a5af683456269eea7614b8d37fb6dbd774912adfc38356293dfbdb79",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019432551843482873,
+          "measured_peak": 0.10908365994691849
+        },
+        "macro-phase-feedback-96000-511.f32le": {
+          "bytes": 184320,
+          "sha256": "82c7ff05a5af683456269eea7614b8d37fb6dbd774912adfc38356293dfbdb79",
+          "frames": 23040,
+          "samples": 46080,
+          "measured_rms": 0.019432551843482873,
+          "measured_peak": 0.10908365994691849
+        },
+        "manifest.json": {
+          "bytes": 169055,
+          "sha256": "9dabe4ead856e9febff52f7518047c4e1b98d655e83b97e245d9db9bdf147866"
+        }
+      },
+      "total_frames": 406296,
+      "total_samples": 812592,
+      "audio_bytes": 3250368
+    }
+  },
+  "scope": "Exact frozen fixture manifests and raw float audio; no performance or private-cache-key proof",
+  "manifest_fields_exact": true,
+  "audio_bytes_exact": true
+}

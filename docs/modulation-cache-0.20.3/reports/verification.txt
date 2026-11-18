@@ -1,0 +1,3 @@
+binaries: PASS
+source-compatibility: PASS
+demo-compatibility: PASS
