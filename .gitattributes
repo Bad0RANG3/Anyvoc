@@ -35,3 +35,7 @@ docs/benchmark-macros-0.19.txt -text -whitespace
 docs/render-0.19*.txt -text -whitespace
 docs/preview-0.19*.txt -text -whitespace
 docs/package-0.19*.txt -text -whitespace
+
+# Preserve the downloaded 0.19 CI evidence byte-for-byte.
+docs/test-details-github-ci-0.19.txt -text -whitespace
+docs/test-results-github-ci-0.19.xml -text -whitespace
