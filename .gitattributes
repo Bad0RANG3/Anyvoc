@@ -8,3 +8,8 @@
 *.png binary
 *.wav binary
 *.zip binary
+
+# Preserve downloaded CI evidence byte-for-byte, including original CR/CRLF.
+# Generated evidence is exempt from prose/source whitespace rules only.
+docs/test-details-github-ci-0.17.txt -text -whitespace
+docs/test-results-github-ci-0.17.xml -text -whitespace

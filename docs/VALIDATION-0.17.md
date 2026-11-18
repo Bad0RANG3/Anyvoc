@@ -66,7 +66,7 @@ Release 构建退出码 0；Windows x64、MSVC 19.44、SDK 10.0.26100.0、CMake 
 
 报告留在 ZIP 之外，避免把 ZIP 自身哈希写进被哈希的内容。最后文档更新后再次打包并校验；最终 ZIP 哈希以该报告为准。包内 EXE／VST3 与上表经过测试的最终构建逐字节一致。旧 0.16 包保留，不以新代码重新覆盖旧版发行文件。
 
-GitHub 仓库存放源码、文档、截图和原始测试记录；EXE、VST3、WAV、发行 ZIP 与外置包报告留在本地 `dist/`，本轮没有创建 GitHub Release 附件。云端 CI 必须按具体提交另行确认；[已成功的 0.16 CI](GITHUB_HANDOFF.md)不作为 0.17 的通过证据。
+GitHub 仓库存放源码、文档、截图和原始测试记录；EXE、VST3、WAV、发行 ZIP 与外置包报告留在本地 `dist/`，本轮没有创建 GitHub Release 附件。后续取得的 [0.17 云端 CI 记录](GITHUB_CI-0.17.md)确认提交 `f20c1aa` 的干净构建及四套 175 组测试成功；此补充不覆盖原发行 ZIP，也不改变原包哈希。[0.16 CI](GITHUB_HANDOFF.md)仍只作为历史基线。
 
 ## 尚未完成
 

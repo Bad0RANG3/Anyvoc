@@ -37,6 +37,6 @@ Git 排除构建目录、发布产物、外部测试工具、本机设置与凭�
 
 ## 接手后怎么继续
 
-先读 [STATUS](STATUS.md)，按 [BUILDING](BUILDING.md)构建，在 [TESTING](TESTING.md)记录当前环境的结果，再按 [ROADMAP](ROADMAP.md)选择一个阶段。0.16 初次交接时的下一步是完成 Chaos LFO；后续 0.17 的实际实现与验收单独记录在 [0.17 验证报告](VALIDATION-0.17.md)，不改写本页的历史基线。
+先读 [STATUS](STATUS.md)，按 [BUILDING](BUILDING.md)构建，在 [TESTING](TESTING.md)记录当前环境的结果，再按 [ROADMAP](ROADMAP.md)选择一个阶段。0.16 初次交接时的下一步是完成 Chaos LFO；后续 0.17 的实际实现与验收单独记录在 [0.17 验证报告](VALIDATION-0.17.md)，不改写本页的历史基线。0.17 提交 `f20c1aa` 后续也已通过云端干净构建和四套 175 组测试，详见[独立的 0.17 云端记录](GITHUB_CI-0.17.md)。
 
 DAW 扫描、真实音频设备、完整听音、macOS/AU/AAX 和完整 Serum 2 等价均仍未完成，不能由本次推送或 CI 成功推导出来。
