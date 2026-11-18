@@ -1,0 +1,26 @@
+PASS package-source.py syntax
+PASS verify-release.py syntax
+PASS 0.20.4 retains old requirements plus exact six additions and three demos
+PASS verifier permits no diagnostic marker/cache
+PASS verifier rejects marker before inspecting packages
+PASS Windows packager rejects marker before dist exists
+PASS Source packager rejects marker before dist exists
+PASS verifier rejects enabled cache ON
+PASS Windows packager rejects enabled cache ON
+PASS verifier rejects enabled cache true
+PASS Windows packager rejects enabled cache true
+PASS verifier rejects enabled cache YES
+PASS Windows packager rejects enabled cache YES
+PASS verifier rejects enabled cache y
+PASS Windows packager rejects enabled cache y
+PASS verifier rejects enabled cache 1
+PASS Windows packager rejects enabled cache 1
+PASS verifier permits disabled cache OFF
+PASS verifier permits disabled cache 0
+PASS verifier permits disabled cache FALSE
+PASS verifier ignores comments and unrelated keys
+PASS Windows normal guard reaches missing-build error without dist
+PASS Source roots exclude build/dist diagnostic trees and binaries
+Path self-tests passed: 4 canonical names, 21 rejected names, case alias rejection.
+PASS archive path self-tests
+SUMMARY 24 PASS

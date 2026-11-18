@@ -1,0 +1,20 @@
+PASS python syntax
+PASS relative output rejected
+PASS Source output forbidden
+PASS Tests output forbidden
+PASS third_party output forbidden
+PASS noncanonical source alias forbidden
+PASS existing file rejected
+PASS existing directory rejected
+PASS fixed commit and clean source accepted
+PASS wrong JUCE commit rejected
+PASS tracked dirty JUCE rejected
+PASS mock snapshot hashes/newlines/only three patches/marker
+PASS successful output cannot be overwritten
+PASS double patch rejected
+PASS mismatched anchor rejected
+PASS failed evidence directory cannot be overwritten
+PASS two contenders exactly one output owner
+PASS mock source bytes unchanged
+PASS all actual pinned JUCE anchors accepted in memory
+SUMMARY 19 PASS

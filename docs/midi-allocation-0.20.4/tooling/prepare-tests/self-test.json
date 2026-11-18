@@ -1,0 +1,25 @@
+{
+  "passed": 19,
+  "cases": [
+    "python syntax",
+    "relative output rejected",
+    "Source output forbidden",
+    "Tests output forbidden",
+    "third_party output forbidden",
+    "noncanonical source alias forbidden",
+    "existing file rejected",
+    "existing directory rejected",
+    "fixed commit and clean source accepted",
+    "wrong JUCE commit rejected",
+    "tracked dirty JUCE rejected",
+    "mock snapshot hashes/newlines/only three patches/marker",
+    "successful output cannot be overwritten",
+    "double patch rejected",
+    "mismatched anchor rejected",
+    "failed evidence directory cannot be overwritten",
+    "two contenders exactly one output owner",
+    "mock source bytes unchanged",
+    "all actual pinned JUCE anchors accepted in memory"
+  ],
+  "scope": "mock filesystem and in-memory original anchors only; no C++ build or full JUCE copy"
+}

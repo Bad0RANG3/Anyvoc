@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "case_id": "fresh-cold",
+      "role": "actual",
+      "file": "fresh-cold.f32le",
+      "frames": 15000,
+      "channels": 2,
+      "bytes": 120000,
+      "sha256": "e099869087ffb7535cd3ca1c3f5501a218e0c726de352ba9717bf9adcc0288d7",
+      "rms": 0.015946876956358,
+      "peak": 0.031502202153206,
+      "finite": true
+    },
+    {
+      "case_id": "fresh-warmed",
+      "role": "actual",
+      "file": "fresh-warmed.f32le",
+      "frames": 15000,
+      "channels": 2,
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "rms": 0.016415655923458,
+      "peak": 0.031502202153206,
+      "finite": true
+    },
+    {
+      "case_id": "fresh-warmed",
+      "role": "manual-reference",
+      "file": "fresh-warmed-manual-reference.f32le",
+      "frames": 15000,
+      "channels": 2,
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "rms": 0.016415655923458,
+      "peak": 0.031502202153206,
+      "finite": true
+    },
+    {
+      "case_id": "rotation",
+      "role": "actual",
+      "file": "rotation.f32le",
+      "frames": 15000,
+      "channels": 2,
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "rms": 0.016415655923458,
+      "peak": 0.031502202153206,
+      "finite": true
+    },
+    {
+      "case_id": "rotation",
+      "role": "manual-reference",
+      "file": "rotation-manual-reference.f32le",
+      "frames": 15000,
+      "channels": 2,
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "rms": 0.016415655923458,
+      "peak": 0.031502202153206,
+      "finite": true
+    },
+    {
+      "case_id": "long-cc",
+      "role": "actual",
+      "file": "long-cc.f32le",
+      "frames": 19000,
+      "channels": 2,
+      "bytes": 152000,
+      "sha256": "cd3bee05ee1a08d26f9ac2d6e9db843870d3ba4f32b211e214ed2f231998231e",
+      "rms": 0.017450946943462,
+      "peak": 0.031502202153206,
+      "finite": true
+    },
+    {
+      "case_id": "long-cc",
+      "role": "manual-reference",
+      "file": "long-cc-manual-reference.f32le",
+      "frames": 19000,
+      "channels": 2,
+      "bytes": 152000,
+      "sha256": "cd3bee05ee1a08d26f9ac2d6e9db843870d3ba4f32b211e214ed2f231998231e",
+      "rms": 0.017450946943462,
+      "peak": 0.031502202153206,
+      "finite": true
+    },
+    {
+      "case_id": "lifecycle",
+      "role": "actual",
+      "file": "lifecycle.f32le",
+      "frames": 22000,
+      "channels": 2,
+      "bytes": 176000,
+      "sha256": "2b3cac8d78fc6537e7e27f9448e655f40d7f0d23800037ed0b553435e8a37dbd",
+      "rms": 0.016322002480056,
+      "peak": 0.044599905610085,
+      "finite": true
+    },
+    {
+      "case_id": "keyboard-off",
+      "role": "actual",
+      "file": "keyboard-off.f32le",
+      "frames": 15000,
+      "channels": 2,
+      "bytes": 120000,
+      "sha256": "8c31b0ee7538b61ef415ce4230a07c3d715c24940b99be4ddd57582478351388",
+      "rms": 0.016840215295011,
+      "peak": 0.031502202153206,
+      "finite": true
+    },
+    {
+      "case_id": "keyboard-on",
+      "role": "actual",
+      "file": "keyboard-on.f32le",
+      "frames": 15000,
+      "channels": 2,
+      "bytes": 120000,
+      "sha256": "26403497d34e3a109c1ce09c0768bbbdc5875e690a7286c8eeaaf8123a47e4a8",
+      "rms": 0.014228505844207,
+      "peak": 0.031502202153206,
+      "finite": true
+    },
+    {
+      "case_id": "sysex-off",
+      "role": "actual",
+      "file": "sysex-off.f32le",
+      "frames": 15000,
+      "channels": 2,
+      "bytes": 120000,
+      "sha256": "ab7d2c17528b06c91b1a137f1a915ec55067e87062f9ad7b2e0f425bfe00299d",
+      "rms": 0.02036755591495,
+      "peak": 0.031502205878496,
+      "finite": true
+    },
+    {
+      "case_id": "sysex-on",
+      "role": "actual",
+      "file": "sysex-on.f32le",
+      "frames": 15000,
+      "channels": 2,
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "rms": 0.016415655923458,
+      "peak": 0.031502202153206,
+      "finite": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "instrumentation_schema": 1,
+  "diagnostic_only": true,
+  "juce_commit": "29396c22c93392d6738e021b83196283d6e4d850",
+  "instrumentation_macro": "ANYVOC_MIDI_ALLOCATION_DIAGNOSTIC",
+  "source_base_head": "0d05f2c2901e19cec6b3aa582264a034d56db9d3",
+  "tool_sha256": "aa6639b56e527e3f05832e0067cb9412bbd943ada488de0452f56479b4625800",
+  "recorder": "Tests/MidiAllocationRecorder.h",
+  "recorder_sha256": "3bc24ca094510a64832c4a30851728be45d1650c948f66c9faf528ae5a128b16",
+  "requires_force_include_in_instrumented_targets": true,
+  "sites": [
+    "HeapBlock mallocWrapper",
+    "HeapBlock callocWrapper",
+    "HeapBlock reallocWrapper",
+    "MidiMessage::allocateSpace malloc"
+  ],
+  "owner_scope": "MidiBuffer::addEvent(const void*, int, int)",
+  "limitations": [
+    "No free interception",
+    "No global allocator interception",
+    "MidiMessage assignment allocations are not instrumented",
+    "Capture is thread-local and bounded"
+  ],
+  "patches": [
+    {
+      "path": "third_party/JUCE/modules/juce_core/memory/juce_HeapBlock.h",
+      "before_sha256": "528c843a912797fb8a30613de3157337235f154e0f3103598e644784deea0f80",
+      "after_sha256": "7bcb90b9a16f1277301994ed64c8c91975d44ee70475a8dc1e25b4278784c67c"
+    },
+    {
+      "path": "third_party/JUCE/modules/juce_audio_basics/midi/juce_MidiMessage.cpp",
+      "before_sha256": "f86c6c0da2eaf67531b583f69418179f4228bd419c83d7ed4bcf46d55a05a083",
+      "after_sha256": "a8954e2a43c1b6dbc05dd2b28cd108b24f12bd1ee205e6d509968b6644205539"
+    },
+    {
+      "path": "third_party/JUCE/modules/juce_audio_basics/midi/juce_MidiBuffer.cpp",
+      "before_sha256": "d0d02798b2113a626485511ed936434b049577d4b30d1b08aa0eb54f9131d484",
+      "after_sha256": "1590d41ef1d0890c4cfca23dc6ca6ad46af3094da301163de3a9ead632fafbf0"
+    }
+  ]
+}

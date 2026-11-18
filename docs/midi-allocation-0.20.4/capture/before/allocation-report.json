@@ -1,0 +1,5223 @@
+{
+  "schema": 1,
+  "label": "before",
+  "valid": true,
+  "controls_passed": true,
+  "owner_scope": "host means exact current host MidiBuffer identity; other-MidiBuffer is another addEvent owner, not inferred from pointer ranges",
+  "cases": [
+    {
+      "id": "fresh-cold",
+      "host_midi_empty": true,
+      "manual_reference_checked": false,
+      "manual_reference_match": null,
+      "allocation_count": 7,
+      "requested_bytes": 112,
+      "overflow": 0,
+      "allocation_events": [
+        {
+          "block": 5,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 10,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 15,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 20,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 26,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 30,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 35,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ],
+      "blocks": [
+        {
+          "index": 0,
+          "start": 0,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 1,
+          "start": 127,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 2,
+          "start": 383,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 3,
+          "start": 894,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 4,
+          "start": 1021,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 5,
+          "start": 1277,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "start": 1788,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 7,
+          "start": 1915,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 8,
+          "start": 2171,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 9,
+          "start": 2682,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 10,
+          "start": 2809,
+          "samples": 256,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "start": 3065,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 12,
+          "start": 3576,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 13,
+          "start": 3703,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 14,
+          "start": 3959,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 15,
+          "start": 4470,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 16,
+          "start": 4597,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 17,
+          "start": 4853,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 18,
+          "start": 5364,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 19,
+          "start": 5491,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 20,
+          "start": 5747,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 21,
+          "start": 6258,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 22,
+          "start": 6385,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 23,
+          "start": 6641,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 24,
+          "start": 7152,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 25,
+          "start": 7279,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 26,
+          "start": 7535,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 27,
+          "start": 8046,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 28,
+          "start": 8173,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 29,
+          "start": 8429,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 30,
+          "start": 8940,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 31,
+          "start": 9067,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 32,
+          "start": 9323,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 33,
+          "start": 9834,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 34,
+          "start": 9961,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 35,
+          "start": 10217,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 36,
+          "start": 10728,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 37,
+          "start": 10855,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 38,
+          "start": 11111,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 39,
+          "start": 11622,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 40,
+          "start": 11749,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 41,
+          "start": 12005,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 42,
+          "start": 12516,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 43,
+          "start": 12643,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 44,
+          "start": 12899,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 45,
+          "start": 13410,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 46,
+          "start": 13537,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 47,
+          "start": 13793,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 48,
+          "start": 14304,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 49,
+          "start": 14431,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 50,
+          "start": 14687,
+          "samples": 313,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        }
+      ],
+      "by_site_owner": [
+        {
+          "site": "heapRealloc",
+          "owner": "other-MidiBuffer",
+          "count": 7,
+          "bytes": 112
+        }
+      ],
+      "positive_control_required": false,
+      "positive_control_passed": true,
+      "valid": true
+    },
+    {
+      "id": "fresh-warmed",
+      "host_midi_empty": true,
+      "manual_reference_checked": true,
+      "manual_reference_match": true,
+      "allocation_count": 8,
+      "requested_bytes": 128,
+      "overflow": 0,
+      "allocation_events": [
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 5,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 10,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 15,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 20,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 26,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 30,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 35,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ],
+      "blocks": [
+        {
+          "index": 0,
+          "start": 0,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "start": 127,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 2,
+          "start": 383,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 3,
+          "start": 894,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 4,
+          "start": 1021,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 5,
+          "start": 1277,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "start": 1788,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 7,
+          "start": 1915,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 8,
+          "start": 2171,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 9,
+          "start": 2682,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 10,
+          "start": 2809,
+          "samples": 256,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "start": 3065,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 12,
+          "start": 3576,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 13,
+          "start": 3703,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 14,
+          "start": 3959,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 15,
+          "start": 4470,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 16,
+          "start": 4597,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 17,
+          "start": 4853,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 18,
+          "start": 5364,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 19,
+          "start": 5491,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 20,
+          "start": 5747,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 21,
+          "start": 6258,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 22,
+          "start": 6385,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 23,
+          "start": 6641,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 24,
+          "start": 7152,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 25,
+          "start": 7279,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 26,
+          "start": 7535,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 27,
+          "start": 8046,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 28,
+          "start": 8173,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 29,
+          "start": 8429,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 30,
+          "start": 8940,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 31,
+          "start": 9067,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 32,
+          "start": 9323,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 33,
+          "start": 9834,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 34,
+          "start": 9961,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 35,
+          "start": 10217,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 36,
+          "start": 10728,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 37,
+          "start": 10855,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 38,
+          "start": 11111,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 39,
+          "start": 11622,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 40,
+          "start": 11749,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 41,
+          "start": 12005,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 42,
+          "start": 12516,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 43,
+          "start": 12643,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 44,
+          "start": 12899,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 45,
+          "start": 13410,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 46,
+          "start": 13537,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 47,
+          "start": 13793,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 48,
+          "start": 14304,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 49,
+          "start": 14431,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 50,
+          "start": 14687,
+          "samples": 313,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        }
+      ],
+      "by_site_owner": [
+        {
+          "site": "heapRealloc",
+          "owner": "other-MidiBuffer",
+          "count": 8,
+          "bytes": 128
+        }
+      ],
+      "positive_control_required": false,
+      "positive_control_passed": true,
+      "valid": true
+    },
+    {
+      "id": "rotation",
+      "host_midi_empty": true,
+      "manual_reference_checked": true,
+      "manual_reference_match": true,
+      "allocation_count": 5,
+      "requested_bytes": 80,
+      "overflow": 0,
+      "allocation_events": [
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 10,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 15,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 31,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 35,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ],
+      "blocks": [
+        {
+          "index": 0,
+          "start": 0,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "start": 127,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 2,
+          "start": 383,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 3,
+          "start": 894,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 4,
+          "start": 1021,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 5,
+          "start": 1277,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 6,
+          "start": 1788,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 7,
+          "start": 1915,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 8,
+          "start": 2171,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 9,
+          "start": 2682,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 10,
+          "start": 2809,
+          "samples": 256,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "start": 3065,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 12,
+          "start": 3576,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 13,
+          "start": 3703,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 14,
+          "start": 3959,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 15,
+          "start": 4470,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 16,
+          "start": 4597,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 17,
+          "start": 4853,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 18,
+          "start": 5364,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 19,
+          "start": 5491,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 20,
+          "start": 5747,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 21,
+          "start": 6258,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 22,
+          "start": 6385,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 23,
+          "start": 6641,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 24,
+          "start": 7152,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 25,
+          "start": 7279,
+          "samples": 221,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 26,
+          "start": 7500,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 27,
+          "start": 8011,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 28,
+          "start": 8138,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 29,
+          "start": 8394,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 30,
+          "start": 8905,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 31,
+          "start": 9032,
+          "samples": 256,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 32,
+          "start": 9288,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 33,
+          "start": 9799,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 34,
+          "start": 9926,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 35,
+          "start": 10182,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 36,
+          "start": 10693,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 37,
+          "start": 10820,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 38,
+          "start": 11076,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 39,
+          "start": 11587,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 40,
+          "start": 11714,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 41,
+          "start": 11970,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 42,
+          "start": 12481,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 43,
+          "start": 12608,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 44,
+          "start": 12864,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 45,
+          "start": 13375,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 46,
+          "start": 13502,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 47,
+          "start": 13758,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 48,
+          "start": 14269,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 49,
+          "start": 14396,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 50,
+          "start": 14652,
+          "samples": 348,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        }
+      ],
+      "by_site_owner": [
+        {
+          "site": "heapRealloc",
+          "owner": "other-MidiBuffer",
+          "count": 5,
+          "bytes": 80
+        }
+      ],
+      "positive_control_required": false,
+      "positive_control_passed": true,
+      "valid": true
+    },
+    {
+      "id": "long-cc",
+      "host_midi_empty": true,
+      "manual_reference_checked": true,
+      "manual_reference_match": true,
+      "allocation_count": 10,
+      "requested_bytes": 3552,
+      "overflow": 0,
+      "allocation_events": [
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 32,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 56,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 96,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 152,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 232,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 352,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 544,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 824,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 1248,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ],
+      "blocks": [
+        {
+          "index": 0,
+          "start": 0,
+          "samples": 8192,
+          "count": 10,
+          "requested_bytes": 3552,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 10,
+              "bytes": 3552
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "start": 8192,
+          "samples": 8192,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 2,
+          "start": 16384,
+          "samples": 2616,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        }
+      ],
+      "by_site_owner": [
+        {
+          "site": "heapRealloc",
+          "owner": "other-MidiBuffer",
+          "count": 10,
+          "bytes": 3552
+        }
+      ],
+      "positive_control_required": false,
+      "positive_control_passed": true,
+      "valid": true
+    },
+    {
+      "id": "lifecycle",
+      "host_midi_empty": true,
+      "manual_reference_checked": false,
+      "manual_reference_match": null,
+      "allocation_count": 13,
+      "requested_bytes": 224,
+      "overflow": 0,
+      "allocation_events": [
+        {
+          "block": 1,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 6,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 8,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 12,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 33,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 35,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 38,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 38,
+          "site": "heapRealloc",
+          "bytes": 32,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 49,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 54,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 65,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 70,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 73,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ],
+      "blocks": [
+        {
+          "index": 0,
+          "start": 0,
+          "samples": 0,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 1,
+          "start": 0,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "start": 127,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 3,
+          "start": 383,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 4,
+          "start": 894,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 5,
+          "start": 1021,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 6,
+          "start": 1277,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "start": 1788,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 8,
+          "start": 1915,
+          "samples": 256,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "start": 2171,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 10,
+          "start": 2682,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 11,
+          "start": 2809,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 12,
+          "start": 3065,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 13,
+          "start": 3576,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 14,
+          "start": 3703,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 15,
+          "start": 3959,
+          "samples": 137,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 16,
+          "start": 4096,
+          "samples": 0,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 17,
+          "start": 4096,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 18,
+          "start": 4223,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 19,
+          "start": 4479,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 20,
+          "start": 4990,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 21,
+          "start": 5117,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 22,
+          "start": 5373,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 23,
+          "start": 5884,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 24,
+          "start": 6011,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 25,
+          "start": 6267,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 26,
+          "start": 6778,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 27,
+          "start": 6905,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 28,
+          "start": 7161,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 29,
+          "start": 7672,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 30,
+          "start": 7799,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 31,
+          "start": 8055,
+          "samples": 137,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 32,
+          "start": 8192,
+          "samples": 0,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 33,
+          "start": 8192,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 34,
+          "start": 8319,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 35,
+          "start": 8575,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 36,
+          "start": 9086,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 37,
+          "start": 9213,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 38,
+          "start": 9469,
+          "samples": 511,
+          "count": 2,
+          "requested_bytes": 48,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 2,
+              "bytes": 48
+            }
+          ]
+        },
+        {
+          "index": 39,
+          "start": 9980,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 40,
+          "start": 10107,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 41,
+          "start": 10363,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 42,
+          "start": 10874,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 43,
+          "start": 11001,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 44,
+          "start": 11257,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 45,
+          "start": 11768,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 46,
+          "start": 11895,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 47,
+          "start": 12151,
+          "samples": 137,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 48,
+          "start": 12288,
+          "samples": 0,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 49,
+          "start": 12288,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 50,
+          "start": 12415,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 51,
+          "start": 12671,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 52,
+          "start": 13182,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 53,
+          "start": 13309,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 54,
+          "start": 13565,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 55,
+          "start": 14076,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 56,
+          "start": 14203,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 57,
+          "start": 14459,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 58,
+          "start": 14970,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 59,
+          "start": 15097,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 60,
+          "start": 15353,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 61,
+          "start": 15864,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 62,
+          "start": 15991,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 63,
+          "start": 16247,
+          "samples": 137,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 64,
+          "start": 16384,
+          "samples": 0,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 65,
+          "start": 16384,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 66,
+          "start": 16511,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 67,
+          "start": 16767,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 68,
+          "start": 17278,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 69,
+          "start": 17405,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 70,
+          "start": 17661,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 71,
+          "start": 18172,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 72,
+          "start": 18299,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 73,
+          "start": 18555,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 74,
+          "start": 19066,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 75,
+          "start": 19193,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 76,
+          "start": 19449,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 77,
+          "start": 19960,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 78,
+          "start": 20087,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 79,
+          "start": 20343,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 80,
+          "start": 20854,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 81,
+          "start": 20981,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 82,
+          "start": 21237,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 83,
+          "start": 21748,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 84,
+          "start": 21875,
+          "samples": 125,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        }
+      ],
+      "by_site_owner": [
+        {
+          "site": "heapRealloc",
+          "owner": "other-MidiBuffer",
+          "count": 13,
+          "bytes": 224
+        }
+      ],
+      "positive_control_required": false,
+      "positive_control_passed": true,
+      "valid": true
+    },
+    {
+      "id": "keyboard-off",
+      "host_midi_empty": true,
+      "manual_reference_checked": false,
+      "manual_reference_match": null,
+      "allocation_count": 2,
+      "requested_bytes": 32,
+      "overflow": 0,
+      "allocation_events": [
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "host",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 27,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "host",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ],
+      "blocks": [
+        {
+          "index": 0,
+          "start": 0,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "host",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "start": 127,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 2,
+          "start": 383,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 3,
+          "start": 894,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 4,
+          "start": 1021,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 5,
+          "start": 1277,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 6,
+          "start": 1788,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 7,
+          "start": 1915,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 8,
+          "start": 2171,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 9,
+          "start": 2682,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 10,
+          "start": 2809,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 11,
+          "start": 3065,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 12,
+          "start": 3576,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 13,
+          "start": 3703,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 14,
+          "start": 3959,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 15,
+          "start": 4470,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 16,
+          "start": 4597,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 17,
+          "start": 4853,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 18,
+          "start": 5364,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 19,
+          "start": 5491,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 20,
+          "start": 5747,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 21,
+          "start": 6258,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 22,
+          "start": 6385,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 23,
+          "start": 6641,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 24,
+          "start": 7152,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 25,
+          "start": 7279,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 26,
+          "start": 7535,
+          "samples": 465,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 27,
+          "start": 8000,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "host",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 28,
+          "start": 8127,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 29,
+          "start": 8383,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 30,
+          "start": 8894,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 31,
+          "start": 9021,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 32,
+          "start": 9277,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 33,
+          "start": 9788,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 34,
+          "start": 9915,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 35,
+          "start": 10171,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 36,
+          "start": 10682,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 37,
+          "start": 10809,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 38,
+          "start": 11065,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 39,
+          "start": 11576,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 40,
+          "start": 11703,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 41,
+          "start": 11959,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 42,
+          "start": 12470,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 43,
+          "start": 12597,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 44,
+          "start": 12853,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 45,
+          "start": 13364,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 46,
+          "start": 13491,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 47,
+          "start": 13747,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 48,
+          "start": 14258,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 49,
+          "start": 14385,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 50,
+          "start": 14641,
+          "samples": 359,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        }
+      ],
+      "by_site_owner": [
+        {
+          "site": "heapRealloc",
+          "owner": "host",
+          "count": 2,
+          "bytes": 32
+        }
+      ],
+      "positive_control_required": true,
+      "positive_control_passed": true,
+      "valid": true
+    },
+    {
+      "id": "keyboard-on",
+      "host_midi_empty": true,
+      "manual_reference_checked": false,
+      "manual_reference_match": null,
+      "allocation_count": 8,
+      "requested_bytes": 128,
+      "overflow": 0,
+      "allocation_events": [
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "host",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 5,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 10,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 15,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 20,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 25,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 27,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "host",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ],
+      "blocks": [
+        {
+          "index": 0,
+          "start": 0,
+          "samples": 127,
+          "count": 2,
+          "requested_bytes": 32,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "host",
+              "count": 1,
+              "bytes": 16
+            },
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "start": 127,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 2,
+          "start": 383,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 3,
+          "start": 894,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 4,
+          "start": 1021,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 5,
+          "start": 1277,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "start": 1788,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 7,
+          "start": 1915,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 8,
+          "start": 2171,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 9,
+          "start": 2682,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 10,
+          "start": 2809,
+          "samples": 256,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "start": 3065,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 12,
+          "start": 3576,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 13,
+          "start": 3703,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 14,
+          "start": 3959,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 15,
+          "start": 4470,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 16,
+          "start": 4597,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 17,
+          "start": 4853,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 18,
+          "start": 5364,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 19,
+          "start": 5491,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 20,
+          "start": 5747,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 21,
+          "start": 6258,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 22,
+          "start": 6385,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 23,
+          "start": 6641,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 24,
+          "start": 7152,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 25,
+          "start": 7279,
+          "samples": 256,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 26,
+          "start": 7535,
+          "samples": 465,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 27,
+          "start": 8000,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "host",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 28,
+          "start": 8127,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 29,
+          "start": 8383,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 30,
+          "start": 8894,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 31,
+          "start": 9021,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 32,
+          "start": 9277,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 33,
+          "start": 9788,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 34,
+          "start": 9915,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 35,
+          "start": 10171,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 36,
+          "start": 10682,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 37,
+          "start": 10809,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 38,
+          "start": 11065,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 39,
+          "start": 11576,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 40,
+          "start": 11703,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 41,
+          "start": 11959,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 42,
+          "start": 12470,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 43,
+          "start": 12597,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 44,
+          "start": 12853,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 45,
+          "start": 13364,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 46,
+          "start": 13491,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 47,
+          "start": 13747,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 48,
+          "start": 14258,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 49,
+          "start": 14385,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 50,
+          "start": 14641,
+          "samples": 359,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        }
+      ],
+      "by_site_owner": [
+        {
+          "site": "heapRealloc",
+          "owner": "host",
+          "count": 2,
+          "bytes": 32
+        },
+        {
+          "site": "heapRealloc",
+          "owner": "other-MidiBuffer",
+          "count": 6,
+          "bytes": 96
+        }
+      ],
+      "positive_control_required": true,
+      "positive_control_passed": true,
+      "valid": true
+    },
+    {
+      "id": "sysex-off",
+      "host_midi_empty": true,
+      "manual_reference_checked": false,
+      "manual_reference_match": null,
+      "allocation_count": 2,
+      "requested_bytes": 2052,
+      "overflow": 0,
+      "allocation_events": [
+        {
+          "block": 2,
+          "site": "midiMessageMalloc",
+          "bytes": 1026,
+          "owner": "none",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 28,
+          "site": "midiMessageMalloc",
+          "bytes": 1026,
+          "owner": "none",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ],
+      "blocks": [
+        {
+          "index": 0,
+          "start": 0,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 1,
+          "start": 127,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 2,
+          "start": 383,
+          "samples": 511,
+          "count": 1,
+          "requested_bytes": 1026,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "midiMessageMalloc",
+              "owner": "none",
+              "count": 1,
+              "bytes": 1026
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "start": 894,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 4,
+          "start": 1021,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 5,
+          "start": 1277,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 6,
+          "start": 1788,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 7,
+          "start": 1915,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 8,
+          "start": 2171,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 9,
+          "start": 2682,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 10,
+          "start": 2809,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 11,
+          "start": 3065,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 12,
+          "start": 3576,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 13,
+          "start": 3703,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 14,
+          "start": 3959,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 15,
+          "start": 4470,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 16,
+          "start": 4597,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 17,
+          "start": 4853,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 18,
+          "start": 5364,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 19,
+          "start": 5491,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 20,
+          "start": 5747,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 21,
+          "start": 6258,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 22,
+          "start": 6385,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 23,
+          "start": 6641,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 24,
+          "start": 7152,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 25,
+          "start": 7279,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 26,
+          "start": 7535,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 27,
+          "start": 8046,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 28,
+          "start": 8173,
+          "samples": 256,
+          "count": 1,
+          "requested_bytes": 1026,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "midiMessageMalloc",
+              "owner": "none",
+              "count": 1,
+              "bytes": 1026
+            }
+          ]
+        },
+        {
+          "index": 29,
+          "start": 8429,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 30,
+          "start": 8940,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 31,
+          "start": 9067,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 32,
+          "start": 9323,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 33,
+          "start": 9834,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 34,
+          "start": 9961,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 35,
+          "start": 10217,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 36,
+          "start": 10728,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 37,
+          "start": 10855,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 38,
+          "start": 11111,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 39,
+          "start": 11622,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 40,
+          "start": 11749,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 41,
+          "start": 12005,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 42,
+          "start": 12516,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 43,
+          "start": 12643,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 44,
+          "start": 12899,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 45,
+          "start": 13410,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 46,
+          "start": 13537,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 47,
+          "start": 13793,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 48,
+          "start": 14304,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 49,
+          "start": 14431,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 50,
+          "start": 14687,
+          "samples": 313,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        }
+      ],
+      "by_site_owner": [
+        {
+          "site": "midiMessageMalloc",
+          "owner": "none",
+          "count": 2,
+          "bytes": 2052
+        }
+      ],
+      "positive_control_required": true,
+      "positive_control_passed": true,
+      "valid": true
+    },
+    {
+      "id": "sysex-on",
+      "host_midi_empty": true,
+      "manual_reference_checked": false,
+      "manual_reference_match": null,
+      "allocation_count": 5,
+      "requested_bytes": 4120,
+      "overflow": 0,
+      "allocation_events": [
+        {
+          "block": 0,
+          "site": "heapRealloc",
+          "bytes": 16,
+          "owner": "other-MidiBuffer",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 2,
+          "site": "midiMessageMalloc",
+          "bytes": 1026,
+          "owner": "none",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 2,
+          "site": "midiMessageMalloc",
+          "bytes": 1026,
+          "owner": "none",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 28,
+          "site": "midiMessageMalloc",
+          "bytes": 1026,
+          "owner": "none",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "block": 28,
+          "site": "midiMessageMalloc",
+          "bytes": 1026,
+          "owner": "none",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ],
+      "blocks": [
+        {
+          "index": 0,
+          "start": 0,
+          "samples": 127,
+          "count": 1,
+          "requested_bytes": 16,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "heapRealloc",
+              "owner": "other-MidiBuffer",
+              "count": 1,
+              "bytes": 16
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "start": 127,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 2,
+          "start": 383,
+          "samples": 511,
+          "count": 2,
+          "requested_bytes": 2052,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "midiMessageMalloc",
+              "owner": "none",
+              "count": 2,
+              "bytes": 2052
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "start": 894,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 4,
+          "start": 1021,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 5,
+          "start": 1277,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 6,
+          "start": 1788,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 7,
+          "start": 1915,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 8,
+          "start": 2171,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 9,
+          "start": 2682,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 10,
+          "start": 2809,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 11,
+          "start": 3065,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 12,
+          "start": 3576,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 13,
+          "start": 3703,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 14,
+          "start": 3959,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 15,
+          "start": 4470,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 16,
+          "start": 4597,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 17,
+          "start": 4853,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 18,
+          "start": 5364,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 19,
+          "start": 5491,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 20,
+          "start": 5747,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 21,
+          "start": 6258,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 22,
+          "start": 6385,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 23,
+          "start": 6641,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 24,
+          "start": 7152,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 25,
+          "start": 7279,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 26,
+          "start": 7535,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 27,
+          "start": 8046,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 28,
+          "start": 8173,
+          "samples": 256,
+          "count": 2,
+          "requested_bytes": 2052,
+          "overflow": 0,
+          "by_site_owner": [
+            {
+              "site": "midiMessageMalloc",
+              "owner": "none",
+              "count": 2,
+              "bytes": 2052
+            }
+          ]
+        },
+        {
+          "index": 29,
+          "start": 8429,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 30,
+          "start": 8940,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 31,
+          "start": 9067,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 32,
+          "start": 9323,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 33,
+          "start": 9834,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 34,
+          "start": 9961,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 35,
+          "start": 10217,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 36,
+          "start": 10728,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 37,
+          "start": 10855,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 38,
+          "start": 11111,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 39,
+          "start": 11622,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 40,
+          "start": 11749,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 41,
+          "start": 12005,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 42,
+          "start": 12516,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 43,
+          "start": 12643,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 44,
+          "start": 12899,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 45,
+          "start": 13410,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 46,
+          "start": 13537,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 47,
+          "start": 13793,
+          "samples": 511,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 48,
+          "start": 14304,
+          "samples": 127,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 49,
+          "start": 14431,
+          "samples": 256,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        },
+        {
+          "index": 50,
+          "start": 14687,
+          "samples": 313,
+          "count": 0,
+          "requested_bytes": 0,
+          "overflow": 0,
+          "by_site_owner": []
+        }
+      ],
+      "by_site_owner": [
+        {
+          "site": "heapRealloc",
+          "owner": "other-MidiBuffer",
+          "count": 1,
+          "bytes": 16
+        },
+        {
+          "site": "midiMessageMalloc",
+          "owner": "none",
+          "count": 4,
+          "bytes": 4104
+        }
+      ],
+      "positive_control_required": true,
+      "positive_control_passed": true,
+      "valid": true
+    }
+  ],
+  "recorder_self_tests": {
+    "nested_capture_and_owner_restore": true,
+    "capacity_overflow": {
+      "passed": true,
+      "count": 8192,
+      "overflow": 1,
+      "expected_overflow": 1
+    }
+  },
+  "controls": [
+    {
+      "id": "scope-noop",
+      "passed": true,
+      "count": 0,
+      "overflow": 0,
+      "events": []
+    },
+    {
+      "id": "heap-malloc",
+      "passed": true,
+      "count": 1,
+      "overflow": 0,
+      "events": [
+        {
+          "site": "heapMalloc",
+          "bytes": 32,
+          "owner": "none",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ]
+    },
+    {
+      "id": "heap-calloc",
+      "passed": true,
+      "count": 1,
+      "overflow": 0,
+      "events": [
+        {
+          "site": "heapCalloc",
+          "bytes": 64,
+          "owner": "none",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ]
+    },
+    {
+      "id": "heap-realloc-same-size",
+      "passed": true,
+      "count": 1,
+      "overflow": 0,
+      "events": [
+        {
+          "site": "heapRealloc",
+          "bytes": 64,
+          "owner": "none",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ]
+    },
+    {
+      "id": "heap-realloc-grow",
+      "passed": true,
+      "count": 1,
+      "overflow": 0,
+      "events": [
+        {
+          "site": "heapRealloc",
+          "bytes": 128,
+          "owner": "none",
+          "before_nonnull": true,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ]
+    },
+    {
+      "id": "midi-message-sysex",
+      "passed": true,
+      "count": 2,
+      "overflow": 0,
+      "events": [
+        {
+          "site": "heapMalloc",
+          "bytes": 1026,
+          "owner": "none",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        },
+        {
+          "site": "midiMessageMalloc",
+          "bytes": 1026,
+          "owner": "none",
+          "before_nonnull": false,
+          "after_nonnull": true,
+          "same_address": false
+        }
+      ]
+    }
+  ]
+}

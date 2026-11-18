@@ -1,0 +1,109 @@
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  1>Checking Build System
+  Generating AnyvocMidiAllocationProbe_artefacts/JuceLibraryCode/AnyvocMidiAllocationProbe_resources.rc
+  Building Custom Rule D:/Anyvoc/build/validation-midi-allocation-after/source/CMakeLists.txt
+  AnyvocMidiAllocationProbe_rc_lib.vcxproj -> D:\Anyvoc\build\validation-midi-allocation-after\build\AnyvocMidiAllocationProbe_rc_lib.dir\Release\AnyvocMidiAllocationProbe_rc_lib.lib
+  Generating Anyvoc_artefacts/JuceLibraryCode/JuceHeader.h
+  Building Custom Rule D:/Anyvoc/build/validation-midi-allocation-after/source/CMakeLists.txt
+  PluginProcessor.cpp
+  PluginEditor.cpp
+  SynthEngine.cpp
+  WavetableDocument.cpp
+  PresetLibrary.cpp
+  LfoCurveDocument.cpp
+  juce_audio_processors.cpp
+  juce_gui_extra.cpp
+  juce_gui_basics.cpp
+  juce_graphics.cpp
+  juce_graphics_Harfbuzz.cpp
+  juce_events.cpp
+  juce_core.cpp
+  juce_core_CompilationTime.cpp
+  juce_data_structures.cpp
+  juce_audio_processors_headless.cpp
+  juce_audio_processors_headless_ara.cpp
+  juce_audio_processors_headless_lv2_libs.cpp
+  juce_audio_basics.cpp
+  juce_audio_utils.cpp
+  juce_audio_formats.cpp
+D:\Anyvoc\build\validation-midi-allocation-after\source\third_party\JUCE\modules\juce_gui_basics\juce_gui_basics.cpp(61): warning : This version of JUCE does not use the splash screen, the flag JUCE_DISPLAY_SPLASH_SCREEN is ignored [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+  juce_audio_devices.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244: “初始化”: 从“_Ty”转换到“_Ty2”，可能丢失数据 [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         with [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         [ [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:             _Ty=int [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         ] [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         and [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         [ [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:             _Ty2=float [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         ] [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+  (编译源文件“../source/Source/PluginProcessor.cpp”)
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54):
+      模板实例化上下文(最早的实例化上下文)为
+          D:\Anyvoc\build\validation-midi-allocation-after\source\Source\PluginProcessor.cpp(14,93):
+          查看对正在编译的函数 模板 实例化“std::pair<const char *,float>::pair<const char(&)[9],int,0>(_Other1,_Other2 &&) noexcept”的引用
+          with
+          [
+              _Other1=const char (&)[9],
+              _Other2=int
+          ]
+              D:\Anyvoc\build\validation-midi-allocation-after\source\Source\PluginProcessor.cpp(12,29):
+              请参阅 "void __cdecl `anonymous namespace'::`dynamic initializer for 'presets''(void)" 中对 "std::pair<const char *,float>::pair" 的第一个引用
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244: “参数”: 从“_Ty”转换到“float”，可能丢失数据 [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:         with [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:         [ [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:             _Ty=int [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:         ] [D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc.vcxproj]
+  (编译源文件“../source/Source/PluginProcessor.cpp”)
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56):
+      模板实例化上下文(最早的实例化上下文)为
+          D:\Anyvoc\build\validation-midi-allocation-after\source\Source\PluginProcessor.cpp(672,21):
+          查看对正在编译的函数 模板 实例化“std::unique_ptr<juce::AudioParameterFloat,std::default_delete<juce::AudioParameterFloat>> std::make_unique<juce::AudioParameterFloat,juce::ParameterID,const char(&)[17],juce::NormalisableRange<float>,int,Object,0>(juce::ParameterID &&,const char (&)[17],juce::NormalisableRange<float> &&,int &&,Object &&)”的引用
+          with
+          [
+              Object=juce::AudioParameterFloatAttributes
+          ]
+  
+  juce_dsp.cpp
+  juce_graphics_Sheenbidi.c
+  Anyvoc.vcxproj -> D:\Anyvoc\build\validation-midi-allocation-after\build\Anyvoc_artefacts\Release\Anyvoc_SharedCode.lib
+  Generating AnyvocMidiAllocationProbe_artefacts/JuceLibraryCode/JuceHeader.h
+  Building Custom Rule D:/Anyvoc/build/validation-midi-allocation-after/source/CMakeLists.txt
+  MidiAllocationProbe.cpp
+  juce_audio_utils.cpp
+  juce_audio_processors.cpp
+  juce_gui_extra.cpp
+  juce_gui_basics.cpp
+  juce_graphics.cpp
+  juce_graphics_Harfbuzz.cpp
+  juce_events.cpp
+  juce_core.cpp
+  juce_core_CompilationTime.cpp
+  juce_data_structures.cpp
+  juce_audio_processors_headless.cpp
+  juce_audio_processors_headless_ara.cpp
+  juce_audio_processors_headless_lv2_libs.cpp
+  juce_audio_basics.cpp
+  juce_audio_formats.cpp
+  juce_audio_devices.cpp
+  juce_dsp.cpp
+  juce_cryptography.cpp
+D:\Anyvoc\build\validation-midi-allocation-after\source\third_party\JUCE\modules\juce_gui_basics\juce_gui_basics.cpp(61): warning : This version of JUCE does not use the splash screen, the flag JUCE_DISPLAY_SPLASH_SCREEN is ignored [D:\Anyvoc\build\validation-midi-allocation-after\build\AnyvocMidiAllocationProbe.vcxproj]
+D:\Anyvoc\build\validation-midi-allocation-after\source\third_party\JUCE\modules\juce_audio_basics\utilities\juce_SmoothedValue.h(265,24): warning C4459: “sampleRate”的声明隐藏了全局声明 [D:\Anyvoc\build\validation-midi-allocation-after\build\AnyvocMidiAllocationProbe.vcxproj]
+  (编译源文件“../source/Tests/MidiAllocationProbe.cpp”)
+      D:\Anyvoc\build\validation-midi-allocation-after\source\Tests\MidiAllocationProbe.cpp(24,18):
+      参见“`anonymous-namespace'::sampleRate”的声明
+      D:\Anyvoc\build\validation-midi-allocation-after\source\third_party\JUCE\modules\juce_audio_basics\utilities\juce_SmoothedValue.h(265,24):
+      模板实例化上下文(最早的实例化上下文)为
+          D:\Anyvoc\build\validation-midi-allocation-after\source\third_party\JUCE\modules\juce_audio_basics\utilities\juce_Reverb.h(325,26):
+          查看对正在编译的 类 模板 实例化“juce::SmoothedValue<float,juce::ValueSmoothingTypes::Linear>”的引用
+          D:\Anyvoc\build\validation-midi-allocation-after\source\third_party\JUCE\modules\juce_audio_basics\utilities\juce_SmoothedValue.h(265,10):
+          在编译 类 模板 成员函数“void juce::SmoothedValue<float,juce::ValueSmoothingTypes::Linear>::reset(double,double) noexcept”时
+              D:\Anyvoc\build\validation-midi-allocation-after\source\third_party\JUCE\modules\juce_audio_basics\utilities\juce_Reverb.h(122,24):
+              请参阅 "juce::Reverb::setSampleRate" 中对 "juce::SmoothedValue<float,juce::ValueSmoothingTypes::Linear>::reset" 的第一个引用
+  
+  juce_graphics_Sheenbidi.c
+  AnyvocMidiAllocationProbe.vcxproj -> D:\Anyvoc\build\validation-midi-allocation-after\build\AnyvocMidiAllocationProbe_artefacts\Release\AnyvocMidiAllocationProbe.exe

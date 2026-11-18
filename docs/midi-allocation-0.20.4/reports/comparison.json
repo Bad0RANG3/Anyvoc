@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "passed": true,
+  "case_count": 9,
+  "fixture_byte_identical": true,
+  "audio_file_count": 12,
+  "compared_audio_bytes_per_side": 1560000,
+  "bounded_private_calls_before": 43,
+  "bounded_private_calls_after": 0,
+  "cases": [
+    {
+      "id": "fresh-cold",
+      "frames": 15000,
+      "old_allocation_calls": 7,
+      "new_allocation_calls": 0,
+      "old_other_midi_buffer_calls": 7,
+      "new_other_midi_buffer_calls": 0,
+      "audio_byte_identical": true
+    },
+    {
+      "id": "fresh-warmed",
+      "frames": 15000,
+      "old_allocation_calls": 8,
+      "new_allocation_calls": 0,
+      "old_other_midi_buffer_calls": 8,
+      "new_other_midi_buffer_calls": 0,
+      "audio_byte_identical": true
+    },
+    {
+      "id": "rotation",
+      "frames": 15000,
+      "old_allocation_calls": 5,
+      "new_allocation_calls": 0,
+      "old_other_midi_buffer_calls": 5,
+      "new_other_midi_buffer_calls": 0,
+      "audio_byte_identical": true
+    },
+    {
+      "id": "long-cc",
+      "frames": 19000,
+      "old_allocation_calls": 10,
+      "new_allocation_calls": 0,
+      "old_other_midi_buffer_calls": 10,
+      "new_other_midi_buffer_calls": 0,
+      "audio_byte_identical": true
+    },
+    {
+      "id": "lifecycle",
+      "frames": 22000,
+      "old_allocation_calls": 13,
+      "new_allocation_calls": 0,
+      "old_other_midi_buffer_calls": 13,
+      "new_other_midi_buffer_calls": 0,
+      "audio_byte_identical": true
+    },
+    {
+      "id": "keyboard-off",
+      "frames": 15000,
+      "old_allocation_calls": 2,
+      "new_allocation_calls": 2,
+      "old_other_midi_buffer_calls": 0,
+      "new_other_midi_buffer_calls": 0,
+      "audio_byte_identical": true
+    },
+    {
+      "id": "keyboard-on",
+      "frames": 15000,
+      "old_allocation_calls": 8,
+      "new_allocation_calls": 2,
+      "old_other_midi_buffer_calls": 6,
+      "new_other_midi_buffer_calls": 0,
+      "audio_byte_identical": true
+    },
+    {
+      "id": "sysex-off",
+      "frames": 15000,
+      "old_allocation_calls": 2,
+      "new_allocation_calls": 2,
+      "old_other_midi_buffer_calls": 0,
+      "new_other_midi_buffer_calls": 0,
+      "audio_byte_identical": true
+    },
+    {
+      "id": "sysex-on",
+      "frames": 15000,
+      "old_allocation_calls": 5,
+      "new_allocation_calls": 4,
+      "old_other_midi_buffer_calls": 1,
+      "new_other_midi_buffer_calls": 0,
+      "audio_byte_identical": true
+    }
+  ],
+  "limitations": [
+    "Only instrumented JUCE HeapBlock wrappers and MidiMessage::allocateSpace malloc are counted.",
+    "Other MidiBuffer owner is the private ARP buffer in these single-thread fixtures.",
+    "Keyboard and SysEx controls intentionally retain real callback allocations.",
+    "No audio device, latency, deadline, global zero-allocation or zero-lock conclusion."
+  ]
+}

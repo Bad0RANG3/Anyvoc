@@ -1,0 +1,408 @@
+{
+  "schema": 1,
+  "passed": true,
+  "snapshot_file_count": 4405,
+  "manifest_sha256": "e7e3548813c9a510b6e411a9299dfd3538f34de16041c0d4d8683284a32b1cea",
+  "marker_sha256": "8eac8d2ecdcdf29bebd874e4c304a206058115b3af3d3f6567504911e6bd6fe0",
+  "compiler_flags": {
+    "Anyvoc": {
+      "runtime": "MultiThreaded",
+      "forced_include": "D:/Anyvoc/build/validation-midi-allocation-after/source/Tests/MidiAllocationRecorder.h",
+      "definitions": [
+        "%(PreprocessorDefinitions)",
+        "WIN32",
+        "_WINDOWS",
+        "NDEBUG",
+        "JucePlugin_Build_AU=0",
+        "JucePlugin_Build_AUv3=0",
+        "JucePlugin_Build_AAX=0",
+        "JucePlugin_Build_LV2=0",
+        "JucePlugin_Build_Standalone=1",
+        "JucePlugin_Build_Unity=0",
+        "JucePlugin_Build_VST=0",
+        "JucePlugin_Build_VST3=1",
+        "JUCE_SHARED_CODE=1",
+        "JUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone",
+        "JucePlugin_IsSynth=1",
+        "JucePlugin_ManufacturerCode=0x41766f63",
+        "JucePlugin_Manufacturer=\"Anyvoc Audio\"",
+        "JucePlugin_ManufacturerWebsite=\"\"",
+        "JucePlugin_ManufacturerEmail=\"\"",
+        "JucePlugin_PluginCode=0x41763031",
+        "JucePlugin_ProducesMidiOutput=0",
+        "JucePlugin_IsMidiEffect=0",
+        "JucePlugin_WantsMidiInput=1",
+        "JucePlugin_EditorRequiresKeyboardFocus=1",
+        "JucePlugin_Name=\"Anyvoc\"",
+        "JucePlugin_Desc=\"Anyvoc\"",
+        "JucePlugin_Version=0.20.3",
+        "JucePlugin_VersionString=\"0.20.3\"",
+        "JucePlugin_VersionCode=0x1403",
+        "JucePlugin_VSTUniqueID=JucePlugin_PluginCode",
+        "JucePlugin_VSTCategory=kPlugCategSynth",
+        "JucePlugin_Vst3Category=\"Instrument|Synth\"",
+        "JucePlugin_AUMainType='aumu'",
+        "JucePlugin_AUSubType=JucePlugin_PluginCode",
+        "JucePlugin_AUExportPrefix=AnyvocAU",
+        "JucePlugin_AUExportPrefixQuoted=\"AnyvocAU\"",
+        "JucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode",
+        "JucePlugin_CFBundleIdentifier=audio.anyvoc.synth",
+        "JucePlugin_AAXIdentifier=audio.anyvoc.synth",
+        "JucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode",
+        "JucePlugin_AAXProductId=JucePlugin_PluginCode",
+        "JucePlugin_AAXCategory=2048",
+        "JucePlugin_AAXDisableBypass=0",
+        "JucePlugin_AAXDisableMultiMono=0",
+        "JucePlugin_VSTNumMidiInputs=16",
+        "JucePlugin_VSTNumMidiOutputs=16",
+        "JucePlugin_Enable_ARA=0",
+        "JucePlugin_ARAFactoryID=\"audio.anyvoc.synth.arafactory.0.20.3\"",
+        "JucePlugin_ARADocumentArchiveID=\"audio.anyvoc.synth.aradocumentarchive.1\"",
+        "JucePlugin_ARACompatibleArchiveIDs=\"\"",
+        "JucePlugin_ARAContentTypes=0",
+        "JucePlugin_ARATransformationFlags=0",
+        "JUCE_WEB_BROWSER=0",
+        "JUCE_USE_CURL=0",
+        "JUCE_VST3_CAN_REPLACE_VST2=0",
+        "JUCE_DISPLAY_SPLASH_SCREEN=0",
+        "ANYVOC_MIDI_ALLOCATION_DIAGNOSTIC=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_processors=1",
+        "JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+        "JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
+        "JUCE_MODULE_AVAILABLE_juce_graphics=1",
+        "JUCE_MODULE_AVAILABLE_juce_events=1",
+        "JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
+        "NDEBUG=1",
+        "_NDEBUG=1",
+        "JUCE_MODULE_AVAILABLE_juce_core=1",
+        "JUCE_MODULE_AVAILABLE_juce_data_structures=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_processors_headless=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_basics=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_utils=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_formats=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_devices=1",
+        "JUCE_MODULE_AVAILABLE_juce_dsp=1",
+        "CMAKE_INTDIR=\"Release\""
+      ]
+    },
+    "AnyvocMidiAllocationProbe": {
+      "runtime": "MultiThreaded",
+      "forced_include": "D:/Anyvoc/build/validation-midi-allocation-after/source/Tests/MidiAllocationRecorder.h",
+      "definitions": [
+        "%(PreprocessorDefinitions)",
+        "WIN32",
+        "_WINDOWS",
+        "NDEBUG",
+        "JUCE_STANDALONE_APPLICATION=1",
+        "_CONSOLE=1",
+        "JUCE_MODAL_LOOPS_PERMITTED=1",
+        "ANYVOC_MIDI_ALLOCATION_DIAGNOSTIC=1",
+        "JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
+        "NDEBUG=1",
+        "_NDEBUG=1",
+        "JucePlugin_IsSynth=1",
+        "JucePlugin_ManufacturerCode=0x41766f63",
+        "JucePlugin_Manufacturer=\"Anyvoc Audio\"",
+        "JucePlugin_ManufacturerWebsite=\"\"",
+        "JucePlugin_ManufacturerEmail=\"\"",
+        "JucePlugin_PluginCode=0x41763031",
+        "JucePlugin_ProducesMidiOutput=0",
+        "JucePlugin_IsMidiEffect=0",
+        "JucePlugin_WantsMidiInput=1",
+        "JucePlugin_EditorRequiresKeyboardFocus=1",
+        "JucePlugin_Name=\"Anyvoc\"",
+        "JucePlugin_Desc=\"Anyvoc\"",
+        "JucePlugin_Version=0.20.3",
+        "JucePlugin_VersionString=\"0.20.3\"",
+        "JucePlugin_VersionCode=0x1403",
+        "JucePlugin_VSTUniqueID=JucePlugin_PluginCode",
+        "JucePlugin_VSTCategory=kPlugCategSynth",
+        "JucePlugin_Vst3Category=\"Instrument|Synth\"",
+        "JucePlugin_AUMainType='aumu'",
+        "JucePlugin_AUSubType=JucePlugin_PluginCode",
+        "JucePlugin_AUExportPrefix=AnyvocAU",
+        "JucePlugin_AUExportPrefixQuoted=\"AnyvocAU\"",
+        "JucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode",
+        "JucePlugin_CFBundleIdentifier=audio.anyvoc.synth",
+        "JucePlugin_AAXIdentifier=audio.anyvoc.synth",
+        "JucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode",
+        "JucePlugin_AAXProductId=JucePlugin_PluginCode",
+        "JucePlugin_AAXCategory=2048",
+        "JucePlugin_AAXDisableBypass=0",
+        "JucePlugin_AAXDisableMultiMono=0",
+        "JucePlugin_VSTNumMidiInputs=16",
+        "JucePlugin_VSTNumMidiOutputs=16",
+        "JucePlugin_Enable_ARA=0",
+        "JucePlugin_ARAFactoryID=\"audio.anyvoc.synth.arafactory.0.20.3\"",
+        "JucePlugin_ARADocumentArchiveID=\"audio.anyvoc.synth.aradocumentarchive.1\"",
+        "JucePlugin_ARACompatibleArchiveIDs=\"\"",
+        "JucePlugin_ARAContentTypes=0",
+        "JucePlugin_ARATransformationFlags=0",
+        "JUCE_WEB_BROWSER=0",
+        "JUCE_USE_CURL=0",
+        "JUCE_VST3_CAN_REPLACE_VST2=0",
+        "JUCE_DISPLAY_SPLASH_SCREEN=0",
+        "JUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_processors=1",
+        "JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+        "JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
+        "JUCE_MODULE_AVAILABLE_juce_graphics=1",
+        "JUCE_MODULE_AVAILABLE_juce_events=1",
+        "JUCE_MODULE_AVAILABLE_juce_core=1",
+        "JUCE_MODULE_AVAILABLE_juce_data_structures=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_processors_headless=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_basics=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_utils=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_formats=1",
+        "JUCE_MODULE_AVAILABLE_juce_audio_devices=1",
+        "JUCE_MODULE_AVAILABLE_juce_dsp=1",
+        "JUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone",
+        "JUCE_MODULE_AVAILABLE_juce_cryptography=1",
+        "CMAKE_INTDIR=\"Release\""
+      ]
+    }
+  },
+  "exe": {
+    "path": "D:\\Anyvoc\\build\\validation-midi-allocation-after\\build\\AnyvocMidiAllocationProbe_artefacts\\Release\\AnyvocMidiAllocationProbe.exe",
+    "bytes": 9825792,
+    "sha256": "e5ddc24f6b13cad59a5b9c5f8b8c2811fb52dd1e4289c02e5e2d14b0419180be"
+  },
+  "source_files": [
+    {
+      "path": "Source/ChaosLfoModel.h",
+      "final_sha256": "ab86808e750242675560b63fbb3f2582e09da531f8cbd0713937aa7e3aaed760"
+    },
+    {
+      "path": "Source/EnvelopeModel.h",
+      "final_sha256": "bfd2fbff74879847f8d7bbc4428456b1b4d2b33b8d4d05e8069d9b08c139ef5f"
+    },
+    {
+      "path": "Source/LfoCurveDocument.cpp",
+      "final_sha256": "9493955958762b154af417245fb3405e7b9e72bf28072269a281d28208a87d2f"
+    },
+    {
+      "path": "Source/LfoCurveDocument.h",
+      "final_sha256": "3776f35d3c6b4b5c26620307e4e8f7eb855a0768e6ee030cca64e724923b7576"
+    },
+    {
+      "path": "Source/LfoModel.h",
+      "final_sha256": "78c28454083260eea5c313b64c81aec11c82080e556acf0e20701976cd5bd71e"
+    },
+    {
+      "path": "Source/ModulationRoute.h",
+      "final_sha256": "97756e999cb37ba498096c25a14ea855a5e78156306902e6fe81d75ffa6f802a"
+    },
+    {
+      "path": "Source/ModulationView.h",
+      "final_sha256": "2078efc485b12d192067d5d5ca588ce87491cce888a15c773dab8cf29e86e07c"
+    },
+    {
+      "path": "Source/PluginEditor.cpp",
+      "final_sha256": "cdf2c15418890b8c069c6f8bb49c04eb4937a76c65746908010fc05791c7bbcc"
+    },
+    {
+      "path": "Source/PluginEditor.h",
+      "final_sha256": "2b98b7d3d766165f2118b10969dd46670dacf22f16865531b3fa0329a5a548d7"
+    },
+    {
+      "path": "Source/PluginProcessor.cpp",
+      "final_sha256": "03add87333a1f4b12e8d1c5ccd3668ba0fbe25e86aeb58e23f612204a34b86c4"
+    },
+    {
+      "path": "Source/PluginProcessor.h",
+      "final_sha256": "154886ac6015d21b365445ca9112d68e912d8878e1564e715ee4044eef0f6d2b"
+    },
+    {
+      "path": "Source/PresetLibrary.cpp",
+      "final_sha256": "71461c681c94f197405bf072dfda501f585edd2b0a8770eb8535858664214149"
+    },
+    {
+      "path": "Source/PresetLibrary.h",
+      "final_sha256": "1f2839dd2bc62fa3a4d6aaaa3d27e72cc940a2f86e57584cf98e1867e88b5d66"
+    },
+    {
+      "path": "Source/SynthEngine.cpp",
+      "final_sha256": "45b74235f10c26fc0ea0577b1a116b715f0138e68b9f7af292be5645be94136f"
+    },
+    {
+      "path": "Source/SynthEngine.h",
+      "final_sha256": "598a3be7ed90acd7cface7df7548609c764798041f590c6785d644c52f9d558c"
+    },
+    {
+      "path": "Source/WavetableDocument.cpp",
+      "final_sha256": "c22900e5b3ec7b221f0c95be7846a12158d7357240230735a4cd8533ed3b5115"
+    },
+    {
+      "path": "Source/WavetableDocument.h",
+      "final_sha256": "6a3fb47a7e9b8227b83d9b0ca138e8f7edfe60be69b1047465c54702f4eb632e"
+    }
+  ],
+  "capture": {
+    "path": "D:\\Anyvoc\\build\\validation-midi-allocation-after-capture",
+    "case_count": 9,
+    "audio_file_count": 12,
+    "files": [
+      {
+        "name": "allocation-report.json",
+        "bytes": 105611,
+        "sha256": "676d66f0e18c57a744a9491b113e0c54a66647a5bc5879365a6918eb99f2baba"
+      },
+      {
+        "name": "audio-meta.json",
+        "bytes": 4317,
+        "sha256": "488cd1edfa8967fc624421f299fc4541008d375625ee0bc895e4867bbddbc224"
+      },
+      {
+        "name": "fixture-manifest.json",
+        "bytes": 1322760,
+        "sha256": "2145aed8b6d9df386a7c2f301d52e6f5d2b4420eddb02b23e7de2c78dcadb293"
+      },
+      {
+        "name": "fresh-cold.f32le",
+        "bytes": 120000,
+        "sha256": "e099869087ffb7535cd3ca1c3f5501a218e0c726de352ba9717bf9adcc0288d7"
+      },
+      {
+        "name": "fresh-warmed-manual-reference.f32le",
+        "bytes": 120000,
+        "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac"
+      },
+      {
+        "name": "fresh-warmed.f32le",
+        "bytes": 120000,
+        "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac"
+      },
+      {
+        "name": "keyboard-off.f32le",
+        "bytes": 120000,
+        "sha256": "8c31b0ee7538b61ef415ce4230a07c3d715c24940b99be4ddd57582478351388"
+      },
+      {
+        "name": "keyboard-on.f32le",
+        "bytes": 120000,
+        "sha256": "26403497d34e3a109c1ce09c0768bbbdc5875e690a7286c8eeaaf8123a47e4a8"
+      },
+      {
+        "name": "lifecycle.f32le",
+        "bytes": 176000,
+        "sha256": "2b3cac8d78fc6537e7e27f9448e655f40d7f0d23800037ed0b553435e8a37dbd"
+      },
+      {
+        "name": "long-cc-manual-reference.f32le",
+        "bytes": 152000,
+        "sha256": "cd3bee05ee1a08d26f9ac2d6e9db843870d3ba4f32b211e214ed2f231998231e"
+      },
+      {
+        "name": "long-cc.f32le",
+        "bytes": 152000,
+        "sha256": "cd3bee05ee1a08d26f9ac2d6e9db843870d3ba4f32b211e214ed2f231998231e"
+      },
+      {
+        "name": "rotation-manual-reference.f32le",
+        "bytes": 120000,
+        "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac"
+      },
+      {
+        "name": "rotation.f32le",
+        "bytes": 120000,
+        "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac"
+      },
+      {
+        "name": "sysex-off.f32le",
+        "bytes": 120000,
+        "sha256": "ab7d2c17528b06c91b1a137f1a915ec55067e87062f9ad7b2e0f425bfe00299d"
+      },
+      {
+        "name": "sysex-on.f32le",
+        "bytes": 120000,
+        "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "fresh-cold",
+      "calls": 0,
+      "requested_bytes": 0,
+      "by_site_owner": []
+    },
+    {
+      "id": "fresh-warmed",
+      "calls": 0,
+      "requested_bytes": 0,
+      "by_site_owner": []
+    },
+    {
+      "id": "rotation",
+      "calls": 0,
+      "requested_bytes": 0,
+      "by_site_owner": []
+    },
+    {
+      "id": "long-cc",
+      "calls": 0,
+      "requested_bytes": 0,
+      "by_site_owner": []
+    },
+    {
+      "id": "lifecycle",
+      "calls": 0,
+      "requested_bytes": 0,
+      "by_site_owner": []
+    },
+    {
+      "id": "keyboard-off",
+      "calls": 2,
+      "requested_bytes": 32,
+      "by_site_owner": [
+        {
+          "site": "heapRealloc",
+          "owner": "host",
+          "count": 2,
+          "bytes": 32
+        }
+      ]
+    },
+    {
+      "id": "keyboard-on",
+      "calls": 2,
+      "requested_bytes": 32,
+      "by_site_owner": [
+        {
+          "site": "heapRealloc",
+          "owner": "host",
+          "count": 2,
+          "bytes": 32
+        }
+      ]
+    },
+    {
+      "id": "sysex-off",
+      "calls": 2,
+      "requested_bytes": 2052,
+      "by_site_owner": [
+        {
+          "site": "midiMessageMalloc",
+          "owner": "none",
+          "count": 2,
+          "bytes": 2052
+        }
+      ]
+    },
+    {
+      "id": "sysex-on",
+      "calls": 4,
+      "requested_bytes": 4104,
+      "by_site_owner": [
+        {
+          "site": "midiMessageMalloc",
+          "owner": "none",
+          "count": 4,
+          "bytes": 4104
+        }
+      ]
+    }
+  ],
+  "helper_sha256": "feadd32dc3e439205de46c588b3b3ba0b6f3a86b5cd2590a4ee43a43ec5543aa"
+}

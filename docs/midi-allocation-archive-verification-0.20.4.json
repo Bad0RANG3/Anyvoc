@@ -1,0 +1,493 @@
+{
+  "schema": 1,
+  "passed": true,
+  "archive": "docs/midi-allocation-0.20.4",
+  "file_count": 79,
+  "total_bytes": 10134351,
+  "original_file_count": 76,
+  "original_bytes": 10104636,
+  "originals_byte_identical": true,
+  "exact_file_set": true,
+  "case_sensitive_unique_paths": true,
+  "git_text_and_whitespace_unset": true,
+  "independent_comparison_passed": true,
+  "independent_comparison_matches_original_bytes": true,
+  "collection_sha256": "9d9ebcb740e79a7f218d541e9bb4321e56e24783723c6d050e38464f6f4c3174",
+  "collection_definition": "SHA-256 of UTF-8 case-sensitive path-sorted lines: relative_path TAB decimal_bytes TAB lowercase_sha256 LF; this external report is excluded.",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 6857,
+      "sha256": "8a3f387ea2fffed4d02d5b5e6e428a1e6b02b2f454ed3d063e1ffe7f1d63976d",
+      "source_path": null
+    },
+    {
+      "path": "capture/after/allocation-report.json",
+      "bytes": 105611,
+      "sha256": "676d66f0e18c57a744a9491b113e0c54a66647a5bc5879365a6918eb99f2baba",
+      "source_path": "build/validation-midi-allocation-after-capture/allocation-report.json"
+    },
+    {
+      "path": "capture/after/audio-meta.json",
+      "bytes": 4317,
+      "sha256": "488cd1edfa8967fc624421f299fc4541008d375625ee0bc895e4867bbddbc224",
+      "source_path": "build/validation-midi-allocation-after-capture/audio-meta.json"
+    },
+    {
+      "path": "capture/after/fixture-manifest.json",
+      "bytes": 1322760,
+      "sha256": "2145aed8b6d9df386a7c2f301d52e6f5d2b4420eddb02b23e7de2c78dcadb293",
+      "source_path": "build/validation-midi-allocation-after-capture/fixture-manifest.json"
+    },
+    {
+      "path": "capture/after/fresh-cold.f32le",
+      "bytes": 120000,
+      "sha256": "e099869087ffb7535cd3ca1c3f5501a218e0c726de352ba9717bf9adcc0288d7",
+      "source_path": "build/validation-midi-allocation-after-capture/fresh-cold.f32le"
+    },
+    {
+      "path": "capture/after/fresh-warmed-manual-reference.f32le",
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "source_path": "build/validation-midi-allocation-after-capture/fresh-warmed-manual-reference.f32le"
+    },
+    {
+      "path": "capture/after/fresh-warmed.f32le",
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "source_path": "build/validation-midi-allocation-after-capture/fresh-warmed.f32le"
+    },
+    {
+      "path": "capture/after/keyboard-off.f32le",
+      "bytes": 120000,
+      "sha256": "8c31b0ee7538b61ef415ce4230a07c3d715c24940b99be4ddd57582478351388",
+      "source_path": "build/validation-midi-allocation-after-capture/keyboard-off.f32le"
+    },
+    {
+      "path": "capture/after/keyboard-on.f32le",
+      "bytes": 120000,
+      "sha256": "26403497d34e3a109c1ce09c0768bbbdc5875e690a7286c8eeaaf8123a47e4a8",
+      "source_path": "build/validation-midi-allocation-after-capture/keyboard-on.f32le"
+    },
+    {
+      "path": "capture/after/lifecycle.f32le",
+      "bytes": 176000,
+      "sha256": "2b3cac8d78fc6537e7e27f9448e655f40d7f0d23800037ed0b553435e8a37dbd",
+      "source_path": "build/validation-midi-allocation-after-capture/lifecycle.f32le"
+    },
+    {
+      "path": "capture/after/long-cc-manual-reference.f32le",
+      "bytes": 152000,
+      "sha256": "cd3bee05ee1a08d26f9ac2d6e9db843870d3ba4f32b211e214ed2f231998231e",
+      "source_path": "build/validation-midi-allocation-after-capture/long-cc-manual-reference.f32le"
+    },
+    {
+      "path": "capture/after/long-cc.f32le",
+      "bytes": 152000,
+      "sha256": "cd3bee05ee1a08d26f9ac2d6e9db843870d3ba4f32b211e214ed2f231998231e",
+      "source_path": "build/validation-midi-allocation-after-capture/long-cc.f32le"
+    },
+    {
+      "path": "capture/after/rotation-manual-reference.f32le",
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "source_path": "build/validation-midi-allocation-after-capture/rotation-manual-reference.f32le"
+    },
+    {
+      "path": "capture/after/rotation.f32le",
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "source_path": "build/validation-midi-allocation-after-capture/rotation.f32le"
+    },
+    {
+      "path": "capture/after/sysex-off.f32le",
+      "bytes": 120000,
+      "sha256": "ab7d2c17528b06c91b1a137f1a915ec55067e87062f9ad7b2e0f425bfe00299d",
+      "source_path": "build/validation-midi-allocation-after-capture/sysex-off.f32le"
+    },
+    {
+      "path": "capture/after/sysex-on.f32le",
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "source_path": "build/validation-midi-allocation-after-capture/sysex-on.f32le"
+    },
+    {
+      "path": "capture/before/allocation-report.json",
+      "bytes": 126234,
+      "sha256": "b54d55f56eaeadd2087b82a95829b9325a0d50e1f7aca6a28047c84f07c0943d",
+      "source_path": "build/validation-midi-allocation-before-capture/allocation-report.json"
+    },
+    {
+      "path": "capture/before/audio-meta.json",
+      "bytes": 4317,
+      "sha256": "488cd1edfa8967fc624421f299fc4541008d375625ee0bc895e4867bbddbc224",
+      "source_path": "build/validation-midi-allocation-before-capture/audio-meta.json"
+    },
+    {
+      "path": "capture/before/fixture-manifest.json",
+      "bytes": 1322760,
+      "sha256": "2145aed8b6d9df386a7c2f301d52e6f5d2b4420eddb02b23e7de2c78dcadb293",
+      "source_path": "build/validation-midi-allocation-before-capture/fixture-manifest.json"
+    },
+    {
+      "path": "capture/before/fresh-cold.f32le",
+      "bytes": 120000,
+      "sha256": "e099869087ffb7535cd3ca1c3f5501a218e0c726de352ba9717bf9adcc0288d7",
+      "source_path": "build/validation-midi-allocation-before-capture/fresh-cold.f32le"
+    },
+    {
+      "path": "capture/before/fresh-warmed-manual-reference.f32le",
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "source_path": "build/validation-midi-allocation-before-capture/fresh-warmed-manual-reference.f32le"
+    },
+    {
+      "path": "capture/before/fresh-warmed.f32le",
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "source_path": "build/validation-midi-allocation-before-capture/fresh-warmed.f32le"
+    },
+    {
+      "path": "capture/before/keyboard-off.f32le",
+      "bytes": 120000,
+      "sha256": "8c31b0ee7538b61ef415ce4230a07c3d715c24940b99be4ddd57582478351388",
+      "source_path": "build/validation-midi-allocation-before-capture/keyboard-off.f32le"
+    },
+    {
+      "path": "capture/before/keyboard-on.f32le",
+      "bytes": 120000,
+      "sha256": "26403497d34e3a109c1ce09c0768bbbdc5875e690a7286c8eeaaf8123a47e4a8",
+      "source_path": "build/validation-midi-allocation-before-capture/keyboard-on.f32le"
+    },
+    {
+      "path": "capture/before/lifecycle.f32le",
+      "bytes": 176000,
+      "sha256": "2b3cac8d78fc6537e7e27f9448e655f40d7f0d23800037ed0b553435e8a37dbd",
+      "source_path": "build/validation-midi-allocation-before-capture/lifecycle.f32le"
+    },
+    {
+      "path": "capture/before/long-cc-manual-reference.f32le",
+      "bytes": 152000,
+      "sha256": "cd3bee05ee1a08d26f9ac2d6e9db843870d3ba4f32b211e214ed2f231998231e",
+      "source_path": "build/validation-midi-allocation-before-capture/long-cc-manual-reference.f32le"
+    },
+    {
+      "path": "capture/before/long-cc.f32le",
+      "bytes": 152000,
+      "sha256": "cd3bee05ee1a08d26f9ac2d6e9db843870d3ba4f32b211e214ed2f231998231e",
+      "source_path": "build/validation-midi-allocation-before-capture/long-cc.f32le"
+    },
+    {
+      "path": "capture/before/rotation-manual-reference.f32le",
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "source_path": "build/validation-midi-allocation-before-capture/rotation-manual-reference.f32le"
+    },
+    {
+      "path": "capture/before/rotation.f32le",
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "source_path": "build/validation-midi-allocation-before-capture/rotation.f32le"
+    },
+    {
+      "path": "capture/before/sysex-off.f32le",
+      "bytes": 120000,
+      "sha256": "ab7d2c17528b06c91b1a137f1a915ec55067e87062f9ad7b2e0f425bfe00299d",
+      "source_path": "build/validation-midi-allocation-before-capture/sysex-off.f32le"
+    },
+    {
+      "path": "capture/before/sysex-on.f32le",
+      "bytes": 120000,
+      "sha256": "b41e44a4f5d90ae50068ceeaf357e2f07afa39f7ae85ac29265a1aad286474ac",
+      "source_path": "build/validation-midi-allocation-before-capture/sysex-on.f32le"
+    },
+    {
+      "path": "failures/before/build.txt",
+      "bytes": 6845,
+      "sha256": "2ed94d922ee21e02be2669515997d5ca5eec52723c6cefbcc9baf3d0e551cc1d",
+      "source_path": "build/validation-midi-allocation-before/build.txt"
+    },
+    {
+      "path": "failures/before/configure.txt",
+      "bytes": 1251,
+      "sha256": "97209750c30c240ca1a0caedc59fa4eec5bd1c065f3679801b25f68bbe0cb5c5",
+      "source_path": "build/validation-midi-allocation-before/configure.txt"
+    },
+    {
+      "path": "failures/before/source/CMakeLists.txt",
+      "bytes": 9207,
+      "sha256": "86b7c559a56c91eb389bc938c5ecd428d5e0844150c7fca76fc0c310687806cf",
+      "source_path": "build/validation-midi-allocation-before/source/CMakeLists.txt"
+    },
+    {
+      "path": "failures/before/source/Tests/MidiAllocationRecorder.h",
+      "bytes": 2059,
+      "sha256": "a871bd04b76d993d7dff904f4114ab440f318961738367285e0854c83e882042",
+      "source_path": "build/validation-midi-allocation-before/source/Tests/MidiAllocationRecorder.h"
+    },
+    {
+      "path": "failures/before2/configure.txt",
+      "bytes": 4060,
+      "sha256": "3d8ef0b6670d326ef111effe54541ed059c2deebc99426346a539bc329966005",
+      "source_path": "build/validation-midi-allocation-before2/configure.txt"
+    },
+    {
+      "path": "failures/before2/source/CMakeLists.txt",
+      "bytes": 9319,
+      "sha256": "fc55a2df14039a109a4a7bb719c0902e28a69e0bd52d4434b0f3a839456ab993",
+      "source_path": "build/validation-midi-allocation-before2/source/CMakeLists.txt"
+    },
+    {
+      "path": "failures/before2/source/Tests/MidiAllocationRecorder.h",
+      "bytes": 2059,
+      "sha256": "a871bd04b76d993d7dff904f4114ab440f318961738367285e0854c83e882042",
+      "source_path": "build/validation-midi-allocation-before2/source/Tests/MidiAllocationRecorder.h"
+    },
+    {
+      "path": "originals.json",
+      "bytes": 20035,
+      "sha256": "b8db5bafe415ce49d2bbb2700697e7261d612b9f658b61fb456ff27459d6e754",
+      "source_path": null
+    },
+    {
+      "path": "reports/comparison-independent.json",
+      "bytes": 2823,
+      "sha256": "c81b1526249ccafe37d20282654ec1ce57164617888e444fe8dcaf62ea9247d6",
+      "source_path": null
+    },
+    {
+      "path": "reports/comparison.json",
+      "bytes": 2823,
+      "sha256": "c81b1526249ccafe37d20282654ec1ce57164617888e444fe8dcaf62ea9247d6",
+      "source_path": "build/validation-midi-allocation-tooling/comparison.json"
+    },
+    {
+      "path": "reports/source-delta.json",
+      "bytes": 672,
+      "sha256": "1abf0209c22fed1a2588662b561d80bbdf3b806c44d41c867382a367530d510e",
+      "source_path": "build/validation-midi-allocation-tooling/source-delta.json"
+    },
+    {
+      "path": "snapshots/after/ANYVOC_MIDI_ALLOCATION_DIAGNOSTIC.json",
+      "bytes": 1805,
+      "sha256": "8eac8d2ecdcdf29bebd874e4c304a206058115b3af3d3f6567504911e6bd6fe0",
+      "source_path": "build/validation-midi-allocation-after/source/third_party/JUCE/ANYVOC_MIDI_ALLOCATION_DIAGNOSTIC.json"
+    },
+    {
+      "path": "snapshots/after/build.txt",
+      "bytes": 9392,
+      "sha256": "abab733cc9d64657561596d16b660ff6cbe50133464f2b0c9a1615ecc62b0dde",
+      "source_path": "build/validation-midi-allocation-after/build.txt"
+    },
+    {
+      "path": "snapshots/after/capture.txt",
+      "bytes": 658,
+      "sha256": "c19e9aba13ca5d2ea8b3b9dddd5168afcde9fa18101267ce60a9abecdeafd883",
+      "source_path": "build/validation-midi-allocation-after/capture.txt"
+    },
+    {
+      "path": "snapshots/after/configure.txt",
+      "bytes": 1250,
+      "sha256": "94333b8f8cd2161d25cdcf14c6ca0c07b9c85b100979c261bf745349c5e27c94",
+      "source_path": "build/validation-midi-allocation-after/configure.txt"
+    },
+    {
+      "path": "snapshots/after/manifest.json",
+      "bytes": 1772228,
+      "sha256": "e7e3548813c9a510b6e411a9299dfd3538f34de16041c0d4d8683284a32b1cea",
+      "source_path": "build/validation-midi-allocation-after/manifest.json"
+    },
+    {
+      "path": "snapshots/after/postbuild-identity.json",
+      "bytes": 14735,
+      "sha256": "24eebad53ad3139df02812b72f1cbecf5a59ed98e59fb69f542d577e31694e59",
+      "source_path": "build/validation-midi-allocation-after/postbuild-identity.json"
+    },
+    {
+      "path": "snapshots/after/source/CMakeLists.txt",
+      "bytes": 9207,
+      "sha256": "86b7c559a56c91eb389bc938c5ecd428d5e0844150c7fca76fc0c310687806cf",
+      "source_path": "build/validation-midi-allocation-after/source/CMakeLists.txt"
+    },
+    {
+      "path": "snapshots/after/source/Source/PluginProcessor.cpp",
+      "bytes": 129092,
+      "sha256": "03add87333a1f4b12e8d1c5ccd3668ba0fbe25e86aeb58e23f612204a34b86c4",
+      "source_path": "build/validation-midi-allocation-after/source/Source/PluginProcessor.cpp"
+    },
+    {
+      "path": "snapshots/after/source/Source/PluginProcessor.h",
+      "bytes": 11592,
+      "sha256": "154886ac6015d21b365445ca9112d68e912d8878e1564e715ee4044eef0f6d2b",
+      "source_path": "build/validation-midi-allocation-after/source/Source/PluginProcessor.h"
+    },
+    {
+      "path": "snapshots/after/source/Tests/MidiAllocationProbe.cpp",
+      "bytes": 29992,
+      "sha256": "fbfe7e7b32f4844d0d3f066d0bb556c72df5e405b8d457b00e70dd71dec0937c",
+      "source_path": "build/validation-midi-allocation-after/source/Tests/MidiAllocationProbe.cpp"
+    },
+    {
+      "path": "snapshots/after/source/Tests/MidiAllocationRecorder.h",
+      "bytes": 2260,
+      "sha256": "3bc24ca094510a64832c4a30851728be45d1650c948f66c9faf528ae5a128b16",
+      "source_path": "build/validation-midi-allocation-after/source/Tests/MidiAllocationRecorder.h"
+    },
+    {
+      "path": "snapshots/before/ANYVOC_MIDI_ALLOCATION_DIAGNOSTIC.json",
+      "bytes": 1805,
+      "sha256": "584bfcb8df841fbc3c8cecdeed7cd507c512830d51a1814bc750248020c8b9b1",
+      "source_path": "build/validation-midi-allocation-before3/source/third_party/JUCE/ANYVOC_MIDI_ALLOCATION_DIAGNOSTIC.json"
+    },
+    {
+      "path": "snapshots/before/build.txt",
+      "bytes": 9460,
+      "sha256": "3686b33aa93de9457050a7abdd063be4dade8f642417e6a5b2b2a52753c1bbec",
+      "source_path": "build/validation-midi-allocation-before3/build.txt"
+    },
+    {
+      "path": "snapshots/before/capture.txt",
+      "bytes": 671,
+      "sha256": "adc986b0428eaa67e9b4d1f135ab34d3c7c854862462ae4006656d0fe1939175",
+      "source_path": "build/validation-midi-allocation-before3/capture.txt"
+    },
+    {
+      "path": "snapshots/before/configure.txt",
+      "bytes": 1252,
+      "sha256": "53fcc2c14e94f559f9cf6881d93250fc00ae9098f4e3c97ac88327633b057e96",
+      "source_path": "build/validation-midi-allocation-before3/configure.txt"
+    },
+    {
+      "path": "snapshots/before/manifest.json",
+      "bytes": 1772471,
+      "sha256": "dc7d16c6ec5b30fd33bc1777c1161cc40f97f688746b6bdacde301e2abcf5ab4",
+      "source_path": "build/validation-midi-allocation-before3/manifest.json"
+    },
+    {
+      "path": "snapshots/before/postbuild-identity.json",
+      "bytes": 15798,
+      "sha256": "0a67e50ee73154534caa10a248bc327ff96faf2cd4685785cb8de2a672d78b15",
+      "source_path": "build/validation-midi-allocation-before3/postbuild-identity.json"
+    },
+    {
+      "path": "snapshots/before/source/CMakeLists.txt",
+      "bytes": 9207,
+      "sha256": "86b7c559a56c91eb389bc938c5ecd428d5e0844150c7fca76fc0c310687806cf",
+      "source_path": "build/validation-midi-allocation-before3/source/CMakeLists.txt"
+    },
+    {
+      "path": "snapshots/before/source/Source/PluginProcessor.cpp",
+      "bytes": 128957,
+      "sha256": "6848e06d7f21bde8d738b5da9aba3f45b86abbe93842469eabc2cb7683d47eb3",
+      "source_path": "build/validation-midi-allocation-before3/source/Source/PluginProcessor.cpp"
+    },
+    {
+      "path": "snapshots/before/source/Source/PluginProcessor.h",
+      "bytes": 11579,
+      "sha256": "dee12afeed094732e158e552d89a91b0529d2896f18fbc090d039f384f1fa902",
+      "source_path": "build/validation-midi-allocation-before3/source/Source/PluginProcessor.h"
+    },
+    {
+      "path": "snapshots/before/source/Tests/MidiAllocationProbe.cpp",
+      "bytes": 29992,
+      "sha256": "fbfe7e7b32f4844d0d3f066d0bb556c72df5e405b8d457b00e70dd71dec0937c",
+      "source_path": "build/validation-midi-allocation-before3/source/Tests/MidiAllocationProbe.cpp"
+    },
+    {
+      "path": "snapshots/before/source/Tests/MidiAllocationRecorder.h",
+      "bytes": 2260,
+      "sha256": "3bc24ca094510a64832c4a30851728be45d1650c948f66c9faf528ae5a128b16",
+      "source_path": "build/validation-midi-allocation-before3/source/Tests/MidiAllocationRecorder.h"
+    },
+    {
+      "path": "tooling/Tests/MidiAllocationComparatorTests.py",
+      "bytes": 22886,
+      "sha256": "d3b05b9b17db9e70dd734c164900cdcf1e96ade7f3db0a4baccdc950edc286cf",
+      "source_path": "Tests/MidiAllocationComparatorTests.py"
+    },
+    {
+      "path": "tooling/logs/cmake-original-guard.txt",
+      "bytes": 311,
+      "sha256": "46fea21238673805809ae8cbe3328f5ba659bef6850bf166bef10630d7f2d884",
+      "source_path": "build/validation-midi-allocation-tooling/cmake-original-guard.txt"
+    },
+    {
+      "path": "tooling/logs/comparator-self-test-initial.txt",
+      "bytes": 4643,
+      "sha256": "242a1bb123c25c2271b8024a81b42572655c3aacd3dc04f5c3e9d332c93bfd29",
+      "source_path": "build/validation-midi-allocation-tooling/comparator-self-test-initial.txt"
+    },
+    {
+      "path": "tooling/logs/comparator-self-test-python311-direct.txt",
+      "bytes": 4643,
+      "sha256": "cfc23f0ca7e8fa00d5af76270511601c5de3dd437aa45608661cef7ada25dea1",
+      "source_path": "build/validation-midi-allocation-tooling/comparator-self-test-python311-direct.txt"
+    },
+    {
+      "path": "tooling/logs/comparator-self-test-python311.txt",
+      "bytes": 224,
+      "sha256": "d9f5126be1d6fb3b72cec93eebaa41b901b1dd4689fa0cf872a6f1b756d59006",
+      "source_path": "build/validation-midi-allocation-tooling/comparator-self-test-python311.txt"
+    },
+    {
+      "path": "tooling/package-guard-tests/self-test.json",
+      "bytes": 1369,
+      "sha256": "31ad76503ebdd006b860936bdc59b94e21d7b02a0074be2b3df148f581b3b94e",
+      "source_path": "build/validation-midi-allocation-tooling/package-guards/self-test.json"
+    },
+    {
+      "path": "tooling/package-guard-tests/self-test.txt",
+      "bytes": 1248,
+      "sha256": "77e0d2e32045d3b49ab229395f4823aa6355e2fbf43d6e7906a01cd40fc43f2a",
+      "source_path": "build/validation-midi-allocation-tooling/package-guards/self-test.txt"
+    },
+    {
+      "path": "tooling/prepare-tests/self-test.json",
+      "bytes": 897,
+      "sha256": "731cccfa2a1fb7f524173e8def66f964a08a5b0d5e8dd6a87d04006a9da7cd33",
+      "source_path": "build/validation-midi-allocation-tooling/self-test.json"
+    },
+    {
+      "path": "tooling/prepare-tests/self-test.txt",
+      "bytes": 738,
+      "sha256": "c0a9b27c851440fd250d6e7274bc7047e2341b413f3c42be9ab0425dd0126b55",
+      "source_path": "build/validation-midi-allocation-tooling/self-test.txt"
+    },
+    {
+      "path": "tooling/scripts/compare-midi-allocation-probe.py",
+      "bytes": 12866,
+      "sha256": "ca0df1c1e7b73711e774404a00bf835aa8e7d148d505bad5978c83ae59a0d680",
+      "source_path": "scripts/compare-midi-allocation-probe.py"
+    },
+    {
+      "path": "tooling/scripts/package-source.py",
+      "bytes": 1556,
+      "sha256": "cbdfffccd7532028f727303ba63cb8f07900b5c1ad096b36a779e216b56a94dd",
+      "source_path": "scripts/package-source.py"
+    },
+    {
+      "path": "tooling/scripts/package.ps1",
+      "bytes": 5624,
+      "sha256": "9e98f5ecef9f78461891b66b37871777c1e3d3cfc1dddbea9a491758c011351c",
+      "source_path": "scripts/package.ps1"
+    },
+    {
+      "path": "tooling/scripts/prepare-midi-allocation-probe.py",
+      "bytes": 14194,
+      "sha256": "aa6639b56e527e3f05832e0067cb9412bbd943ada488de0452f56479b4625800",
+      "source_path": "scripts/prepare-midi-allocation-probe.py"
+    },
+    {
+      "path": "tooling/scripts/verify-release.py",
+      "bytes": 20019,
+      "sha256": "ef4c59e73e8d531aa91f249a0cca0c48bf1da312fe93458d0aa09dbb2d9d61f7",
+      "source_path": "scripts/verify-release.py"
+    },
+    {
+      "path": "tooling/verify-snapshot.py",
+      "bytes": 3461,
+      "sha256": "feadd32dc3e439205de46c588b3b3ba0b6f3a86b5cd2590a4ee43a43ec5543aa",
+      "source_path": "build/validation-midi-allocation-tooling/verify-snapshot.py"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "passed": 24,
+  "tests": [
+    "package-source.py syntax",
+    "verify-release.py syntax",
+    "0.20.4 retains old requirements plus exact six additions and three demos",
+    "verifier permits no diagnostic marker/cache",
+    "verifier rejects marker before inspecting packages",
+    "Windows packager rejects marker before dist exists",
+    "Source packager rejects marker before dist exists",
+    "verifier rejects enabled cache ON",
+    "Windows packager rejects enabled cache ON",
+    "verifier rejects enabled cache true",
+    "Windows packager rejects enabled cache true",
+    "verifier rejects enabled cache YES",
+    "Windows packager rejects enabled cache YES",
+    "verifier rejects enabled cache y",
+    "Windows packager rejects enabled cache y",
+    "verifier rejects enabled cache 1",
+    "Windows packager rejects enabled cache 1",
+    "verifier permits disabled cache OFF",
+    "verifier permits disabled cache 0",
+    "verifier permits disabled cache FALSE",
+    "verifier ignores comments and unrelated keys",
+    "Windows normal guard reaches missing-build error without dist",
+    "Source roots exclude build/dist diagnostic trees and binaries",
+    "archive path self-tests"
+  ],
+  "scope": "Mock guards, Python syntax, policy constants and archive path self-tests only; no real package or release verification"
+}

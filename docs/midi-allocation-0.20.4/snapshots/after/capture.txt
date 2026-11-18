@@ -1,0 +1,10 @@
+CASE fresh-cold valid; captured calls=0, requested bytes=0
+CASE fresh-warmed valid; captured calls=0, requested bytes=0
+CASE rotation valid; captured calls=0, requested bytes=0
+CASE long-cc valid; captured calls=0, requested bytes=0
+CASE lifecycle valid; captured calls=0, requested bytes=0
+CASE keyboard-off valid; captured calls=2, requested bytes=32
+CASE keyboard-on valid; captured calls=2, requested bytes=32
+CASE sysex-off valid; captured calls=2, requested bytes=2052
+CASE sysex-on valid; captured calls=4, requested bytes=4104
+MIDI ALLOCATION DIAGNOSTIC COMPLETE: 9 cases; allocation totals are observations, not zero-allocation acceptance

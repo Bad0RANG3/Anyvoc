@@ -92,3 +92,6 @@ docs/github-ci-0.20.3-test-results.xml -text -whitespace
 docs/github-ci-0.20.3-analyzer-self-test.json -text -whitespace
 docs/github-ci-0.20.3-comparator-self-test.json -text -whitespace
 docs/github-ci-0.20.3-runner-tests.txt -text -whitespace
+
+# Preserve isolated 0.20.4 MIDI allocation evidence and exact diagnostic inputs.
+docs/midi-allocation-0.20.4/** -text -whitespace

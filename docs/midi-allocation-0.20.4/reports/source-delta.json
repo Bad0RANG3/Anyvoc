@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "passed": true,
+  "file_count_per_side": 4405,
+  "only_changed_files": [
+    {
+      "path": "Source/PluginProcessor.cpp",
+      "before_sha256": "6848e06d7f21bde8d738b5da9aba3f45b86abbe93842469eabc2cb7683d47eb3",
+      "after_sha256": "03add87333a1f4b12e8d1c5ccd3668ba0fbe25e86aeb58e23f612204a34b86c4"
+    },
+    {
+      "path": "Source/PluginProcessor.h",
+      "before_sha256": "dee12afeed094732e158e552d89a91b0529d2896f18fbc090d039f384f1fa902",
+      "after_sha256": "154886ac6015d21b365445ca9112d68e912d8878e1564e715ee4044eef0f6d2b"
+    }
+  ],
+  "identical_tool_and_juce_hooks": true,
+  "identical_cmake_and_test_fixtures": true
+}
