@@ -1,0 +1,46 @@
+{
+  "version": "0.19.0",
+  "date": "2026-11-18",
+  "scope": "Native UI observations on pre-text-fix build; independent saved-XML and settings-byte checks",
+  "native_observations": [
+    "Loaded factory Performance / Prism Handle",
+    "Dragged LFO 1 to Macro 1; base stayed 40%; C4 showed green output, latest voice and EV 46.2%",
+    "Outer ring amount 25% to 40%, matrix confirmed; one Undo restored 25%",
+    "Switched to macros 5-8; dragged Macro 1 to Macro 8; C4 showed base 0% / EV 15.7%",
+    "Resized content to minimum 1008x684; macros, EV, keyboard and status visible",
+    "Native SAVE chooser created Native19-Macros.anyvoc; INIT reset sound; native LOAD chooser restored file",
+    "MOD showed route 4 LFO1 to Macro1 +25% and route 5 Macro1 to Macro8 +25%; C4 again showed green output and Macro8 EV15.7%",
+    "Closed owned test process; verified it had exited before restoring original settings"
+  ],
+  "saved_preset": {
+    "path": "D:\\Anyvoc\\build\\validation-baseline\\Native19-Macros.anyvoc",
+    "bytes": 59175,
+    "sha256": "05dd9d2a610091ffa7272923a7cbd51e36d31544324d7a7aa03cb020c79051ed",
+    "schema": 14,
+    "parameter_count": 1256,
+    "checked_parameters": {
+      "macro1": 0.4000000059604645,
+      "macro8": 0.0,
+      "mod4Source": 1.0,
+      "mod4MacroEnabled": 1.0,
+      "mod4MacroTarget": 0.0,
+      "mod4Amount": 0.25,
+      "mod5Source": 6.0,
+      "mod5MacroEnabled": 1.0,
+      "mod5MacroTarget": 7.0,
+      "mod5Amount": 0.25
+    }
+  },
+  "settings_restore": {
+    "byte_identical": true,
+    "sha256": "5000f1074d6b885621afabb357a32e2ba2050f8661ad38c3fb92bc520674ab7e"
+  },
+  "not_covered": [
+    "Program restart and reloading external assets",
+    "Actual OS clipboard use",
+    "External MIDI devices",
+    "Subjective listening or speaker output recording",
+    "DAW loading, automation or project reopen",
+    "Native repeated after final two ASCII text substitutions"
+  ]
+}

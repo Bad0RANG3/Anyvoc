@@ -470,12 +470,14 @@ juce::Colour modulationSourceColour (int source)
     return blue;
 }
 
-constexpr size_t matrixRouteFieldCount = 17;
+bool matrixHierarchyVisible (const juce::Component* component);
+
+constexpr size_t matrixRouteFieldCount = 19;
 using MatrixRouteSnapshot = std::array<float, matrixRouteFieldCount>;
 MatrixRouteSnapshot matrixRouteSnapshot (AnyvocAudioProcessor& processor, int route)
 {
     const std::array<const char*, matrixRouteFieldCount> suffixes { "Source", "Dest", "Amount", "DestBank", "FilterTarget", "WarpEnabled", "WarpTarget",
-        "Enabled", "Polarity", "Curve", "AuxSource", "AuxPolarity", "AuxCurve", "SourceExtra", "AuxSourceExtra", "LfoPhaseEnabled", "LfoPhaseTarget" };
+        "Enabled", "Polarity", "Curve", "AuxSource", "AuxPolarity", "AuxCurve", "SourceExtra", "AuxSourceExtra", "LfoPhaseEnabled", "LfoPhaseTarget", "MacroEnabled", "MacroTarget" };
     MatrixRouteSnapshot snapshot{};
     const auto prefix = "mod" + juce::String (route + 1);
     for (size_t i = 0; i < snapshot.size(); ++i) snapshot[i] = processor.apvts.getParameter (prefix + suffixes[i])->getValue();
@@ -507,7 +509,8 @@ public:
             setTooltip (getTitle() + ": " + formatted (amount(), Unit::signedPercent)
                 + ". Drag the outer ring up/down; Shift is fine adjustment. Double-click sets depth to zero; right-click chooses a route."
                   " Arc = this route's nominal range including polarity and AUX, clipped to the base knob. A grey arc is bypassed and has no effect. Other routes, filter envelope, tracking and live voices are not shown."
-                + (anyvoc::lfoIndexForPhaseDestination (destination) >= 0 ? " LFO phase wraps at 360 degrees; this clipped arc does not show that wrap." : ""));
+                + (anyvoc::lfoIndexForPhaseDestination (destination) >= 0 ? " LFO phase wraps at 360 degrees; this clipped arc does not show that wrap." : "")
+                + (anyvoc::macroIndexForDestination (destination) >= 0 ? " The knob edits the macro's base value. EV shows the newest active voice's actual value, or the smoothed base while idle. Macro input reaches its source on the next audio sample; the arc does not predict feedback." : ""));
         }
         repaint();
     }
@@ -553,7 +556,7 @@ public:
     void mouseDown (const juce::MouseEvent& event) override
     {
         if (event.mods.isPopupMenu()) { if (onMenu) onMenu(); return; }
-        if (! event.mods.isLeftButtonDown() || route < 0 || processor.isUserEditActive()) return;
+        if (! event.mods.isLeftButtonDown() || route < 0 || ! macroTargetEditable() || processor.isUserEditActive()) return;
         if (processor.getModulationSource (route) != source || processor.getModulationDestination (route) != destination) return;
         parameter = processor.apvts.getParameter (prefix() + "Amount");
         if (parameter == nullptr) return;
@@ -619,13 +622,17 @@ private:
     }
     juce::String prefix() const { return "mod" + juce::String (route + 1); }
     float amount() const { return route >= 0 ? value (processor, prefix() + "Amount") : 0; }
+    bool macroTargetEditable() const
+    {
+        return anyvoc::macroIndexForDestination (destination) < 0 || (matrixHierarchyVisible (this) && isEnabled());
+    }
     bool validGesture() const
     {
         auto current = processor.getModulationRoute (route);
         current.amount = gestureRoute.amount;
         auto currentParameters = matrixRouteSnapshot (processor, route);
         currentParameters[2] = gestureParameters[2]; // Amount is the one value owned by this gesture.
-        return gesturing && parameter != nullptr && processor.getHistoryRevision() == revision
+        return gesturing && parameter != nullptr && macroTargetEditable() && processor.getHistoryRevision() == revision
             && currentParameters == gestureParameters
             && processor.getModulationSource (route) == source
             && processor.getModulationDestination (route) == destination
@@ -742,6 +749,7 @@ public:
     bool isInterestedInDragSource (const SourceDetails& details) override
     {
         return isEnabled() && modulationDestination > 0
+            && (anyvoc::macroIndexForDestination (modulationDestination) < 0 || matrixHierarchyVisible (this))
             && (! slider.userEditAllowed || slider.userEditAllowed())
             && details.description.toString().startsWith ("anyvoc.mod:");
     }
@@ -898,7 +906,8 @@ private:
 const juce::StringArray modulationDestinationNames { "Off", "Filter A Cutoff", "Osc A Position", "Osc B Position", "Osc C Position",
                                                     "Pitch", "Level", "Pan", "Filter B Cutoff", "Filter A Resonance", "Filter B Resonance", "Parallel Balance",
                                                     "Osc A Warp 1", "Osc A Warp 2", "Osc B Warp 1", "Osc B Warp 2", "Osc C Warp 1", "Osc C Warp 2",
-                                                    "LFO 1 Phase", "LFO 2 Phase", "LFO 3 Phase", "LFO 4 Phase", "LFO 5 Phase", "LFO 6 Phase", "LFO 7 Phase", "LFO 8 Phase", "LFO 9 Phase", "LFO 10 Phase" };
+                                                    "LFO 1 Phase", "LFO 2 Phase", "LFO 3 Phase", "LFO 4 Phase", "LFO 5 Phase", "LFO 6 Phase", "LFO 7 Phase", "LFO 8 Phase", "LFO 9 Phase", "LFO 10 Phase",
+                                                    "Macro 1", "Macro 2", "Macro 3", "Macro 4", "Macro 5", "Macro 6", "Macro 7", "Macro 8" };
 
 class ModulationDestinationChoice final : public juce::Component
 {
@@ -908,17 +917,21 @@ public:
         addAndMakeVisible (box); box.addItemList (modulationDestinationNames, 1);
         box.setTitle ("Modulation " + juce::String (route + 1) + " destination");
         box.setComponentID ("mod" + juce::String (route + 1) + "Destination" + suffix);
-        box.setTooltip ("Choose what this source moves. LFO Phase shifts the curve's reading position; it has no effect on Random, Lorenz or Rossler. Warp targets require an active warp mode.");
+        box.setTooltip ("Choose what this source moves. LFO Phase shifts the curve's reading position; it has no effect on Random, Lorenz or Rossler. Warp targets require an active warp mode. Macro inputs add to the base separately for each voice, clamp to 0-100%, and feed the next audio sample, including self or mutual modulation.");
         box.onChange = [this]
         {
             const auto selected = box.getSelectedItemIndex();
             if (selected < 0) return;
+            const bool macroEdit = anyvoc::macroIndexForDestination (selected) >= 0
+                                || anyvoc::macroIndexForDestination (processor.getModulationDestination (route)) >= 0;
+            if (macroEdit && ! matrixHierarchyVisible (this)) { refresh(); return; }
             const juce::Component::SafePointer<ModulationDestinationChoice> safe (this);
-            processor.setModulationDestination (route, selected, [safe] { return safe != nullptr; });
+            processor.setModulationDestination (route, selected, [safe, macroEdit]
+            { return safe != nullptr && (! macroEdit || matrixHierarchyVisible (safe.getComponent())); });
             if (safe != nullptr) refresh();
         };
         const auto prefix = "mod" + juce::String (route + 1);
-        const std::array<const char*, 7> suffixes { "Dest", "DestBank", "FilterTarget", "WarpEnabled", "WarpTarget", "LfoPhaseEnabled", "LfoPhaseTarget" };
+        const std::array<const char*, 9> suffixes { "Dest", "DestBank", "FilterTarget", "WarpEnabled", "WarpTarget", "LfoPhaseEnabled", "LfoPhaseTarget", "MacroEnabled", "MacroTarget" };
         for (size_t i = 0; i < parameters.size(); ++i) parameters[i] = processor.apvts.getParameter (prefix + suffixes[i]);
         const juce::Component::SafePointer<ModulationDestinationChoice> safe (this);
         for (size_t i = 0; i < attachments.size(); ++i)
@@ -928,7 +941,8 @@ public:
     void refresh()
     {
         const auto plain = [this] (size_t i) { return juce::roundToInt (parameters[i]->convertFrom0to1 (parameters[i]->getValue())); };
-        const int destination = plain (5) != 0 ? 18 + plain (6) : plain (3) != 0 ? 12 + plain (4)
+        const int destination = plain (7) != 0 ? anyvoc::macroDestinationId (plain (8))
+                              : plain (5) != 0 ? 18 + plain (6) : plain (3) != 0 ? 12 + plain (4)
                               : plain (1) != 0 ? 8 + plain (2) : plain (0);
         box.setSelectedItemIndex (destination, juce::dontSendNotification);
     }
@@ -937,8 +951,8 @@ private:
     AnyvocAudioProcessor& processor;
     int route;
     juce::ComboBox box;
-    std::array<juce::RangedAudioParameter*, 7> parameters{};
-    std::array<std::unique_ptr<juce::ParameterAttachment>, 7> attachments;
+    std::array<juce::RangedAudioParameter*, 9> parameters{};
+    std::array<std::unique_ptr<juce::ParameterAttachment>, 9> attachments;
 };
 
 class ModulationSourceChoice final : public juce::Component
@@ -951,7 +965,9 @@ public:
         const auto id = "mod" + juce::String (route + 1) + (auxiliary ? "AuxSource" : "Source");
         for (int source = 0; source <= 24; ++source)
             box.addItem (auxiliary && source == 0 ? "None" : modulationSourceName (source), source + 1);
-        box.setComponentID (id + suffix); box.setTitle (caption); box.setTooltip (tip); addAndMakeVisible (box);
+        box.setComponentID (id + suffix); box.setTitle (caption);
+        box.setTooltip (tip + " Macro sources use the voice's effective value, including incoming modulation from the previous audio sample. Different notes may have different values.");
+        addAndMakeVisible (box);
         box.onChange = [this]
         {
             const int selected = box.getSelectedItemIndex();
@@ -1131,7 +1147,10 @@ public:
         drawText (g, "AMOUNT", { 545, 67, 270, 16 }, 10.5f);
         drawCard (g, { 18, 127, 512, 274 }, "SOURCE RESPONSE", "", mint);
         drawCard (g, { 548, 127, 510, 274 }, "AUX RESPONSE", "", lilac);
-        drawText (g, "Choose a curve to change how the input responds; the line shows the result before AMOUNT.", { 24, 412, 1020, 18 }, 11, secondaryText);
+        drawText (g, anyvoc::macroIndexForDestination (processor.getModulationDestination (route)) >= 0
+                         ? "Macro input adds to its base per voice, clips to 0-100%, and reaches its source on the next audio sample."
+                         : "Choose a curve to change how the input responds; the line shows the result before AMOUNT.",
+                  { 24, 412, 1020, 18 }, 11, secondaryText);
         drawText (g, "AUX None keeps full depth. An AUX value of zero stops this route; a negative AUX reverses its direction.", { 24, 435, 1020, 17 }, 10.5f, primaryText);
     }
     std::function<void()> onClose;
@@ -4907,7 +4926,7 @@ public:
         const juce::StringArray descriptions {
             "Open BROWSE to search factory and user sounds, then choose LOAD SOUND.\nClick the piano keys or send MIDI. INIT gives you a simple sound to build from.",
             "Choose Wavetable, Sample or Granular. Drop in a WAV; EDIT opens source controls.\nWARP reshapes wavetables; FM / PM / AM / RM use another source, even at LEVEL 0.",
-            "SOURCES: 10 LFOs, 4 envelopes, 8 macros. MOD: 32 routes with curve and AUX.\nLFO TOOLS: grid, selection, transforms and .anycurve files. Chaos shows a live trajectory.",
+            "SOURCES: 10 LFOs, 4 envelopes, 8 macros. Macros can also receive modulation; EV shows the actual voice value.\nMOD: 32 routes with curve and AUX. LFO TOOLS: grid, selection, transforms and .anycurve files.",
             "Envelope EDIT opens six stages, draggable curves, BPM timing and Legato retrigger.\nTry FX for space, then SAVE your sound as an .anyvoc file."
         };
         for (int i = 0; i < 4; ++i)
@@ -5473,28 +5492,52 @@ private:
 
     void buildFooter()
     {
+        addAndMakeVisible (macroLiveContext);
+        macroLiveContext.setComponentID ("MacroLiveContext");
+        macroLiveContext.setBounds (42, 629, 196, 11);
+        macroLiveContext.setFont (font (8.5f)); macroLiveContext.setBorderSize (juce::BorderSize<int> (0));
+        macroLiveContext.setColour (juce::Label::textColourId, secondaryText);
+        macroLiveContext.setInterceptsMouseClicks (false, false);
+        macroLiveContext.setTooltip ("EV is the actual effective macro value read by the audio engine. It shows the newest active voice, including release; other notes may differ. With no active voice it shows the smoothed base. The editable knob always sets the saved base value.");
         for (int bank = 0; bank < 2; ++bank)
         {
-            auto& page = macroPages[(size_t) bank]; addAndMakeVisible (page); page.setBounds (24, 638, 348, 88); page.setInterceptsMouseClicks (false, true);
+            auto& page = macroPages[(size_t) bank]; addAndMakeVisible (page); page.setBounds (24, 640, 348, 99); page.setInterceptsMouseClicks (false, true);
             for (int i = 0; i < 4; ++i)
             {
                 const int number = bank * 4 + i + 1;
-                knob (page, "macro" + juce::String (number), "MACRO " + juce::String (number),
-                      "A performance control. Assign Macro " + juce::String (number) + " as a source or auxiliary in the MOD matrix.",
-                      Unit::percent, { 9 + i * 80, 0, 78, 88 }, i % 2 == 0 ? mint : lilac);
+                auto& control = knob (page, "macro" + juce::String (number), "MACRO " + juce::String (number),
+                      "Set the saved base value. Drag a source here to modulate Macro " + juce::String (number)
+                      + ", then use this macro as a source or auxiliary. Incoming modulation is separate for each voice and feeds the next audio sample; EV is the actual value, not the base knob.",
+                      Unit::percent, { 9 + i * 80, 0, 78, 84 }, i % 2 == 0 ? mint : lilac);
+                registerModulationTarget (control, anyvoc::macroDestinationId (number - 1));
+                const juce::Component::SafePointer<Knob> target (&control);
+                control.slider.userEditAllowed = [target]
+                { return target != nullptr && matrixHierarchyVisible (target.getComponent()) && target->isEnabled(); };
+                auto& live = macroLiveValues[(size_t) number - 1]; page.addAndMakeVisible (live);
+                live.setComponentID ("macro" + juce::String (number) + "LiveValue");
+                live.setTitle ("Macro " + juce::String (number) + " effective value");
+                live.setBounds (9 + i * 80, 86, 78, 12);
+                live.setFont (font (9.2f)); live.setJustificationType (juce::Justification::centred);
+                live.setBorderSize (juce::BorderSize<int> (0));
+                live.setColour (juce::Label::textColourId, i % 2 == 0 ? mint : lilac);
+                live.setInterceptsMouseClicks (false, false);
+                live.setTooltip (macroLiveContext.getTooltip());
             }
             page.setVisible (bank == 0);
             auto& select = macroBankButtons[(size_t) bank];
             button (*this, select, bank == 0 ? "1 - 4" : "5 - 8", { 250 + bank * 54, 606, 48, 24 }, [this, bank]
             {
+                const juce::Component::SafePointer<Interface> safe (this);
                 for (int i = 0; i < 2; ++i)
                 {
                     macroPages[(size_t) i].setVisible (i == bank);
+                    if (safe == nullptr) return;
                     macroBankButtons[(size_t) i].setToggleState (i == bank, juce::dontSendNotification);
                 }
             }, "Show this group of four macros. All eight values remain active when you change groups.");
             select.setComponentID ("MacroBank" + juce::String (bank + 1)); select.setToggleState (bank == 0, juce::dontSendNotification);
         }
+        refreshMacroValues();
         addAndMakeVisible (keyboard);
         keyboard.setBounds (390, 641, 552, 85);
         keyboard.setAvailableRange (24, 96);
@@ -5719,8 +5762,10 @@ private:
             {
                 if (safe == nullptr || target == nullptr) return false;
                 const int lfo = anyvoc::lfoIndexForPhaseDestination (dest);
-                return lfo < 0 || (matrixHierarchyVisible (target.getComponent()) && target->isEnabled()
-                                   && lfoHasPhase (safe->processor.getLfoShape (lfo)));
+                if (lfo >= 0) return matrixHierarchyVisible (target.getComponent()) && target->isEnabled()
+                                     && lfoHasPhase (safe->processor.getLfoShape (lfo));
+                return anyvoc::macroIndexForDestination (dest) < 0
+                    || (matrixHierarchyVisible (target.getComponent()) && target->isEnabled());
             });
             if (safe == nullptr) return;
             if (assigned)
@@ -5775,6 +5820,8 @@ private:
 
     void showModulationMenu (int destination, juce::Component* target)
     {
+        const bool macroTarget = anyvoc::macroIndexForDestination (destination) >= 0;
+        if (macroTarget && (target == nullptr || ! matrixHierarchyVisible (target))) return;
         juce::PopupMenu menu;
         menu.addSectionHeader (destinationName (destination) + " modulation");
         int count = 0;
@@ -5809,10 +5856,12 @@ private:
         menu.addSeparator(); menu.addItem (1, "Open full modulation matrix");
         if (count > 0) menu.addItem (2, "Remove all routes to this target");
         auto safe = juce::Component::SafePointer<Interface> (this);
+        const juce::Component::SafePointer<juce::Component> safeTarget (target);
         const auto menuRevision = processor.getHistoryRevision();
-        menu.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (target), [safe, destination, menuSources, menuRoutes, menuSnapshots, menuRevision] (int result)
+        menu.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (target), [safe, safeTarget, macroTarget, destination, menuSources, menuRoutes, menuSnapshots, menuRevision] (int result)
         {
             if (safe == nullptr || result == 0) return;
+            if (macroTarget && (safeTarget == nullptr || ! matrixHierarchyVisible (safeTarget.getComponent()))) return;
             if (safe->processor.getHistoryRevision() != menuRevision) return;
             if (result == 1) { safe->showPage (1); if (safe != nullptr) safe->modulationMatrix->showExpanded(); return; }
             for (int i = 0; i < matrixRouteCount; ++i)
@@ -5826,6 +5875,7 @@ private:
                         if (matrixRouteSnapshot (safe->processor, i) != menuSnapshots[(size_t) i]) return;
                         safe->clearRoute (i);
                         if (safe == nullptr || safe->processor.getHistoryRevision() != menuRevision) return;
+                        if (macroTarget && (safeTarget == nullptr || ! matrixHierarchyVisible (safeTarget.getComponent()))) return;
                     }
                 safe->status = "Removed modulation from " + safe->destinationName (destination) + ".";
             }
@@ -5886,6 +5936,25 @@ private:
         }
     }
 
+    void refreshMacroValues()
+    {
+        // One coherent engine snapshot supplies every visible/hidden macro.
+        // Never write telemetry into the base sliders or parameter state.
+        const auto snapshot = processor.getMacroModulationSnapshot();
+        macroLiveContext.setText (snapshot.hasActiveVoice ? "EV: latest voice" : "EV: idle base", juce::dontSendNotification);
+        macroLiveContext.getProperties().set ("macroHasActiveVoice", snapshot.hasActiveVoice);
+        macroLiveContext.getProperties().set ("macroVoiceId", (juce::int64) snapshot.voiceId);
+        for (size_t i = 0; i < macroLiveValues.size(); ++i)
+        {
+            auto& display = macroLiveValues[i];
+            const float actual = std::isfinite (snapshot.values[i]) ? juce::jlimit (0.0f, 1.0f, snapshot.values[i]) : 0.0f;
+            display.setText ("EV " + juce::String (actual * 100.0f, 1) + "%", juce::dontSendNotification);
+            display.getProperties().set ("macroEffectiveValue", (double) actual);
+            display.getProperties().set ("macroHasActiveVoice", snapshot.hasActiveVoice);
+            display.getProperties().set ("macroVoiceId", (juce::int64) snapshot.voiceId);
+        }
+    }
+
     void dragOperationStarted (const juce::DragAndDropTarget::SourceDetails&) override
     {
         const juce::Component::SafePointer<Interface> safe (this);
@@ -5900,10 +5969,10 @@ private:
         if (! warpOpen && ! lfoOpen && currentPage != 3) showPage (0);
         if (safe == nullptr) return;
         for (auto* target : modulationTargets) target->setTargetHighlighted (true);
-        status = lfoOpen ? "Drop onto START PHASE to move a periodic LFO's reading position. Random, Lorenz and Rossler have no phase target."
-                 : warpOpen ? "Drop onto WARP 1 or WARP 2 AMOUNT, or WAVE. Choose a warp mode to hear its modulation; right-click to edit routes."
-                 : currentPage == 3 ? "Drop onto a highlighted filter CUTOFF, RESONANCE or PARALLEL MIX knob. Right-click it to edit routes."
-                                  : "Drop onto a highlighted WAVE / START / CENTRE or filter knob. FILTER opens more targets; right-click a knob to edit routes.";
+        status = lfoOpen ? "Drop onto a MACRO, or START PHASE for a periodic LFO. Random and Chaos have no phase target."
+                 : warpOpen ? "Drop onto a MACRO, WARP AMOUNT or WAVE. Choose an active warp mode; right-click to edit routes."
+                 : currentPage == 3 ? "Drop onto a MACRO or highlighted filter knob. Right-click the target to edit routes."
+                                  : "Drop onto a MACRO, WAVE / START / CENTRE or filter knob. A macro can be both a source and a target.";
     }
 
     void dragOperationEnded (const juce::DragAndDropTarget::SourceDetails&) override
@@ -5998,7 +6067,7 @@ private:
         drawText (g, "-60", { 1081, 710, 18, 12 }, 7);
         drawText (g, "0", { 1081, 647, 16, 12 }, 7);
         drawText (g, status, { 26, 744, 930, 13 }, 9, secondaryText);
-        drawText (g, "ANYVOC  /  0.18", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
+        drawText (g, "ANYVOC  /  0.19", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
     }
 
     void showPage (int index)
@@ -6168,6 +6237,7 @@ private:
     void timerCallback() override
     {
         meter = juce::jmax (processor.getOutputLevel(), meter * 0.84f);
+        refreshMacroValues();
         tempoDisplay->refresh();
         refreshPresetIdentity();
         refreshHistoryControls();
@@ -6236,6 +6306,8 @@ private:
     juce::TextButton sourcePaletteButton;
     std::array<juce::Component, 2> macroPages;
     std::array<juce::TextButton, 2> macroBankButtons;
+    std::array<juce::Label, anyvoc::macroCount> macroLiveValues;
+    juce::Label macroLiveContext;
     std::unique_ptr<TempoDisplay> tempoDisplay;
     std::vector<std::unique_ptr<Knob>> knobs;
     std::vector<std::unique_ptr<Choice>> choices;

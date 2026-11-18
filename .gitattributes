@@ -23,3 +23,15 @@ docs/pluginval-0.18.txt -text -whitespace
 # Preserve the downloaded 0.18 CI evidence byte-for-byte.
 docs/test-details-github-ci-0.18.txt -text -whitespace
 docs/test-results-github-ci-0.18.xml -text -whitespace
+
+# Preserve locally generated 0.19 validation evidence byte-for-byte.
+docs/build-0.19*.txt -text -whitespace
+docs/configure-0.19.txt -text -whitespace
+docs/ctest-0.19*.txt -text -whitespace
+docs/ctest-0.19*.xml -text -whitespace
+docs/test-details-0.19*.txt -text -whitespace
+docs/pluginval-0.19*.txt -text -whitespace
+docs/benchmark-macros-0.19.txt -text -whitespace
+docs/render-0.19*.txt -text -whitespace
+docs/preview-0.19*.txt -text -whitespace
+docs/package-0.19*.txt -text -whitespace

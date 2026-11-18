@@ -1,0 +1,88 @@
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Generating AnyvocProcessorTests_artefacts/JuceLibraryCode/AnyvocProcessorTests_resources.rc
+  AnyvocProcessorTests_rc_lib.vcxproj -> D:\Anyvoc\build\AnyvocProcessorTests_rc_lib.dir\Release\AnyvocProcessorTests_rc_lib.lib
+  Anyvoc.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Anyvoc_SharedCode.lib
+  Generating AnyvocProcessorTests_artefacts/JuceLibraryCode/JuceHeader.h
+  ProcessorTests.cpp
+  juce_audio_utils.cpp
+  juce_audio_processors.cpp
+  juce_gui_extra.cpp
+  juce_gui_basics.cpp
+  juce_graphics.cpp
+  juce_graphics_Harfbuzz.cpp
+  juce_events.cpp
+  juce_core.cpp
+  juce_core_CompilationTime.cpp
+  juce_data_structures.cpp
+  juce_audio_processors_headless.cpp
+  juce_audio_processors_headless_ara.cpp
+  juce_audio_processors_headless_lv2_libs.cpp
+  juce_audio_basics.cpp
+  juce_audio_formats.cpp
+  juce_audio_devices.cpp
+  juce_dsp.cpp
+D:\Anyvoc\third_party\JUCE\modules\juce_gui_basics\juce_gui_basics.cpp(61): warning : This version of JUCE does not use the splash screen, the flag JUCE_DISPLAY_SPLASH_SCREEN is ignored [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1774,34): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1745,21): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1751,23): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1766,38): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1767,22): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1770,40): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1790,21): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1795,23): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1803,23): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1824,23): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1831,23): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1838,23): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(1841,23): warning C4996: 'juce::ListBox::getModel': The name of this function is ambiguous if derived classes supply their own models, use getListBoxModel instead [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(4664,120): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据 [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(4687,104): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据 [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(4710,79): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据 [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(4713,88): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据 [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(4996,122): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据 [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(5746,120): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据 [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(6152,145): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据 [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(6467,115): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据 [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+D:\Anyvoc\Tests\ProcessorTests.cpp(6729,59): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据 [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244: “初始化”: 从“_Ty”转换到“_Ty2”，可能丢失数据 [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         with [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         [ [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:             _Ty=int [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         ] [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         and [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         [ [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:             _Ty2=float [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         ] [D:\Anyvoc\build\AnyvocProcessorTests.vcxproj]
+  (编译源文件“../Tests/ProcessorTests.cpp”)
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54):
+      模板实例化上下文(最早的实例化上下文)为
+          D:\Anyvoc\Tests\ProcessorTests.cpp(7127,61):
+          查看对正在编译的函数 模板 实例化“std::pair<const char *,float>::pair<const char(&)[5],int,0>(_Other1,_Other2 &&) noexcept”的引用
+          with
+          [
+              _Other1=const char (&)[5],
+              _Other2=int
+          ]
+              D:\Anyvoc\Tests\ProcessorTests.cpp(7127,29):
+              请参阅 "`anonymous-namespace'::expectCurveOnly" 中对 "std::pair<const char *,float>::pair" 的第一个引用
+  
+  juce_graphics_Sheenbidi.c
+  AnyvocProcessorTests.vcxproj -> D:\Anyvoc\build\AnyvocProcessorTests_artefacts\Release\AnyvocProcessorTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Generating AnyvocWavetableTests_artefacts/JuceLibraryCode/AnyvocWavetableTests_resources.rc
+  AnyvocWavetableTests_rc_lib.vcxproj -> D:\Anyvoc\build\AnyvocWavetableTests_rc_lib.dir\Release\AnyvocWavetableTests_rc_lib.lib
+  Generating AnyvocWavetableTests_artefacts/JuceLibraryCode/JuceHeader.h
+  WavetableDocument.cpp
+  WavetableTests.cpp
+  AnyvocWavetableTests.vcxproj -> D:\Anyvoc\build\AnyvocWavetableTests_artefacts\Release\AnyvocWavetableTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Generating AnyvocPresetLibraryTests_artefacts/JuceLibraryCode/AnyvocPresetLibraryTests_resources.rc
+  AnyvocPresetLibraryTests_rc_lib.vcxproj -> D:\Anyvoc\build\AnyvocPresetLibraryTests_rc_lib.dir\Release\AnyvocPresetLibraryTests_rc_lib.lib
+  Generating AnyvocPresetLibraryTests_artefacts/JuceLibraryCode/JuceHeader.h
+  AnyvocPresetLibraryTests.vcxproj -> D:\Anyvoc\build\AnyvocPresetLibraryTests_artefacts\Release\AnyvocPresetLibraryTests.exe

@@ -11,7 +11,7 @@ inline constexpr std::size_t modulationRouteCount = 32;
 inline constexpr std::size_t lfoCount = 10;
 inline constexpr std::size_t macroCount = 8;
 inline constexpr std::size_t modulationSourceCount = 25;
-inline constexpr std::size_t modulationDestinationCount = 28;
+inline constexpr std::size_t modulationDestinationCount = 36;
 
 inline constexpr int lfoPhaseDestinationId (int zeroBased)
 {
@@ -20,7 +20,17 @@ inline constexpr int lfoPhaseDestinationId (int zeroBased)
 
 inline constexpr int lfoIndexForPhaseDestination (int destination)
 {
-    return destination >= 18 && destination < static_cast<int> (modulationDestinationCount) ? destination - 18 : -1;
+    return destination >= 18 && destination < 18 + static_cast<int> (lfoCount) ? destination - 18 : -1;
+}
+
+inline constexpr int macroDestinationId (int zeroBased)
+{
+    return zeroBased < 0 || zeroBased >= static_cast<int> (macroCount) ? 0 : 28 + zeroBased;
+}
+
+inline constexpr int macroIndexForDestination (int destination)
+{
+    return destination >= 28 && destination < 28 + static_cast<int> (macroCount) ? destination - 28 : -1;
 }
 
 // Source IDs 0..9 retain their original host/preset meanings. New LFOs occupy
@@ -56,7 +66,8 @@ struct ModRoute
     // Keep these first three fields in order for legacy aggregate initialisers.
     // Destinations: off, A cutoff, A/B/C position, pitch, level, pan, B cutoff,
     // A/B resonance, parallel balance, A/B/C warp1/warp2 amounts (12..17),
-    // LFO1..10 phase offsets in turns (18..27, one-sample feedback delay).
+    // LFO1..10 phase offsets in turns (18..27, one-sample feedback delay),
+    // Macro1..8 normalized offsets (28..35, voice-local one-sample delay).
     int source = 0, destination = 0;
     float amount = 0.0f;
     bool enabled = true;

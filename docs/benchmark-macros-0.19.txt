@@ -1,0 +1,18 @@
+Macro benchmark: Release; 48 kHz; 16 sustained voices, distinct velocities/staggered onsets; 32 routes; one wavetable oscillator, unison1; FX off; filters off except final dual-filter case; 256-sample blocks; 2 audio seconds/run, 3 rounds; includes setSettings each block, excludes construction/warmup. Curved case includes per-voice primary/AUX curves, macro feedback and phase feedback.
+ROUND 1 32 legacy macro-source routes: wall=0.396237s, wall/audio=0.198119
+ROUND 1 32 curved macro feedback/AUX routes: wall=1.161989s, wall/audio=0.580995
+ROUND 1 997Hz LFO-to-macro pitch/pan: wall=0.571539s, wall/audio=0.285770
+ROUND 1 997Hz LFO-to-macro dual-filter: wall=0.548745s, wall/audio=0.274373
+ROUND 2 32 curved macro feedback/AUX routes: wall=1.170533s, wall/audio=0.585267
+ROUND 2 997Hz LFO-to-macro pitch/pan: wall=0.567085s, wall/audio=0.283542
+ROUND 2 997Hz LFO-to-macro dual-filter: wall=0.547458s, wall/audio=0.273729
+ROUND 2 32 legacy macro-source routes: wall=0.390010s, wall/audio=0.195005
+ROUND 3 997Hz LFO-to-macro pitch/pan: wall=0.583552s, wall/audio=0.291776
+ROUND 3 997Hz LFO-to-macro dual-filter: wall=0.548283s, wall/audio=0.274141
+ROUND 3 32 legacy macro-source routes: wall=0.390955s, wall/audio=0.195477
+ROUND 3 32 curved macro feedback/AUX routes: wall=1.159741s, wall/audio=0.579871
+MEDIAN 32 legacy macro-source routes: wall=0.390955s, wall/audio=0.195477, real-time throughput=5.115680x
+MEDIAN 32 curved macro feedback/AUX routes: wall=1.161989s, wall/audio=0.580995, real-time throughput=1.721186x
+MEDIAN 997Hz LFO-to-macro pitch/pan: wall=0.571539s, wall/audio=0.285770, real-time throughput=3.499322x
+MEDIAN 997Hz LFO-to-macro dual-filter: wall=0.548283s, wall/audio=0.274141, real-time throughput=3.647754x
+CHECKSUM 0.039300

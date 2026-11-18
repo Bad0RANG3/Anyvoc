@@ -1,0 +1,23 @@
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Anyvoc_rc_lib.vcxproj -> D:\Anyvoc\build\Anyvoc_rc_lib.dir\Release\Anyvoc_rc_lib.lib
+  PluginEditor.cpp
+  Anyvoc.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Anyvoc_SharedCode.lib
+  Anyvoc_Standalone.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Standalone\Anyvoc.exe
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Anyvoc_rc_lib.vcxproj -> D:\Anyvoc\build\Anyvoc_rc_lib.dir\Release\Anyvoc_rc_lib.lib
+  Anyvoc.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Anyvoc_SharedCode.lib
+  Anyvoc_vst3_helper.vcxproj -> D:\Anyvoc\build\Release\Anyvoc_vst3_helper.exe
+    正在创建库 D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.lib 和对象 D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.exp
+  Anyvoc_VST3.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\VST3\Anyvoc.vst3\Contents\x86_64-win\Anyvoc.vst3
+  removing moduleinfo.json
+  creating D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.vst3
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  AnyvocProcessorTests_rc_lib.vcxproj -> D:\Anyvoc\build\AnyvocProcessorTests_rc_lib.dir\Release\AnyvocProcessorTests_rc_lib.lib
+  Anyvoc.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Anyvoc_SharedCode.lib
+  AnyvocProcessorTests.vcxproj -> D:\Anyvoc\build\AnyvocProcessorTests_artefacts\Release\AnyvocProcessorTests.exe

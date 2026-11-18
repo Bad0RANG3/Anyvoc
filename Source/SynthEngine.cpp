@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <limits>
 #include <mutex>
+#include <tuple>
 
 namespace anyvoc
 {
@@ -30,6 +31,13 @@ constexpr std::array<uint32_t, lfoCount> lfoRandomSeeds {
 float finiteClamp (float value, float lo, float hi, float fallback = 0.0f)
 {
     return std::isfinite (value) ? juce::jlimit (lo, hi, value) : juce::jlimit (lo, hi, fallback);
+}
+
+bool sameModulationRoute (const ModRoute& a, const ModRoute& b)
+{
+    return a.source == b.source && a.destination == b.destination && a.amount == b.amount
+        && a.enabled == b.enabled && a.polarity == b.polarity && a.auxSource == b.auxSource
+        && a.auxPolarity == b.auxPolarity && a.curve == b.curve && a.auxCurve == b.auxCurve;
 }
 
 float lfoRandomValue (uint32_t cycle, uint32_t seed)
@@ -675,6 +683,10 @@ struct Voice
     std::array<float, 5> crossTaps {};
     std::array<double, lfoCount> lfoPhase {};
     std::array<float, lfoCount> lfoPhaseMod {}, lfoReadPosition {};
+    std::array<float, macroCount> macroIncoming {}, macroReadValues {};
+    unsigned macroControlFlushMask = 0;
+    int macroControlFlushRemaining = 0;
+    bool macroReadValid = false;
     std::array<uint32_t, lfoCount> lfoCycle {};
     std::array<float, lfoCount> lfoRandom {};
     std::array<ChaosLfoState, lfoCount> chaosLfos;
@@ -796,6 +808,7 @@ public:
         activeTables.fill (factory);
         target = sanitise (target);
         smooth = target;
+        publishMacroSnapshot();
         prepareModulationRoutes();
         for (auto& phase : publishedLfoPhase) phase.store (0.0f, std::memory_order_relaxed);
     }
@@ -845,6 +858,7 @@ public:
             publishedLfoChaos[i].publish ({}, target.lfoShape[i], target.lfoMode[i]);
         }
         smooth = target;
+        publishMacroSnapshot();
         snapFilterTopology();
         snapWarpModes();
         ageCounter = 0;
@@ -1222,9 +1236,44 @@ public:
         prepareLfoDependencies();
     }
 
+    void preserveMacroRoutePermutation (const std::array<ModRoute, modulationRouteCount>& previous)
+    {
+        bool changed = false, hadMacroGraph = false;
+        for (size_t i = 0; i < modulationRouteCount; ++i)
+        {
+            changed = changed || ! sameModulationRoute (previous[i], target.routes[i]);
+            hadMacroGraph = hadMacroGraph || (previous[i].enabled && previous[i].source != 0
+                && macroIndexForDestination (previous[i].destination) >= 0
+                && (previous[i].amount != 0.0f || smooth.routes[i].amount != 0.0f));
+        }
+        // Preserve the legacy physical-slot smoothing for ordinary edits and
+        // every graph without active macro targets. Only a complete multiset
+        // permutation qualifies; no source/amount edit is guessed to be a move.
+        if (! changed || ! hadMacroGraph) return;
+        std::array<bool, modulationRouteCount> used {};
+        std::array<float, modulationRouteCount> movedAmounts {};
+        for (size_t next = 0; next < modulationRouteCount; ++next)
+        {
+            bool found = false;
+            for (size_t old = 0; old < modulationRouteCount; ++old)
+                if (! used[old] && sameModulationRoute (target.routes[next], previous[old]))
+                {
+                    used[old] = true;
+                    movedAmounts[next] = smooth.routes[old].amount;
+                    found = true;
+                    break;
+                }
+            if (! found) return;
+        }
+        for (size_t i = 0; i < modulationRouteCount; ++i) smooth.routes[i].amount = movedAmounts[i];
+    }
+
     void prepareLfoDependencies()
     {
         std::array<bool, lfoCount> fast {};
+        std::array<bool, lfoCount> macroAffectedLfos {};
+        std::array<bool, macroCount> nextModulatedMacros {};
+        std::array<bool, modulationDestinations> canonicalDestinations {};
         phaseModulatedLfos.fill (false);
         for (size_t i = 0; i < lfoCount; ++i)
             fast[i] = target.lfoAudioRateEnabled[i] && ! target.lfoSync[i];
@@ -1237,38 +1286,93 @@ public:
             if (destination >= 0 && hasAmount (index) && target.lfoShape[static_cast<size_t> (destination)] != 4
                 && ! isChaosLfoShape (target.lfoShape[static_cast<size_t> (destination)]))
                 phaseModulatedLfos[static_cast<size_t> (destination)] = true;
+            const int macro = macroIndexForDestination (target.routes[index].destination);
+            if (macro >= 0 && hasAmount (index))
+            {
+                nextModulatedMacros[static_cast<size_t> (macro)] = true;
+                canonicalDestinations[static_cast<size_t> (target.routes[index].destination)] = true;
+            }
         }
         // Phase feedback can generate audio bandwidth even from a slow clock.
         // Close the primary AND auxiliary dependency graph with bounded work.
         for (size_t i = 0; i < lfoCount; ++i) fast[i] = fast[i] || phaseModulatedLfos[i];
-        const auto fastSource = [&fast] (int source)
-        { const int index = lfoIndexForSource (source); return index >= 0 && fast[static_cast<size_t> (index)]; };
-        for (size_t pass = 0; pass < lfoCount; ++pass)
+        const auto fastSource = [&fast, &nextModulatedMacros] (int source)
+        {
+            const int lfo = lfoIndexForSource (source), macro = macroIndexForSource (source);
+            return (lfo >= 0 && fast[static_cast<size_t> (lfo)])
+                || (macro >= 0 && nextModulatedMacros[static_cast<size_t> (macro)]);
+        };
+        const auto macroAffectedSource = [&macroAffectedLfos, &nextModulatedMacros] (int source)
+        {
+            const int lfo = lfoIndexForSource (source), macro = macroIndexForSource (source);
+            return (lfo >= 0 && macroAffectedLfos[static_cast<size_t> (lfo)])
+                || (macro >= 0 && nextModulatedMacros[static_cast<size_t> (macro)]);
+        };
+        // Every driven macro is potentially audio bandwidth, including a
+        // negative self-loop. The bounded LFO+macro graph includes AUX edges.
+        for (size_t pass = 0; pass < lfoCount + macroCount; ++pass)
             for (size_t r = 0; r < activeModulationRoutes; ++r)
             {
                 const auto index = modulationRoutes[r].index;
                 const auto& route = target.routes[index];
+                if (! hasAmount (index)) continue;
                 const int destination = lfoIndexForPhaseDestination (route.destination);
-                if (destination >= 0 && hasAmount (index) && target.lfoShape[static_cast<size_t> (destination)] != 4
-                    && ! isChaosLfoShape (target.lfoShape[static_cast<size_t> (destination)])
-                    && (fastSource (route.source) || fastSource (route.auxSource)))
+                const bool periodicPhase = destination >= 0 && target.lfoShape[static_cast<size_t> (destination)] != 4
+                    && ! isChaosLfoShape (target.lfoShape[static_cast<size_t> (destination)]);
+                if (periodicPhase && (fastSource (route.source) || fastSource (route.auxSource)))
                     fast[static_cast<size_t> (destination)] = true;
+                if (macroAffectedSource (route.source) || macroAffectedSource (route.auxSource))
+                {
+                    canonicalDestinations[static_cast<size_t> (route.destination)] = true;
+                    if (periodicPhase) macroAffectedLfos[static_cast<size_t> (destination)] = true;
+                }
             }
         fastControlMask = 0;
+        unsigned nextMacroControlMask = 0;
         for (size_t r = 0; r < activeModulationRoutes; ++r)
         {
             const auto index = modulationRoutes[r].index;
             const auto& route = target.routes[index];
             if (! hasAmount (index) || (! fastSource (route.source) && ! fastSource (route.auxSource))) continue;
+            unsigned mask = 0;
             switch (route.destination)
             {
-                case 5: fastControlMask |= pitchControl; break;
-                case 7: fastControlMask |= panControl; break;
-                case 1: case 9: fastControlMask |= filterAControl; break;
-                case 8: case 10: fastControlMask |= filterBControl; break;
-                default: if (route.destination >= 12 && route.destination <= 17) fastControlMask |= warpMipControl; break;
+                case 5: mask = pitchControl; break;
+                case 7: mask = panControl; break;
+                case 1: case 9: mask = filterAControl; break;
+                case 8: case 10: mask = filterBControl; break;
+                default: if (route.destination >= 12 && route.destination <= 17) mask = warpMipControl; break;
             }
+            fastControlMask |= mask;
+            if (canonicalDestinations[static_cast<size_t> (route.destination)]) nextMacroControlMask |= mask;
         }
+        const unsigned removedControls = macroFastControlMask & ~nextMacroControlMask;
+        for (auto& voice : voices)
+        {
+            voice.macroControlFlushMask |= removedControls;
+            if (removedControls != 0) voice.macroControlFlushRemaining = 2;
+            for (size_t i = 0; i < macroCount; ++i)
+                if (! nextModulatedMacros[i]) voice.macroIncoming[i] = 0.0f;
+        }
+        macroFastControlMask = nextMacroControlMask;
+        modulatedMacros = nextModulatedMacros;
+
+        // Only macro-affected destination sums change accumulation order. All
+        // unrelated legacy sums retain physical-slot order, even if an unused
+        // macro graph is present. Exact descriptor duplicates are ordered by
+        // their block-start smoothed amount; equal-target IIRs never cross.
+        std::sort (modulationRoutes.begin(), modulationRoutes.begin() + activeModulationRoutes,
+            [&] (const auto& a, const auto& b)
+            {
+                const auto& x = target.routes[a.index]; const auto& y = target.routes[b.index];
+                if (x.destination != y.destination) return x.destination < y.destination;
+                if (! canonicalDestinations[static_cast<size_t> (x.destination)]) return a.index < b.index;
+                const auto xKey = std::tie (x.source, x.auxSource, x.polarity, x.auxPolarity, x.curve, x.auxCurve, x.amount);
+                const auto yKey = std::tie (y.source, y.auxSource, y.polarity, y.auxPolarity, y.curve, y.auxCurve, y.amount);
+                if (xKey != yKey) return xKey < yKey;
+                const float xAmount = smooth.routes[a.index].amount, yAmount = smooth.routes[b.index].amount;
+                return xAmount != yAmount ? xAmount < yAmount : a.index < b.index;
+            });
     }
 
     void smoothParameters()
@@ -1504,6 +1608,15 @@ public:
             else
                 publishedLfoPhase[i].store (lastLfoReadPosition[i], std::memory_order_relaxed);
         }
+    }
+
+    void publishMacroSnapshot()
+    {
+        const Voice* latest = nullptr;
+        for (const auto& voice : voices)
+            if (voice.active && voice.macroReadValid && (latest == nullptr || voice.age > latest->age)) latest = &voice;
+        publishedMacros.publish (latest != nullptr ? latest->macroReadValues : smooth.macros,
+                                 latest != nullptr, latest != nullptr ? latest->age : 0);
     }
 
     void updateVoiceControl (Voice& v, const std::array<float, modulationDestinations>& mod, float filterEnvelope,
@@ -1899,6 +2012,17 @@ public:
                 sources[19 + i] = v.extraEnvelopes[i].next (smooth.extraEnvelopes[i], extraAttack[i], extraDecay[i], envelopeRates[i + 2]);
             for (size_t i = 4; i < macroCount; ++i)
                 sources[static_cast<size_t> (macroSourceId (static_cast<int> (i)))] = smooth.macros[i];
+            // All macro sources are read before any incoming sum is written.
+            // Only the modulation edge is delayed; base automation retains its
+            // existing per-sample smoothing and never writes back to settings.
+            for (size_t i = 0; i < macroCount; ++i)
+            {
+                const float value = modulatedMacros[i]
+                    ? finiteClamp (smooth.macros[i] + v.macroIncoming[i], 0.0f, 1.0f) : smooth.macros[i];
+                v.macroReadValues[i] = value;
+                if (modulatedMacros[i]) sources[static_cast<size_t> (macroSourceId (static_cast<int> (i)))] = value;
+            }
+            v.macroReadValid = true;
             std::array<float, modulationDestinations> mod {};
             for (size_t r = 0; r < activeModulationRoutes; ++r)
             {
@@ -1915,6 +2039,9 @@ public:
             // Publish this sample's sums only after the entire matrix has run.
             for (size_t i = 0; i < lfoCount; ++i)
                 v.lfoPhaseMod[i] = target.lfoShape[i] == 4 || isChaosLfoShape (target.lfoShape[i]) ? 0.0f : mod[18 + i];
+            for (size_t i = 0; i < macroCount; ++i)
+                v.macroIncoming[i] = modulatedMacros[i]
+                    ? finiteClamp (mod[28 + i], -static_cast<float> (modulationRouteCount), static_cast<float> (modulationRouteCount)) : 0.0f;
             for (size_t o = 0; o < 3; ++o)
             {
                 const auto& state = v.sampleOsc[o];
@@ -1928,8 +2055,13 @@ public:
                 updateVoiceControl (v, mod, filterEnvelope);
                 v.controlCounter = 15;
             }
-            else if (fastControlMask != 0)
-                updateVoiceControl (v, mod, filterEnvelope, fastControlMask);
+            else if ((fastControlMask | v.macroControlFlushMask) != 0)
+                updateVoiceControl (v, mod, filterEnvelope, fastControlMask | v.macroControlFlushMask);
+            // A removed phase edge still has one actual read pending. Refresh
+            // both that sample and the following cleared phase, then return
+            // to the old 16-sample control schedule without caching the tail.
+            if (v.macroControlFlushRemaining > 0 && --v.macroControlFlushRemaining == 0)
+                v.macroControlFlushMask = 0;
             // Start from audible oscillators, then close over current AND fading
             // connections. A disconnected muted route must not start grains/RNG.
             std::array<bool, 5> required {};
@@ -2135,7 +2267,9 @@ public:
     std::array<PreparedModulationRoute, modulationRouteCount> modulationRoutes {};
     size_t activeModulationRoutes = 0;
     std::array<bool, lfoCount> phaseModulatedLfos {};
+    std::array<bool, macroCount> modulatedMacros {};
     unsigned fastControlMask = 0;
+    unsigned macroFastControlMask = 0;
     std::array<FilterTopology, 2> filterTopologies;
     size_t filterBank = 0;
     int filterFadeRemaining = 0, filterFadeLength = 220;
@@ -2199,6 +2333,35 @@ public:
         }
     };
     std::array<PublishedChaosPoint, lfoCount> publishedLfoChaos;
+    struct PublishedMacros
+    {
+        // As with Chaos snapshots, all participating accesses are seq_cst.
+        // The single audio writer never waits; UI retries a torn generation.
+        std::atomic<std::uint64_t> generation { 0 }, voiceId { 0 };
+        std::array<std::atomic<float>, macroCount> values {};
+        std::atomic<bool> active { false };
+        void publish (const std::array<float, macroCount>& next, bool hasVoice, std::uint64_t id) noexcept
+        {
+            generation.fetch_add (1);
+            for (size_t i = 0; i < macroCount; ++i) values[i].store (next[i]);
+            active.store (hasVoice);
+            voiceId.store (id);
+            generation.fetch_add (1);
+        }
+        MacroModulationSnapshot read() const noexcept
+        {
+            for (;;)
+            {
+                const auto before = generation.load();
+                if ((before & 1u) != 0) continue;
+                MacroModulationSnapshot result;
+                for (size_t i = 0; i < macroCount; ++i) result.values[i] = values[i].load();
+                result.hasActiveVoice = active.load();
+                result.voiceId = voiceId.load();
+                if (generation.load() == before) return result;
+            }
+        }
+    } publishedMacros;
     double transportBpm = 120.0, transportPpq = 0.0;
     double renderPpq = 0.0; // Fractional beat avoids loss of tiny sample deltas at huge PPQ.
     bool transportPlaying = false, transportHasPpq = false;
@@ -2229,7 +2392,9 @@ void SynthEngine::setSettings (const SynthSettings& settings)
 {
     const int previousVoiceMode = impl->target.voiceMode;
     const auto previousShapes = impl->target.lfoShape, previousModes = impl->target.lfoMode;
+    const auto previousRoutes = impl->target.routes;
     impl->target = sanitise (settings);
+    impl->preserveMacroRoutePermutation (previousRoutes);
     for (size_t i = 0; i < lfoCount; ++i)
         if ((previousShapes[i] != impl->target.lfoShape[i] || previousModes[i] != impl->target.lfoMode[i])
             && (isChaosLfoShape (previousShapes[i]) || isChaosLfoShape (impl->target.lfoShape[i])))
@@ -2255,6 +2420,8 @@ void SynthEngine::setSettings (const SynthSettings& settings)
         impl->firstSettingsAfterPrepare = false;
     }
     impl->updateEnvelopeRates();
+    if (std::none_of (impl->voices.begin(), impl->voices.end(), [] (const auto& voice) { return voice.active; }))
+        impl->publishMacroSnapshot();
 }
 
 void SynthEngine::setTransport (double bpm, double ppq, bool playing, bool hasPpq)
@@ -2278,6 +2445,11 @@ std::array<float, 3> SynthEngine::getLfoChaosPoint (int zeroBased, int expectedS
 {
     if (zeroBased < 0 || zeroBased >= static_cast<int> (lfoCount)) return {};
     return impl->publishedLfoChaos[static_cast<size_t> (zeroBased)].read (expectedShape, expectedMode);
+}
+
+MacroModulationSnapshot SynthEngine::getMacroModulationSnapshot() const noexcept
+{
+    return impl->publishedMacros.read();
 }
 
 void SynthEngine::render (juce::AudioBuffer<float>& output, juce::MidiBuffer& midi)
@@ -2329,6 +2501,7 @@ void SynthEngine::render (juce::AudioBuffer<float>& output, juce::MidiBuffer& mi
     }
     impl->renderRange (output, cursor, output.getNumSamples() - cursor);
     impl->publishLfoPhases();
+    impl->publishMacroSnapshot();
 }
 
 void SynthEngine::setUserWavetable (int oscillator, std::shared_ptr<const Wavetable> table)

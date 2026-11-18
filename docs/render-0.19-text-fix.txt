@@ -1,0 +1,4 @@
+DEMO D:\Anyvoc\build\validation-baseline\Anyvoc-v0.19-legacy-demo.wav (0-5s pad, 5-10s sample, 10-15s granular)
+DEMO D:\Anyvoc\dist\Anyvoc-v0.19-Macro-Demo.wav (0-5s fixed Macro 1 .4; 5-10s add LFO 1 to Macro 1; 10-15s add LFO 2 pan with Macro 1 AUX; 15-20s Macro 1/8 feedback and Macro 8 AUX; same C4/base voice and fixed gain, later sections change multiple routes)
+DEMO D:\Anyvoc\dist\Anyvoc-v0.16-Lfo-Motion-Demo.wav (0-4s Swing Carousel straight, 4-8s swing 60%, 8-12s swing 60%/reverse, all 120 BPM; 12-16s Phase Lantern audio LFO 110 Hz, 16-20s 220 Hz; fixed gain)
+DEMO D:\Anyvoc\dist\Anyvoc-v0.17-Chaos-Demo.wav (0-10s Lorenz, 10-20s Rossler; same C4 voice, 2 Hz nominal rate, fixed gain)

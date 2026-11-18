@@ -1,10 +1,10 @@
 # Anyvoc
 
-面向 Windows 的原创波表、采样与颗粒合成器，提供 **独立程序和 VST3 乐器插件**。当前版本为 **0.18.0**：LFO 绘图工具已完成实现、本轮验证及 Windows／完整源码包校验，**P1B 当前约定范围已交付，本地包可用**。[0.18 云端干净构建与 188 组测试](docs/GITHUB_CI-0.18.md)已通过；项目优先完善独立版的调音体验。
+面向 Windows 的原创波表、采样与颗粒合成器，提供 **独立程序和 VST3 乐器插件**。当前版本 **0.19.0** 新增八个宏作为调制目标、独立的实时有效值显示及两个示例音色；本机 201 组自动测试、声音回归和发行包校验通过。项目优先完善独立版的调音体验。
 
 项目以 Serum 2 的功能与操作体验为长期参考，目前仍在开发中。**尚未实现完整功能或声音一致性，不支持 Serum 预设，也不包含 Xfer 的代码、素材或品牌界面。**
 
-![Anyvoc LFO curve selection and tools](docs/images/LFO-Curve-Selection.png)
+![Anyvoc macro modulation and live effective values](docs/images/Macro-Live.png)
 
 | 想了解什么 | 从这里看 |
 | --- | --- |
@@ -13,21 +13,21 @@
 | 如何测试、验收、记录失败 | [测试与验收](docs/TESTING.md) |
 | 从 GitHub 克隆、编译、运行、打包 | [构建与贡献](docs/BUILDING.md) |
 | 小白如何发声和调音 | [三步开始](docs/快速开始.txt) · [完整使用手册](docs/USER_GUIDE.md) |
-| 版本验证结果和原始日志 | [验证报告](docs/VALIDATION.md) · [0.17 归档](docs/VALIDATION-0.17.md) · [0.16 归档](docs/VALIDATION-0.16.md) |
+| 版本验证结果和原始日志 | [验证报告](docs/VALIDATION.md) · [0.18 归档](docs/VALIDATION-0.18.md) · [0.17 归档](docs/VALIDATION-0.17.md) |
 
-当前能力包括 3 个振荡器、双滤波器、双层 Warp 与 FM/PM/AM/RM、4 个可绘制包络、10 个 LFO、32 行调制矩阵、8 个宏、4 类效果、琶音器和 26 个工厂音色。LFO 支持自绘曲线、相位、方向、Swing 和 20–1000 Hz 高速模式；0.17 新增 Lorenz／Rössler 连续混沌与实际引擎轨迹显示。Chaos 的 Rate 表示演化速度，Phase／Direction 在该模式下不适用。
+当前能力包括 3 个振荡器、双滤波器、双层 Warp 与 FM/PM/AM/RM、4 个可绘制包络、10 个 LFO、32 行调制矩阵、8 个宏、4 类效果、琶音器和 28 个工厂音色。LFO 支持自绘曲线、相位、方向、Swing 和 20–1000 Hz 高速模式；0.17 新增 Lorenz／Rössler 连续混沌与实际引擎轨迹显示。Chaos 的 Rate 表示演化速度，Phase／Direction 在该模式下不适用。
 
-0.18 的 **TOOLS** 增加独立 X/Y 网格与吸附、选区、翻转、位移与缩放、单点输入，以及跨 LFO／实例复制粘贴和 `.anycurve` 曲线文件。它保留 33 点、0.01 点值精度、1,192 个参数、schema 13 与生产 DSP。粘贴／载入明确选择 Custom；无变化的普通编辑不增加撤销记录。操作说明见[使用手册](docs/USER_GUIDE.md)。
+**0.19 的宏目标：**将 LFO 或包络拖到下方宏旋钮，再用这个宏控制多个参数；也可在矩阵选择 Macro 1–8。旋钮编辑保存的基础值，EV 显示最新活动声部实际使用的值。支持两组宏、外圈深度、主来源/AUX 和一采样反馈。原 1,192 个宿主参数保留，末尾追加 64 个，共 1,256；状态为 schema 14。计算、兼容及限制见[宏目标说明](docs/MACRO_TARGETS.md)。
 
-**0.18 验证范围：**本机四套共 **188 组（68／104／10／6）**自动测试通过，VST3 通过 pluginval strictness 5。旧演示与留存 0.17 程序重渲染结果逐字节一致，Motion／Chaos 演示也保持一致；生成 84 张预览，新增 4 张逐一检查无裁切。原生检查覆盖曲线文件保存／载入、选区翻转与撤销、Custom 切换、屏幕 C4 输出表、取消文件选择及最小窗口。Windows 包 208 个文件、完整源码包 4,600 个文件的版本与逐文件内容校验通过。[源码提交 45578ca 的云端构建与四套测试](docs/GITHUB_CI-0.18.md)也已通过，共 188 组、零失败、约 130.98 秒。云端证据为发布后补充，既有 0.18 包保留原文档快照与哈希。具体证据见[验证报告](docs/VALIDATION.md)。
+**当前验证：**完整四套 **201 组（75/110/10/6）**通过；最终界面文字修复后 Processor 110 组补测与 pluginval strictness 5 再次通过。旧 15 秒演示与留存 0.18 程序重渲染结果逐字节一致，新 20 秒四段宏演示通过独立分析。原生检查覆盖两组宏拖放、base/EV、外圈撤销、最小窗口，以及宏音色 SAVE→INIT→LOAD 后恢复路由和演奏电平；该原生会话发生在最后两处文字修正之前。测试范围、包校验和限制见[验证报告](docs/VALIDATION.md)。
 
-**0.17 历史证据：**四套共 175 组测试、本机 pluginval、音频对比、原生操作及发行包核验已完成；[提交 f20c1aa 的云端干净构建及 175 组测试](docs/GITHUB_CI-0.17.md)也已通过。这些云端结果仅对应 0.17。
+**历史交付：**0.18 的 LFO 绘图工具／`.anycurve` 已交付，[对应云端构建及 188 组测试](docs/GITHUB_CI-0.18.md)通过，原发行包保留原哈希。0.17 的 Chaos 实现及其[175 组云端测试](docs/GITHUB_CI-0.17.md)也保留独立记录。旧版 CI 不替代 0.19 的实际运行。
 
-**尚未验证/完成：**本轮未实测操作系统剪贴板、外接 MIDI、真人听音、整音色原生保存重开或 DAW 工作流；FL Studio 和其他 DAW 仍需分别验收。macOS、AU、AAX 尚未提供。宏作为调制目标、多重采样/SFZ、频谱振荡器、效果总线、Clip 编曲、MPE 等仍在路线图。
+**仍待完成：**更多调制目标、音频侧整组路由发布、独立路由复制、多采样/SFZ、频谱振荡器、效果总线、Clip、MPE 和其他平台。当前未实测外接 MIDI、真人听音、系统剪贴板或 DAW 工作流；宏音色载入检查不等于所有外部素材和程序重启恢复均已验证。
 
 ## 运行与构建
 
-本地 0.18 独立版入口为 `dist/Anyvoc-0.18.0-Windows/Anyvoc.exe`；若使用 Windows 发布 ZIP，先完整解压再运行 `Anyvoc.exe`。Git 仓库保存源码、文档、截图和测试记录，**不提交 EXE、VST3、WAV 或历史发布 ZIP**；GitHub 的 “Download ZIP” 是源码包。从源码构建的步骤见构建指南，0.17 及更早的历史包保留。
+本机 0.19 发行包已生成并核验，入口为 `dist/Anyvoc-0.19.0-Windows/Anyvoc.exe`。使用 Windows 发布 ZIP 时，先完整解压再运行 `Anyvoc.exe`。Windows 包有 246 个文件，完整对应源码包有 4,638 个文件；最终大小和 SHA-256 记录于包外的 `dist/Anyvoc-0.19.0-PackageVerification.json`。Git 仓库保存源码、文档、截图和测试记录，**不提交 EXE、VST3、WAV 或历史发布 ZIP**；尚未上传 GitHub Release 附件，GitHub 的 “Download ZIP” 是源码包。从源码构建的步骤见构建指南，0.18 及更早的历史包保留。
 
 在安装 Visual Studio 2022 C++ Build Tools、Windows SDK、CMake ≥ 3.22 和 Git 后，使用 PowerShell：
 

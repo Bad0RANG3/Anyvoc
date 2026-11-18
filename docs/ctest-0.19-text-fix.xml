@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="1"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="184"
+	timestamp="2026-11-18T15:44:19"
+	>
+	<testcase name="ProcessorTests" classname="ProcessorTests" time="184.382" status="run">
+		<properties/>
+		<system-out>PASS DAW state roundtrip
+PASS Preset file identity, rename and self-contained DAW restore
+PASS Legacy preset identity and malformed metadata rollback
+PASS Failed preset save/load preserves sound, identity and existing files
+PASS Browser selection/favourites preserve audio and explicit actions load
+PASS Deterministic factory presets and defaults
+PASS First host MIDI after preset and project restore
+PASS Self-contained wavetable state and preset files
+PASS Edited wavetable amplitude, state and floating-point export
+PASS Invalid wavetable edits and atomic rollback
+PASS Legacy wavetable normalization across state versions
+PASS Open wavetable editor protects newer DAW state
+PASS Embedded stereo sample state and preset files
+PASS Version 1 migration and required parameter validation
+PASS Drawable LFO points and selection state roundtrip
+PASS Version 2 migration and legacy shape automation
+PASS Dual-filter state, preset defaults and host audio automation
+PASS Version 4 migration and legacy destination automation
+PAS...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+</testsuite>

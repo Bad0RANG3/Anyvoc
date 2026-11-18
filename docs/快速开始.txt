@@ -1,22 +1,76 @@
-﻿Anyvoc 0.18 独立版 · 三步开始
+﻿Anyvoc 0.19 独立版 · 三步开始
 
-本说明加入0.18的TOOLS绘图工具。本轮本地188组测试全部通过（68/104/10/6），共161.94秒；
-pluginval strictness 5验证成功，音频回归和下述限定原生操作已通过。
-旧声音与留存0.17程序重渲染逐字节相同，Motion/Chaos演示重渲染也与旧文件一致。
-仍为1192个参数、schema 13、26个工厂音色，生产DSP不变。
-本地包已可用：dist/Anyvoc-0.18.0-Windows/Anyvoc.exe。使用Windows ZIP时先完整解压再运行。
-Windows包208个文件、完整源码包4600个文件，版本与逐文件内容校验通过；P1B当前约定范围已交付。
-0.18提交45578ca的GitHub干净构建与188组测试已通过，零失败，合计约130.98秒；详见GITHUB_CI-0.18.md。
-此为发布后的仓库补充证据，不覆盖既有0.18包；原包保留原文档快照及打包报告哈希。
-自行构建的入口为 build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe。
-0.17及更早包继续保留；旧程序中没有0.18工具，旧验收和CI不替代本轮验证。
-详细结果见 VALIDATION-0.18.md 和 VALIDATION.md。
+0.19让八个宏既作为调制来源，也能接受LFO、包络或其他宏的调制。
+全量201组测试通过（75/110/10/6），192.89秒。之后仅修正两处0-100%范围文字乱码，
+重建并补测Processor 110组全部通过，CTest 184.39秒；DSP未因此改变。
+最终0.19.0的pluginval strictness 5再次SUCCESS，seed 0x619c021。
+原生宏拖放、外圈撤销、最小窗口及SAVE→INIT→LOAD已完成；这些检查在文字修复前进行。
+最终四份音频和90张预览已重生成，独立音频分析再次PASS；本机当前宏目标范围已交付。
+Windows包246个文件、完整源码包4638个文件，CRC/安全路径/精确集合/逐文件内容、
+当前文档、PE 0.19.0版本及三份必需演示校验通过。最终报告以外置
+dist/Anyvoc-0.19.0-PackageVerification.json为准。0.19 CI待推送后运行，无GitHub Release附件。
+当前为1256个参数、schema 14、28个工厂音色，保留0.18前1192个参数定义和顺序。
+本地启动入口：dist/Anyvoc-0.19.0-Windows/Anyvoc.exe；Windows ZIP须完整解压后运行。
+自行构建入口：build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe。启动前确认版本。
+已交付的0.18包仍可使用，但没有宏目标。它的历史188组测试、pluginval、音频、
+限定原生操作和包校验见VALIDATION-0.18.md；云端证据见GITHUB_CI-0.18.md。
+0.18原包及更早版本保留原文档和哈希，旧验收不代替0.19；本版记录见VALIDATION-0.19.md，当前汇总见VALIDATION.md。
 
 1. 双击 Anyvoc.exe。
 2. 点顶部音色名称打开浏览器，搜索 Copper Bell（采样钟声）或 Northern Lights（铺底音色），双击结果加载。
 3. 用鼠标按住底部钢琴白键。松开后声音会逐渐结束。
 
-试新的 LFO 绘图工具（0.18）：
+试宏目标（0.19）：
+  BROWSE 搜索 Performance / Prism Handle，双击加载，按住琴键。
+  转底部MACRO 1：一个宏同时控制截止、OSC A波表位置和第一层Warp。
+  旋钮数字是你编辑的基础值base；下方EV是实际有效值，不会反写旋钮或自动化。
+  EV: latest voice表示最新活动声部，包含release；和弦各音可不同，不是平均值。
+  EV: idle base表示没有活动声部，显示平滑基础值；基础值有15ms平滑。
+  载入或PANIC尚待音频回调时先显示当前参数基础值，避免留下旧声部读数。
+
+  再试 Motion / Breathing Prism：基础值20%，Trigger三角LFO 1以0.4Hz运行，
+  Unipolar、60%深度调入Macro 1；按住琴键，旋钮仍20%，EV和三项声音目标一起变化。
+  松键后仍可能有release，等声部结束才显示idle base。
+
+  自己接线：从Prism Handle开始，把顶部LFO 1拖到底部MACRO 1旋钮。
+  也可用SOURCES选来源；底部1–4 / 5–8切换八个宏的两组，换组不改声音。
+  MOD矩阵目标可选Macro 1–8；EDIT里选Unipolar使LFO只向上增加，再调AMOUNT。
+  选中来源后拖宏外圈改路由深度，中心仍调基础值；Shift细调，右键管理路由。
+  重复投放同一来源和目标会保留设置并重新启用，不复制新行；UNDO撤回有效编辑。
+  外圈只是当前一条路由的名义范围，实际值看EV。入路相加后限制在0–100%。
+  基础旋钮0%并不代表有调制入路时EV也是0%。
+
+  AUX例子：LFO 2→Pan，AUX SOURCE选Macro 1，左右摆动跟随宏的实际有效值。
+  Original极性下EV为0%关闭该路由，为100%完整放行；None不额外缩放。
+  可把Macro 1接到Macro 8，再将Macro 8接回Macro 1；各声部独立计算。
+  每采样先用平滑base加前一采样入量，再计算下一采样；不是延迟一整音频块。
+  新声部/PANIC清入量，Legato和release延续；最后有效入路删除生效后回到base。
+  反馈和高速调制可能剧烈变化或混叠，可从小深度开始比较。
+
+  Anyvoc-v0.19-Macro-Demo.wav的生成方法见BUILDING.md；最终重渲染后的独立PCM分析已通过。
+  四份WAV哈希与文字修复前相同，旧示例与0.18程序新渲染逐字节相同；Motion/Chaos哈希也一致。
+  20秒分四段，每段5秒：
+  0–5秒：Macro 1基础40%，三条出路控制截止、波表位置和Warp。
+  5–10秒：增加Trigger三角LFO 1→Macro 1，0.4Hz、Unipolar、40%深度。
+  10–15秒：增加LFO 2→Pan，1.2Hz、65%深度，AUX选Macro 1。
+  15–20秒：再加Macro 1→Macro 8（base10%、深度50%）及Macro 8→Macro 1（20%），
+  Pan的AUX改Macro 8。前两段只增加一条路由，后两段改变组合接线，不是单参数对比。
+
+0.19已完成的原生检查（两处显示文字修复前）：
+  Prism Handle中拖LFO 1到Macro 1，base保持40%，演奏时EV 46.2%、latest voice和绿表可见。
+  外圈25%调到40%，一次UNDO回25%；切5–8组拖Macro 1到Macro 8，base 0%、EV 15.7%。
+  实际1008×684最小窗口宏区和琴键完整。EV为当时快照，不是预设固定读数。
+  真实SAVE对话框保存Native19-Macros.anyvoc，独立确认59175字节、schema 14。
+  INIT后真实LOAD恢复行4 LFO1→Macro1 +25%、行5 Macro1→Macro8 +25%；
+  C4绿表可见，Macro8 base0/EV15.7。退出测试进程后恢复原设置，核对SHA一致。
+  详见native-0.19.json；未覆盖程序重启、外部资产重载、真人听音或DAW，文字修复后未重复原生流程。
+
+0.19最终图形记录：
+  90张预览已重生成；新增Macro-Live和Macro-Bank2-Live各两尺寸，四张在文字修复前检查。
+  Macro-Routing两尺寸在修复后重新查看，0-100%显示正常，无裁切。
+  其余84张虽已重生成，不宣称全部人工复查。日志见preview-0.19-text-fix.txt。
+
+试 LFO 绘图工具（0.18已有）：
   加载 Motion / Painted Steps → MOD → LFO 1 的 EDIT LFO → TOOLS。
   TOOLS替换下半区控制，画布和琴键仍可用；CONTROLS返回速度、波形和插值控制。
   Draw在画布绘制；Select拖出包含两端点的选区。默认全选；SELECT ALL重选33点。
@@ -48,13 +102,13 @@ Windows包208个文件、完整源码包4600个文件，版本与逐文件内容
   这些查看操作及COPY/SAVE CURVE都不改变声音。顶部SAVE才是完整.anyvoc音色保存。
   选文件期间关闭工具页、切换LFO或改变相关声音状态，会取消迟到的载入/保存。
 
-本轮实际验证范围：
+0.18历史原生验证范围（不代替0.19本轮验收）：
   在Neon Skyline中通过系统SAVE CURVE对话框保存Native18-Sine.anycurve，
   文件1121字节，独立解析确认33点；Select第9–25点、FLIP Y后一次UNDO复原。
   通过原生LOAD CURVE载入该文件，CONTROLS确认Custom；按C4观察绿色输出电平，UNDO回Sine。
   最小窗口工具和琴键无裁切；LOAD CURVE后按Escape取消，声音状态保持。
   共生成84张预览，新增4张工具预览逐张检查无裁切。
-  本轮没有实测系统剪贴板、完整.anyvoc音色的原生保存并重新打开、外接MIDI、真人听音或DAW。
+  0.18当时没有实测系统剪贴板、完整.anyvoc音色的原生保存并重新打开、外接MIDI、真人听音或DAW。
   自动测试的复制粘贴/文件回调使用可注入的平台服务，不代表系统剪贴板已实测。
   .anycurve曲线文件的真实保存载入，不能代替完整音色或DAW工程的保存重开验证。
 
@@ -63,7 +117,7 @@ Windows包208个文件、完整源码包4600个文件，版本与逐文件内容
   按住琴键：Lorenz 让截止频率和 OSC A 的波表位置持续变化。
   EVOLUTION SPEED 默认1.80；调慢或调快，比较运动，再用 UNDO 恢复。
   再试 Texture / Spiral Drift：Rossler、速度0.70、Free，让截止与声像演化。
-  0.17新增这两个音色，共26个工厂音色；0.18仍保留全部26个。
+  0.17新增这两个音色至26个；0.18保留26个，0.19追加两宏预设至28个。
   SHAPE 共8项：Sine、Triangle、Saw、Square、Random、Custom、Lorenz、Rossler。
   Lorenz / Rossler 的数值是演化速度，不表示“每秒重复几次”。
   RATE MODE 仍可选 Free Hz / Tempo / Audio Rate；Tempo 和 FOLLOW SWING 改变演化速度。
@@ -81,8 +135,8 @@ Windows包208个文件、完整源码包4600个文件，版本与逐文件内容
   Anyvoc-v0.17-Chaos-Demo.wav 是20秒对比：前10秒Lorenz，后10秒Rossler。
   0.17验收时已检查两算法实际读数与输出表、速度修改与撤销、Free无按键演化和Envelope短音后保持。
   当时原生检查未单独计时Envelope完整名义周期；该行为由当时的自动测试验证。
-  以上为0.17历史原生检查，不替代0.18本轮验证；本轮Motion/Chaos重渲染与旧文件逐字节相同。
-  本轮.anycurve原生保存载入已测；完整.anyvoc音色原生保存重开、真人听音和DAW仍未测。
+  以上为0.17历史原生检查，不替代0.19本轮验证；0.18验收时Motion/Chaos重渲染与旧文件逐字节相同。
+  0.18当时.anycurve原生保存载入已测；完整.anyvoc音色原生保存重开、真人听音和DAW仍未测。
 
 试新的 LFO 运动控制：
   加载 Motion / Swing Carousel → MOD → EDIT LFO。
@@ -120,11 +174,12 @@ Windows包208个文件、完整源码包4600个文件，版本与逐文件内容
 试调制矩阵：
   加载 Motion / Tide Machine → MOD → 第一行 EDIT。
   AUX SOURCE 选 Macro 1，按住琴键，转动底部 MACRO 1。
-  Macro 为0时关闭这条扫频，增加后逐渐放行 LFO 的变化。
+  Macro的实际有效值为0时关闭这条扫频，增加后逐渐放行；宏有入路时不能只看基础值。
   POLARITY 选 Unipolar 会让 LFO 只向一个方向调制；CURVE 改变响应节奏。
   BACK 返回矩阵。ON / OFF 可旁通对比，X 清空一行，UNDO 恢复。
   矩阵共有32行，左右翻页；EXPAND 展开后可滚动，拖最左小点可移动整行。
   已写好的宿主自动化仍跟随行号；排序不会自动移动宿主自动化片段。
+  移动完整行能保留设置，但各参数不是同时发布，演奏中移动可能有短暂过渡。
 
 试新的金属音色：
   BROWSE 搜索 Phase Alloy，双击加载 → OSC A 的 WARP。

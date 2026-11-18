@@ -5,6 +5,7 @@
 #include "EnvelopeModel.h"
 #include "LfoModel.h"
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -99,6 +100,13 @@ struct SampleData
     juce::AudioBuffer<float> audio;
 };
 
+struct MacroModulationSnapshot
+{
+    std::array<float, macroCount> values {};
+    bool hasActiveVoice = false;
+    std::uint64_t voiceId = 0; // Engine voice age; zero means no active, actually sampled voice.
+};
+
 class SynthEngine
 {
 public:
@@ -124,6 +132,12 @@ public:
     // zero. UI-only: the reader may retry; the audio writer never waits.
     std::array<float, 3> getLfoChaosPoint (int zeroBased, int expectedShape = -1,
                                          int expectedMode = -1) const noexcept;
+    // One coherent snapshot of the newest active voice which has actually
+    // read source/AUX values, not its next-sample incoming sums. A new MIDI
+    // voice at an empty/block-end boundary is skipped until its first sample.
+    // No sampled active voice returns the smoothed base with voiceId zero.
+    // UI-only: the reader may retry; the audio writer never waits or allocates.
+    MacroModulationSnapshot getMacroModulationSnapshot() const noexcept;
     void render (juce::AudioBuffer<float>& output, juce::MidiBuffer& midi);
 
     // Construct/import tables off the audio thread. A null table restores the factory waves.

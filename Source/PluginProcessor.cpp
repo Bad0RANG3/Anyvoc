@@ -8,7 +8,7 @@
 
 namespace {
 struct Preset { const char* name; std::initializer_list<std::pair<const char*,float>> values; };
-const std::array<Preset,26> presets {{
+const std::array<Preset,28> presets {{
     {"Init / Pure Canvas", {}},
     {"Keys / Glass Garden", {{"osc1Position",.08f},{"osc2Level",.24f},{"osc2Position",.24f},{"osc2Semi",12},{"ampAttack",.003f},{"ampDecay",1.2f},{"ampSustain",.12f},{"ampRelease",1.1f},{"cutoff",7500},{"filterEnv",.25f},{"reverbMix",.25f},{"delayMix",.14f}}},
     {"Pad / Northern Lights", {{"osc1Position",.62f},{"osc1Unison",5},{"osc1Detune",17},{"osc2Level",.38f},{"osc2Position",.38f},{"osc2Semi",12},{"osc2Unison",3},{"ampAttack",1.6f},{"ampDecay",1.9f},{"ampSustain",.7f},{"ampRelease",2.8f},{"cutoff",2400},{"filterEnv",.2f},{"chorusMix",.35f},{"reverbMix",.4f},{"reverbSize",.8f},{"mod1Source",1},{"mod1Dest",2},{"mod1Amount",.2f},{"lfo1Rate",.13f}}},
@@ -35,8 +35,16 @@ const std::array<Preset,26> presets {{
     ,{"Keys / Phase Lantern", {{"osc1Position",.15f},{"osc1Level",.5f},{"osc1RandomUnison",0},{"subLevel",0},{"cutoff",9000},{"ampAttack",.004f},{"ampDecay",1.2f},{"ampSustain",.3f},{"ampRelease",.6f},{"lfo1AudioRateEnabled",1},{"lfo1AudioRateHz",110},{"lfo1Mode",1},{"lfo2Rate",.6f},{"lfo2Mode",1},{"lfo2Phase",.25f},{"lfo2Direction",1},{"mod1Source",1},{"mod1Dest",5},{"mod1Amount",.018f},{"mod2Source",2},{"mod2LfoPhaseEnabled",1},{"mod2LfoPhaseTarget",0},{"mod2Amount",.22f},{"reverbMix",.12f}}}
     ,{"Motion / Butterfly Current", {{"osc1Position",.62f},{"osc1Unison",3},{"osc1Detune",9},{"osc2Position",.2f},{"osc2Level",.16f},{"osc2Semi",7},{"subLevel",.12f},{"cutoff",1600},{"resonance",.22f},{"ampAttack",.04f},{"ampSustain",.8f},{"ampRelease",.8f},{"lfo1Chaos",1},{"lfo1Rate",1.8f},{"lfo1Mode",1},{"mod1Source",1},{"mod1Dest",1},{"mod1Amount",.52f},{"mod2Source",1},{"mod2Dest",2},{"mod2Amount",.3f},{"delayMix",.12f},{"reverbMix",.2f}}}
     ,{"Texture / Spiral Drift", {{"osc1Position",.37f},{"osc1Unison",3},{"osc1Detune",12},{"osc2Position",.15f},{"osc2Level",.25f},{"osc2Semi",12},{"noiseLevel",.01f},{"subLevel",.08f},{"cutoff",2200},{"resonance",.18f},{"ampAttack",.6f},{"ampSustain",.8f},{"ampRelease",1.4f},{"lfo1Chaos",2},{"lfo1Rate",.7f},{"lfo1Mode",0},{"mod1Source",1},{"mod1Dest",1},{"mod1Amount",.4f},{"mod2Source",1},{"mod2Dest",7},{"mod2Amount",.6f},{"chorusMix",.18f},{"reverbMix",.3f}}}
+    ,{"Performance / Prism Handle", {{"osc1Position",.18f},{"osc1Unison",3},{"osc1Detune",8},{"osc1Warp1Mode",1},{"osc1Warp1Amount",.05f},{"osc2Position",.1f},{"osc2Level",.14f},{"osc2Semi",7},{"subLevel",.1f},{"cutoff",650},{"resonance",.22f},{"ampAttack",.04f},{"ampSustain",.8f},{"ampRelease",.55f},{"macro1",.4f},{"mod1Source",6},{"mod1Dest",1},{"mod1Amount",.4f},{"mod2Source",6},{"mod2Dest",2},{"mod2Amount",.35f},{"mod3Source",6},{"mod3WarpEnabled",1},{"mod3WarpTarget",0},{"mod3Amount",.25f},{"delayMix",.08f},{"reverbMix",.12f}}}
+    ,{"Motion / Breathing Prism", {{"osc1Position",.18f},{"osc1Unison",3},{"osc1Detune",8},{"osc1Warp1Mode",1},{"osc1Warp1Amount",.05f},{"osc2Position",.1f},{"osc2Level",.14f},{"osc2Semi",7},{"subLevel",.1f},{"cutoff",650},{"resonance",.22f},{"ampAttack",.04f},{"ampSustain",.8f},{"ampRelease",.55f},{"macro1",.2f},{"mod1Source",6},{"mod1Dest",1},{"mod1Amount",.4f},{"mod2Source",6},{"mod2Dest",2},{"mod2Amount",.35f},{"mod3Source",6},{"mod3WarpEnabled",1},{"mod3WarpTarget",0},{"mod3Amount",.25f},{"lfo1Shape",1},{"lfo1Rate",.4f},{"lfo1Mode",1},{"mod4Source",1},{"mod4Polarity",1},{"mod4MacroEnabled",1},{"mod4MacroTarget",0},{"mod4Amount",.6f},{"delayMix",.08f},{"reverbMix",.12f}}}
 }};
 float v(std::atomic<float>* p) { return p->load(std::memory_order_relaxed); }
+struct MacroResetScope
+{
+    explicit MacroResetScope(std::atomic<std::uint64_t>& value) : epoch(value) { epoch.fetch_add(1); }
+    ~MacroResetScope() { epoch.fetch_add(1); }
+    std::atomic<std::uint64_t>& epoch;
+};
 constexpr int maxStateBytes=40*1024*1024;
 constexpr int maxSampleFrames=960000;
 constexpr const char* editableWaveComment="Anyvoc Wavetable; frameLength=2048; normalise=0";
@@ -99,10 +107,10 @@ bool isCrossModulationParameter(const juce::String& id)
     return false;
 }
 
-constexpr std::array<const char*,17> modulationRouteSuffixes {
+constexpr std::array<const char*,19> modulationRouteSuffixes {
     "Source", "Dest", "Amount", "DestBank", "FilterTarget", "WarpEnabled", "WarpTarget",
     "Enabled", "Polarity", "Curve", "AuxSource", "AuxPolarity", "AuxCurve", "SourceExtra", "AuxSourceExtra",
-    "LfoPhaseEnabled", "LfoPhaseTarget"
+    "LfoPhaseEnabled", "LfoPhaseTarget", "MacroEnabled", "MacroTarget"
 };
 bool isAdvancedModulationParameter(const juce::String& id)
 {
@@ -158,6 +166,14 @@ bool isChaosLfoParameter(const juce::String& id)
 {
     for(int n=1;n<=static_cast<int>(anyvoc::lfoCount);++n)
         if(id=="lfo"+juce::String(n)+"Chaos")return true;
+    return false;
+}
+
+bool isMacroDestinationParameter(const juce::String& id)
+{
+    for(int n=1;n<=static_cast<int>(anyvoc::modulationRouteCount);++n)
+        for(const auto* suffix:{"MacroEnabled","MacroTarget"})
+            if(id=="mod"+juce::String(n)+suffix)return true;
     return false;
 }
 
@@ -800,6 +816,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout AnyvocAudioProcessor::makePa
     for(int n=1;n<=static_cast<int>(anyvoc::lfoCount);++n)
         layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID{"lfo"+juce::String(n)+"Chaos",13},
             "LFO "+juce::String(n)+" Chaos",juce::StringArray{"Off","Lorenz","Rossler"},0));
+    // Append only: all 1,192 parameters of 0.18 retain their exact mappings.
+    // A separate bank preserves the legacy destination choice ranges.
+    juce::StringArray macroTargets;
+    for(int n=1;n<=static_cast<int>(anyvoc::macroCount);++n)macroTargets.add("Macro "+juce::String(n));
+    for(int n=1;n<=static_cast<int>(anyvoc::modulationRouteCount);++n){
+        const auto id="mod"+juce::String(n),name="Mod "+juce::String(n)+" ";
+        layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{id+"MacroEnabled",14},name+"Macro Destination",false));
+        layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID{id+"MacroTarget",14},name+"Macro Target",macroTargets,0));
+    }
     return layout;
 }
 
@@ -814,7 +839,7 @@ AnyvocAudioProcessor::AnyvocAudioProcessor()
             p(id+"AttackCurve"),p(id+"DecayCurve"),p(id+"ReleaseCurve"),p(id+"TempoSync"),
             {p(id+"DelayDivision"),p(id+"AttackDivision"),p(id+"HoldDivision"),p(id+"DecayDivision"),p(id+"ReleaseDivision")},p(id+"RetriggerLegato")};
     }
-    for(size_t n=0;n<routeParams.size();++n) { auto id="mod"+juce::String(static_cast<int>(n)+1);routeParams[n]={p(id+"Source"),p(id+"Dest"),p(id+"Amount"),p(id+"DestBank"),p(id+"FilterTarget"),p(id+"WarpEnabled"),p(id+"WarpTarget"),p(id+"Enabled"),p(id+"Polarity"),p(id+"Curve"),p(id+"AuxSource"),p(id+"AuxPolarity"),p(id+"AuxCurve"),p(id+"SourceExtra"),p(id+"AuxSourceExtra"),p(id+"LfoPhaseEnabled"),p(id+"LfoPhaseTarget")}; }
+    for(size_t n=0;n<routeParams.size();++n) { auto id="mod"+juce::String(static_cast<int>(n)+1);routeParams[n]={p(id+"Source"),p(id+"Dest"),p(id+"Amount"),p(id+"DestBank"),p(id+"FilterTarget"),p(id+"WarpEnabled"),p(id+"WarpTarget"),p(id+"Enabled"),p(id+"Polarity"),p(id+"Curve"),p(id+"AuxSource"),p(id+"AuxPolarity"),p(id+"AuxCurve"),p(id+"SourceExtra"),p(id+"AuxSourceExtra"),p(id+"LfoPhaseEnabled"),p(id+"LfoPhaseTarget"),p(id+"MacroEnabled"),p(id+"MacroTarget")}; }
     for(size_t osc=0;osc<3;++osc)for(size_t slot=0;slot<2;++slot){
         const auto id="osc"+juce::String(static_cast<int>(osc)+1)+"Warp"+juce::String(static_cast<int>(slot)+1);
         warpModes[osc][slot]=p(id+"Mode");warpAmounts[osc][slot]=p(id+"Amount");
@@ -919,8 +944,13 @@ anyvoc::SynthSettings AnyvocAudioProcessor::readSettings() const
 }
 
 void AnyvocAudioProcessor::prepareToPlay(double sr,int maxBlock)
-{ sampleRate=sr;engine.prepare(sr,maxBlock);engine.setSettings(readSettings());clearArp();arpWasEnabled=false;wasPlaying=false;outputLevel.store(0); }
-void AnyvocAudioProcessor::releaseResources() { engine.reset();clearArp(); }
+{ MacroResetScope reset(macroResetEpoch);sampleRate=sr;engine.prepare(sr,maxBlock);engine.setSettings(readSettings());clearArp();arpWasEnabled=false;wasPlaying=false;outputLevel.store(0); }
+void AnyvocAudioProcessor::resetEngine()
+{
+    MacroResetScope reset(macroResetEpoch);
+    engine.reset();
+}
+void AnyvocAudioProcessor::releaseResources() { resetEngine();clearArp(); }
 double AnyvocAudioProcessor::getTailLengthSeconds() const
 {
     const double delayTail=v(delayMix)>0.0001f ? v(delayTime)*juce::jmax(1.0,std::log(0.0001)/std::log(juce::jmax(0.001,static_cast<double>(v(delayFeedback))))) : 0.0;
@@ -936,7 +966,7 @@ void AnyvocAudioProcessor::clearArp() { held.fill(0);keyDown.fill(false);arpNote
 void AnyvocAudioProcessor::processArp(juce::MidiBuffer& midi,int samples,double bpm)
 {
     const bool enabled=v(arpEnabled)>.5f;
-    if(enabled!=arpWasEnabled){engine.reset();clearArp();arpWasEnabled=enabled;}
+    if(enabled!=arpWasEnabled){resetEngine();clearArp();arpWasEnabled=enabled;}
     if(!enabled)return;
     arpMidi.clear();
     auto it=midi.cbegin(),end=midi.cend();
@@ -973,15 +1003,20 @@ void AnyvocAudioProcessor::processArp(juce::MidiBuffer& midi,int samples,double 
 void AnyvocAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,juce::MidiBuffer& midi)
 {
     juce::ScopedNoDenormals noDenormals;buffer.clear();
-    const bool hardReset=panicRequested.exchange(false);
-    if(soundResetRequested.exchange(false) || hardReset){engine.reset();clearArp();if(hardReset)keyboardState.reset();}
+    if(panicRequested.load() || soundResetRequested.load()){
+        // Enter the reset epoch before claiming either flag. The UI must never
+        // mistake a claimed request for a completed engine reset.
+        MacroResetScope reset(macroResetEpoch);
+        const bool hardReset=panicRequested.exchange(false);
+        if(soundResetRequested.exchange(false) || hardReset){engine.reset();clearArp();if(hardReset)keyboardState.reset();}
+    }
     keyboardState.processNextMidiBuffer(midi,0,buffer.getNumSamples(),true);
     double bpm=v(tempo),ppq=0;bool fromHost=false,hasPpq=false,playing=false;
     if(auto* host=getPlayHead())if(auto position=host->getPosition()){
         if(auto hostBpm=position->getBpm())if(std::isfinite(*hostBpm) && *hostBpm>0){bpm=juce::jlimit(1.0,960.0,*hostBpm);fromHost=true;}
         if(auto hostPpq=position->getPpqPosition())if(std::isfinite(*hostPpq)){ppq=*hostPpq;hasPpq=true;}
         playing=position->getIsPlaying();
-        if(wasPlaying && !playing){engine.reset();clearArp();}
+        if(wasPlaying && !playing){resetEngine();clearArp();}
         wasPlaying=playing;
     }
     actualTempo.store(static_cast<float>(bpm));hostTempo.store(fromHost);
@@ -1060,7 +1095,7 @@ void AnyvocAudioProcessor::applyProgram(int index,bool userEdit)
 juce::ValueTree AnyvocAudioProcessor::createState() const
 {
     auto state=const_cast<juce::AudioProcessorValueTreeState&>(apvts).copyState();
-    state.setProperty("schemaVersion",13,nullptr);state.setProperty("program",currentProgram.load(),nullptr);
+    state.setProperty("schemaVersion",14,nullptr);state.setProperty("program",currentProgram.load(),nullptr);
     const auto identity = std::atomic_load (&presetIdentity);
     const auto name = identity ? identity->name : juce::String (presets[static_cast<size_t> (juce::jlimit (0, static_cast<int> (presets.size()) - 1, currentProgram.load()))].name);
     state.setProperty ("presetName", name, nullptr);
@@ -1080,7 +1115,7 @@ bool AnyvocAudioProcessor::restoreState(const juce::ValueTree& incoming,bool use
     if(recordUserEdit && history->isPublishing())return false;
     const auto initialGeneration=history->generation();
     const int version=static_cast<int>(incoming.getProperty("schemaVersion",0));
-    if(!incoming.hasType("ANYVOC") || version<1 || version>13)return false;
+    if(!incoming.hasType("ANYVOC") || version<1 || version>14)return false;
     const int incomingProgram = juce::jlimit (0, getNumPrograms() - 1, static_cast<int> (incoming.getProperty ("program", 0)));
     const bool hasName = incoming.hasProperty ("presetName"), hasId = incoming.hasProperty ("presetId");
     if (hasName != hasId) return false;
@@ -1143,7 +1178,7 @@ bool AnyvocAudioProcessor::restoreState(const juce::ValueTree& incoming,bool use
     }
     for(auto* base:getParameters())if(auto* param=dynamic_cast<juce::RangedAudioParameter*>(base)){
         if(seenParameters.contains(param->paramID))continue;
-        if(!((version==1 && isSampleParameter(param->paramID)) || (version<3 && isLfoParameter(param->paramID)) || (version<5 && isDualFilterParameter(param->paramID)) || (version<6 && isWarpParameter(param->paramID)) || (version<7 && isVoicingParameter(param->paramID)) || (version<8 && isCrossModulationParameter(param->paramID)) || (version<9 && isAdvancedModulationParameter(param->paramID)) || (version<10 && isExpandedSourceParameter(param->paramID)) || (version<11 && isExtendedEnvelopeParameter(param->paramID)) || (version<12 && isLfoMotionParameter(param->paramID)) || (version<13 && isChaosLfoParameter(param->paramID))))return false;
+        if(!((version==1 && isSampleParameter(param->paramID)) || (version<3 && isLfoParameter(param->paramID)) || (version<5 && isDualFilterParameter(param->paramID)) || (version<6 && isWarpParameter(param->paramID)) || (version<7 && isVoicingParameter(param->paramID)) || (version<8 && isCrossModulationParameter(param->paramID)) || (version<9 && isAdvancedModulationParameter(param->paramID)) || (version<10 && isExpandedSourceParameter(param->paramID)) || (version<11 && isExtendedEnvelopeParameter(param->paramID)) || (version<12 && isLfoMotionParameter(param->paramID)) || (version<13 && isChaosLfoParameter(param->paramID)) || (version<14 && isMacroDestinationParameter(param->paramID))))return false;
         cleaned.getChildWithProperty("id",param->paramID).setProperty("value",param->convertFrom0to1(param->getDefaultValue()),nullptr);
     }
     if(recordUserEdit && (history->isPublishing() || history->generation()!=initialGeneration))return false;
@@ -1436,31 +1471,37 @@ int AnyvocAudioProcessor::getModulationDestination(int route) const
 {
     if(route<0 || route>=static_cast<int>(routeParams.size()))return 0;
     const auto& p=routeParams[static_cast<size_t>(route)];
+    if(v(p.macroEnabled)>.5f)return anyvoc::macroDestinationId(static_cast<int>(v(p.macroTarget)));
     if(v(p.lfoPhaseEnabled)>.5f)return 18+static_cast<int>(v(p.lfoPhaseTarget));
     if(v(p.warpEnabled)>.5f)return 12+static_cast<int>(v(p.warpTarget));
     return v(p.bank)>.5f?8+static_cast<int>(v(p.filterTarget)):static_cast<int>(v(p.dest));
 }
 void AnyvocAudioProcessor::setModulationDestination(int route,int destination,const std::function<bool()>& isCurrent)
 {
-    if(route<0 || route>=static_cast<int>(routeParams.size()) || destination<0 || destination>27)return;
+    if(route<0 || route>=static_cast<int>(routeParams.size()) || destination<0 || destination>=static_cast<int>(anyvoc::modulationDestinationCount))return;
     const auto id="mod"+juce::String(route+1);
     std::vector<std::pair<juce::RangedAudioParameter*,float>> edits;
     // Guard all destination selectors, including the remembered inactive ones.
-    for(const auto* suffix:{"Dest","FilterTarget","DestBank","WarpTarget","WarpEnabled","LfoPhaseTarget","LfoPhaseEnabled"}){
+    for(const auto* suffix:{"Dest","FilterTarget","DestBank","WarpTarget","WarpEnabled","LfoPhaseTarget","LfoPhaseEnabled","MacroTarget","MacroEnabled"}){
         auto* parameter=apvts.getParameter(id+suffix);edits.emplace_back(parameter,parameter->getValue());
     }
     auto set=[&](size_t index,int plain){
         edits[index].second=edits[index].first->convertTo0to1(static_cast<float>(plain));
     };
-    if(destination>=18){set(5,destination-18);set(6,1);}
+    const int macro=anyvoc::macroIndexForDestination(destination);
+    if(macro>=0){set(7,macro);set(8,1);}
     else {
-        if(destination>=12){set(3,destination-12);set(4,1);}
+        if(destination>=18){set(5,destination-18);set(6,1);}
         else {
-            if(destination<8){set(0,destination);set(2,0);}
-            else {set(1,destination-8);set(2,1);}
-            set(4,0);
+            if(destination>=12){set(3,destination-12);set(4,1);}
+            else {
+                if(destination<8){set(0,destination);set(2,0);}
+                else {set(1,destination-8);set(2,1);}
+                set(4,0);
+            }
+            set(6,0);
         }
-        set(6,0);
+        set(8,0);
     }
     applyModulationEdits("Change modulation destination",edits,isCurrent);
 }
@@ -1538,7 +1579,7 @@ void AnyvocAudioProcessor::moveModulationRoute(int from,int to)
 }
 bool AnyvocAudioProcessor::assignModulation(int source,int destination,float amount,const std::function<bool()>& isCurrent)
 {
-    if(source<1 || source>=static_cast<int>(anyvoc::modulationSourceCount) || destination<1 || destination>27 || !std::isfinite(amount))return false;
+    if(source<1 || source>=static_cast<int>(anyvoc::modulationSourceCount) || destination<1 || destination>=static_cast<int>(anyvoc::modulationDestinationCount) || !std::isfinite(amount))return false;
     if(history->isPublishing())return false;
     int free=-1;
     for(int n=0;n<static_cast<int>(routeParams.size());++n){
@@ -1570,8 +1611,10 @@ bool AnyvocAudioProcessor::assignModulation(int source,int destination,float amo
         else if(suffix=="FilterTarget" && destination>=8 && destination<12)plain=static_cast<float>(destination-8);
         else if(suffix=="WarpEnabled")plain=destination>=12 && destination<18?1.0f:0.0f;
         else if(suffix=="WarpTarget" && destination>=12 && destination<18)plain=static_cast<float>(destination-12);
-        else if(suffix=="LfoPhaseEnabled")plain=destination>=18?1.0f:0.0f;
-        else if(suffix=="LfoPhaseTarget" && destination>=18)plain=static_cast<float>(destination-18);
+        else if(suffix=="LfoPhaseEnabled")plain=anyvoc::lfoIndexForPhaseDestination(destination)>=0?1.0f:0.0f;
+        else if(suffix=="LfoPhaseTarget" && anyvoc::lfoIndexForPhaseDestination(destination)>=0)plain=static_cast<float>(destination-18);
+        else if(suffix=="MacroEnabled")plain=anyvoc::macroIndexForDestination(destination)>=0?1.0f:0.0f;
+        else if(suffix=="MacroTarget" && anyvoc::macroIndexForDestination(destination)>=0)plain=static_cast<float>(anyvoc::macroIndexForDestination(destination));
         edits.emplace_back(parameter,parameter->convertTo0to1(plain));
     }
     auto* sourceParameter=apvts.getParameter(prefix+"Source");
@@ -1584,6 +1627,23 @@ bool AnyvocAudioProcessor::assignModulation(int source,int destination,float amo
         edits.emplace_back(extraParameter,extraParameter->convertTo0to1(static_cast<float>(source-9)));
     }
     return applyModulationEdits("Assign modulation",edits,isCurrent);
+}
+anyvoc::MacroModulationSnapshot AnyvocAudioProcessor::getMacroModulationSnapshot() const noexcept
+{
+    const auto idleBase=[this]{
+        anyvoc::MacroModulationSnapshot result;
+        for(size_t i=0;i<macroParams.size();++i)
+            result.values[i]=anyvoc::finiteModulationValue(v(macroParams[i]),0.0f,1.0f);
+        return result;
+    };
+    const auto pending=[this]{return panicRequested.load() || soundResetRequested.load();};
+    // Epoch comparison covers reset's flag-claim window and an entire reset
+    // occurring between the two reads. This UI fallback never changes audio.
+    const auto before=macroResetEpoch.load();
+    if((before & 1u)!=0 || pending())return idleBase();
+    const auto snapshot=engine.getMacroModulationSnapshot();
+    if(before!=macroResetEpoch.load() || pending())return idleBase();
+    return snapshot;
 }
 juce::AudioProcessorEditor* AnyvocAudioProcessor::createEditor(){return new AnyvocAudioProcessorEditor(*this);}
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter(){return new AnyvocAudioProcessor();}

@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "D:\Anyvoc\scripts\verify-release.py", line 340, in <module>
+    main()
+    ~~~~^^
+  File "D:\Anyvoc\scripts\verify-release.py", line 308, in main
+    verify_archive(DIST / f"Anyvoc-{version}-Windows-x64.zip", windows_inputs),
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Anyvoc\scripts\verify-release.py", line 177, in verify_archive
+    require(entry.file_size == original.stat().st_size,
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            f"Archive file size differs: {path.name}: {name}")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Anyvoc\scripts\verify-release.py", line 66, in require
+    raise RuntimeError(message)
+RuntimeError: Archive file size differs: Anyvoc-0.19.0-Windows-x64.zip: docs/TESTING.md

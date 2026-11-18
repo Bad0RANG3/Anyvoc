@@ -83,6 +83,7 @@ public:
     void setLfoShape(int index, int shape, const std::function<bool()>& isCurrent = {});
     int getLfoRateMode(int index) const;
     void setLfoRateMode(int index, int mode, const std::function<bool()>& isCurrent = {});
+    anyvoc::MacroModulationSnapshot getMacroModulationSnapshot() const noexcept;
     float getTempo() const { return actualTempo.load(); }
     bool isTempoFromHost() const { return hostTempo.load(); }
     void panic() { panicRequested.store(true); }
@@ -93,6 +94,7 @@ private:
     anyvoc::SynthSettings readSettings() const;
     void processArp(juce::MidiBuffer&, int, double);
     void clearArp();
+    void resetEngine();
     juce::ValueTree createState() const;
     bool restoreState(const juce::ValueTree&, bool userEdit = false);
     bool applyModulationEdits(const juce::String& label,
@@ -120,7 +122,7 @@ private:
         std::atomic<float>* retriggerLegato;
     };
     struct RouteParams { std::atomic<float> *source,*dest,*amount,*bank,*filterTarget,*warpEnabled,*warpTarget,
-        *enabled,*polarity,*curve,*auxSource,*auxPolarity,*auxCurve,*sourceExtra,*auxSourceExtra,*lfoPhaseEnabled,*lfoPhaseTarget; };
+        *enabled,*polarity,*curve,*auxSource,*auxPolarity,*auxCurve,*sourceExtra,*auxSourceExtra,*lfoPhaseEnabled,*lfoPhaseTarget,*macroEnabled,*macroTarget; };
     std::array<OscParams,3> oscParams;
     std::array<std::array<std::atomic<float>*,2>,3> warpModes,warpAmounts;
     std::array<std::array<std::atomic<float>*,2>,3> crossModes,crossSources;
@@ -155,5 +157,6 @@ private:
     std::atomic<bool> hostTempo{false};
     std::atomic<bool> panicRequested{false};
     std::atomic<bool> soundResetRequested{false};
+    std::atomic<std::uint64_t> macroResetEpoch{0};
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnyvocAudioProcessor)
 };

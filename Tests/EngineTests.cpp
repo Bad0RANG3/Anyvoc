@@ -1362,7 +1362,7 @@ void testModulationSourceTransformsAndRanges()
            "Negative curve clamp/exponent is incorrect");
     anyvoc::ModRoute bad { -1, 99, inf, false, -1, 999, 999, nan, inf };
     const auto safe = anyvoc::sanitiseModRoute (bad);
-    require (safe.source == 0 && safe.destination == 27 && safe.amount == 0 && ! safe.enabled
+    require (safe.source == 0 && safe.destination == 35 && safe.amount == 0 && ! safe.enabled
                  && safe.polarity == 0 && safe.auxSource == 24 && safe.auxPolarity == 2
                  && safe.curve == 0 && safe.auxCurve == 0,
              "Invalid route fields were not sanitised deterministically");
@@ -1526,7 +1526,7 @@ void testAdvancedModulationIdentityAndInvalids()
     invalid.osc[2].level = valid.osc[2].level = .2f;
     invalid.osc[2].warpMode[1] = valid.osc[2].warpMode[1] = 6;
     invalid.routes.back() = { 99, 99, 5, true, 99, 99, -5, 5, -5 };
-    valid.routes.back() = { 24, 27, 1, true, 2, 24, 0, 1, -1 };
+    valid.routes.back() = { 24, 35, 1, true, 2, 24, 0, 1, -1 };
     require (audioDifference (renderWarpFixture (invalid), renderWarpFixture (valid)) == 0,
              "Engine did not clamp all advanced route settings");
     invalid = valid;
@@ -2559,6 +2559,347 @@ void testLfoAdvancedIdentityPartitionAndLifecycle()
     invalid.lfoAudioRateHz[9] = 5000; valid.lfoAudioRateHz[9] = 1000;
     invalid.lfoPhaseOffset[0] = -1; valid.lfoPhaseOffset[0] = 0;
     require (audioDifference (audio (invalid), audio (valid)) == 0, "Advanced LFO rate/phase limits were not clamped");
+}
+
+void testMacroMappingsAndProducts()
+{
+    require (anyvoc::modulationDestinationCount == 36 && anyvoc::macroDestinationId (-1) == 0
+             && anyvoc::macroDestinationId (8) == 0 && anyvoc::macroIndexForDestination (27) == -1
+             && anyvoc::macroIndexForDestination (36) == -1 && anyvoc::lfoIndexForPhaseDestination (27) == 9
+             && anyvoc::lfoIndexForPhaseDestination (28) == -1 && anyvoc::lfoIndexForPhaseDestination (35) == -1,
+             "Macro destination bank overlaps the phase bank");
+    const std::vector<Event> note { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } };
+    for (int index = 0; index < 8; ++index) for (bool auxiliary : { false, true })
+    {
+        require (anyvoc::macroDestinationId (index) == 28 + index
+                 && anyvoc::macroIndexForDestination (28 + index) == index, "Macro destination mapping");
+        LfoAudioProbe probe;
+        const int source = anyvoc::macroSourceId (index), donor = anyvoc::macroSourceId ((index + 1) % 8);
+        probe.settings.macros.fill (.5f); probe.settings.macros[static_cast<size_t> (index)] = .25f;
+        probe.settings.routes[0] = { auxiliary ? 4 : source, 6, .5f };
+        if (auxiliary) probe.settings.routes[0].auxSource = source;
+        probe.settings.routes[31] = { donor, 28 + index, .5f };
+        probe.prepare(); probe.read (32, note);
+        for (int n = 1; n < 32; ++n)
+            expectEnvelope (probe.level (n), .5, "Macro primary/AUX actual audio or one-sample delay");
+        const auto live = probe.actual.getMacroModulationSnapshot();
+        require (live.hasActiveVoice && live.voiceId == 1 && live.values[static_cast<size_t> (index)] == .5f,
+                 "Macro snapshot did not report the source value actually read");
+    }
+    LfoAudioProbe product;
+    product.settings.macros = { .2f, .25f, .5f, 0, 0, 0, 0, 0 };
+    product.settings.routes[0] = { 6, 6, .5f };
+    product.settings.routes[1] = { 7, 28, -.5f };
+    product.settings.routes[1].polarity = 2; product.settings.routes[1].curve = .25f;
+    product.settings.routes[1].auxSource = 8; product.settings.routes[1].auxCurve = -.25f;
+    product.prepare(); product.read (32, note);
+    const double expected = .2f + .125 * std::sqrt (.5);
+    for (int n = 1; n < 32; ++n)
+        expectEnvelope (product.level (n), expected, "Incoming primary/AUX curve and polarity product");
+    // Add every contribution before the final clamp: clipping each positive
+    // route before subtracting the negative one would produce a wrong result.
+    for (const auto amounts : { std::array<float, 3> { 1, 1, -1 }, { -1, -1, 1 }, { 1, 1, 1 } })
+    {
+        LfoAudioProbe sum; sum.settings.macros.fill (1); sum.settings.macros[0] = .25f;
+        sum.settings.routes[0] = { 6, 6, .5f };
+        for (int r = 0; r < 3; ++r) sum.settings.routes[static_cast<size_t> (r + 1)] = { 7, 28, amounts[static_cast<size_t> (r)] };
+        sum.prepare(); sum.read (16, note);
+        const float value = std::clamp (.25f + amounts[0] + amounts[1] + amounts[2], 0.0f, 1.0f);
+        expectEnvelope (sum.level (15), value, "Macro incoming sum/clamp order");
+    }
+}
+
+void testMacroDelayedGraphs()
+{
+    const std::vector<Event> note { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } };
+    LfoAudioProbe chain; chain.settings.macros.fill (0); chain.settings.macros[0] = .5f;
+    chain.settings.routes[0] = { 24, 6, .5f };
+    for (int i = 0; i < 7; ++i) chain.settings.routes[static_cast<size_t> (i + 1)] = { anyvoc::macroSourceId (i), 29 + i, 1 };
+    chain.prepare(); chain.read (32, note);
+    for (int n = 1; n < 32; ++n) expectEnvelope (chain.level (n), n < 7 ? 0 : .5, "Eight-macro chain lost an edge delay");
+    LfoAudioProbe feedback; feedback.settings.macros.fill (0); feedback.settings.macros[0] = 1;
+    feedback.settings.routes[0] = { 6, 7, .5f }; feedback.settings.routes[1] = { 6, 28, -1 };
+    feedback.prepare(); feedback.read (128, note);
+    for (int n = 1; n < 128; ++n)
+        expectEnvelope (feedback.pan (n), n % 2 == 0 ? 1 : 0, "Self-feedback was implicit or held at 16-sample control rate");
+    // A macro/LFO cycle has two independent edge delays. The reference keeps
+    // both preceding sums and never calls a production routing/model helper.
+    LfoAudioProbe cycle; cycle.sampleRate = 4096;
+    cycle.settings.macros.fill (0); cycle.settings.macros[0] = .5f; cycle.settings.macros[1] = .125f;
+    cycle.settings.lfoMode[0] = 1; cycle.settings.lfoShape[0] = 2; cycle.settings.lfoRate[0] = 32;
+    cycle.settings.routes[0] = { 6, 7, .5f };
+    cycle.settings.routes[1] = { 1, 28, .25f };
+    cycle.settings.routes[2] = { 6, 29, .5f };
+    cycle.settings.routes[3] = { 4, 18, .5f }; cycle.settings.routes[3].auxSource = 7;
+    cycle.prepare(); cycle.read (256, note);
+    float previousLfo = 0, previousMacro = 0, previousPhase = 0, finalRead = 0;
+    for (int n = 0; n < 256; ++n)
+    {
+        const float macro0 = std::clamp (.5f + previousLfo, 0.0f, 1.0f);
+        const float macro1 = std::clamp (.125f + previousMacro, 0.0f, 1.0f);
+        double phase = n / 128.0 + previousPhase; phase -= std::floor (phase);
+        const float lfo = 2 * static_cast<float> (phase) - 1;
+        if (n > 0) expectEnvelope (cycle.pan (n), macro0, "Macro/LFO phase cycle used a current-sample value");
+        finalRead = macro0;
+        previousLfo = lfo * .25f; previousMacro = macro0 * .5f; previousPhase = macro1 * .5f;
+    }
+    const auto live = cycle.actual.getMacroModulationSnapshot();
+    require (live.values[0] == finalRead, "Telemetry exposed next-sample pending sums");
+}
+
+void testMacroLifecycleAndTelemetry()
+{
+    auto settings = cleanSettings(); settings.macros.fill (.125f); settings.amp = { .001f, .001f, 1, .01f };
+    settings.routes = {}; settings.routes[0] = { 4, 28, .5f };
+    SynthEngine poly; poly.setSettings (settings); poly.prepare (4096, 128);
+    const auto frame = [&] (SynthEngine& engine, const std::vector<Event>& events = {}, int count = 1)
+    { render (engine, count, 127, events); return engine.getMacroModulationSnapshot(); };
+    // A MIDI message at the end of an empty block creates a voice, but no
+    // source value has actually been read: expose idle base until a sample.
+    juce::AudioBuffer<float> empty (2, 0); juce::MidiBuffer pending;
+    pending.addEvent (juce::MidiMessage::noteOn (1, 48, 1.0f), 0); poly.render (empty, pending);
+    require (! poly.getMacroModulationSnapshot().hasActiveVoice
+             && poly.getMacroModulationSnapshot().values == settings.macros, "Empty block invented an actual voice read");
+    poly.reset();
+    auto live = frame (poly, { { 0, juce::MidiMessage::noteOn (1, 60, static_cast<juce::uint8> (32)) } });
+    require (live.hasActiveVoice && live.voiceId == 1 && live.values[0] == .125f, "New voice inherited incoming macro state");
+    live = frame (poly);
+    require (live.values[0] == .125f + (32 / 127.0f) * .5f, "Velocity-to-macro voice 1 value");
+    pending.clear(); pending.addEvent (juce::MidiMessage::noteOn (2, 64, static_cast<juce::uint8> (96)), 0);
+    poly.render (empty, pending);
+    require (poly.getMacroModulationSnapshot().voiceId == 1, "Unread new voice replaced the latest actually sampled voice");
+    live = frame (poly);
+    require (live.voiceId == 2 && live.values[0] == .125f, "Second voice inherited voice 1 macro state");
+    live = frame (poly); require (live.values[0] == .125f + (96 / 127.0f) * .5f, "Latest voice telemetry mixed voice sources");
+    frame (poly, { { 0, juce::MidiMessage::controllerEvent (2, 64, 127) }, { 0, juce::MidiMessage::noteOff (2, 64) } }, 64);
+    require (poly.getMacroModulationSnapshot().voiceId == 2, "Sustained macro voice was discarded");
+    live = frame (poly, { { 0, juce::MidiMessage::controllerEvent (2, 123, 0) } });
+    require (live.voiceId == 2 && live.values[0] > .125f, "All Notes Off destroyed the release macro state");
+    live = frame (poly, {}, 512);
+    require (live.voiceId == 1 && live.values[0] == .125f + (32 / 127.0f) * .5f, "Release did not return telemetry to older active voice");
+    live = frame (poly, { { 0, juce::MidiMessage::controllerEvent (1, 120, 0) } });
+    require (! live.hasActiveVoice && live.voiceId == 0 && live.values == settings.macros, "Panic retained old macro readings");
+    for (int voice = 0; voice < 17; ++voice)
+    {
+        live = frame (poly, { { 0, juce::MidiMessage::noteOn (1, 40 + voice, 1.0f) } });
+        require (live.values[0] == .125f, "Voice stealing retained previous macro incoming sum");
+        frame (poly, {}, 3);
+    }
+    poly.reset(); live = poly.getMacroModulationSnapshot();
+    require (! live.hasActiveVoice && live.voiceId == 0 && live.values == settings.macros, "Reset getter is stale until the next render");
+    for (int mode : { 1, 2 })
+    {
+        SynthEngine mono; auto configured = settings; configured.voiceMode = mode;
+        configured.macros[0] = 1; configured.routes[0] = { 6, 28, -1 };
+        configured.amp.retriggerLegato = true;
+        mono.setSettings (configured); mono.prepare (4096, 128);
+        frame (mono, { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } }, 3); // current=1, pending=-1
+        live = frame (mono, { { 0, juce::MidiMessage::noteOn (1, 64, 1.0f) } });
+        require (live.values[0] == (mode == 1 ? 1.0f : 0.0f), "Mono retrigger/Legato did not reset/preserve macro feedback");
+        require (live.voiceId == (mode == 1 ? 2u : 1u), "Legato unexpectedly allocated a new voice");
+        live = frame (mono, { { 0, juce::MidiMessage::noteOff (1, 64) } });
+        require (live.values[0] == 1.0f, "Last-note fallback macro continuity/retrigger contract");
+        configured.voiceMode = 0; mono.setSettings (configured);
+        require (! mono.getMacroModulationSnapshot().hasActiveVoice, "Voice mode change left stale macro telemetry");
+    }
+}
+
+void testMacroFastControlOracles()
+{
+    const auto note = juce::MidiMessage::noteOn (1, 60, 1.0f);
+    const std::vector<Event> notes { { 0, note } };
+    const auto macroAt = [] (int n) { return n == 0 ? .5f : .5f + .25f * independentAudioLfo (n - 1, 997, 48000); };
+    const auto configure = [] (LfoAudioProbe& probe)
+    {
+        probe.sampleRate = 48000; probe.settings.macros.fill (0); probe.settings.macros[0] = .5f;
+        probe.settings.lfoMode[9] = 1; probe.settings.lfoAudioRateEnabled[9] = true; probe.settings.lfoAudioRateHz[9] = 997;
+        probe.settings.routes[1] = { 17, 28, .25f };
+    };
+    for (bool auxiliary : { false, true })
+    {
+        LfoAudioProbe pan; configure (pan);
+        pan.settings.routes[0] = { auxiliary ? 4 : 6, 7, .5f };
+        if (auxiliary) pan.settings.routes[0].auxSource = 6;
+        pan.prepare(); pan.read (1027, notes);
+        for (int n = 1; n < 1027; ++n) expectEnvelope (pan.pan (n), macroAt (n), "Audio-rate macro primary/AUX pan control");
+        // Disable at a non-control-tick boundary. The cached pan must return
+        // to base on the first subsequent sample, then resume old cadence.
+        pan.settings.routes[1].enabled = false; pan.set(); pan.read (3);
+        for (int n = 0; n < 3; ++n) expectEnvelope (pan.pan (n), .5, "Removed macro graph left cached pan modulation");
+    }
+    LfoAudioProbe phaseChain; configure (phaseChain);
+    phaseChain.settings.lfoMode[0] = 1; phaseChain.settings.lfoShape[0] = 2; phaseChain.settings.lfoRate[0] = 1;
+    phaseChain.settings.routes[0] = { 1, 7, .5f };
+    phaseChain.settings.routes[2] = { 4, 18, .25f }; phaseChain.settings.routes[2].auxSource = 6;
+    phaseChain.prepare(); phaseChain.read (1027, notes);
+    for (int n = 1; n < 1027; ++n)
+    {
+        double position = n / 48000.0 + macroAt (n - 1) * .25f; position -= std::floor (position);
+        expectEnvelope (phaseChain.pan (n), 2 * static_cast<float> (position) - 1,
+                        "Fast AUX dependency failed across LFO-to-macro-to-slow-LFO phase");
+    }
+    phaseChain.settings.routes[2].enabled = false; phaseChain.set(); phaseChain.read (3);
+    double pendingPosition = 1027 / 48000.0 + macroAt (1026) * .25f;
+    pendingPosition -= std::floor (pendingPosition);
+    expectEnvelope (phaseChain.pan (0), 2 * static_cast<float> (pendingPosition) - 1,
+                    "Deleting a phase edge discarded its preceding-sample read");
+    expectEnvelope (phaseChain.pan (1), 2 * static_cast<float> (1028 / 48000.0) - 1,
+                    "Deleted macro-to-phase edge cached its final pending read beyond one sample");
+    LfoAudioProbe pitch; configure (pitch); pitch.settings.osc[0].mode = 0;
+    pitch.settings.routes[0] = { 6, 5, .2f }; pitch.prepare(); pitch.read (1024, notes);
+    float phase = 0, amplitude = 0;
+    const float attack = 1.0f / (.001f * 48000.0f), fundamental = 440 * std::exp2 ((60.0f - 69) / 12);
+    for (int n = 0; n < 1024; ++n)
+    {
+        amplitude = std::min (1.0f, amplitude + attack);
+        const float modulation = macroAt (n) * .2f;
+        phase += fundamental * std::exp2 ((modulation * 12) / 12) / 48000;
+        if (phase >= 1) phase -= 1;
+        const float gain = amplitude * .23f;
+        const double expected = pitch.actual.getWavetableSample (0, phase, 0) * pitch.settings.osc[0].level
+            * std::cos (static_cast<float> (pi) * .25f) * gain * std::min (1.0f, n / 64.0f);
+        require (std::abs (pitch.raw (pitch.wet, 0, n) - expected) < 2.0e-5, "Macro pitch was not integrated per sample");
+    }
+    for (int destination : { 1, 8, 9, 10 })
+    {
+        LfoAudioProbe filter; configure (filter); filter.settings.osc[0].mode = 0;
+        const bool second = destination == 8 || destination == 10;
+        filter.settings.filterEnabled = ! second; filter.settings.filter2Enabled = second;
+        filter.settings.cutoff = filter.settings.filter2Cutoff = 800;
+        filter.settings.resonance = filter.settings.filter2Resonance = .2f;
+        filter.settings.routes[0] = { 4, destination, .15f }; filter.settings.routes[0].auxSource = 6;
+        filter.prepare(); filter.read (1024, notes);
+        double state1 = 0, state2 = 0; amplitude = 0;
+        for (int n = 0; n < 1024; ++n)
+        {
+            amplitude = std::min (1.0f, amplitude + attack); const float gain = amplitude * .23f;
+            const float mod = macroAt (n) * .15f;
+            const float hz = destination <= 8 ? 800 * std::exp2 (mod * 5) : 800;
+            const float resonance = destination >= 9 ? .2f + mod : .2f;
+            const double g = std::tan (static_cast<float> (pi) * hz / 48000), damping = 2.0f - 1.94f * resonance;
+            const double a1 = 1 / (1 + g * (g + damping)), a2 = g * a1, a3 = g * a2;
+            const double input = filter.raw (filter.dry, 0, n) / gain;
+            const double v3 = input - state2, v1 = a1 * state1 + a2 * v3, output = state2 + a2 * state1 + a3 * v3;
+            state1 = 2 * v1 - state1; state2 = 2 * output - state2;
+            require (std::abs (filter.raw (filter.wet, 0, n) - output * gain) < 4.0e-6,
+                     "Macro AUX filter oracle failed for destination " + std::to_string (destination));
+        }
+    }
+}
+
+void testMacroSmoothingAndRemoval()
+{
+    LfoAudioProbe probe; probe.settings.macros.fill (.25f); probe.settings.macros[1] = .5f;
+    probe.settings.routes[0] = { 6, 6, .5f }; probe.settings.routes[1] = { 7, 28, .5f };
+    probe.prepare(); probe.set(); // consume the first-after-prepare settings snap before automation
+    probe.read (1, { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } });
+    float base = .25f, amount = .5f, preceding = .25f;
+    const float alpha = 1.0f - std::exp (-1.0f / static_cast<float> (.015 * probe.sampleRate));
+    probe.settings.macros[0] = .625f; probe.settings.routes[1].amount = -.25f; probe.set(); probe.read (257);
+    for (int n = 0; n < 257; ++n)
+    {
+        base += alpha * (.625f - base); amount += alpha * (-.25f - amount);
+        expectEnvelope (probe.level (n), std::clamp (base + preceding, 0.0f, 1.0f), "Base and route amount smoothing lost their sample ordering");
+        preceding = .5f * amount;
+    }
+    probe.settings.routes[1].amount = 0; probe.set(); probe.read (9);
+    for (int n = 0; n < 9; ++n)
+    {
+        base += alpha * (.625f - base); amount += alpha * (0 - amount);
+        expectEnvelope (probe.level (n), base + preceding, "Target-zero amount incorrectly discarded its smoothing tail");
+        preceding = .5f * amount;
+    }
+    probe.settings.routes[1].source = 0; probe.set(); probe.read (3);
+    for (int n = 0; n < 3; ++n)
+    {
+        base += alpha * (.625f - base);
+        expectEnvelope (probe.level (n), base, "Last incoming route Off did not clear its old pending sum immediately");
+    }
+}
+
+void testMacroPermutationAndCompatibility()
+{
+    auto base = cleanSettings(); base.filterEnabled = false; base.macros.fill (.25f); base.macros[1] = .75f;
+    base.routes = {}; base.routes[0] = { 6, 7, .5f };
+    base.routes[1] = { 7, 28, .7f }; base.routes[2] = { 7, 28, -.3f };
+    base.routes[3] = { 4, 28, -.2f }; base.routes[4] = { 1, 28, .4f };
+    base.routes[8] = { 6, 18, .2f }; base.routes[9] = { 1, 7, .2f };
+    base.lfoMode[0] = 1;
+    SynthEngine fixed, moved; fixed.setSettings (base); moved.setSettings (base);
+    fixed.prepare (48000, 512); moved.prepare (48000, 512);
+    fixed.setSettings (base); moved.setSettings (base); // normal later edits must really smooth
+    const std::vector<Event> note { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } };
+    require (audioDifference (render (fixed, 37, 37, note), render (moved, 37, 37, note)) == 0, "Permutation fixture initial audio");
+    base.routes[1].amount = base.routes[2].amount = .125f; // identical descriptors, different in-flight smooth amounts
+    base.routes[3].amount = -.5f; base.routes[4].amount = .1f;
+    fixed.setSettings (base); moved.setSettings (base);
+    require (audioDifference (render (fixed, 11, 11), render (moved, 11, 11)) == 0, "Permutation fixture smoothing audio");
+    auto permutation = base;
+    for (int pass = 0; pass < 5; ++pass)
+    {
+        std::rotate (permutation.routes.begin(), permutation.routes.begin() + 7, permutation.routes.end());
+        fixed.setSettings (base); moved.setSettings (permutation);
+        require (audioDifference (render (fixed, 113, 1), render (moved, 113, 47)) == 0,
+                 "Pure row permutation changed a macro graph while amounts were smoothing");
+        require (fixed.getMacroModulationSnapshot().values == moved.getMacroModulationSnapshot().values,
+                 "Pure row permutation changed actual macro source values");
+    }
+    const auto audio = [&] (const SynthSettings& settings, int block = 127)
+    { SynthEngine engine; engine.setSettings (settings); engine.prepare (48000, 512); return render (engine, 2048, block, note); };
+    require (audioDifference (audio (base, 1), audio (base, 257)) == 0, "Macro/phase feedback depended on block partition");
+    auto legacy = cleanSettings(); legacy.routes = {};
+    legacy.routes[0] = { 1, 7, .2f }; legacy.routes[3] = { 4, 7, -.1f }; legacy.routes[9] = { 2, 1, .2f };
+    auto unused = legacy; unused.routes[31] = { 4, 35, .75f };
+    require (audioDifference (audio (legacy), audio (unused)) == 0, "Unused macro graph changed unrelated old target audio");
+    for (int mode = 0; mode < 3; ++mode)
+    {
+        unused = legacy; unused.routes[31] = { 6, 28, .75f };
+        if (mode == 0) unused.routes[31].enabled = false;
+        if (mode == 1) unused.routes[31].source = 0;
+        if (mode == 2) unused.routes[31].amount = 0;
+        require (audioDifference (audio (legacy), audio (unused)) == 0, "Inactive macro destination changed legacy audio");
+    }
+    auto invalid = base, valid = base;
+    invalid.macros[0] = std::numeric_limits<float>::quiet_NaN(); valid.macros[0] = 0;
+    invalid.macros[1] = 8; valid.macros[1] = 1;
+    invalid.routes[31] = { 99, 99, std::numeric_limits<float>::infinity() }; valid.routes[31] = { 24, 35, 0 };
+    require (audioDifference (audio (invalid), audio (valid)) == 0, "Macro values or expanded destinations escaped sanitization");
+    render (fixed, 4096, 127); render (moved, 4096, 127);
+    fixed.setSettings (base); moved.setSettings (base); fixed.reset(); moved.reset();
+    require (audioDifference (render (fixed, 1024, 1, note), render (moved, 1024, 257, note)) == 0,
+             "Reset retained previous macro incoming sums");
+}
+
+void testMacroCoherentTelemetry()
+{
+    SynthEngine engine; auto settings = cleanSettings(); settings.macros.fill (1); settings.routes = {};
+    // Each voice alternates a complete eight-value vector between all one and
+    // all zero. An independent invariant detects a torn array immediately.
+    for (int i = 0; i < 8; ++i) settings.routes[static_cast<size_t> (i)] = { anyvoc::macroSourceId (i), 28 + i, -1 };
+    engine.setSettings (settings); engine.prepare (4096, 64);
+    std::atomic<bool> finished { false }, bad { false };
+    std::atomic<unsigned> reads { 0 };
+    std::thread reader ([&]
+    {
+        while (! finished.load())
+        {
+            const auto point = engine.getMacroModulationSnapshot();
+            if (point.hasActiveVoice != (point.voiceId != 0)) bad.store (true);
+            for (float value : point.values) if (value != point.values[0] || (value != 0 && value != 1)) bad.store (true);
+            ++reads;
+        }
+    });
+    while (reads.load() == 0) std::this_thread::yield();
+    juce::AudioBuffer<float> buffer (2, 1); juce::MidiBuffer midi;
+    for (int n = 0; n < 10000; ++n)
+    {
+        midi.clear();
+        if (n % 101 == 0) { engine.reset(); midi.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0); }
+        if (n % 101 == 99) midi.addEvent (juce::MidiMessage::controllerEvent (1, 120, 0), 0);
+        engine.render (buffer, midi);
+    }
+    finished.store (true); reader.join();
+    require (reads.load() > 0 && ! bad.load(), "Macro telemetry did not publish one coherent actual-value/voice snapshot");
 }
 
 using ChaosPoint = std::array<double, 3>;
@@ -4101,9 +4442,89 @@ int benchmarkChaosLfos()
     return 0;
 }
 
+int benchmarkMacroTargets()
+{
+    constexpr double rate = 48000.0, audioSeconds = 2.0;
+    constexpr int blockSize = 256, blocks = 375, rounds = 3, scenarios = 4;
+    constexpr const char* labels[] { "32 legacy macro-source routes", "32 curved macro feedback/AUX routes",
+                                    "997Hz LFO-to-macro pitch/pan", "997Hz LFO-to-macro dual-filter" };
+    std::array<std::array<double, rounds>, scenarios> elapsed {};
+    double checksum = 0;
+    std::cout << "Macro benchmark: Release; 48 kHz; 16 sustained voices, distinct velocities/staggered onsets; "
+        "32 routes; one wavetable oscillator, unison1; FX off; filters off except final dual-filter case; "
+        "256-sample blocks; 2 audio seconds/run, 3 rounds; includes setSettings each block, excludes construction/warmup. "
+        "Curved case includes per-voice primary/AUX curves, macro feedback and phase feedback.\n";
+    for (int round = 0; round < rounds; ++round)
+        for (int order = 0; order < scenarios; ++order)
+        {
+            const int scenario = (order + round) % scenarios;
+            auto settings = cleanSettings(); settings.filterEnabled = settings.filter2Enabled = scenario == 3;
+            settings.cutoff = 1200; settings.filter2Cutoff = 3500;
+            settings.osc[0].level = .12f; settings.osc[0].position = .37f;
+            settings.amp = { .005f, .02f, .8f, .05f }; settings.macros.fill (.5f);
+            settings.lfoMode.fill (1); settings.lfoAudioRateEnabled.fill (scenario >= 2);
+            settings.lfoAudioRateHz.fill (997);
+            for (int r = 0; r < 32; ++r)
+            {
+                auto& route = settings.routes[static_cast<size_t> (r)];
+                route = { anyvoc::macroSourceId (r % 8), 7, r % 2 == 0 ? .015f : -.01f };
+                if (scenario == 1)
+                {
+                    route.destination = r < 24 ? 28 + (r * 3 + 1) % 8 : r < 28 ? 18 + r % 10 : 7;
+                    route.source = r % 3 == 0 ? anyvoc::lfoSourceId (r % 10) : anyvoc::macroSourceId (r % 8);
+                    route.amount = r % 2 == 0 ? .15f : -.15f;
+                    route.auxSource = r % 2 == 0 ? 4 : anyvoc::macroSourceId ((r + 2) % 8);
+                    route.polarity = r % 3; route.auxPolarity = (r + 1) % 3;
+                    route.curve = -.8f + r * 1.6f / 31; route.auxCurve = .75f - r * 1.5f / 31;
+                }
+                else if (scenario >= 2)
+                {
+                    if (r < 16) route = { anyvoc::lfoSourceId (r % 10), 28 + r % 8, r % 2 == 0 ? .125f : -.125f };
+                    else
+                    {
+                        constexpr int filters[] { 1, 8, 9, 10 };
+                        route.destination = scenario == 3 ? filters[r % 4] : r % 2 == 0 ? 5 : 7;
+                        route.auxSource = anyvoc::macroSourceId ((r + 1) % 8);
+                    }
+                }
+            }
+            SynthEngine engine; engine.setSettings (settings); engine.prepare (rate, blockSize);
+            juce::AudioBuffer<float> block (2, blockSize); juce::MidiBuffer midi;
+            for (int voice = 0; voice < 16; ++voice)
+            {
+                midi.addEvent (juce::MidiMessage::noteOn (1, 48 + voice, .4f + .03f * voice), (voice * 17) % blockSize);
+                engine.render (block, midi); midi.clear();
+            }
+            for (int warmup = 0; warmup < 48; ++warmup) engine.render (block, midi);
+            const auto start = std::chrono::steady_clock::now();
+            for (int n = 0; n < blocks; ++n)
+            {
+                engine.setSettings (settings); engine.render (block, midi);
+                checksum += block.getSample (0, blockSize - 1);
+            }
+            const double wall = std::chrono::duration<double> (std::chrono::steady_clock::now() - start).count();
+            elapsed[static_cast<size_t> (scenario)][static_cast<size_t> (round)] = wall;
+            require (inspect (block).rms > .001, "Macro benchmark fixture is silent");
+            std::cout << std::fixed << std::setprecision (6) << "ROUND " << round + 1 << " " << labels[scenario]
+                      << ": wall=" << wall << "s, wall/audio=" << wall / audioSeconds << '\n';
+        }
+    for (size_t scenario = 0; scenario < elapsed.size(); ++scenario)
+    {
+        auto times = elapsed[scenario]; std::sort (times.begin(), times.end());
+        std::cout << "MEDIAN " << labels[scenario] << ": wall=" << times[1] << "s, wall/audio=" << times[1] / audioSeconds
+                  << ", real-time throughput=" << audioSeconds / times[1] << "x\n";
+    }
+    std::cout << "CHECKSUM " << checksum << '\n';
+    return 0;
+}
+
 int main (int argc, char* argv[])
 {
     juce::ScopedJuceInitialiser_GUI initialiseJuce;
+    if (argc > 1 && std::string (argv[1]) == "--benchmark-macros")
+        try { return benchmarkMacroTargets(); }
+        catch (const std::exception& error)
+        { std::cerr << "FAIL Macro benchmark: " << error.what() << '\n'; return 1; }
     if (argc > 1 && std::string (argv[1]) == "--benchmark-chaos")
         try { return benchmarkChaosLfos(); }
         catch (const std::exception& error)
@@ -4184,6 +4605,13 @@ int main (int argc, char* argv[])
         , { "Curve XML independent structure, float-bit round trips and exact size limit", testCurveCodecRoundTrip }
         , { "Curve strict XML grammar, numeric bounds and atomic parse rejection", testCurveCodecRejections }
         , { "Curve file round trips, bounded reads and failed-save preservation", testCurveFileTransactions }
+        , { "All eight macro targets, primary/AUX products and sum-before-clamp", testMacroMappingsAndProducts }
+        , { "Macro chain/self-feedback and macro/LFO cycle independent sample delays", testMacroDelayedGraphs }
+        , { "Macro per-voice lifecycle, stealing, Legato and actual-read telemetry", testMacroLifecycleAndTelemetry }
+        , { "Macro audio-rate primary/AUX pitch, pan and dual-filter oracles", testMacroFastControlOracles }
+        , { "Macro live base/amount smoothing and immediate graph removal", testMacroSmoothingAndRemoval }
+        , { "Macro row permutation during smoothing, legacy identity and partition", testMacroPermutationAndCompatibility }
+        , { "Macro coherent concurrent eight-value and voice telemetry", testMacroCoherentTelemetry }
     };
     int failures = 0;
     for (const auto& test : tests)

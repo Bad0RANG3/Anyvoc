@@ -462,8 +462,8 @@ void testEditedWavetableStateAndExport()
                  "Edited additive frame was clipped or normalized");
     }
     auto tree = stateTree (source);
-    require (static_cast<int> (tree.getProperty ("schemaVersion")) == 13,
-             "Edited table state did not use schema version 13");
+    require (static_cast<int> (tree.getProperty ("schemaVersion")) == 14,
+             "Edited table state did not use schema version 14");
     int tables = 0;
     for (int child = 0; child < tree.getNumChildren(); ++child)
         if (const auto table = tree.getChild (child); table.hasType ("WAVETABLE"))
@@ -631,8 +631,8 @@ void testEmbeddedSampleState()
     const auto sampleName = source.getSampleName (0);
     const auto data = save (source);
     const auto tree = stateTree (source);
-    require (static_cast<int> (tree.getProperty ("schemaVersion")) == 13,
-             "Current state was not stored with schema version 13");
+    require (static_cast<int> (tree.getProperty ("schemaVersion")) == 14,
+             "Current state was not stored with schema version 14");
     int samples = 0;
     for (int child = 0; child < tree.getNumChildren(); ++child)
         if (tree.getChild (child).hasType ("SAMPLE"))
@@ -740,6 +740,15 @@ constexpr int advancedMatrixParameterCount = 24 * 7 + 32 * 6;
 constexpr int expandedSourceParameterCount = 8 * 40 + 2 * 4 + 4 + 32 * 2;
 constexpr int advancedEnvelopeParameterCount = 4 * 12;
 constexpr int chaosParameterCount = 10;
+constexpr int macroDestinationParameterCount = 32 * 2;
+
+bool isMacroDestinationParameter (const juce::String& id)
+{
+    for (int route = 1; route <= 32; ++route)
+        if (id == "mod" + juce::String (route) + "MacroEnabled"
+            || id == "mod" + juce::String (route) + "MacroTarget") return true;
+    return false;
+}
 
 bool isChaosParameter (const juce::String& id)
 {
@@ -829,8 +838,8 @@ void testVoicingStateAndPresetDefaults()
     AnyvocAudioProcessor restored;
     restored.setStateInformation (state.getData(), static_cast<int> (state.getSize()));
     expectParameters (restored, expected);
-    require (static_cast<int> (stateTree (restored).getProperty ("schemaVersion")) == 13,
-             "Voicing state did not use the current schema 13");
+    require (static_cast<int> (stateTree (restored).getProperty ("schemaVersion")) == 14,
+             "Voicing state did not use the current schema 14");
     juce::TemporaryFile file (".anyvoc");
     require (source.savePreset (file.getFile()) && restored.loadPreset (file.getFile()),
              "Voicing user preset did not save/load");
@@ -851,7 +860,7 @@ void testVoicingStateAndPresetDefaults()
     for (int index = 0; index < order.size(); ++index)
     {
         const auto* parameter = dynamic_cast<const juce::RangedAudioParameter*> (
-            all[all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 12 - order.size() + index]);
+            all[all.size() - macroDestinationParameterCount - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 12 - order.size() + index]);
         require (parameter != nullptr && parameter->getParameterID() == order[index],
                  "New voicing parameters were inserted into the old host automation order");
     }
@@ -1228,7 +1237,7 @@ void testAdditionalModulationDestinations()
     processor.setModulationDestination (-1, 8);
     processor.setModulationDestination (static_cast<int> (anyvoc::modulationRouteCount), 8);
     processor.setModulationDestination (0, -1);
-    processor.setModulationDestination (0, 28);
+    processor.setModulationDestination (0, 36);
     require (save (processor) == beforeInvalid, "Invalid destination selection changed the matrix");
     processor.setCurrentProgram (0);
     for (int destination = 8; destination <= 11; ++destination)
@@ -1376,7 +1385,7 @@ void testWarpModulationAssignmentsAndAudio()
         setParameter (processor, ("mod" + juce::String (route) + "Dest").toRawUTF8(), 6);
     }
     const auto full = save (processor);
-    require (! processor.assignModulation (2, 17) && ! processor.assignModulation (1, 28),
+    require (! processor.assignModulation (2, 17) && ! processor.assignModulation (1, 36),
              "A warp assignment overwrote a full matrix or accepted an invalid target");
     require (save (processor) == full, "Rejected warp assignment changed the matrix");
     AnyvocAudioProcessor restored;
@@ -1522,7 +1531,7 @@ void testModulationAssignment()
     const auto full = save (processor);
     require (! processor.assignModulation (9, 1), "Assignment unexpectedly overwrote a full modulation matrix");
     require (! processor.assignModulation (0, 1) && ! processor.assignModulation (25, 1)
-                 && ! processor.assignModulation (1, 0) && ! processor.assignModulation (1, 28),
+                 && ! processor.assignModulation (1, 0) && ! processor.assignModulation (1, 36),
              "Invalid modulation source or destination was accepted");
     require (save (processor) == full, "Rejected modulation assignment changed existing routes");
     setParameter (processor, "mod3Dest", 0);
@@ -2116,7 +2125,7 @@ void testHistoryCompoundEdits()
                  && std::abs (plainParameter (processor, "mod1Amount") - .61f) < 1.0e-5f
                  && processor.getUndoCount() == beforeAssignment + 1,
              "Duplicate modulation assignment changed its depth or created history");
-    require (! processor.assignModulation (0, 17, .3f) && ! processor.assignModulation (1, 28, .3f),
+    require (! processor.assignModulation (0, 17, .3f) && ! processor.assignModulation (1, 36, .3f),
              "Invalid modulation assignment was accepted");
     expectHistoryResult (processor.undoUserEdit(), "Undo compound route");
     expectParameters (processor, drawn);
@@ -3335,7 +3344,7 @@ void testCrossModulationStateAndParameterCompatibility()
     const auto& all = source.getParameters();
     require (all.size() > 12, "Cross-modulation parameters were not appended");
     const auto* previousLast = dynamic_cast<const juce::RangedAudioParameter*> (
-        all[all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 13]);
+        all[all.size() - macroDestinationParameterCount - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 13]);
     require (previousLast != nullptr && previousLast->getParameterID() == "osc3RandomUnison",
              "Cross-modulation controls were inserted into preexisting host automation order");
     int appended = 0;
@@ -3353,7 +3362,7 @@ void testCrossModulationStateAndParameterCompatibility()
             {
                 auto* parameter = source.apvts.getParameter (prefix + suffix);
                 const auto* atIndex = dynamic_cast<const juce::RangedAudioParameter*> (
-                    all[all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 12 + appended]);
+                    all[all.size() - macroDestinationParameterCount - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 12 + appended]);
                 require (parameter != nullptr && parameter == atIndex && parameter->getNumSteps() == 5
                              && parameter->getVersionHint() == 8 && parameter->getDefaultValue() == 0,
                          "Cross-modulation parameter order, choice range, version hint or default changed");
@@ -3375,8 +3384,8 @@ void testCrossModulationStateAndParameterCompatibility()
         }
     const auto expected = parameters (source);
     const auto state = save (source);
-    require (static_cast<int> (stateTree (source).getProperty ("schemaVersion")) == 13,
-             "Cross-modulation state did not advertise schema 13");
+    require (static_cast<int> (stateTree (source).getProperty ("schemaVersion")) == 14,
+             "Cross-modulation state did not advertise schema 14");
     AnyvocAudioProcessor restored;
     restored.setStateInformation (state.getData(), static_cast<int> (state.getSize()));
     expectParameters (restored, expected);
@@ -3393,7 +3402,7 @@ void testCrossModulationStateAndParameterCompatibility()
         if (auto* parameter = dynamic_cast<juce::RangedAudioParameter*> (base);
             parameter != nullptr && isCrossModulationParameter (parameter->getParameterID()))
             require (parameter->getValue() == parameter->getDefaultValue(), "Init retained a cross mode or source");
-    require (restored.getNumPrograms() == 26 && restored.getProgramName (16) == "Keys / Phase Alloy"
+    require (restored.getNumPrograms() == 28 && restored.getProgramName (16) == "Keys / Phase Alloy"
                  && restored.getProgramName (17) == "Bass / Vector Steel",
              "The new cross-modulation presets displaced previous program indices");
     setParameter (restored, "osc1Warp1Mode", 6);
@@ -3640,11 +3649,11 @@ void testUnifiedWarpEditorControls()
                  && ! source->isEnabled(), "Returning to Sync failed to disable cross modulation and its source control");
 }
 
-const std::array<const char*, 17> matrixRouteFields {
+const std::array<const char*, 19> matrixRouteFields {
     "Source", "Dest", "Amount", "DestBank", "FilterTarget", "WarpEnabled", "WarpTarget",
-    "Enabled", "Polarity", "Curve", "AuxSource", "AuxPolarity", "AuxCurve", "SourceExtra", "AuxSourceExtra", "LfoPhaseEnabled", "LfoPhaseTarget" };
+    "Enabled", "Polarity", "Curve", "AuxSource", "AuxPolarity", "AuxCurve", "SourceExtra", "AuxSourceExtra", "LfoPhaseEnabled", "LfoPhaseTarget", "MacroEnabled", "MacroTarget" };
 
-using MatrixPayload = std::array<float, 17>;
+using MatrixPayload = std::array<float, 19>;
 
 MatrixPayload matrixPayload (AnyvocAudioProcessor& processor, int route)
 {
@@ -3670,13 +3679,14 @@ void expectMatrixPayload (AnyvocAudioProcessor& processor, int route, const Matr
 void configureMatrixPayload (AnyvocAudioProcessor& processor, int route)
 {
     const auto prefix = "mod" + juce::String (route + 1);
-    const std::array<float, 17> values {
+    const std::array<float, 19> values {
         static_cast<float> (route % 9 + 1), static_cast<float> (route % 7 + 1), -.83f + route * .049f,
         static_cast<float> (route % 2), static_cast<float> (route % 4), static_cast<float> ((route + 1) % 2),
         static_cast<float> (route % 6), static_cast<float> ((route + 1) % 2), static_cast<float> (route % 3),
         -.72f + route * .037f, static_cast<float> ((route + 3) % 10), static_cast<float> ((route + 2) % 3),
         .81f - route * .041f, static_cast<float> (route % 16), static_cast<float> ((route + 5) % 16),
-        static_cast<float> (route % 2), static_cast<float> ((route + 3) % 10) };
+        static_cast<float> (route % 2), static_cast<float> ((route + 3) % 10),
+        static_cast<float> (route % 2), static_cast<float> ((route + 5) % 8) };
     for (size_t field = 0; field < values.size(); ++field)
         setParameter (processor, (prefix + matrixRouteFields[field]).toRawUTF8(), values[field]);
 }
@@ -3729,7 +3739,7 @@ void testAdvancedMatrixParameterCompatibility()
     for (int osc = 1; osc <= 3; ++osc) for (int slot = 1; slot <= 2; ++slot)
         append ("osc" + juce::String (osc) + "Warp" + juce::String (slot), { "CrossMode", "CrossSource" });
     const auto& all = processor.getParameters();
-    require (all.size() == legacy.size() + advancedMatrixParameterCount + expandedSourceParameterCount + advancedEnvelopeParameterCount + lfoMotionParameterCount + chaosParameterCount,
+    require (all.size() == legacy.size() + advancedMatrixParameterCount + expandedSourceParameterCount + advancedEnvelopeParameterCount + lfoMotionParameterCount + chaosParameterCount + macroDestinationParameterCount,
              "Advanced matrix did not append exactly 360 host controls");
     for (int index = 0; index < legacy.size(); ++index)
     {
@@ -3771,7 +3781,7 @@ void testAdvancedMatrixParameterCompatibility()
                 require (parameter->getNumSteps() == (enabled ? 2 : field == 10 ? 10 : 3),
                          "Advanced source/polarity/bypass choice count changed");
         }
-    require (next == all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount, "The complete v0.13 host prefix changed");
+    require (next == all.size() - macroDestinationParameterCount - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount, "The complete v0.13 host prefix changed");
     for (int route = 1; route <= 8; ++route)
     {
         const auto prefix = "mod" + juce::String (route);
@@ -3798,8 +3808,8 @@ void testAdvancedMatrixStateAndMigration()
     setParameter (source, "master", .41f);
     const auto expected = parameters (source);
     const auto state = save (source);
-    require (static_cast<int> (stateTree (source).getProperty ("schemaVersion")) == 13,
-             "Advanced matrix state did not advertise schema 13");
+    require (static_cast<int> (stateTree (source).getProperty ("schemaVersion")) == 14,
+             "Advanced matrix state did not advertise schema 14");
     AnyvocAudioProcessor restored;
     restored.setStateInformation (state.getData(), static_cast<int> (state.getSize()));
     expectParameters (restored, expected);
@@ -3834,13 +3844,13 @@ void testAdvancedMatrixStateAndMigration()
     setParameter (legacySource, "mod8Amount", -.23f);
     const auto legacyExpected = parameters (legacySource);
     const auto current = stateTree (legacySource);
-    for (int version = 1; version <= 12; ++version)
+    for (int version = 1; version <= 13; ++version)
     {
         auto legacy = current.createCopy(); legacy.setProperty ("schemaVersion", version, nullptr);
         for (int child = legacy.getNumChildren(); --child >= 0;)
         {
             const auto id = legacy.getChild (child).getProperty ("id").toString();
-            if (isChaosParameter (id) || (version < 12 && isLfoMotionParameter (id)) || (version < 11 && isAdvancedEnvelopeParameter (id)) || (version < 10 && isExpandedSourceParameter (id))
+            if (isMacroDestinationParameter (id) || (version < 13 && isChaosParameter (id)) || (version < 12 && isLfoMotionParameter (id)) || (version < 11 && isAdvancedEnvelopeParameter (id)) || (version < 10 && isExpandedSourceParameter (id))
                 || (version < 9 && isAdvancedMatrixParameter (id)) || (version < 8 && isCrossModulationParameter (id))
                 || (version < 7 && isVoicingParameter (id)) || (version < 6 && isWarpParameter (id))
                 || (version < 5 && isDualFilterParameter (id)) || (version < 3 && isDrawableLfoParameter (id))
@@ -3851,7 +3861,7 @@ void testAdvancedMatrixStateAndMigration()
         for (auto* base : target.getParameters())
             if (auto* parameter = dynamic_cast<juce::RangedAudioParameter*> (base);
                 parameter != nullptr && (isAdvancedEnvelopeParameter (parameter->getParameterID())
-                    || isLfoMotionParameter (parameter->getParameterID()) || isChaosParameter (parameter->getParameterID()))) parameter->setValueNotifyingHost (1);
+                    || isLfoMotionParameter (parameter->getParameterID()) || isChaosParameter (parameter->getParameterID()) || isMacroDestinationParameter (parameter->getParameterID()))) parameter->setValueNotifyingHost (1);
         restore (target, legacy);
         expectParameters (target, legacyExpected);
         const auto retained = save (target);
@@ -3929,7 +3939,8 @@ void testAdvancedMatrixCapacityAndReuse()
                  && plainParameter (processor, "mod13Dest") == 0 && plainParameter (processor, "mod13DestBank") == 0
                  && plainParameter (processor, "mod13FilterTarget") == 0
                  && plainParameter (processor, "mod13SourceExtra") == 0 && plainParameter (processor, "mod13AuxSourceExtra") == 0
-                 && plainParameter (processor, "mod13LfoPhaseEnabled") == 0 && plainParameter (processor, "mod13LfoPhaseTarget") == 0,
+                 && plainParameter (processor, "mod13LfoPhaseEnabled") == 0 && plainParameter (processor, "mod13LfoPhaseTarget") == 0
+                 && plainParameter (processor, "mod13MacroEnabled") == 0 && plainParameter (processor, "mod13MacroTarget") == 0,
              "A reused row inherited stale hidden destination fields, bypass, polarity or auxiliary control");
     const auto beforeInvalid = save (processor);
     const auto history = processor.getHistoryRevision();
@@ -4136,7 +4147,7 @@ void testAdvancedMatrixEditorNavigationAndControls()
         auto* destination = findComponent<juce::ComboBox> (*editor, prefix + "Destination");
         auto* amount = findComponent<juce::Slider> (*editor, prefix + "Amount");
         auto* enabled = findComponent<juce::Button> (*editor, prefix + "Enabled");
-        require (source != nullptr && source->getNumItems() == 25 && destination != nullptr && destination->getNumItems() == 28
+        require (source != nullptr && source->getNumItems() == 25 && destination != nullptr && destination->getNumItems() == 36
                      && amount != nullptr && amount->getMinimum() == -1 && amount->getMaximum() == 1 && enabled != nullptr
                      && findComponent<juce::Button> (*editor, prefix + "Edit") != nullptr
                      && findComponent<juce::Button> (*editor, prefix + "Clear") != nullptr
@@ -4258,8 +4269,8 @@ void testAdvancedMatrixEditorMoveAndCancellation()
     auto* secondHandle = findComponent<juce::Component> (*editor, "ModulationRouteHandle2");
     const auto start = handle->getLocalBounds().toFloat().getCentre();
     const auto end = handle->getLocalPoint (secondHandle, secondHandle->getLocalBounds().getCentre()).toFloat();
-    const std::array<const char*, 9> hostMoveFields { "AuxCurve", "Source", "SourceExtra", "AuxSource", "AuxSourceExtra", "Dest", "WarpTarget", "LfoPhaseEnabled", "LfoPhaseTarget" };
-    const std::array<float, 9> hostMoveValues { -.94f, 9, 15, 9, 15, 7, 5, 0, 9 };
+    const std::array<const char*, 11> hostMoveFields { "AuxCurve", "Source", "SourceExtra", "AuxSource", "AuxSourceExtra", "Dest", "WarpTarget", "LfoPhaseEnabled", "LfoPhaseTarget", "MacroEnabled", "MacroTarget" };
+    const std::array<float, 11> hostMoveValues { -.94f, 9, 15, 9, 15, 7, 5, 0, 9, 0, 7 };
     for (int scenario = -1; scenario < static_cast<int> (hostMoveFields.size()); ++scenario)
     {
         handle->mouseDown (modulationMouseEvent (*handle, start, start));
@@ -4283,7 +4294,7 @@ void testAdvancedMatrixEditorMoveAndCancellation()
     auto* ring = findComponent<juce::Component> (*editor, "cutoffModulationRing");
     require (modulationControlVisible (ring), "Advanced cancellation fixture did not expose its modulation ring");
     const auto point = modulationRingPoint (*ring);
-    for (const auto* suffix : { "Enabled", "Polarity", "Curve", "AuxSource", "AuxPolarity", "AuxCurve", "AuxSourceExtra", "SourceExtra", "LfoPhaseTarget" })
+    for (const auto* suffix : { "Enabled", "Polarity", "Curve", "AuxSource", "AuxPolarity", "AuxCurve", "AuxSourceExtra", "SourceExtra", "LfoPhaseTarget", "MacroTarget", "MacroEnabled" })
     {
         ModulationGestureProbe probe (*processor.apvts.getParameter ("mod1Amount"));
         ring->mouseDown (modulationMouseEvent (*ring, point, point));
@@ -4438,7 +4449,7 @@ void testExpandedSourceParameterCompatibility()
     require (anyvoc::lfoCount == 10 && anyvoc::macroCount == 8 && anyvoc::modulationSourceCount == 25,
              "Expanded modulator/source counts changed");
     const auto& all = processor.getParameters();
-    int next = all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount;
+    int next = all.size() - macroDestinationParameterCount - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount;
     const auto parameter = [&] (const juce::String& id)
     {
         auto* result = dynamic_cast<juce::RangedAudioParameter*> (all[next++]);
@@ -4497,7 +4508,7 @@ void testExpandedSourceParameterCompatibility()
                 require (old->convertFrom0to1 (value / 9.0f) == value, "A legacy source index was renumbered");
         }
     }
-    require (next == all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount, "The v0.14 source controls moved from their frozen 396-parameter block");
+    require (next == all.size() - macroDestinationParameterCount - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount, "The v0.14 source controls moved from their frozen 396-parameter block");
 }
 
 void testExpandedSourceStateValidation()
@@ -4549,7 +4560,7 @@ void testExpandedSourceStateValidation()
     for (int child = v9.getNumChildren(); --child >= 0;)
         if (isExpandedSourceParameter (v9.getChild (child).getProperty ("id").toString())
             || isAdvancedEnvelopeParameter (v9.getChild (child).getProperty ("id").toString())
-            || (isLfoMotionParameter (v9.getChild (child).getProperty ("id").toString()) || isChaosParameter (v9.getChild (child).getProperty ("id").toString()))) v9.removeChild (child, nullptr);
+            || (isLfoMotionParameter (v9.getChild (child).getProperty ("id").toString()) || (isChaosParameter (v9.getChild (child).getProperty ("id").toString()) || isMacroDestinationParameter (v9.getChild (child).getProperty ("id").toString())))) v9.removeChild (child, nullptr);
     restore (target, current); restore (target, v9); expectParameters (target, legacyExpected);
     require (target.getModulationSource (31) == 9 && target.getModulationSource (31, true) == 2,
              "Schema 9 migration shadowed its old primary/auxiliary source");
@@ -4757,7 +4768,7 @@ void testExpandedSourcesReachAudio()
 void testExpandedFactoryPresets()
 {
     AnyvocAudioProcessor processor;
-    require (processor.getNumPrograms() == 26 && processor.getProgramName (18) == "Motion / Prism Weave"
+    require (processor.getNumPrograms() == 28 && processor.getProgramName (18) == "Motion / Prism Weave"
                  && processor.getProgramName (19) == "Pad / Four Horizons", "Expanded source presets displaced the old factory bank");
     for (int program = 0; program < processor.getNumPrograms(); ++program)
     {
@@ -5123,7 +5134,7 @@ void testAdvancedEnvelopeParameterCompatibility()
 {
     AnyvocAudioProcessor processor;
     const auto& all = processor.getParameters();
-    require (all.size() == 1018 + advancedEnvelopeParameterCount + lfoMotionParameterCount + chaosParameterCount, "Advanced envelopes did not append exactly 48 controls after v0.14");
+    require (all.size() == 1018 + advancedEnvelopeParameterCount + lfoMotionParameterCount + chaosParameterCount + macroDestinationParameterCount, "Advanced envelopes did not append exactly 48 controls after v0.14");
     int next = 1018;
     const std::array<int, 5> divisionDefaults { 0, 3, 0, 5, 5 };
     const juce::StringArray divisions { "Instant", "1/64", "1/32", "1/16", "1/8", "1/4", "1/2", "1 bar", "2 bars", "4 bars",
@@ -5170,7 +5181,7 @@ void testAdvancedEnvelopeParameterCompatibility()
                      "An existing ADSR parameter changed its host range/version: " + id.toStdString());
         }
     }
-    require (next == all.size() - chaosParameterCount - lfoMotionParameterCount, "Advanced envelope verification missed a tail parameter");
+    require (next == all.size() - macroDestinationParameterCount - chaosParameterCount - lfoMotionParameterCount, "Advanced envelope verification missed a tail parameter");
 }
 
 void testAdvancedEnvelopeStateAndMigration()
@@ -5186,7 +5197,7 @@ void testAdvancedEnvelopeStateAndMigration()
     setParameter (source, "ampAttack", .12345f); setParameter (source, "env4Release", .45678f);
     const auto expected = parameters (source);
     const auto current = stateTree (source);
-    require (static_cast<int> (current.getProperty ("schemaVersion")) == 13, "Envelope state did not advertise schema 13");
+    require (static_cast<int> (current.getProperty ("schemaVersion")) == 14, "Envelope state did not advertise schema 14");
     AnyvocAudioProcessor restored;
     restore (restored, current); expectParameters (restored, expected, "Advanced envelope DAW roundtrip");
     juce::TemporaryFile file (".anyvoc");
@@ -5205,16 +5216,16 @@ void testAdvancedEnvelopeStateAndMigration()
     auto v10 = stateTree (legacy); v10.setProperty ("schemaVersion", 10, nullptr);
     for (int child = v10.getNumChildren(); --child >= 0;)
         if (isAdvancedEnvelopeParameter (v10.getChild (child).getProperty ("id").toString())
-            || (isLfoMotionParameter (v10.getChild (child).getProperty ("id").toString()) || isChaosParameter (v10.getChild (child).getProperty ("id").toString()))) v10.removeChild (child, nullptr);
+            || (isLfoMotionParameter (v10.getChild (child).getProperty ("id").toString()) || (isChaosParameter (v10.getChild (child).getProperty ("id").toString()) || isMacroDestinationParameter (v10.getChild (child).getProperty ("id").toString())))) v10.removeChild (child, nullptr);
     restore (restored, current); restore (restored, v10); expectParameters (restored, legacyExpected, "Authentic schema 10 envelope migration");
     const auto retained = save (restored);
     for (const auto* prefix : envelopePrefixes) for (const auto* suffix : advancedEnvelopeFields)
     {
         const auto id = juce::String (prefix) + suffix;
         auto missing = current.createCopy(); missing.removeChild (missing.getChildWithProperty ("id", id), nullptr);
-        restore (restored, missing); require (save (restored) == retained, "Schema 13 accepted missing " + id.toStdString());
+        restore (restored, missing); require (save (restored) == retained, "Schema 14 accepted missing " + id.toStdString());
         auto duplicate = current.createCopy(); duplicate.addChild (duplicate.getChildWithProperty ("id", id).createCopy(), -1, nullptr);
-        restore (restored, duplicate); require (save (restored) == retained, "Schema 13 accepted duplicate " + id.toStdString());
+        restore (restored, duplicate); require (save (restored) == retained, "Schema 14 accepted duplicate " + id.toStdString());
     }
     for (const auto* prefix : envelopePrefixes) for (const auto* suffix : { "Delay", "AttackCurve", "TempoSync", "ReleaseDivision", "RetriggerLegato" })
         for (const auto* bad : { "NaN", "Infinity", "invalid" })
@@ -5547,7 +5558,7 @@ void testLfoMotionParameterCompatibility()
 {
     AnyvocAudioProcessor processor;
     const auto& all = processor.getParameters();
-    require (all.size() == 1066 + lfoMotionParameterCount + chaosParameterCount, "LFO motion must append 116 parameters after the frozen v0.15 prefix");
+    require (all.size() == 1066 + lfoMotionParameterCount + chaosParameterCount + macroDestinationParameterCount, "LFO motion must append 116 parameters after the frozen v0.15 prefix");
     int next = 1066;
     const auto parameter = [&] (const juce::String& id)
     {
@@ -5595,7 +5606,7 @@ void testLfoMotionParameterCompatibility()
         const auto prefix = "mod" + juce::String (route);
         toggle (prefix + "LfoPhaseEnabled"); choice (prefix + "LfoPhaseTarget", destinations);
     }
-    require (next == all.size() - chaosParameterCount, "LFO motion parameter verification missed appended controls");
+    require (next == all.size() - macroDestinationParameterCount - chaosParameterCount, "LFO motion parameter verification missed appended controls");
 }
 
 void testLfoMotionStateAndMigration()
@@ -5611,7 +5622,7 @@ void testLfoMotionStateAndMigration()
     require (count == lfoMotionParameterCount, "LFO motion state fixture missed appended controls");
     const auto expected = parameters (source);
     const auto current = stateTree (source);
-    require (static_cast<int> (current.getProperty ("schemaVersion")) == 13, "LFO motion state must use schema 13");
+    require (static_cast<int> (current.getProperty ("schemaVersion")) == 14, "LFO motion state must use schema 14");
     AnyvocAudioProcessor restored; restore (restored, current); expectParameters (restored, expected, "LFO motion DAW roundtrip");
     juce::TemporaryFile preset (".anyvoc");
     require (source.savePreset (preset.getFile()) && restored.loadPreset (preset.getFile()), "LFO motion preset file failed to roundtrip");
@@ -5624,7 +5635,7 @@ void testLfoMotionStateAndMigration()
     AnyvocAudioProcessor legacy; legacy.setCurrentProgram (20); setParameter (legacy, "lfo10Rate", 7.4321f);
     const auto oldValues = parameters (legacy); auto v11 = stateTree (legacy); v11.setProperty ("schemaVersion", 11, nullptr);
     for (int child = v11.getNumChildren(); --child >= 0;)
-        if ((isLfoMotionParameter (v11.getChild (child).getProperty ("id").toString()) || isChaosParameter (v11.getChild (child).getProperty ("id").toString()))) v11.removeChild (child, nullptr);
+        if ((isLfoMotionParameter (v11.getChild (child).getProperty ("id").toString()) || (isChaosParameter (v11.getChild (child).getProperty ("id").toString()) || isMacroDestinationParameter (v11.getChild (child).getProperty ("id").toString())))) v11.removeChild (child, nullptr);
     restore (restored, current); restore (restored, v11); expectParameters (restored, oldValues, "Authentic schema 11 migration");
     const auto retained = save (restored);
     for (auto* base : source.getParameters())
@@ -5632,9 +5643,9 @@ void testLfoMotionStateAndMigration()
         {
             const auto id = p->getParameterID();
             auto missing = current.createCopy(); missing.removeChild (missing.getChildWithProperty ("id", id), nullptr);
-            restore (restored, missing); require (save (restored) == retained, "Schema 13 accepted missing " + id.toStdString());
+            restore (restored, missing); require (save (restored) == retained, "Schema 14 accepted missing " + id.toStdString());
             auto duplicate = current.createCopy(); duplicate.addChild (duplicate.getChildWithProperty ("id", id).createCopy(), -1, nullptr);
-            restore (restored, duplicate); require (save (restored) == retained, "Schema 13 accepted duplicate " + id.toStdString());
+            restore (restored, duplicate); require (save (restored) == retained, "Schema 14 accepted duplicate " + id.toStdString());
             for (const auto* bad : { "NaN", "Infinity", "not numeric" })
             {
                 auto invalid = current.createCopy(); invalid.getChildWithProperty ("id", id).setProperty ("value", bad, nullptr);
@@ -5920,7 +5931,7 @@ void testLfoMotionEditorControls()
     auto* detail = findComponent<juce::Component> (*editor, "MatrixRouteDetail");
     require (modulationControlVisible (detail), "Matrix route 32 detail was unavailable");
     auto* destination = findComponent<juce::ComboBox> (*detail, "mod32DestinationDetail");
-    require (modulationControlVisible (destination) && destination->getNumItems() == 28, "Matrix detail omitted LFO phase destinations");
+    require (modulationControlVisible (destination) && destination->getNumItems() == 36, "Matrix detail omitted LFO phase destinations");
     for (int target = 18; target <= 27; ++target)
     {
         destination->setSelectedItemIndex (target, juce::sendNotificationSync);
@@ -6044,7 +6055,7 @@ void testChaosParameterCompatibilityAndState()
 {
     AnyvocAudioProcessor source;
     const auto& all = source.getParameters();
-    require (all.size() == 1192, "Chaos must append ten parameters after the frozen 1182-parameter prefix");
+    require (all.size() == 1192 + macroDestinationParameterCount, "Chaos must append ten parameters after the frozen 1182-parameter prefix");
     for (int index = 0; index < 10; ++index)
     {
         const auto prefix = "lfo" + juce::String (index + 1);
@@ -6067,7 +6078,7 @@ void testChaosParameterCompatibilityAndState()
     }
     const auto current = stateTree (source);
     const auto expected = parameters (source);
-    require (static_cast<int> (current.getProperty ("schemaVersion")) == 13, "Chaos state must use schema 13");
+    require (static_cast<int> (current.getProperty ("schemaVersion")) == 14, "Chaos state must use schema 14");
     AnyvocAudioProcessor restored; restore (restored, current); expectParameters (restored, expected, "Chaos DAW roundtrip");
     juce::TemporaryFile file (".anyvoc");
     require (source.savePreset (file.getFile()) && restored.loadPreset (file.getFile()), "Chaos preset file roundtrip failed");
@@ -6078,23 +6089,23 @@ void testChaosParameterCompatibilityAndState()
     AnyvocAudioProcessor legacy; legacy.setCurrentProgram (23);
     const auto legacyExpected = parameters (legacy); auto v12 = stateTree (legacy); v12.setProperty ("schemaVersion", 12, nullptr);
     for (int child = v12.getNumChildren(); --child >= 0;)
-        if (isChaosParameter (v12.getChild (child).getProperty ("id").toString())) v12.removeChild (child, nullptr);
+        if ((isChaosParameter (v12.getChild (child).getProperty ("id").toString()) || isMacroDestinationParameter (v12.getChild (child).getProperty ("id").toString()))) v12.removeChild (child, nullptr);
     restore (restored, current); restore (restored, v12); expectParameters (restored, legacyExpected, "Authentic schema 12 migration over active Chaos");
     const auto retained = save (restored);
     for (int index = 1; index <= 10; ++index)
     {
         const auto id = "lfo" + juce::String (index) + "Chaos";
         auto missing = current.createCopy(); missing.removeChild (missing.getChildWithProperty ("id", id), nullptr);
-        restore (restored, missing); require (save (restored) == retained, "Schema 13 accepted missing " + id.toStdString());
+        restore (restored, missing); require (save (restored) == retained, "Schema 14 accepted missing " + id.toStdString());
         auto duplicate = current.createCopy(); duplicate.addChild (duplicate.getChildWithProperty ("id", id).createCopy(), -1, nullptr);
-        restore (restored, duplicate); require (save (restored) == retained, "Schema 13 accepted duplicate " + id.toStdString());
+        restore (restored, duplicate); require (save (restored) == retained, "Schema 14 accepted duplicate " + id.toStdString());
         for (const auto* invalid : { "NaN", "Infinity", "invalid" })
         {
             auto bad = current.createCopy(); bad.getChildWithProperty ("id", id).setProperty ("value", invalid, nullptr);
             restore (restored, bad); require (save (restored) == retained, "Malformed Chaos partially replaced the live state");
         }
     }
-    auto future = current.createCopy(); future.setProperty ("schemaVersion", 14, nullptr);
+    auto future = current.createCopy(); future.setProperty ("schemaVersion", 15, nullptr);
     restore (restored, future); require (save (restored) == retained, "Unknown future schema was accepted");
     require (source.getProgramName (24) == "Motion / Butterfly Current" && source.getProgramName (25) == "Texture / Spiral Drift",
              "Chaos presets displaced existing factory indices");
@@ -6473,6 +6484,523 @@ void testChaosShapeUiHostCallbacks()
 // The platform boundary is simulated; the actual buttons, snapshot guards,
 // codec, file I/O and sound history remain production code. No test reads or
 // overwrites the user's OS clipboard or opens a native chooser.
+void testMacroDestinationCompatibilityAndState()
+{
+    AnyvocAudioProcessor source;
+    const auto& all = source.getParameters();
+    require (all.size() == 1256 && anyvoc::modulationDestinationCount == 36,
+             "Macro destinations must append exactly 64 controls after the complete 1192-parameter prefix");
+    for (int index = 0; index < 1192; ++index)
+    {
+        auto* parameter = dynamic_cast<juce::RangedAudioParameter*> (all[index]);
+        require (parameter != nullptr && parameter->getVersionHint() < 14
+                     && ! isMacroDestinationParameter (parameter->getParameterID()),
+                 "A macro destination control was inserted into the legacy host prefix");
+    }
+    const juce::StringArray names { "Macro 1", "Macro 2", "Macro 3", "Macro 4", "Macro 5", "Macro 6", "Macro 7", "Macro 8" };
+    for (int row = 0; row < 32; ++row)
+    {
+        const auto prefix = "mod" + juce::String (row + 1);
+        for (int field = 0; field < 2; ++field)
+        {
+            auto* parameter = dynamic_cast<juce::RangedAudioParameter*> (all[1192 + row * 2 + field]);
+            require (parameter != nullptr && parameter->getParameterID() == prefix + (field == 0 ? "MacroEnabled" : "MacroTarget")
+                         && parameter->getVersionHint() == 14 && parameter->getDefaultValue() == 0
+                         && parameter->getNumSteps() == (field == 0 ? 2 : 8),
+                     "Macro target tail order, version, neutral default or host mapping changed at " + prefix.toStdString());
+            if (field == 0) require (dynamic_cast<juce::AudioParameterBool*> (parameter) != nullptr, "Macro bank enable is not a Boolean parameter");
+            else
+            {
+                auto* choice = dynamic_cast<juce::AudioParameterChoice*> (parameter);
+                require (choice != nullptr && choice->choices == names, "Macro target labels or normalized choice count changed");
+                for (int target = 0; target < 8; ++target)
+                    require (parameter->convertFrom0to1 (target / 7.0f) == target, "Macro target normalized host mapping is incorrect");
+            }
+        }
+        configureMatrixPayload (source, row);
+        source.setModulationDestination (row, 28 + row % 8);
+    }
+    for (const int destination : { -1, 0, 17, 28, 35, 36 })
+        require (anyvoc::lfoIndexForPhaseDestination (destination) == -1,
+                 "A macro or invalid destination was misclassified as an LFO phase index");
+    require (anyvoc::lfoIndexForPhaseDestination (18) == 0 && anyvoc::lfoIndexForPhaseDestination (27) == 9,
+             "The original phase destination boundaries changed");
+    require (anyvoc::macroIndexForDestination (27) == -1 && anyvoc::macroIndexForDestination (28) == 0
+                 && anyvoc::macroIndexForDestination (35) == 7 && anyvoc::macroIndexForDestination (36) == -1
+                 && anyvoc::macroDestinationId (-1) == 0 && anyvoc::macroDestinationId (0) == 28
+                 && anyvoc::macroDestinationId (7) == 35 && anyvoc::macroDestinationId (8) == 0,
+             "Macro destination helper boundaries overlap legacy destinations or accept invalid indices");
+    clearMatrixHistory (source);
+    const auto current = stateTree (source);
+    require (static_cast<int> (current.getProperty ("schemaVersion")) == 14, "Macro destinations require schema 14");
+    AnyvocAudioProcessor restored;
+    restore (restored, current);
+    for (int row = 0; row < 32; ++row) expectMatrixPayload (restored, row, matrixPayload (source, row));
+    juce::TemporaryFile file (".anyvoc");
+    require (source.savePreset (file.getFile()) && restored.loadPreset (file.getFile()), "Macro destination preset roundtrip failed");
+    expectParameters (restored, parameters (source), "Macro destination file roundtrip");
+    AnyvocAudioProcessor legacy;
+    legacy.setCurrentProgram (24); clearMatrixHistory (legacy);
+    auto v13 = stateTree (legacy); v13.setProperty ("schemaVersion", 13, nullptr);
+    for (int child = v13.getNumChildren(); --child >= 0;)
+        if (isMacroDestinationParameter (v13.getChild (child).getProperty ("id").toString())) v13.removeChild (child, nullptr);
+    restore (restored, v13);
+    expectParameters (restored, parameters (legacy), "Authentic schema 13 over active macro destinations");
+    require (restored.getLfoShape (0) == legacy.getLfoShape (0), "Macro migration discarded an existing Chaos selection");
+    const auto retained = save (restored);
+    for (int row = 1; row <= 32; ++row) for (const auto* suffix : { "MacroEnabled", "MacroTarget" })
+    {
+        const auto id = "mod" + juce::String (row) + suffix;
+        auto missing = current.createCopy(); missing.removeChild (missing.getChildWithProperty ("id", id), nullptr);
+        restore (restored, missing); require (save (restored) == retained, "Schema 14 accepted missing " + id.toStdString());
+        auto duplicate = current.createCopy(); duplicate.addChild (duplicate.getChildWithProperty ("id", id).createCopy(), -1, nullptr);
+        restore (restored, duplicate); require (save (restored) == retained, "Duplicate macro parameter partially replaced sound: " + id.toStdString());
+        for (const auto* value : { "NaN", "Infinity", "0 junk" })
+        {
+            auto bad = current.createCopy(); bad.getChildWithProperty ("id", id).setProperty ("value", value, nullptr);
+            restore (restored, bad); require (save (restored) == retained, "Malformed macro target partially replaced sound: " + id.toStdString());
+        }
+    }
+    restored.setCurrentProgram (0);
+    for (int row = 1; row <= 32; ++row)
+        require (plainParameter (restored, "mod" + juce::String (row) + "MacroEnabled") == 0
+                     && plainParameter (restored, "mod" + juce::String (row) + "MacroTarget") == 0,
+                 "Init retained a macro destination bank");
+    require (source.getProgramName (26) == "Performance / Prism Handle" && source.getProgramName (27) == "Motion / Breathing Prism",
+             "Macro examples did not append after the unchanged 26 factory programs");
+}
+
+void testMacroDestinationBanksCapacityAndHistory()
+{
+    AnyvocAudioProcessor processor;
+    for (const int row : { 0, 31 })
+    {
+        const auto prefix = "mod" + juce::String (row + 1);
+        configureMatrixPayload (processor, row);
+        for (int target = 0; target < 8; ++target)
+        {
+            processor.setModulationDestination (row, 27);
+            clearMatrixHistory (processor);
+            const auto before = matrixPayload (processor, row);
+            processor.setModulationDestination (row, 28 + target);
+            auto expected = before; expected[17] = 1; expected[18] = target / 7.0f;
+            expectMatrixPayload (processor, row, expected);
+            require (processor.getModulationDestination (row) == 28 + target && processor.getUndoCount() == 1,
+                     "Macro selection changed an inactive bank or split compound history");
+            expectHistoryResult (processor.undoUserEdit(), "Undo macro destination"); expectMatrixPayload (processor, row, before);
+            expectHistoryResult (processor.redoUserEdit(), "Redo macro destination"); expectMatrixPayload (processor, row, expected);
+            const auto unchanged = save (processor); processor.setModulationDestination (row, 28 + target);
+            require (save (processor) == unchanged && processor.getUndoCount() == 1, "Repeated macro destination selection created an edit");
+        }
+        // All flags may be simultaneously remembered by host automation. The
+        // highest active bank wins; turning it off reveals the next bank.
+        setParameter (processor, (prefix + "Dest").toRawUTF8(), 7); setParameter (processor, (prefix + "FilterTarget").toRawUTF8(), 3);
+        setParameter (processor, (prefix + "DestBank").toRawUTF8(), 1); setParameter (processor, (prefix + "WarpTarget").toRawUTF8(), 5);
+        setParameter (processor, (prefix + "WarpEnabled").toRawUTF8(), 1); setParameter (processor, (prefix + "LfoPhaseTarget").toRawUTF8(), 9);
+        setParameter (processor, (prefix + "LfoPhaseEnabled").toRawUTF8(), 1);
+        require (processor.getModulationDestination (row) == 35, "Macro bank did not have the documented highest priority");
+        for (const auto& entry : std::array<std::pair<const char*, int>, 4> {{{ "MacroEnabled", 27 }, { "LfoPhaseEnabled", 17 }, { "WarpEnabled", 11 }, { "DestBank", 7 }}})
+        {
+            setParameter (processor, (prefix + entry.first).toRawUTF8(), 0);
+            require (processor.getModulationDestination (row) == entry.second, "Hidden destination bank priority was changed by macro targets");
+        }
+        for (const int destination : { 0, 7, 11, 17, 18, 27 })
+        {
+            processor.setModulationDestination (row, 35); processor.setModulationDestination (row, destination);
+            require (processor.getModulationDestination (row) == destination && plainParameter (processor, prefix + "MacroEnabled") == 0
+                         && plainParameter (processor, prefix + "MacroTarget") == 7, "Leaving a macro destination discarded its remembered target");
+        }
+    }
+    processor.setCurrentProgram (0);
+    for (int row = 0; row < 32; ++row)
+        require (processor.assignModulation (1 + row / 8, 28 + row % 8, .25f), "Macro destinations could not fill all 32 rows");
+    setParameter (processor, "mod1Enabled", 0); setParameter (processor, "mod32Enabled", 0);
+    const auto full = save (processor);
+    require (! processor.assignModulation (24, 35) && save (processor) == full, "Macro assignment reused an occupied bypassed row");
+    setParameter (processor, "mod32AuxCurve", -.43127f); setParameter (processor, "mod32LfoPhaseTarget", 9);
+    clearMatrixHistory (processor);
+    auto expected = matrixPayload (processor, 31); expected[7] = 1;
+    require (processor.assignModulation (4, 35, -.9f), "A bypassed macro duplicate could not be re-enabled");
+    expectMatrixPayload (processor, 31, expected);
+    require (processor.getUndoCount() == 1, "Macro duplicate re-enable fragmented history");
+    expectHistoryResult (processor.undoUserEdit(), "Undo macro duplicate"); expected[7] = 0; expectMatrixPayload (processor, 31, expected);
+    expectHistoryResult (processor.redoUserEdit(), "Redo macro duplicate"); expected[7] = 1; expectMatrixPayload (processor, 31, expected);
+    const auto unchanged = save (processor);
+    require (processor.assignModulation (4, 35, -.9f) && save (processor) == unchanged, "An active macro duplicate changed depth or remembered controls");
+    setParameter (processor, "mod32Source", 0); setParameter (processor, "mod32SourceExtra", 0);
+    require (processor.assignModulation (24, 27, .3125f) && processor.getModulationDestination (31) == 27
+                 && plainParameter (processor, "mod32MacroEnabled") == 0 && plainParameter (processor, "mod32MacroTarget") == 0,
+             "Reusing a macro route leaked its inactive target bank");
+    const auto invalidBefore = save (processor); const auto revision = processor.getHistoryRevision();
+    for (const int invalid : { -1, 36, 99 })
+    {
+        processor.setModulationDestination (31, invalid);
+        require (! processor.assignModulation (1, invalid), "An invalid macro destination was accepted");
+    }
+    require (save (processor) == invalidBefore && processor.getHistoryRevision() == revision, "Invalid destination changed sound or history");
+}
+
+void testMacroDestinationHelperHostBoundaries()
+{
+    const std::array<const char*, 9> selectors { "Dest", "FilterTarget", "DestBank", "WarpTarget", "WarpEnabled",
+                                               "LfoPhaseTarget", "LfoPhaseEnabled", "MacroTarget", "MacroEnabled" };
+    for (int operation = 0; operation < 4; ++operation) for (int boundary = 0; boundary < 3; ++boundary)
+        for (int action = -2; action < static_cast<int> (selectors.size()); ++action)
+        {
+            AnyvocAudioProcessor processor;
+            if (operation == 2) { setParameter (processor, "mod32AuxCurve", -.3125f); }
+            else
+            {
+                configureMatrixPayload (processor, 31);
+                processor.setModulationSource (31, 17);
+                processor.setModulationDestination (31, operation == 0 ? 27 : 35);
+                if (operation == 3) setParameter (processor, "mod32Enabled", 0);
+            }
+            // Force the final row to be the only vacancy when assigning.
+            for (int row = 1; row < 32; ++row)
+            {
+                setParameter (processor, ("mod" + juce::String (row) + "Source").toRawUTF8(), 1);
+                setParameter (processor, ("mod" + juce::String (row) + "Dest").toRawUTF8(), 1);
+            }
+            clearMatrixHistory (processor); const auto replacement = save (processor);
+            std::vector<std::unique_ptr<ModulationGestureProbe>> probes;
+            for (const auto* field : matrixRouteFields)
+                probes.push_back (std::make_unique<ModulationGestureProbe> (*processor.apvts.getParameter ("mod32" + juce::String (field))));
+            auto& trigger = *probes[static_cast<size_t> (operation == 0 ? 18 : operation == 1 ? 1 : operation == 2 ? 2 : 7)];
+            bool alive = true; std::vector<float> expected;
+            const auto callback = [&]
+            {
+                if (action == -2) processor.setStateInformation (replacement.getData(), static_cast<int> (replacement.getSize()));
+                else if (action == -1) alive = false;
+                else
+                {
+                    auto* parameter = processor.apvts.getParameter ("mod32" + juce::String (selectors[static_cast<size_t> (action)]));
+                    parameter->setValueNotifyingHost (parameter->getValue() > .5f ? 0.0f : 1.0f);
+                }
+                expected = parameters (processor);
+            };
+            if (boundary == 0) trigger.onStart = callback; else if (boundary == 1) trigger.onValue = callback; else trigger.onEnd = callback;
+            if (operation < 2) processor.setModulationDestination (31, operation == 0 ? 28 : 7, [&] { return alive; });
+            else processor.assignModulation (17, 35, .5f, [&] { return alive; });
+            const auto context = "macro helper operation=" + std::to_string (operation) + " boundary=" + std::to_string (boundary) + " action=" + std::to_string (action);
+            require (! expected.empty(), "Requested host callback did not run: " + context);
+            require (parameters (processor) == expected && ! processor.isUserEditActive(), "Macro helper continued after host interruption: " + context);
+            for (const auto& probe : probes) require (probe->starts == probe->ends, "Macro helper retained a host gesture: " + context);
+            if (action == -2) require (! processor.canUndo() && ! processor.canRedo(), "Project replacement retained stale macro history");
+        }
+}
+
+void testMacroDestinationsReachAudioAndSnapshots()
+{
+    // These constants are independent of the modulation implementation. Each
+    // active incoming route produces .25, zero, or a saturated endpoint.
+    // References use an ordinary stored macro, with no incoming macro route.
+    struct Case { float amount; int input; bool auxiliary; int auxPolarity; float curve; bool enabled; float expected; };
+    const std::array<Case, 7> cases {{
+        { .25f, 0, false, 0, 0, true, .5f },
+        { .5f, 0, true, 0, 0, true, .5f },
+        { .5f, 0, true, 2, 0, true, .25f },
+        { 1, 1, false, 0, .25f, true, .5f },
+        { -1, 0, false, 0, 0, true, 0 },
+        { 1, 0, false, 0, 0, true, 1 },
+        { .25f, 0, false, 0, 0, false, .25f }
+    }};
+    for (int macro = 0; macro < 8; ++macro) for (size_t scenario = 0; scenario < cases.size(); ++scenario)
+    {
+        AnyvocAudioProcessor direct, routed;
+        const auto item = cases[scenario];
+        const int other = (macro + 1) % 8;
+        const int source = macro < 4 ? 6 + macro : 17 + macro;
+        const int otherSource = other < 4 ? 6 + other : 17 + other;
+        const auto macroId = "macro" + juce::String (macro + 1);
+        for (auto* processor : { &direct, &routed })
+        {
+            prepareCrossModulationFixture (*processor);
+            setParameter (*processor, macroId.toRawUTF8(), .25f);
+            setParameter (*processor, ("macro" + juce::String (other + 1)).toRawUTF8(), .5f);
+            processor->setModulationSource (31, source); processor->setModulationDestination (31, 2);
+            setParameter (*processor, "mod32Amount", .5f);
+        }
+        setParameter (direct, macroId.toRawUTF8(), item.expected);
+        require (plainParameter (direct, macroId) == item.expected, "Macro oracle was changed by legacy host quantization");
+        routed.setModulationSource (0, item.input == 0 ? 4 : otherSource);
+        routed.setModulationDestination (0, 28 + macro);
+        setParameter (routed, "mod1Amount", item.amount); setParameter (routed, "mod1Curve", item.curve);
+        setParameter (routed, "mod1Enabled", item.enabled ? 1 : 0);
+        if (item.auxiliary) routed.setModulationSource (0, otherSource, true);
+        setParameter (routed, "mod1AuxPolarity", static_cast<float> (item.auxPolarity));
+        clearMatrixHistory (routed); const auto stored = save (routed);
+        direct.prepareToPlay (48000, 257); routed.prepareToPlay (48000, 257);
+        const std::vector<Event> notes { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } };
+        render (direct, 24000, notes, 257); render (routed, 24000, notes, 257);
+        const auto expectedAudio = render (direct, 4096, {}, 257), audio = render (routed, 4096, {}, 257);
+        const auto context = "macro=" + std::to_string (macro + 1) + " case=" + std::to_string (scenario);
+        require (rms (audio) > .005 && crossAudioDifference (audio, expectedAudio) < 2.0e-6,
+                 "Macro target did not match the independent constant audio reference: " + context);
+        const auto snapshot = routed.getMacroModulationSnapshot();
+        require (snapshot.hasActiveVoice && snapshot.voiceId != 0 && std::abs (snapshot.values[static_cast<size_t> (macro)] - item.expected) < 2.0e-6f,
+                 "Live macro snapshot does not describe the value used by the rendered voice: " + context);
+        for (size_t index = 0; index < snapshot.values.size(); ++index)
+            require (std::isfinite (snapshot.values[index]) && snapshot.values[index] >= 0 && snapshot.values[index] <= 1
+                         && (index == static_cast<size_t> (macro)
+                             || std::abs (snapshot.values[index] - plainParameter (routed, "macro" + juce::String (static_cast<int> (index) + 1))) < 2.0e-6f),
+                     "A macro destination changed an unrelated macro or published invalid telemetry: " + context);
+        require (save (routed) == stored && ! routed.canUndo() && ! routed.isUserEditActive(),
+                 "Audio-rate macro evaluation wrote base parameters, project state or sound history");
+        routed.panic();
+        const auto panic = routed.getMacroModulationSnapshot();
+        require (! panic.hasActiveVoice && panic.voiceId == 0 && panic.values[static_cast<size_t> (macro)] == .25f,
+                 "Pending panic exposed a stale effective macro before the next audio block");
+        render (routed, 1);
+        const auto processedPanic = routed.getMacroModulationSnapshot();
+        require (! processedPanic.hasActiveVoice && processedPanic.voiceId == 0
+                     && std::abs (processedPanic.values[static_cast<size_t> (macro)] - .25f) < 2.0e-6f,
+                 "Consuming panic republished the old active macro voice");
+        routed.setCurrentProgram (0);
+        const auto reset = routed.getMacroModulationSnapshot();
+        require (! reset.hasActiveVoice && reset.voiceId == 0, "Pending state replacement retained a previous macro voice");
+        for (int index = 0; index < 8; ++index)
+            require (reset.values[static_cast<size_t> (index)] == plainParameter (routed, "macro" + juce::String (index + 1)),
+                     "State replacement did not immediately publish the new stored macro bases");
+        render (routed, 1); routed.releaseResources();
+        const auto released = routed.getMacroModulationSnapshot();
+        require (! released.hasActiveVoice && released.voiceId == 0, "releaseResources retained an active macro voice");
+        routed.prepareToPlay (48000, 128);
+        const auto prepared = routed.getMacroModulationSnapshot();
+        require (! prepared.hasActiveVoice && prepared.voiceId == 0, "prepareToPlay exposed stale macro voice telemetry");
+    }
+    // A UI reorder moves the complete payload while amount smoothing is in
+    // flight. Its multiset is identical, so it must not restart modulation.
+    AnyvocAudioProcessor moved, reference;
+    for (auto* processor : { &moved, &reference })
+    {
+        prepareCrossModulationFixture (*processor);
+        setParameter (*processor, "macro1", .25f);
+        require (processor->assignModulation (1, 28, .25f) && processor->assignModulation (6, 2, .5f), "Macro reorder audio fixture failed");
+        processor->prepareToPlay (48000, 128);
+        render (*processor, 4096, { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } });
+        setParameter (*processor, "mod1Amount", .75f); render (*processor, 37);
+    }
+    moved.moveModulationRoute (0, 31);
+    const auto actual = render (moved, 4096), expected = render (reference, 4096);
+    require (crossAudioDifference (actual, expected) == 0, "Moving a complete macro route restarted its smoothing or changed accumulation order");
+}
+
+void testMacroDestinationEditorRoutingAndLiveValues()
+{
+    PresetTestDirectory files;
+    AnyvocAudioProcessor processor;
+    std::unique_ptr<juce::AudioProcessorEditor> editor (new AnyvocAudioProcessorEditor (
+        processor, files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml")));
+    editor->setVisible (true); editor->setSize (1008, 684);
+    const auto dropOnMacro = [&] (int macro, int source)
+    {
+        clickMatrixControl (*editor, macro < 4 ? "MacroBank1" : "MacroBank2");
+        auto* slider = findComponent<juce::Slider> (*editor, "macro" + juce::String (macro + 1));
+        require (modulationControlVisible (slider), "A macro target knob was unavailable at minimum size");
+        auto* target = dynamic_cast<juce::DragAndDropTarget*> (slider->getParentComponent());
+        require (target != nullptr, "A macro knob did not expose the actual drag/drop path");
+        clickMatrixControl (*editor, "openModulationSources");
+        auto* chip = findComponent<juce::Component> (*editor, "paletteModSource" + juce::String (source));
+        require (modulationControlVisible (chip), "Macro drop palette source was unavailable");
+        const juce::DragAndDropTarget::SourceDetails drop { "anyvoc.mod:" + juce::String (source), chip, { 20, 20 } };
+        require (target->isInterestedInDragSource (drop), "A visible macro knob rejected a valid source");
+        target->itemDragEnter (drop); target->itemDropped (drop);
+        clickMatrixControl (*editor, "SourcePaletteClose");
+        return target;
+    };
+    for (int macro = 0; macro < 8; ++macro)
+    {
+        processor.setCurrentProgram (0); clearMatrixHistory (processor); refreshEditorTimers();
+        const auto before = parameters (processor);
+        auto* target = dropOnMacro (macro, 17);
+        require (processor.getModulationSource (0) == 17 && processor.getModulationDestination (0) == 28 + macro
+                     && processor.getUndoCount() == 1, "Macro drop used a wrong destination, source or history group");
+        for (int index = 0; index < 8; ++index)
+            require (plainParameter (processor, "macro" + juce::String (index + 1)) == 0, "A macro drop overwrote a saved base knob");
+        const auto after = parameters (processor);
+        expectHistoryResult (processor.undoUserEdit(), "Undo macro knob drop"); expectParameters (processor, before);
+        expectHistoryResult (processor.redoUserEdit(), "Redo macro knob drop"); expectParameters (processor, after);
+        refreshEditorTimers();
+        auto* ring = findComponent<juce::Component> (*editor, "macro" + juce::String (macro + 1) + "ModulationRing");
+        require (modulationControlVisible (ring), "Assigned macro did not expose its depth ring");
+        const auto point = modulationRingPoint (*ring);
+        if (macro == 0 || macro == 7)
+            for (const auto* suffix : { "Source", "LfoPhaseTarget", "MacroTarget", "MacroEnabled" })
+            {
+                processor.setModulationSource (0, 17); processor.setModulationDestination (0, 28 + macro);
+                setParameter (processor, "mod1Enabled", 1); setParameter (processor, "mod1Amount", .25f);
+                clearMatrixHistory (processor); refreshEditorTimers();
+                ModulationGestureProbe probe (*processor.apvts.getParameter ("mod1Amount"));
+                ring->mouseDown (modulationMouseEvent (*ring, point, point));
+                ring->mouseDrag (modulationMouseEvent (*ring, point.translated (0, -10), point));
+                require (probe.starts == 1, "Macro ring cancellation fixture did not start a real amount gesture");
+                auto* parameter = processor.apvts.getParameter ("mod1" + juce::String (suffix));
+                parameter->setValueNotifyingHost (parameter->getValue() > .5f ? 0.0f : 1.0f);
+                const auto interrupted = parameters (processor);
+                ring->mouseDrag (modulationMouseEvent (*ring, point.translated (0, -50), point));
+                ring->mouseUp (modulationMouseEvent (*ring, point.translated (0, -50), point));
+                require (parameters (processor) == interrupted && probe.starts == probe.ends && ! processor.isUserEditActive(),
+                         std::string ("Macro ring overwrote related host changes to ") + suffix);
+            }
+        auto* slider = findComponent<juce::Slider> (*editor, "macro" + juce::String (macro + 1));
+        clickMatrixControl (*editor, macro < 4 ? "MacroBank2" : "MacroBank1");
+        const auto hidden = parameters (processor); const auto history = processor.getHistoryRevision();
+        const juce::DragAndDropTarget::SourceDetails late { "anyvoc.mod:17", nullptr, { 20, 20 } };
+        require (! target->isInterestedInDragSource (late), "Hidden macro bank still advertised a drop target");
+        target->itemDragEnter (late); target->itemDropped (late);
+        slider->setValue (.75, juce::sendNotificationSync);
+        ring->mouseDown (modulationMouseEvent (*ring, point, point));
+        ring->mouseDrag (modulationMouseEvent (*ring, point.translated (0, -40), point));
+        ring->mouseUp (modulationMouseEvent (*ring, point.translated (0, -40), point));
+        require (parameters (processor) == hidden && processor.getHistoryRevision() == history && ! processor.isUserEditActive(),
+                 "A late hidden-bank drop, knob or ring event changed sound/history");
+    }
+    processor.setCurrentProgram (0); clearMatrixHistory (processor);
+    dropOnMacro (0, 24); dropOnMacro (7, 6); dropOnMacro (0, 6);
+    require (processor.getModulationSource (0) == 24 && processor.getModulationDestination (0) == 28
+                 && processor.getModulationSource (1) == 6 && processor.getModulationDestination (1) == 35
+                 && processor.getModulationSource (2) == 6 && processor.getModulationDestination (2) == 28,
+             "The actual macro drag path rejected self modulation or mutually routed macros");
+
+    findButton (*editor, "MOD")->onClick();
+    for (int page = 0; page < 3; ++page) clickMatrixControl (*editor, "MatrixNextPage");
+    clickMatrixControl (*editor, "mod32Edit");
+    auto* detail = findComponent<juce::Component> (*editor, "MatrixRouteDetail");
+    auto* destination = findComponent<juce::ComboBox> (*detail, "mod32DestinationDetail");
+    require (modulationControlVisible (destination) && destination->getNumItems() == 36, "Matrix detail omitted the eight appended macro targets");
+    for (int macro = 0; macro < 8; ++macro)
+    {
+        destination->setSelectedItemIndex (28 + macro, juce::sendNotificationSync);
+        require (processor.getModulationDestination (31) == 28 + macro, "Matrix macro target choice did not reach the processor");
+        setParameter (processor, "mod32MacroTarget", static_cast<float> (7 - macro));
+        require (destination->getSelectedItemIndex() == 35 - macro, "Macro destination UI lagged behind host target automation");
+    }
+    setParameter (processor, "mod32LfoPhaseTarget", 9); setParameter (processor, "mod32LfoPhaseEnabled", 1);
+    setParameter (processor, "mod32MacroEnabled", 0);
+    require (destination->getSelectedItemIndex() == 27, "Turning off the macro bank did not immediately reveal its remembered phase target");
+
+    prepareCrossModulationFixture (processor); setParameter (processor, "macro8", .25f);
+    processor.setModulationSource (0, 4); processor.setModulationDestination (0, 35); setParameter (processor, "mod1Amount", .25f);
+    processor.setModulationSource (1, 24); processor.setModulationDestination (1, 2); setParameter (processor, "mod2Amount", .5f);
+    clearMatrixHistory (processor); processor.prepareToPlay (48000, 128);
+    render (processor, 24000, { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } });
+    const auto stored = save (processor);
+    std::array<juce::Label*, 8> displays {};
+    for (int bank = 0; bank < 2; ++bank)
+    {
+        clickMatrixControl (*editor, bank == 0 ? "MacroBank1" : "MacroBank2");
+        for (int index = bank * 4; index < bank * 4 + 4; ++index)
+        {
+            displays[static_cast<size_t> (index)] = findComponent<juce::Label> (*editor, "macro" + juce::String (index + 1) + "LiveValue");
+            require (modulationControlVisible (displays[static_cast<size_t> (index)]), "Macro live label was unavailable in its visible bank");
+        }
+    }
+    const auto checkDisplay = [&]
+    {
+        const auto snapshot = processor.getMacroModulationSnapshot(); refreshEditorTimers();
+        for (int macro = 0; macro < 8; ++macro)
+        {
+            auto* label = displays[static_cast<size_t> (macro)];
+            require (label != nullptr && static_cast<double> (label->getProperties()["macroEffectiveValue"]) == static_cast<double> (snapshot.values[static_cast<size_t> (macro)])
+                         && static_cast<bool> (label->getProperties()["macroHasActiveVoice"]) == snapshot.hasActiveVoice
+                         && static_cast<juce::int64> (label->getProperties()["macroVoiceId"]) == static_cast<juce::int64> (snapshot.voiceId),
+                     "Live macro labels did not use one real engine snapshot, including the hidden bank");
+        }
+    };
+    checkDisplay();
+    require (std::abs (processor.getMacroModulationSnapshot().values[7] - .5f) < 2.0e-6f, "Live macro fixture never received its expected modulation");
+    clickMatrixControl (*editor, "MacroBank1"); checkDisplay(); clickMatrixControl (*editor, "MacroBank2"); checkDisplay();
+    require (save (processor) == stored && ! processor.canUndo() && plainParameter (processor, "macro8") == .25f,
+             "Live values or bank navigation changed the stored macro base or history");
+    processor.panic(); checkDisplay();
+    auto* context = findComponent<juce::Label> (*editor, "MacroLiveContext");
+    require (context != nullptr && context->getText() == "EV: idle base", "Pending panic left a stale active-voice label");
+}
+
+void testMacroDestinationUiHostCallbacks()
+{
+    PresetTestDirectory files;
+    // Real knob drop, bypassed duplicate and visible detail ComboBox paths.
+    for (int scenario = 0; scenario < 5; ++scenario) for (int boundary = 0; boundary < 3; ++boundary)
+        for (int action = 0; action < 4; ++action)
+        {
+            AnyvocAudioProcessor processor;
+            for (int row = 1; row < 32; ++row)
+            {
+                setParameter (processor, ("mod" + juce::String (row) + "Source").toRawUTF8(), 1);
+                setParameter (processor, ("mod" + juce::String (row) + "Dest").toRawUTF8(), 1);
+            }
+            if (scenario == 2 || scenario == 4)
+            {
+                require (processor.assignModulation (17, 35, .3125f), "Macro callback duplicate fixture failed");
+                if (scenario == 2) setParameter (processor, "mod32Enabled", 0);
+            }
+            clearMatrixHistory (processor);
+            std::vector<std::unique_ptr<ModulationGestureProbe>> probes;
+            for (const auto* field : matrixRouteFields)
+                probes.push_back (std::make_unique<ModulationGestureProbe> (*processor.apvts.getParameter ("mod32" + juce::String (field))));
+            auto& trigger = *probes[static_cast<size_t> (scenario == 0 ? 17 : scenario == 1 || scenario == 3 ? 18 : scenario == 2 ? 7 : 1)];
+            std::unique_ptr<juce::AudioProcessorEditor> editor (new AnyvocAudioProcessorEditor (
+                processor, files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml")));
+            editor->setVisible (true); editor->setSize (1008, 684);
+            if (scenario >= 3)
+            {
+                findButton (*editor, "MOD")->onClick();
+                for (int page = 0; page < 3; ++page) clickMatrixControl (*editor, "MatrixNextPage");
+                clickMatrixControl (*editor, "mod32Edit");
+            }
+            else { clickMatrixControl (*editor, "MacroBank2"); clickMatrixControl (*editor, "openModulationSources"); }
+            const auto replacement = save (processor); std::vector<float> expected;
+            const auto callback = [&]
+            {
+                if (action == 0) processor.setStateInformation (replacement.getData(), static_cast<int> (replacement.getSize()));
+                else if (action == 1) setParameter (processor, "mod32LfoPhaseTarget", 9);
+                else if (action == 2) editor.reset();
+                else if (scenario < 3) clickMatrixControl (*editor, "MacroBank1");
+                else findComponent<juce::Component> (*editor, "MatrixRouteDetail")->setVisible (false);
+                expected = parameters (processor);
+            };
+            if (boundary == 0) trigger.onStart = callback; else if (boundary == 1) trigger.onValue = callback; else trigger.onEnd = callback;
+            if (scenario < 3)
+            {
+                auto* slider = findComponent<juce::Slider> (*editor, "macro8");
+                require (modulationControlVisible (slider), "Macro callback target was hidden before the operation");
+                auto* target = dynamic_cast<juce::DragAndDropTarget*> (slider->getParentComponent());
+                auto* chip = findComponent<juce::Component> (*editor, "paletteModSource17");
+                require (target != nullptr && modulationControlVisible (chip), "Macro callback drop did not use actual UI controls");
+                const juce::DragAndDropTarget::SourceDetails drop { "anyvoc.mod:17", chip, { 20, 20 } };
+                require (target->isInterestedInDragSource (drop), "Macro callback target rejected the source");
+                target->itemDragEnter (drop); target->itemDropped (drop);
+            }
+            else
+            {
+                auto* detail = findComponent<juce::Component> (*editor, "MatrixRouteDetail");
+                auto* choice = findComponent<juce::ComboBox> (*detail, "mod32DestinationDetail");
+                require (modulationControlVisible (choice), "Macro destination callback used a hidden matrix choice");
+                choice->setSelectedItemIndex (scenario == 3 ? 35 : 7, juce::sendNotificationSync);
+            }
+            const auto context = "macro UI scenario=" + std::to_string (scenario) + " boundary=" + std::to_string (boundary) + " action=" + std::to_string (action);
+            require (! expected.empty(), "Requested UI host callback did not fire: " + context);
+            require (parameters (processor) == expected && ! processor.isUserEditActive(), "Macro UI wrote after interruption: " + context);
+            for (const auto& probe : probes) require (probe->starts == probe->ends, "Macro UI left an unbalanced host gesture: " + context);
+            if (action == 3 && scenario >= 3)
+            {
+                // The panel was hidden inside begin/value/end. Its rejected
+                // candidate must also be reconciled when it becomes visible.
+                auto* detail = findComponent<juce::ComboBox> (*editor, "mod32DestinationDetail");
+                require (detail == nullptr, "The callback fixture did not actually hide the destination control");
+                // Keep the ordinary view reopening path; it must not commit
+                // the previously rejected candidate to the sound.
+                findButton (*editor, "SYNTH")->onClick(); findButton (*editor, "MOD")->onClick();
+                clickMatrixControl (*editor, "mod32Edit");
+                auto* reopened = findComponent<juce::ComboBox> (*editor, "mod32DestinationDetail");
+                require (modulationControlVisible (reopened) && reopened->getSelectedItemIndex() == processor.getModulationDestination (31)
+                             && parameters (processor) == expected, "Reopening a cancelled macro target choice retained its stale candidate");
+            }
+        }
+}
+
 struct MemoryLfoCurveServices final : LfoCurveServices
 {
     juce::String clipboard;
@@ -7158,6 +7686,37 @@ void testCurveToolsAsyncFileTransactions()
     }
 }
 
+void installMacroDemoFixture (AnyvocAudioProcessor& processor, int section)
+{
+    processor.setCurrentProgram (26);
+    setParameter (processor, "master", .42f); setParameter (processor, "macro1", .4f);
+    for (int oscillator = 1; oscillator <= 3; ++oscillator)
+    {
+        const auto prefix = "osc" + juce::String (oscillator);
+        setParameter (processor, (prefix + "Phase").toRawUTF8(), 0);
+        setParameter (processor, (prefix + "PhaseRandom").toRawUTF8(), 0);
+        setParameter (processor, (prefix + "RandomUnison").toRawUTF8(), 0);
+    }
+    processor.setLfoShape (0, 1); setParameter (processor, "lfo1Rate", .4f); setParameter (processor, "lfo1Mode", 1);
+    processor.setLfoShape (1, 0); setParameter (processor, "lfo2Rate", 1.2f); setParameter (processor, "lfo2Mode", 1);
+    if (section >= 1)
+    {
+        require (processor.assignModulation (1, 28, .4f), "Could not assign the demonstration LFO-to-macro route");
+        setParameter (processor, "mod4Polarity", 1);
+    }
+    if (section >= 2)
+    {
+        require (processor.assignModulation (2, 7, .65f), "Could not assign the demonstration pan route");
+        processor.setModulationSource (4, section == 3 ? 24 : 6, true);
+    }
+    if (section == 3)
+    {
+        setParameter (processor, "macro8", .1f);
+        require (processor.assignModulation (6, 35, .5f) && processor.assignModulation (24, 28, .2f),
+                 "Could not assign the demonstration macro feedback routes");
+    }
+}
+
 void createPreviews (const juce::File& directory)
 {
     require (directory.createDirectory().wasOk(), "Could not create preview output directory");
@@ -7454,6 +8013,22 @@ void createPreviews (const juce::File& directory)
     clickMatrixControl (*editor, "lfo1ApplyTransform");
     capture ("LFO-Curve-Selection.png");
     editor->setSize (1008, 684); capture ("LFO-Curve-Selection-small.png");
+    openProgram (26); installMacroDemoFixture (processor, 1);
+    processor.prepareToPlay (48000, 512);
+    render (processor, 48000, { { 0, juce::MidiMessage::noteOn (1, 60, .75f) } });
+    refreshEditorTimers();
+    require (processor.getMacroModulationSnapshot().hasActiveVoice, "Macro preview did not render a real active voice");
+    capture ("Macro-Live.png");
+    editor->setSize (1008, 684); capture ("Macro-Live-small.png");
+    openProgram (26); installMacroDemoFixture (processor, 3);
+    processor.prepareToPlay (48000, 512);
+    render (processor, 48000, { { 0, juce::MidiMessage::noteOn (1, 60, .75f) } });
+    clickMatrixControl (*editor, "MacroBank2"); refreshEditorTimers();
+    capture ("Macro-Bank2-Live.png");
+    editor->setSize (1008, 684); capture ("Macro-Bank2-Live-small.png");
+    editor->setSize (1120, 760); selectPage ("MOD"); clickMatrixControl (*editor, "mod4Edit"); refreshEditorTimers();
+    capture ("Macro-Routing.png");
+    editor->setSize (1008, 684); capture ("Macro-Routing-small.png");
 }
 
 void createPresetDemo (const juce::File& file)
@@ -7834,6 +8409,36 @@ void createChaosDemo (const juce::File& file)
     std::cout << "DEMO " << file.getFullPathName() << " (0-10s Lorenz, 10-20s Rossler; same C4 voice, 2 Hz nominal rate, fixed gain)\n";
 }
 
+void createMacroDemo (const juce::File& file)
+{
+    require (file.getParentDirectory().createDirectory().wasOk(), "Could not create macro demo directory");
+    constexpr int rate = 48000, sectionLength = rate * 5;
+    juce::AudioBuffer<float> output (2, sectionLength * 4); output.clear();
+    for (int section = 0; section < 4; ++section)
+    {
+        AnyvocAudioProcessor processor; installMacroDemoFixture (processor, section);
+        processor.prepareToPlay (rate, 512);
+        auto audio = render (processor, sectionLength,
+            { { 0, juce::MidiMessage::noteOn (1, 60, .75f) }, { rate * 4, juce::MidiMessage::noteOff (1, 60) } }, 512);
+        require (rms (audio) > .001 && audio.getMagnitude (0, sectionLength) < .99f, "Macro demo section was silent or clipped");
+        for (int channel = 0; channel < 2; ++channel) for (int sample = 0; sample < sectionLength; ++sample)
+            require (std::isfinite (audio.getSample (channel, sample)), "Macro demo contained a non-finite sample");
+        audio.applyGainRamp (0, 960, 0.0f, 1.0f); audio.applyGainRamp (sectionLength - 4800, 4800, 1.0f, 0.0f);
+        for (int channel = 0; channel < 2; ++channel) output.copyFrom (channel, section * sectionLength, audio, channel, 0, sectionLength);
+    }
+    std::unique_ptr<juce::OutputStream> stream = file.createOutputStream();
+    require (stream != nullptr, "Could not open macro demo output"); stream->setPosition (0);
+    if (auto* disk = dynamic_cast<juce::FileOutputStream*> (stream.get())) disk->truncate();
+    juce::WavAudioFormat format;
+    auto writer = format.createWriterFor (stream, juce::AudioFormatWriterOptions{}
+        .withSampleRate (rate).withNumChannels (2).withBitsPerSample (24));
+    require (writer != nullptr && writer->writeFromAudioSampleBuffer (output, 0, output.getNumSamples()), "Could not encode macro demo WAV");
+    writer.reset();
+    std::cout << "DEMO " << file.getFullPathName()
+              << " (0-5s fixed Macro 1 .4; 5-10s add LFO 1 to Macro 1; 10-15s add LFO 2 pan with Macro 1 AUX;"
+                 " 15-20s Macro 1/8 feedback and Macro 8 AUX; same C4/base voice and fixed gain, later sections change multiple routes)\n";
+}
+
 void createVoicingDemo (const juce::File& file)
 {
     require (file.getParentDirectory().createDirectory().wasOk(), "Could not create voicing demo directory");
@@ -7896,9 +8501,10 @@ int main (int argc, char* argv[])
                           && std::string (argv[1]) != "--warp-demo" && std::string (argv[1]) != "--voicing-demo"
                           && std::string (argv[1]) != "--crossmod-demo" && std::string (argv[1]) != "--matrix-demo"
                           && std::string (argv[1]) != "--sources-demo" && std::string (argv[1]) != "--envelopes-demo"
-                          && std::string (argv[1]) != "--lfo-motion-demo" && std::string (argv[1]) != "--chaos-demo"))
+                          && std::string (argv[1]) != "--lfo-motion-demo" && std::string (argv[1]) != "--chaos-demo"
+                          && std::string (argv[1]) != "--macro-demo"))
         {
-            std::cerr << "Usage: AnyvocProcessorTests [--preview <directory> | --demo <wav-file> | --warp-demo <wav-file> | --voicing-demo <wav-file> | --crossmod-demo <wav-file> | --matrix-demo <wav-file> | --sources-demo <wav-file> | --envelopes-demo <wav-file> | --lfo-motion-demo <wav-file> | --chaos-demo <wav-file>]\n";
+            std::cerr << "Usage: AnyvocProcessorTests [--preview <directory> | --demo <wav-file> | --warp-demo <wav-file> | --voicing-demo <wav-file> | --crossmod-demo <wav-file> | --matrix-demo <wav-file> | --sources-demo <wav-file> | --envelopes-demo <wav-file> | --lfo-motion-demo <wav-file> | --chaos-demo <wav-file> | --macro-demo <wav-file>]\n";
             return 2;
         }
         try
@@ -7913,6 +8519,7 @@ int main (int argc, char* argv[])
             else if (std::string (argv[1]) == "--envelopes-demo") createEnvelopeDemo (output);
             else if (std::string (argv[1]) == "--lfo-motion-demo") createLfoMotionDemo (output);
             else if (std::string (argv[1]) == "--chaos-demo") createChaosDemo (output);
+            else if (std::string (argv[1]) == "--macro-demo") createMacroDemo (output);
             else createPresetDemo (output);
             return 0;
         }
@@ -7971,7 +8578,7 @@ int main (int argc, char* argv[])
         { "Unified warp mode history and reentrant project boundaries", testUnifiedWarpModeHistoryAndHostBoundaries },
         { "Cross-modulation host parameters reach muted-source carrier audio", testCrossModulationProcessorAudio },
         { "Advanced matrix appends 360 controls after the complete legacy host prefix", testAdvancedMatrixParameterCompatibility },
-        { "Schema 1-12 matrix migration and complete schema 13 preset validation", testAdvancedMatrixStateAndMigration },
+        { "Schema 1-13 matrix migration and complete schema 14 preset validation", testAdvancedMatrixStateAndMigration },
         { "Thirty-two matrix rows preserve bypassed routes and reset reused slots", testAdvancedMatrixCapacityAndReuse },
         { "Complete matrix payloads move and clear as single undoable edits", testAdvancedMatrixResetAndReorderHistory },
         { "Matrix compound helpers stop at host restore and automation boundaries", testAdvancedMatrixHostBoundaries },
@@ -7984,14 +8591,14 @@ int main (int argc, char* argv[])
         { "Every source bank preserves legacy choices, compound history and effective assignment", testExpandedSourceSelectionAndAssignment },
         { "Paired source/LFO selectors preserve synchronous host edits and project replacements", testExpandedSourceHostBoundaries },
         { "All fifteen new primary and auxiliary sources match independent legacy audio references", testExpandedSourcesReachAudio },
-        { "All twenty-six factory programs sound and new presets use expanded sources", testExpandedFactoryPresets },
+        { "All twenty-eight factory programs sound and new presets use expanded sources", testExpandedFactoryPresets },
         { "Ten LFOs, four envelopes, eight macros and source palette are editable at minimum size", testExpandedSourceEditorNavigation },
         { "Composite matrix source controls survive host callbacks and editor destruction", testExpandedSourceUiHostCallbacks },
         { "LFO 10 drawing and curve presets preserve host state and survive editor destruction", testExpandedLfoCurveHostCallbacks },
         { "LFO 10 composite shape UI survives host callbacks and editor destruction", testExpandedLfoShapeUiHostCallbacks },
         { "Actual LFO 10 knob drops and duplicate re-enable survive host callbacks and editor teardown", testExpandedSourceDropHostCallbacks },
         { "Advanced envelopes append 48 controls after the complete v0.14 host prefix", testAdvancedEnvelopeParameterCompatibility },
-        { "Advanced envelope schema 13 roundtrips, schema 10 migration and atomic validation", testAdvancedEnvelopeStateAndMigration },
+        { "Advanced envelope schema 14 roundtrips, schema 10 migration and atomic validation", testAdvancedEnvelopeStateAndMigration },
         { "Delay, hold and three curves reach all four independent envelope source outputs", testAdvancedEnvelopesReachAudio },
         { "Four envelopes synchronize all timed stages to manual/host BPM with invalid-clock fallback", testAdvancedEnvelopeTempoAudio },
         { "Each envelope independently retriggers only its routed legato sound", testAdvancedEnvelopeLegatoIsolation },
@@ -7999,7 +8606,7 @@ int main (int argc, char* argv[])
         { "Envelope graph gestures stop across host restore, related automation and editor teardown", testAdvancedEnvelopeGraphHostCallbacks },
         { "Envelope curve, division and flag controls survive host callbacks and editor teardown", testAdvancedEnvelopeControlHostCallbacks },
         { "LFO motion appends 116 host parameters after the unchanged v0.15 prefix", testLfoMotionParameterCompatibility },
-        { "LFO motion schema 13 roundtrips, schema 11 migration and strict atomic validation", testLfoMotionStateAndMigration },
+        { "LFO motion schema 14 roundtrips, schema 11 migration and strict atomic validation", testLfoMotionStateAndMigration },
         { "LFO rate modes and all phase destinations preserve complete history and remembered selectors", testLfoRateModesAndPhaseDestinationHistory },
         { "LFO rate and phase destination helpers stop at host and lifetime boundaries", testLfoMotionHelperHostBoundaries },
         { "All ten LFO motion controls reach audio and preserve legacy/tempo rate precedence", testLfoMotionControlsReachAudio },
@@ -8007,7 +8614,7 @@ int main (int argc, char* argv[])
         { "LFO motion Lab controls and phase matrix targets work at minimum size", testLfoMotionEditorControls },
         { "LFO motion controls and composite rate/destination selectors survive host callbacks", testLfoMotionUiHostCallbacks },
         { "Real LFO phase drops and duplicate re-enable survive host callbacks and editor teardown", testLfoPhaseDropHostCallbacks },
-        { "Chaos appends ten parameters, preserves legacy mappings and validates schema 13 atomically", testChaosParameterCompatibilityAndState },
+        { "Chaos appends ten parameters, preserves legacy mappings and validates schema 14 atomically", testChaosParameterCompatibilityAndState },
         { "All Chaos shape selectors preserve compound history and synchronous host boundaries", testChaosShapeHistoryAndHostBoundaries },
         { "All twenty Chaos source paths reach evolving audio, reproduce reset and preserve block partition", testChaosAllSourcesReachEvolvingAudio },
         { "Chaos rate and swing bindings work while phase routing and remembered legacy controls stay isolated", testChaosRateBindingsAndInactivePhase },
@@ -8019,6 +8626,12 @@ int main (int argc, char* argv[])
         { "Curve clipboard buttons transfer complete curves and reject invalid or stale reads atomically", testCurveToolsClipboardTransactions },
         { "Curve tools preserve exact host callback boundaries and all 46 related parameter guards", testCurveToolsHostCallbackBoundaries },
         { "Curve asset buttons use real files while deferred chooser replies respect sound and view lifetime", testCurveToolsAsyncFileTransactions },
+        { "Macro destinations append 64 controls and migrate schema 1-13 with strict schema 14 validation", testMacroDestinationCompatibilityAndState },
+        { "All macro target banks preserve remembered selectors, full capacity and single-action history", testMacroDestinationBanksCapacityAndHistory },
+        { "Macro destination helpers preserve all nine selectors across host and lifetime callbacks", testMacroDestinationHelperHostBoundaries },
+        { "All eight macro targets match independent audio values and publish actual voice snapshots", testMacroDestinationsReachAudioAndSnapshots },
+        { "Actual macro drops, hidden banks, matrix targets and live labels preserve stored bases", testMacroDestinationEditorRoutingAndLiveValues },
+        { "Macro drops and matrix choices survive host callbacks, hidden pages and editor destruction", testMacroDestinationUiHostCallbacks },
         { "Unified warp editor modes, sources and host automation", testUnifiedWarpEditorControls },
         { "Host BPM, PPQ and manual tempo fallback", testProcessorHostAndManualTempo },
         { "Invalid sample imports and embedded sample rollback", testSampleImportRejection },

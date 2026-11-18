@@ -32,6 +32,7 @@ HISTORICAL_DEMOS = (
 )
 MOTION_DEMO = "Anyvoc-v0.16-Lfo-Motion-Demo.wav"
 CHAOS_DEMO = "Anyvoc-v0.17-Chaos-Demo.wav"
+MACRO_DEMO = "Anyvoc-v0.19-Macro-Demo.wav"
 # Explicit version policies prevent a future release from claiming that its new
 # features were checked by this script merely because the generic checks pass.
 FEATURE_POLICIES = {
@@ -46,6 +47,12 @@ FEATURE_POLICIES = {
     },
     "0.18.0": {
         "demos": (MOTION_DEMO, CHAOS_DEMO),
+        "headers": ("Source/ModulationRoute.h", "Source/EnvelopeModel.h",
+                    "Source/LfoModel.h", "Source/ChaosLfoModel.h",
+                    "Source/LfoCurveDocument.h", "Source/LfoCurveDocument.cpp"),
+    },
+    "0.19.0": {
+        "demos": (MOTION_DEMO, CHAOS_DEMO, MACRO_DEMO),
         "headers": ("Source/ModulationRoute.h", "Source/EnvelopeModel.h",
                     "Source/LfoModel.h", "Source/ChaosLfoModel.h",
                     "Source/LfoCurveDocument.h", "Source/LfoCurveDocument.cpp"),
@@ -262,7 +269,11 @@ def main():
     windows_inputs.update({"docs/" + name: path for name, path in tree_files(ROOT / "docs").items()})
     windows_inputs["快速开始.txt"] = ROOT / "docs/快速开始.txt"
     demos = [verify_demo(DIST / name) for name in policy["demos"]] if policy else []
-    for name in (*HISTORICAL_DEMOS, MOTION_DEMO, CHAOS_DEMO):
+    # Optional historical demos keep their old packaging rules. New feature
+    # demos belong only to versions with an explicit acceptance policy.
+    packaged_demos = dict.fromkeys((*HISTORICAL_DEMOS, MOTION_DEMO, CHAOS_DEMO,
+                                   *(policy["demos"] if policy else ())))
+    for name in packaged_demos:
         if (DIST / name).is_file():
             windows_inputs[name] = DIST / name
     windows_inputs["Licenses/JUCE-LICENSE.md"] = ROOT / "third_party/JUCE/LICENSE.md"

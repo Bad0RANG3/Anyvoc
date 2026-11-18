@@ -1,0 +1,12 @@
+{
+  "version": "0.19.0-development",
+  "baseline_commit": "45578ca2f770b21c99ec9aec59a3d9a0b0fc38e1",
+  "preserved_parameter_prefix_count": 1192,
+  "lf_normalized_definition_sha256": "4e6a526fa28ee205a3eea1e42a6ee2f271b72fb15343449862486ea9a95b69cd",
+  "exact_source_prefix_identical": true,
+  "appended_parameters": 64,
+  "new_total": 1256,
+  "schema": 14,
+  "status": "PASS",
+  "scope": "Definition prefix only; runtime mapping and state migration tested separately."
+}

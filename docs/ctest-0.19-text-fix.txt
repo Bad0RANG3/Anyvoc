@@ -1,0 +1,7 @@
+Test project D:/Anyvoc/build
+    Start 2: ProcessorTests
+1/1 Test #2: ProcessorTests ...................   Passed  184.38 sec
+
+100% tests passed out of 1
+
+Total Test time (real) = 184.39 sec
