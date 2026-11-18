@@ -1,286 +1,53 @@
-﻿Anyvoc 0.19 独立版 · 三步开始
+Anyvoc 0.20 独立版 · 新手开始
 
-0.19让八个宏既作为调制来源，也能接受LFO、包络或其他宏的调制。
-全量201组测试通过（75/110/10/6），192.89秒。之后仅修正两处0-100%范围文字乱码，
-重建并补测Processor 110组全部通过，CTest 184.39秒；DSP未因此改变。
-最终0.19.0的pluginval strictness 5再次SUCCESS，seed 0x619c021。
-原生宏拖放、外圈撤销、最小窗口及SAVE→INIT→LOAD已完成；这些检查在文字修复前进行。
-最终四份音频和90张预览已重生成，独立音频分析再次PASS；本机当前宏目标范围已交付。
-Windows包246个文件、完整源码包4638个文件，CRC/安全路径/精确集合/逐文件内容、
-当前文档、PE 0.19.0版本及三份必需演示校验通过。最终报告以外置
-dist/Anyvoc-0.19.0-PackageVerification.json为准。0.19 CI待推送后运行，无GitHub Release附件。
-当前为1256个参数、schema 14、28个工厂音色，保留0.18前1192个参数定义和顺序。
-本地启动入口：dist/Anyvoc-0.19.0-Windows/Anyvoc.exe；Windows ZIP须完整解压后运行。
-自行构建入口：build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe。启动前确认版本。
-已交付的0.18包仍可使用，但没有宏目标。它的历史188组测试、pluginval、音频、
-限定原生操作和包校验见VALIDATION-0.18.md；云端证据见GITHUB_CI-0.18.md。
-0.18原包及更早版本保留原文档和哈希，旧验收不代替0.19；本版记录见VALIDATION-0.19.md，当前汇总见VALIDATION.md。
+从 PLAY 页面开始：选一个音色，弹奏，再试着调出自己的声音。
 
-1. 双击 Anyvoc.exe。
-2. 点顶部音色名称打开浏览器，搜索 Copper Bell（采样钟声）或 Northern Lights（铺底音色），双击结果加载。
-3. 用鼠标按住底部钢琴白键。松开后声音会逐渐结束。
+1. 先让它发出声音
+使用独立版 ZIP 时，先完整解压，再双击里面的 Anyvoc.exe，不要在压缩包内运行。
+启动后默认进入 PLAY。点 CHOOSE A SOUND，选一个音色，再点 LOAD SOUND。
+只选中列表中的名字不会换音色，必须加载后再试听。
+用鼠标按住底部钢琴白键；松开后，声音会按音色的设置逐渐结束。
 
-试宏目标（0.19）：
-  BROWSE 搜索 Performance / Prism Handle，双击加载，按住琴键。
-  转底部MACRO 1：一个宏同时控制截止、OSC A波表位置和第一层Warp。
-  旋钮数字是你编辑的基础值base；下方EV是实际有效值，不会反写旋钮或自动化。
-  EV: latest voice表示最新活动声部，包含release；和弦各音可不同，不是平均值。
-  EV: idle base表示没有活动声部，显示平滑基础值；基础值有15ms平滑。
-  载入或PANIC尚待音频回调时先显示当前参数基础值，避免留下旧声部读数。
+2. 如果没有声音
+打开独立版的 Options → Audio settings，选择你正在使用的耳机、音箱或声卡输出。
+检查系统音量与插件的主音量，再按底部琴键试听。
+先用鼠标琴键确认能发声，再连接 MIDI 键盘。
 
-  再试 Motion / Breathing Prism：基础值20%，Trigger三角LFO 1以0.4Hz运行，
-  Unipolar、60%深度调入Macro 1；按住琴键，旋钮仍20%，EV和三项声音目标一起变化。
-  松键后仍可能有release，等声部结束才显示idle base。
+3. 在 PLAY 调整声音
+TONE：控制 Filter A（滤波器）。先切到 ON，再试着拖动 CUTOFF 和 RESONANCE。
+  CUTOFF 在低通模式下通常越高越明亮；其他滤波类型的变化不同。
+  RESONANCE 加强截止频率附近的声音。
+  OFF 时这两个旋钮变暗、不可调整；重新 ON 会保留原来的设置。
+  如果变化听不出来，点 TONE 的 EDIT，到 FILTER 检查音源是否经过 Filter A。
 
-  自己接线：从Prism Handle开始，把顶部LFO 1拖到底部MACRO 1旋钮。
-  也可用SOURCES选来源；底部1–4 / 5–8切换八个宏的两组，换组不改声音。
-  MOD矩阵目标可选Macro 1–8；EDIT里选Unipolar使LFO只向上增加，再调AMOUNT。
-  选中来源后拖宏外圈改路由深度，中心仍调基础值；Shift细调，右键管理路由。
-  重复投放同一来源和目标会保留设置并重新启用，不复制新行；UNDO撤回有效编辑。
-  外圈只是当前一条路由的名义范围，实际值看EV。入路相加后限制在0–100%。
-  基础旋钮0%并不代表有调制入路时EV也是0%。
+NOTE SHAPE：控制一个音符怎样开始、保持和结束。
+  ATTACK：起音需要多久。DECAY：从最响降到持续音量需要多久。
+  SUSTAIN：按住琴键时保持的音量，不是持续时间。
+  RELEASE：松开琴键后，声音淡出需要多久。
+  如果启用了 BPM 同步，ATTACK、DECAY、RELEASE 显示节拍长度，只能查看。
+  此时点 EDIT 修改节拍长度；SUSTAIN 仍可直接调整。
 
-  AUX例子：LFO 2→Pan，AUX SOURCE选Macro 1，左右摆动跟随宏的实际有效值。
-  Original极性下EV为0%关闭该路由，为100%完整放行；None不额外缩放。
-  可把Macro 1接到Macro 8，再将Macro 8接回Macro 1；各声部独立计算。
-  每采样先用平滑base加前一采样入量，再计算下一采样；不是延迟一整音频块。
-  新声部/PANIC清入量，Legato和release延续；最后有效入路删除生效后回到base。
-  反馈和高速调制可能剧烈变化或混叠，可从小深度开始比较。
+SPACE：ECHO 增减回声，REVERB 增减混响。
+  想调整回声间隔或混响空间大小，点 EDIT 进入 FX。
 
-  Anyvoc-v0.19-Macro-Demo.wav的生成方法见BUILDING.md；最终重渲染后的独立PCM分析已通过。
-  四份WAV哈希与文字修复前相同，旧示例与0.18程序新渲染逐字节相同；Motion/Chaos哈希也一致。
-  20秒分四段，每段5秒：
-  0–5秒：Macro 1基础40%，三条出路控制截止、波表位置和Warp。
-  5–10秒：增加Trigger三角LFO 1→Macro 1，0.4Hz、Unipolar、40%深度。
-  10–15秒：增加LFO 2→Pan，1.2Hz、65%深度，AUX选Macro 1。
-  15–20秒：再加Macro 1→Macro 8（base10%、深度50%）及Macro 8→Macro 1（20%），
-  Pan的AUX改Macro 8。前两段只增加一条路由，后两段改变组合接线，不是单参数对比。
+4. 让声音自己变化
+先打开 TONE 的 ON，再点 MOD SOURCES，找到 LFO 1。
+把 LFO 1 拖到可高亮接收的 CUTOFF、RESONANCE 或底部宏旋钮上。
+拖拽时来源面板会收起；按住琴键试听变化。
+旋钮中间调整原来的基础值，彩色外环调整当前选中那条调制的深度。
+拖外环时按住 Shift 可以细调；想看完整接线，进入 MOD 页面。
+NOTE SHAPE、ECHO 和 REVERB 不是这里的拖拽目标。
 
-0.19已完成的原生检查（两处显示文字修复前）：
-  Prism Handle中拖LFO 1到Macro 1，base保持40%，演奏时EV 46.2%、latest voice和绿表可见。
-  外圈25%调到40%，一次UNDO回25%；切5–8组拖Macro 1到Macro 8，base 0%、EV 15.7%。
-  实际1008×684最小窗口宏区和琴键完整。EV为当时快照，不是预设固定读数。
-  真实SAVE对话框保存Native19-Macros.anyvoc，独立确认59175字节、schema 14。
-  INIT后真实LOAD恢复行4 LFO1→Macro1 +25%、行5 Macro1→Macro8 +25%；
-  C4绿表可见，Macro8 base0/EV15.7。退出测试进程后恢复原设置，核对SHA一致。
-  详见native-0.19.json；未覆盖程序重启、外部资产重载、真人听音或DAW，文字修复后未重复原生流程。
+5. 保存、撤销和深入编辑
+点顶部 SAVE，给音色起一个新名字，保存为 .anyvoc 文件；以后用 LOAD 读回来。
+调错了点 UNDO 撤销，想恢复刚撤销的操作点 REDO。
+顶部 PLAY / SYNTH / FILTER / MOD / FX 都在编辑同一个音色，切页不会重置它。
+PLAY 下方 GO DEEPER 也能进入完整页面：
+  SOURCES / SYNTH：选择发声音源。TONE / FILTER：调整滤波。
+  MOVEMENT / MOD：编辑 LFO、包络和接线。FINISH / FX：调整效果。
 
-0.19最终图形记录：
-  90张预览已重生成；新增Macro-Live和Macro-Bank2-Live各两尺寸，四张在文字修复前检查。
-  Macro-Routing两尺寸在修复后重新查看，0-100%显示正常，无裁切。
-  其余84张虽已重生成，不宣称全部人工复查。日志见preview-0.19-text-fix.txt。
-
-试 LFO 绘图工具（0.18已有）：
-  加载 Motion / Painted Steps → MOD → LFO 1 的 EDIT LFO → TOOLS。
-  TOOLS替换下半区控制，画布和琴键仍可用；CONTROLS返回速度、波形和插值控制。
-  Draw在画布绘制；Select拖出包含两端点的选区。默认全选；SELECT ALL重选33点。
-  X GRID / Y GRID独立设置1/2/4/8/16/32格，默认32/4；SNAP X/Y默认关闭。
-  开启吸附只影响新绘图，不改变旧点；半格位置取右边/上边。Select不受吸附影响。
-  FLIP X反转选区左右顺序；FLIP Y以0为中心反转正负。选区外保留。
-
-  组合示例：选Select，从第9点拖到第25点，确认SELECTED 9 - 25。
-  设置X OFFSET=2、Y OFFSET=0.1、WIDTH=1.5、HEIGHT=0.7，再点APPLY TRANSFORM。
-  X按点位移，1点=1/32周期；WIDTH围绕选区中点，HEIGHT围绕0。
-  Y在高度缩放后相加，结果限制在-1到+1；越过选区边界时保持端点，不绕回。
-  一次APPLY是一次有效声音编辑；暂存的四个数值仍保留，再点会继续变换。
-  用琴键比较，再点顶部UNDO撤回；选区和工具数值不随声音撤销。
-  要另存修改后的曲线，先REDO，再SAVE CURVE为 Painted Steps Variation.anycurve。
-  若UNDO后直接保存，保存的就是撤销后的原曲线。
-
-  POINT选第1–33点，VALUE输入-1到+1，点SET才提交单点；网格不影响数值输入。
-  实际点值仍按0.01精度保存：0.125约为0.13，0.0625约为0.06。
-  即使显示三位小数，绘图、变换、粘贴、载入也遵守该精度；细网格可能略有偏移。
-  COPY CURVE / PASTE CURVE跨LFO或实例复制整条曲线；忽略当前选区。
-  LOAD CURVE / SAVE CURVE使用最多16KiB的独立.anycurve文件。
-  曲线文件和剪贴板只带33点及Linear/Step插值，不带速度、相位、路由或完整音色。
-  高精度文件写入声音时会量化；再次COPY/SAVE导出实际存值。坏文件会报错并保留声音。
-  Paste/Load明确替换整条资产并选Custom；Basic/Random即使点相同，也有一次可撤销编辑。
-  已Custom时重复相同数据无新撤销；无变化的FLIP/SET/APPLY也不改变波形或撤销历史。
-  基础波形从可见的33点采样编辑；Random工具页编辑SAVED CUSTOM CURVE，不是实时随机输出。
-  Lorenz/Rossler可打开TOOLS，但所有曲线工具禁用；回CONTROLS切换波形后再编辑。
-  选区、网格、吸附、工具模式和暂存数值只属于当前界面，各LFO独立，不写入音色或曲线文件。
-  这些查看操作及COPY/SAVE CURVE都不改变声音。顶部SAVE才是完整.anyvoc音色保存。
-  选文件期间关闭工具页、切换LFO或改变相关声音状态，会取消迟到的载入/保存。
-
-0.18历史原生验证范围（不代替0.19本轮验收）：
-  在Neon Skyline中通过系统SAVE CURVE对话框保存Native18-Sine.anycurve，
-  文件1121字节，独立解析确认33点；Select第9–25点、FLIP Y后一次UNDO复原。
-  通过原生LOAD CURVE载入该文件，CONTROLS确认Custom；按C4观察绿色输出电平，UNDO回Sine。
-  最小窗口工具和琴键无裁切；LOAD CURVE后按Escape取消，声音状态保持。
-  共生成84张预览，新增4张工具预览逐张检查无裁切。
-  0.18当时没有实测系统剪贴板、完整.anyvoc音色的原生保存并重新打开、外接MIDI、真人听音或DAW。
-  自动测试的复制粘贴/文件回调使用可注入的平台服务，不代表系统剪贴板已实测。
-  .anycurve曲线文件的真实保存载入，不能代替完整音色或DAW工程的保存重开验证。
-
-试 Chaos LFO（0.17已有）：
-  BROWSE 搜索 Motion / Butterfly Current，双击加载 → MOD → LFO 1 的 EDIT LFO。
-  按住琴键：Lorenz 让截止频率和 OSC A 的波表位置持续变化。
-  EVOLUTION SPEED 默认1.80；调慢或调快，比较运动，再用 UNDO 恢复。
-  再试 Texture / Spiral Drift：Rossler、速度0.70、Free，让截止与声像演化。
-  0.17新增这两个音色至26个；0.18保留26个，0.19追加两宏预设至28个。
-  SHAPE 共8项：Sine、Triangle、Saw、Square、Random、Custom、Lorenz、Rossler。
-  Lorenz / Rossler 的数值是演化速度，不表示“每秒重复几次”。
-  RATE MODE 仍可选 Free Hz / Tempo / Audio Rate；Tempo 和 FOLLOW SWING 改变演化速度。
-  Free 持续运行；Trigger 在声部真正重新起音时重开，遵循 Mono / Legato 规则。
-  Envelope 按 Rate / Beat 运行一个名义周期后保持，轨迹不必回到起点。
-  图左是实际引擎的 X-Y 轨迹，右是近期 X 输出，下方是归一化 XYZ 读数。
-  Free 显示共享状态；Trigger / Envelope 显示最近活动声部，没有活动声部时保留读数。
-  只记录界面刷新取得的真实快照，连续重复值会省略；横向间距不是均匀音频时间。
-  图形不会自行推进声音；切算法、播放模式或恢复音色时清空历史，再积累匹配的新轨迹。
-  尚无匹配读数时的全零XYZ不画成样点，不会连入旧轨迹；其他静止非零点仍显示。
-  Chaos 下 PHASE、DIRECTION、插值、画布绘制和5个曲线按钮不可用。
-  原相位、方向、曲线点及路由仍保存；相位路由在 Chaos 下不生效，也不能向 PHASE 拖放。
-  选 Custom 可继续编辑旧曲线，选周期波形后可重新使用相位与方向。
-  SAVE 保存声音设置，不保存实时轨迹；0.17新文件需要0.17或更新版本，请另存并保留旧文件。
-  Anyvoc-v0.17-Chaos-Demo.wav 是20秒对比：前10秒Lorenz，后10秒Rossler。
-  0.17验收时已检查两算法实际读数与输出表、速度修改与撤销、Free无按键演化和Envelope短音后保持。
-  当时原生检查未单独计时Envelope完整名义周期；该行为由当时的自动测试验证。
-  以上为0.17历史原生检查，不替代0.19本轮验证；0.18验收时Motion/Chaos重渲染与旧文件逐字节相同。
-  0.18当时.anycurve原生保存载入已测；完整.anyvoc音色原生保存重开、真人听音和DAW仍未测。
-
-试新的 LFO 运动控制：
-  加载 Motion / Swing Carousel → MOD → EDIT LFO。
-  将 SWING 从60%调到0%，比较节奏；DIRECTION 可选反向或往返。
-  PHASE 改变起点，LIVE 游标显示当前运行位置；调错可以 UNDO。
-  FOLLOW SWING 只在 Tempo 模式生效，下方全局 Swing 供所有 LFO 共用。
-  再试 Keys / Phase Lantern，Audio Rate 在110和220 Hz之间比较。
-  将来源拖到 PHASE 旋钮可以调制 LFO 相位，矩阵中也能选择该目标。
-  Random、Lorenz、Rossler 不使用相位和方向，显示 N/A；切回周期波形后恢复原设置。
-  Anyvoc-v0.16-Lfo-Motion-Demo.wav 是20秒试听，每4秒一段：
-  Swing关 → Swing60% → 加反向 → 高速110Hz → 高速220Hz。
-  历史0.16版能读取更早音色；0.17继续读取0.16及更早音色，旧音色默认不开启Chaos。
-
-试包络编辑器：
-  加载 Motion / Clockwork Bloom → SYNTH → AMP ENVELOPE 的 EDIT。
-  Envelope Lab 顶部可选择 Amp / Filter / Env 3 / Env 4。
-  拖图中节点调整时长或保持电平，拖曲率手柄改变起音和衰减形状。
-  DELAY 是起音前等待，HOLD 是峰值保持；SUSTAIN 平台表示按住琴键。
-  BPM 开启时各时间用节拍分割，关掉后回到原来的秒值。
-  120 BPM 的 1/4 是500毫秒，1/8 是250毫秒；Instant 跳过该时间段。
-  想输入精确值，用图下方控件；调错后用 UNDO 撤回一次拖动。
-  Lead / Second Breath 示范连奏时滤波包络独立重触发。
-  用 MIDI 键盘按住一个音再按另一个，切 Filter 的 RETRIGGER IN LEGATO 比较。
-  Anyvoc-v0.15-Envelopes-Demo.wav 是20秒对比，每4秒一段：
-  直线包络 → 弯曲包络 → 加快BPM → 连奏重触发关 → 连奏重触发开。
-
-试 LFO、包络和宏：
-  加载 Motion / Prism Weave → MOD。
-  两张 LFO 卡的标题可选择 LFO 1–10，试选 LFO 10 并点 EDIT LFO。
-  右侧包络卡可选择 Amp Env / Filter Env / Env 3 / Env 4。
-  底部宏区点 5–8，转动 Macro 5，改变包络推动 Warp 的程度。
-  顶部 SOURCES 可找到所有来源，再拖到目标旋钮上。
-  再试 Pad / Four Horizons，Macro 8 控制左右摆动深度。
-
-试调制矩阵：
-  加载 Motion / Tide Machine → MOD → 第一行 EDIT。
-  AUX SOURCE 选 Macro 1，按住琴键，转动底部 MACRO 1。
-  Macro的实际有效值为0时关闭这条扫频，增加后逐渐放行；宏有入路时不能只看基础值。
-  POLARITY 选 Unipolar 会让 LFO 只向一个方向调制；CURVE 改变响应节奏。
-  BACK 返回矩阵。ON / OFF 可旁通对比，X 清空一行，UNDO 恢复。
-  矩阵共有32行，左右翻页；EXPAND 展开后可滚动，拖最左小点可移动整行。
-  已写好的宿主自动化仍跟随行号；排序不会自动移动宿主自动化片段。
-  移动完整行能保留设置，但各参数不是同时发布，演奏中移动可能有短暂过渡。
-
-试新的金属音色：
-  BROWSE 搜索 Phase Alloy，双击加载 → OSC A 的 WARP。
-  按住琴键，转动第一层 AMOUNT。来源 OSC B 的 LEVEL 为 0 也能改变 A 的声音。
-  DONE 返回；调 B 的 SEMI 和 WAVE，可以改变谐波和金属感。
-  再试 Bass / Vector Steel；MACRO 1 可以增加 FM 强度。
-  FM 改变频率，PM 移动相位，AM 改变音量，RM 将两个信号相乘。
-  SOURCE 选择来源；选自己会显示 SELF FEEDBACK。两层都支持 LFO / Macro 调制。
-  上方波形只预览经典变形，不显示实时跨声源调制，请按琴键试听。
-  Anyvoc-v0.12-Crossmod-Demo.wav：每3秒依次听原声、FM、PM、AM、RM。
-
-第一次调音：
-  CUTOFF：往左拖会让声音更暗。
-  AMP ENVELOPE 的 ATTACK：增大后声音慢慢出现。
-  RELEASE：增大后松开琴键仍会留下尾音。
-  FX 页 REVERB：增加空间感。
-  把顶部 LFO 1 拖到 CUTOFF，可以让声音自动变化。上下拖旋钮外圈调强度，Shift 可细调。
-  单击 LFO / MACRO 标签查看它的外圈；拖旋钮中心仍调基础值。
-  外圈往下可调成负值；双击归零，保留路由。MOD 页仍可输入精确数值。
-  一目标多条路由时，右键选 Route → Edit this route on the knob。外圈只代表选中的一条。
-  振荡器的 EDIT 打开大面板；DONE 返回。
-  SAVE 保存自己的音色，LOAD 读取。INIT 回到初始音色。
-  调错后点顶部 UNDO 撤回一步，REDO 恢复。一次旋钮拖动算一步。
-  Ctrl+Z 撤销，Ctrl+Y 或 Ctrl+Shift+Z 重做；输入文字时用于文字编辑。
-  本机已实测顶部按钮；快捷键若没有响应，请先点 UNDO / REDO。
-  换预设、导入声音和画曲线也能撤回，最多64步；重新打开程序后历史清空。
-  SAVE / EXPORT 已写入的文件不会被撤销。
-
-试滑音与连奏：
-  搜索并加载 Lead / Ribbon Glide，用鼠标依次点低音、高音，听音高滑动。
-  SYNTH 页右侧 PERFORMANCE 区域点 VOICING 打开演奏面板。
-  Poly 同时弹多个音；Mono 一次一个音并重新起音；Legato 在重叠按键间保持连奏。
-  GLIDE 设置滑动用时；ALWAYS 开启后，分开弹也滑音，适合鼠标试玩。
-  下方 PHASE 调起始位置，RANDOM 调随机范围；仅用于波表。
-  想要稳定起音，关闭 RANDOM UNISON，并把 RANDOM 设成 0%。
-  修改相位后重新按键才能生效；DONE 返回。切换演奏模式后也请重新按键。
-  Anyvoc-v0.8-Voicing-Demo.wav 是12秒对比，每3秒依次为复音、单音、连奏、连奏加滑音。
-
-找音色与收藏：
-  点击顶部名称或 BROWSE 打开 PRESET LIBRARY，输入名字或类别搜索。
-  单击只选中；双击、Enter 或 LOAD SOUND 才加载。底部琴键试听当前已加载的音色。
-  点击星标收藏，再用收藏筛选快速找到常用音色。
-  SAVE 默认存入“文档/Anyvoc/Presets”，可建立子文件夹分类。
-  放入新文件后点 REFRESH。顶部 LOAD 也能读取其他位置的 .anyvoc。
-  自存音色名称会跟随工程保存；收藏保存在本机，文件改名或移动后需要重新收藏。
-
-试颗粒合成：
-  选 Granular / Cloud Bell → 点击 OSC A 的 EDIT → 按住琴键试听。
-  CENTRE 改变取样位置，GRAIN SIZE 改变颗粒长度，SPRAY 增加随机变化。
-  可以导入自己的 WAV（最长20秒、单声道或立体声）。
-
-没有声音：
-  点左上角 Options → Audio settings，选择电脑实际使用的输出设备。
-  检查系统音量、MASTER、OSC A 的 LEVEL。
-  卡住的音符可用 ALL NOTES OFF 停止。
-
-画声音变化：
-  选 Motion / Painted Steps → MOD → LFO 1 卡片的 EDIT LFO。
-  在大画布里拖动，画出自己的曲线。按住琴键可试听滤波变化。
-  RATE MODE 选 Tempo 跟随顶部 BPM 或宿主速度；Free Hz 使用 RATE。
-  Trigger 每次按键从头循环，Envelope 只运行一次，Free 连续运行。
-  Linear 是平滑连线，Step 是阶梯变化。DONE 返回。
-  曲线和其他参数一起保存在 SAVE 音色里。
-
-Anyvoc-v0.2-Demo.wav 是15秒试听：前5秒铺底，中间5秒采样钟声，最后5秒颗粒。
-
-自己画波形：
-  选 INIT → OSC A 的 EDIT，打开 Wavetable Lab。
-  在波形画布上拖动；松开鼠标后生效，用底部琴键试听。
-  HARMONICS 调整谐波强度，增加高次谐波会使声音更亮。
-  PHASE 调每个谐波的相位；先给谐波增加强度，再画相位。0° 是正弦，90° 是余弦。
-  页选择可查看第1–1023阶，每页最多64个；高次谐波不一定能在当前音高听到。
-  相位重置/随机化只作用于当前页。切页或切视图不会改动声音。
-  复制帧后编辑不同波形，再用 WAVE 旋钮或 LFO 扫过不同帧。
-  FROM / TO 选两端，之间至少留一帧；选 Spectral 再按 MORPH，会按谐波强度和相位生成中间帧。
-  Waveform 是原有波形混合；Spectral 可以避免反相波形在中点完全抵消。
-  TABLE UNDO / TABLE REDO 回退与恢复波表操作，REVERT 回到打开时的波表。
-  顶部全局 UNDO 改变波表时会关闭旧编辑会话；重新点 EDIT 继续。
-  EXPORT 保存 WAV 波表；保存完整音色仍用顶部 SAVE。
-
-这是持续开发中的原创合成器，目前不等同于 Serum 2，也不读取 Serum 音色文件。
-你已选择先用独立版；FL Studio 安装与工程重开测试留待之后完成。
-
-试双滤波器：
-  选 Motion / Dual Current → FILTER。
-  拖 A/B 的 CUTOFF，或拖响应曲线；底部琴键可以随时试听。
-  A > B 是串联，Parallel 是并联；并联时 BALANCE 混合两条分支。
-  每个声源都能选 Both、A only、B only、Bypass；SUB 的 Bypass 可保留低音。
-  关闭滤波器相当于原声通过；并联时仍占用这一条分支。
-  将 LFO 1 拖到 FILTER B 的 CUTOFF，可自动扫频；右键旋钮修改强度。
-  预设已设置好 LFO 扫描，MACRO 1 控制 FILTER B 的共振。
-
-试两层波形变形：
-  选 Motion / Folded Orbit → OSC A 的 WARP。
-  每层先选模式，再调 AMOUNT；两层按 1 → 2 的顺序叠加。
-  上方曲线显示基础波形变化；底部琴键可以随时试听。
-  Bend 弯曲波形，Pulse Width 改变脉宽，Sync 增加周期内重复，Fold 折叠幅度。
-  把顶部 LFO 或 Macro 拖到 AMOUNT，可让声音持续变化。
-  这个预设的 MACRO 1 已控制第二层 Fold；慢慢向右拖来试听。
-  Off 或 AMOUNT 0% 不改变声音；DONE 返回主页面。
-  WARP 目前用于 Wavetable，源波表不被覆盖，完整设置用 SAVE 保存。
-
-Anyvoc-v0.6-Warp-Demo.wav 是12秒对比，每3秒依次听：
-  原声 → 第一层 Bend + → 两层 Bend + / Fold → 两层加入 LFO。
+版本与更多说明
+包内 PLAY 说明见 docs/UI_WORKFLOW.md；完整功能说明见 docs/USER_GUIDE.md。
+本版测试、发行包检查和音色格式兼容记录见 docs/VALIDATION-0.20.md。
+需要自行构建时再看 docs/BUILDING.md。
+如果从源码的 docs 目录打开本文件，上述说明就在同一目录。

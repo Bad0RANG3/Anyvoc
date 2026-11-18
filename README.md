@@ -1,35 +1,39 @@
 # Anyvoc
 
-面向 Windows 的原创波表、采样与颗粒合成器，提供 **独立程序和 VST3 乐器插件**。当前版本 **0.19.0** 新增八个宏作为调制目标、独立的实时有效值显示及两个示例音色；本机 201 组自动测试、声音回归和发行包校验通过。项目优先完善独立版的调音体验。
+面向 Windows 的原创波表、采样与颗粒合成器，提供**独立程序和 VST3 乐器插件**，优先完善初学者的调音体验。
 
-项目以 Serum 2 的功能与操作体验为长期参考，目前仍在开发中。**尚未实现完整功能或声音一致性，不支持 Serum 预设，也不包含 Xfer 的代码、素材或品牌界面。**
+**当前版本：0.20.0，本机限定范围验收及 Windows／源码包交付已完成。** 运行入口见下方，未测范围见文末。
 
-![Anyvoc macro modulation and live effective values](docs/images/Macro-Live.png)
+在 0.20 独立版中，点 **CHOOSE A SOUND → 选音色 → LOAD SOUND**，再按住底部琴键就能试听。第一次使用从[新手开始](docs/快速开始.txt)读起。
 
-| 想了解什么 | 从这里看 |
+项目以 Serum 2 的功能与操作体验为长期参考。**目前没有达到完整功能或声音等价，不支持 Serum 预设，也不包含 Xfer 的代码、素材或品牌界面。**
+
+## 0.20 做了什么
+
+- **先选音色，再调声音。** 默认 PLAY 页提供 `CHOOSE A SOUND → LOAD SOUND → 底部琴键`，集中显示 TONE、NOTE SHAPE、SPACE；SYNTH、FILTER、MOD、FX 完整页面继续保留，编辑的是同一个音色。
+- **独立复制调制路由。** COPY 将一行的全部 19 个设置复制到第一条完全空行，支持一次撤销。不会覆盖保存了设置的草稿；启用的副本会立即参与调制。旋钮菜单也支持一次删除通往该目标的所有有效来源路由。
+- **让音频接收完整接线。** 32 行共 608 个路由字段统一发布；组合编辑进行中，音频继续使用上一份完整接线，完成后才接收新接线。范围与中断规则见[路由说明](docs/ROUTE_PUBLICATION.md)。
+
+已有能力包括三个振荡器、双滤波器、双层 Warp、四条包络、十个 LFO、32 行调制矩阵、八个可受调制的宏、四类效果、琶音器和 28 个工厂音色。波表、采样、颗粒、Custom／Chaos LFO 与曲线工具继续可用。**本轮不新增声音参数或音色格式：仍为 1,256 个宿主参数、schema 14、28 个工厂音色。**
+
+当前独立版与 VST3 已构建，**完整 210 组测试和 pluginval strictness 5 通过**；四份演示与冻结的 0.19 文件逐字节一致，宏演示独立分析通过。实际窗口检查涵盖 PLAY、COPY 三个入口、撤销与副本独立编辑、按目标批量删除和最小窗口；发行包完整性校验已通过。初轮失败、修正与验证边界见[0.20 记录](docs/VALIDATION-0.20.md)。对应提交的云端验证尚未记录。
+
+| 想做什么 | 从这里看 |
 | --- | --- |
-| 目前做到哪、哪些已经验证 | [项目现状](docs/STATUS.md) |
-| 下一步做什么、每阶段怎样算完成 | [开发路线](docs/ROADMAP.md) |
-| 如何测试、验收、记录失败 | [测试与验收](docs/TESTING.md) |
-| 从 GitHub 克隆、编译、运行、打包 | [构建与贡献](docs/BUILDING.md) |
-| 小白如何发声和调音 | [三步开始](docs/快速开始.txt) · [完整使用手册](docs/USER_GUIDE.md) |
-| 版本验证结果和原始日志 | [验证报告](docs/VALIDATION.md) · [0.18 归档](docs/VALIDATION-0.18.md) · [0.17 归档](docs/VALIDATION-0.17.md) |
-
-当前能力包括 3 个振荡器、双滤波器、双层 Warp 与 FM/PM/AM/RM、4 个可绘制包络、10 个 LFO、32 行调制矩阵、8 个宏、4 类效果、琶音器和 28 个工厂音色。LFO 支持自绘曲线、相位、方向、Swing 和 20–1000 Hz 高速模式；0.17 新增 Lorenz／Rössler 连续混沌与实际引擎轨迹显示。Chaos 的 Rate 表示演化速度，Phase／Direction 在该模式下不适用。
-
-**0.19 的宏目标：**将 LFO 或包络拖到下方宏旋钮，再用这个宏控制多个参数；也可在矩阵选择 Macro 1–8。旋钮编辑保存的基础值，EV 显示最新活动声部实际使用的值。支持两组宏、外圈深度、主来源/AUX 和一采样反馈。原 1,192 个宿主参数保留，末尾追加 64 个，共 1,256；状态为 schema 14。计算、兼容及限制见[宏目标说明](docs/MACRO_TARGETS.md)。
-
-**当前验证：**完整四套 **201 组（75/110/10/6）**通过；最终界面文字修复后 Processor 110 组补测与 pluginval strictness 5 再次通过。旧 15 秒演示与留存 0.18 程序重渲染结果逐字节一致，新 20 秒四段宏演示通过独立分析。原生检查覆盖两组宏拖放、base/EV、外圈撤销、最小窗口，以及宏音色 SAVE→INIT→LOAD 后恢复路由和演奏电平；该原生会话发生在最后两处文字修正之前。测试范围、包校验和限制见[验证报告](docs/VALIDATION.md)。推送后的 [bf3efc6 云端干净构建](docs/GITHUB_CI-0.19.md)另确认四套 201 组通过，约 204.59 秒；JUnit 程序状态与完整日志内部计数已分别核对。
-
-**历史交付：**0.18 的 LFO 绘图工具／`.anycurve` 已交付，[对应云端构建及 188 组测试](docs/GITHUB_CI-0.18.md)通过，原发行包保留原哈希。0.17 的 Chaos 实现及其[175 组云端测试](docs/GITHUB_CI-0.17.md)也保留独立记录。旧版 CI 不替代 0.19 的实际运行。
-
-**仍待完成：**更多调制目标、音频侧整组路由发布、独立路由复制、多采样/SFZ、频谱振荡器、效果总线、Clip、MPE 和其他平台。当前未实测外接 MIDI、真人听音、系统剪贴板或 DAW 工作流；宏音色载入检查不等于所有外部素材和程序重启恢复均已验证。
+| 第一次选音色、发声、调音 | [新手开始](docs/快速开始.txt) · [PLAY 操作说明](docs/UI_WORKFLOW.md) |
+| 了解现在的能力与未测范围 | [项目现状](docs/STATUS.md) |
+| 了解接下来怎么做 | [开发路线](docs/ROADMAP.md) |
+| 使用已有完整编辑功能 | [使用手册](docs/USER_GUIDE.md) |
+| 编译或参与开发 | [构建指南](docs/BUILDING.md) · [测试指南](docs/TESTING.md) |
+| 查验证结果与历史证据 | [0.20 当前记录](docs/VALIDATION-0.20.md) · [0.19 归档](docs/VALIDATION-0.19.md) · [0.19 云端记录](docs/GITHUB_CI-0.19.md) |
 
 ## 运行与构建
 
-本机 0.19 发行包已生成并核验，入口为 `dist/Anyvoc-0.19.0-Windows/Anyvoc.exe`。使用 Windows 发布 ZIP 时，先完整解压再运行 `Anyvoc.exe`。Windows 包有 246 个文件，完整对应源码包有 4,638 个文件；最终大小和 SHA-256 记录于包外的 `dist/Anyvoc-0.19.0-PackageVerification.json`。Git 仓库保存源码、文档、截图和测试记录，**不提交 EXE、VST3、WAV 或历史发布 ZIP**；尚未上传 GitHub Release 附件，GitHub 的 “Download ZIP” 是源码包。从源码构建的步骤见构建指南，0.18 及更早的历史包保留。本次云端证据是交付后的仓库补充；冻结的 0.19 ZIP 及包内文档仍为 `bf3efc6` 时的快照，未为补充 CI 记录重打包。
+本机 0.20 入口：`dist/Anyvoc-0.20.0-Windows/Anyvoc.exe`。使用 Windows 发布 ZIP 时，先完整解压再运行根目录的 `Anyvoc.exe`。Windows／完整源码包已核对文件集合、逐文件内容和 0.20.0 版本；最终记录在包外的 `dist/Anyvoc-0.20.0-PackageVerification.json`。0.19 及更早的冻结包保持原样。
 
-在安装 Visual Studio 2022 C++ Build Tools、Windows SDK、CMake ≥ 3.22 和 Git 后，使用 PowerShell：
+Git 仓库保存源码、文档和验证记录，不提交 EXE、VST3、WAV 或发布 ZIP；尚未上传 GitHub Release 附件。GitHub 的 “Download ZIP” 是源码，不能直接运行。
+
+安装 Visual Studio 2022 C++ Build Tools、Windows SDK、CMake ≥ 3.22 和 Git 后，可在 PowerShell 中构建所检出的版本：
 
 ```powershell
 git clone --recurse-submodules https://github.com/Bad0RANG3/Anyvoc.git
@@ -37,12 +41,10 @@ cd Anyvoc
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1
 ```
 
-生成的独立版：`build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe`。VST3：`build/Anyvoc_artefacts/Release/VST3/Anyvoc.vst3`，它是整个插件目录。
+版本以检出提交的 `CMakeLists.txt` 为准。独立版输出为 `build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe`；VST3 输出为 `build/Anyvoc_artefacts/Release/VST3/Anyvoc.vst3`，安装时须保留整个插件目录。JUCE 固定为 8.0.12，详细环境与验证命令见构建指南。
 
-JUCE 固定为 8.0.12 的 commit `29396c22c93392d6738e021b83196283d6e4d850`。GitHub Actions 配置为 Windows 2022 上构建和运行四套自动测试；**具体提交是否通过以 Actions 的实际结果为准**。它不会替代 pluginval、本机音频设备和 DAW 测试。
+## 还缺什么
 
-## 开发约定与许可
+更多调制目标、多采样/SFZ、频谱声源、效果总线、Clip、MPE 和其他平台尚未完成。**FL Studio 等 DAW、外接 MIDI 和真人听音仍待实测**；pluginval 与屏幕输出电平不能代替这些检查。完整素材恢复、程序重启后恢复和实时高负载体验也需要继续验证。
 
-保持旧参数 ID、顺序、选项和默认值；新参数追加并提供状态迁移。改动需要相应的音频、状态或 UI 验证，已知问题不能通过删除断言或放宽容差掩盖。详见[构建与贡献](docs/BUILDING.md)和[测试与验收](docs/TESTING.md)。
-
-原创代码采用 [AGPL-3.0](LICENSE)，依赖及分发要求见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。本项目独立于 Xfer Records。
+开发须保留旧参数 ID、顺序和状态兼容，为行为变化补充音频、状态或界面验证。原创代码采用 [AGPL-3.0](LICENSE)，依赖与分发要求见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。本项目独立于 Xfer Records。

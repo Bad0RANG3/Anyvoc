@@ -5,6 +5,7 @@
 #include <atomic>
 #include <cstdint>
 #include <functional>
+#include <vector>
 
 class AnyvocAudioProcessor : public juce::AudioProcessor
 {
@@ -69,8 +70,18 @@ public:
                           const std::function<bool()>& isCurrent = {});
     anyvoc::ModRoute getModulationRoute(int route) const;
     void resetModulationRoute(int route);
+    // Clears the menu's routes (non-Off source, including bypassed rows) in one
+    // publication/Undo. Off drafts are preserved. False means unavailable or
+    // interrupted, not rollback; no matching routes is a successful no-op.
+    bool resetModulationRoutesToDestination(int destination, const std::function<bool()>& isCurrent = {});
     // Moves the complete route and shifts intervening rows. Host IDs stay tied to rows.
     void moveModulationRoute(int from, int to);
+    enum class ModulationCopyStatus { copied, emptySource, noEmptySlot, busy, cancelled, invalidRoute };
+    struct ModulationCopyResult { ModulationCopyStatus status; int destination = -1; };
+    // A row is empty only when all 19 stored fields equal their defaults.
+    // Copies to the first such row without shifting or merging existing routes.
+    bool isModulationRouteEmpty(int route) const;
+    ModulationCopyResult copyModulationRoute(int source, const std::function<bool()>& isCurrent = {});
     int getModulationDestination(int route) const;
     void setModulationDestination(int route, int destination, const std::function<bool()>& isCurrent = {});
     // Effective source combines the frozen legacy choice and the appended selector.
@@ -91,7 +102,10 @@ public:
     juce::MidiKeyboardState keyboardState;
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout makeParameters();
-    anyvoc::SynthSettings readSettings() const;
+    anyvoc::SynthSettings readSettings();
+    void readAudioModulationRoutes(std::array<anyvoc::ModRoute, anyvoc::modulationRouteCount>&);
+    void publishModulationParameter(int parameterIndex) noexcept;
+    class RoutePublicationScope;
     void processArp(juce::MidiBuffer&, int, double);
     void clearArp();
     void resetEngine();
@@ -99,7 +113,8 @@ private:
     bool restoreState(const juce::ValueTree&, bool userEdit = false);
     bool applyModulationEdits(const juce::String& label,
                              const std::vector<std::pair<juce::RangedAudioParameter*, float>>& normalizedEdits,
-                             const std::function<bool()>& isCurrent = {});
+                             const std::function<bool()>& isCurrent = {},
+                             const std::vector<float>* requiredBefore = nullptr);
     void applyProgram(int index, bool userEdit);
     class SoundHistory;
     std::unique_ptr<SoundHistory> history;
@@ -130,6 +145,14 @@ private:
     std::atomic<float> *voiceMode,*glideTime,*glideAlways;
     std::array<EnvParams,4> envParams;
     std::array<RouteParams,anyvoc::modulationRouteCount> routeParams;
+    // Fixed storage owned only by prepareToPlay/processBlock. A bounded read
+    // keeps the last complete graph while a compound editor/state edit runs.
+    std::array<anyvoc::ModRoute,anyvoc::modulationRouteCount> audioRoutes {};
+    static constexpr size_t storedRouteFieldCount = 19;
+    std::array<std::atomic<float>,anyvoc::modulationRouteCount * storedRouteFieldCount> publishedRouteFields {};
+    std::vector<int> routeFieldForParameter; // Constructed once, never resized after listeners attach.
+    std::atomic<std::uint32_t> routePublications { 0 };
+    std::atomic<std::uint64_t> routePublicationRevision { 0 };
     std::array<std::atomic<float>*,anyvoc::lfoCount> lfoRates,lfoShapes;
     std::array<std::atomic<float>*,anyvoc::lfoCount> lfoSync,lfoDivision,lfoMode,lfoInterpolation,lfoKind;
     std::array<std::atomic<float>*,anyvoc::lfoCount> lfoPhaseOffset,lfoDirection,lfoFollowSwing,lfoAudioRateEnabled,lfoAudioRateHz;

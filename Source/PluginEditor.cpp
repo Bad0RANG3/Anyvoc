@@ -484,6 +484,40 @@ MatrixRouteSnapshot matrixRouteSnapshot (AnyvocAudioProcessor& processor, int ro
     return snapshot;
 }
 
+juce::String modulationCopyStatusName (AnyvocAudioProcessor::ModulationCopyStatus status)
+{
+    using Status = AnyvocAudioProcessor::ModulationCopyStatus;
+    switch (status)
+    {
+        case Status::copied: return "copied";
+        case Status::emptySource: return "emptySource";
+        case Status::noEmptySlot: return "noEmptySlot";
+        case Status::busy: return "busy";
+        case Status::cancelled: return "cancelled";
+        case Status::invalidRoute: return "invalidRoute";
+    }
+    return "invalidRoute";
+}
+
+juce::String modulationCopyMessage (int source, const AnyvocAudioProcessor::ModulationCopyResult& result)
+{
+    using Status = AnyvocAudioProcessor::ModulationCopyStatus;
+    switch (result.status)
+    {
+        case Status::copied: return "Copied route " + juce::String (source + 1) + " to route " + juce::String (result.destination + 1)
+                                   + ". Both routes keep their settings; Undo removes the copy.";
+        case Status::emptySource: return "This route is completely empty. Configure it before copying.";
+        case Status::noEmptySlot: return "No completely empty route. Clear a row with X, then copy again.";
+        case Status::busy: return "Finish the current edit before copying.";
+        case Status::cancelled: return "Copy interrupted; review current routes";
+        case Status::invalidRoute: return "Copy unavailable. Choose a modulation route and try again.";
+    }
+    return {};
+}
+
+const juce::String modulationCopyTooltip = "Copy every setting to the first completely empty row without replacing another route. "
+    "Bypassed routes and unfinished Off/None drafts are kept. An enabled copy adds its modulation immediately. Undo removes the copy.";
+
 class ModulationRing final : public juce::Component, public juce::SettableTooltipClient
 {
 public:
@@ -947,6 +981,7 @@ public:
         box.setSelectedItemIndex (destination, juce::dontSendNotification);
     }
     void resized() override { box.setBounds (getLocalBounds()); }
+    void focusControl() { if (box.isShowing()) box.grabKeyboardFocus(); }
 private:
     AnyvocAudioProcessor& processor;
     int route;
@@ -1096,7 +1131,7 @@ public:
     {
         setComponentID ("MatrixRouteDetail");
         for (auto* component : std::initializer_list<juce::Component*> { &source, &destination, &polarity, &auxSource, &auxPolarity,
-                                  &curve, &auxCurve, &sourceResponse, &auxResponse, &amount, &enabled, &close, &previous, &next })
+                                  &curve, &auxCurve, &sourceResponse, &auxResponse, &amount, &enabled, &copy, &close, &previous, &next })
             addAndMakeVisible (component);
         source.box.setComponentID (prefix + "SourceDetail");
         source.box.setTitle ("Modulation " + juce::String (route + 1) + " source");
@@ -1111,6 +1146,9 @@ public:
         enabled.setComponentID (prefix + "EnabledDetail");
         curve.slider.setTitle ("Modulation " + juce::String (route + 1) + " source curve");
         auxCurve.slider.setTitle ("Modulation " + juce::String (route + 1) + " auxiliary curve");
+        copy.setButtonText ("COPY"); copy.setComponentID (prefix + "CopyDetail");
+        copy.setTitle ("Copy modulation route " + juce::String (route + 1)); copy.setTooltip (modulationCopyTooltip);
+        copy.onClick = [this] { const auto callback = onCopy; if (callback) callback (route, &copy); };
         close.setButtonText ("BACK"); close.setComponentID ("MatrixDetailClose");
         close.onClick = [this] { if (onClose) onClose(); };
         previous.setButtonText ("<"); previous.setComponentID ("MatrixRouteDetailPrev"); previous.setTooltip ("Edit the previous modulation route.");
@@ -1131,6 +1169,7 @@ public:
     }
     void resized() override
     {
+        copy.setBounds (getWidth() - 306, 15, 98, 28);
         close.setBounds (getWidth() - 112, 15, 92, 28);
         previous.setBounds (getWidth() - 200, 15, 32, 28); next.setBounds (getWidth() - 160, 15, 32, 28);
         source.setBounds (22, 67, 202, 44); destination.setBounds (244, 86, 258, 25);
@@ -1155,6 +1194,7 @@ public:
     }
     std::function<void()> onClose;
     std::function<void (int)> onNavigate;
+    std::function<void (int, juce::Component*)> onCopy;
 private:
     AnyvocAudioProcessor& processor;
     int route;
@@ -1167,7 +1207,7 @@ private:
     Knob curve, auxCurve;
     ModulationRouteResponse sourceResponse, auxResponse;
     SoundSlider amount;
-    juce::TextButton enabled, close, previous, next;
+    juce::TextButton enabled, copy, close, previous, next;
     std::unique_ptr<SoundSliderAttachment> amountAttachment;
     std::unique_ptr<SoundButtonAttachment> enabledAttachment;
 };
@@ -1211,7 +1251,7 @@ public:
         : handle (index), processor (p), route (index), prefix ("mod" + juce::String (route + 1)),
           source (p, route, false, "", "What moves the sound. Off leaves this route inactive."), destination (p, route)
     {
-        for (auto* component : std::initializer_list<juce::Component*> { &handle, &source, &destination, &amount, &enabled, &edit, &clear }) addAndMakeVisible (component);
+        for (auto* component : std::initializer_list<juce::Component*> { &handle, &source, &destination, &amount, &enabled, &copy, &edit, &clear }) addAndMakeVisible (component);
         source.box.setTitle ("Modulation " + juce::String (route + 1) + " source");
         configureMatrixAmount (amount);
         amount.setTitle ("Modulation " + juce::String (route + 1) + " amount");
@@ -1224,6 +1264,9 @@ public:
         edit.setButtonText ("EDIT"); edit.setComponentID (prefix + "Edit"); edit.setTooltip ("Edit polarity, response curves and an auxiliary source for this route.");
         edit.setTitle ("Edit modulation route " + juce::String (route + 1) + " curve and auxiliary source");
         edit.onClick = [this] { if (onEdit) onEdit (route); };
+        copy.setButtonText ("COPY"); copy.setComponentID (prefix + "Copy");
+        copy.setTitle ("Copy modulation route " + juce::String (route + 1)); copy.setTooltip (modulationCopyTooltip);
+        copy.onClick = [this] { const auto callback = onCopy; if (callback) callback (route, &copy); };
         clear.setButtonText ("X"); clear.setComponentID (prefix + "Clear"); clear.setTitle ("Clear route " + juce::String (route + 1));
         clear.setTooltip ("Clear this complete route. Undo restores all of its settings.");
         clear.onClick = [this]
@@ -1249,7 +1292,8 @@ public:
         const int y = (getHeight() - 22) / 2;
         handle.setBounds (0, y - 1, 18, 25); enabled.setBounds (48, y, 44, 22);
         source.setBounds (104, y, 190, 22); destination.setBounds (316, y, 243, 22);
-        amount.setBounds (579, y, 313, 22); edit.setBounds (906, y, 64, 22); clear.setBounds (980, y, 32, 22);
+        amount.setBounds (579, y, 249, 22); copy.setBounds (842, y, 54, 22);
+        edit.setBounds (906, y, 64, 22); clear.setBounds (980, y, 32, 22);
     }
     void paint (juce::Graphics& g) override
     {
@@ -1259,6 +1303,8 @@ public:
     }
     ModulationRouteHandle handle;
     std::function<void (int)> onEdit;
+    std::function<void (int, juce::Component*)> onCopy;
+    void focusDestination() { destination.focusControl(); }
 private:
     AnyvocAudioProcessor& processor;
     int route;
@@ -1266,7 +1312,7 @@ private:
     ModulationSourceChoice source;
     ModulationDestinationChoice destination;
     SoundSlider amount;
-    juce::TextButton enabled, edit, clear;
+    juce::TextButton enabled, copy, edit, clear;
     std::unique_ptr<SoundSliderAttachment> amountAttachment;
     std::unique_ptr<SoundButtonAttachment> enabledAttachment;
 };
@@ -1297,6 +1343,7 @@ public:
         {
             auto row = std::make_unique<ModulationMatrixRow> (processor, i);
             row->onEdit = [this] (int index) { showDetail (index); };
+            row->onCopy = [this] (int index, juce::Component* origin) { copyRoute (index, origin, false); };
             row->handle.onStart = [this] (int index) { startMove (index); };
             row->handle.onDrag = [this] (int, juce::Point<int> point) { dragMove (point); };
             row->handle.onDrop = [this] (int index, juce::Point<int> point, bool moved) { finishMove (index, point, moved); };
@@ -1319,9 +1366,10 @@ public:
     }
     void visibilityChanged() override
     {
-        if (! matrixHierarchyVisible (this)) { dragSource = -1; dragTarget = -1; dragActive = false; }
+        if (! matrixHierarchyVisible (this)) { cancelPendingNavigation(); dragSource = -1; dragTarget = -1; dragActive = false; }
     }
-    void dismissDetail() { ++detailRequest; if (detail != nullptr) detail->setVisible (false); resized(); repaint(); }
+    void cancelPendingNavigation() { ++detailRequest; }
+    void dismissDetail() { cancelPendingNavigation(); if (detail != nullptr) detail->setVisible (false); resized(); repaint(); }
     void showDetail (int route)
     {
         if (route < 0 || route >= matrixRouteCount) return;
@@ -1330,17 +1378,68 @@ public:
         const juce::Component::SafePointer<ModulationMatrix> safe (this);
         const auto request = ++detailRequest;
         const auto revision = processor.getHistoryRevision();
-        juce::MessageManager::callAsync ([safe, route, request, revision]
+        const auto snapshot = matrixRouteSnapshot (processor, route);
+        juce::MessageManager::callAsync ([safe, route, request, revision, snapshot]
         {
-            if (safe == nullptr || safe->detailRequest != request || ! matrixHierarchyVisible (safe.getComponent())
-                || safe->processor.getHistoryRevision() != revision) return;
-            safe->detail = std::make_unique<ModulationRouteDetail> (safe->processor, route);
+            const auto isCurrent = [safe, route, request, revision, snapshot]
+            {
+                return safe != nullptr && safe->detailRequest == request && matrixHierarchyVisible (safe.getComponent())
+                    && safe->processor.getHistoryRevision() == revision && ! safe->processor.isUserEditActive()
+                    && matrixRouteSnapshot (safe->processor, route) == snapshot;
+            };
+            if (! isCurrent()) return;
+            // Detach ownership before destruction: ending a control's gesture
+            // may close the editor, so do not assign through its unique_ptr.
+            auto outgoing = std::move (safe->detail);
+            outgoing.reset();
+            if (! isCurrent()) return;
+            auto replacement = std::make_unique<ModulationRouteDetail> (safe->processor, route);
+            if (! isCurrent()) return;
+            safe->detail = std::move (replacement);
             safe->detail->onClose = [safe] { if (safe != nullptr) safe->dismissDetail(); };
             safe->detail->onNavigate = [safe] (int index) { if (safe != nullptr) safe->showDetail (index); };
+            safe->detail->onCopy = [safe] (int index, juce::Component* origin) { if (safe != nullptr) safe->copyRoute (index, origin, true); };
             safe->addAndMakeVisible (*safe->detail); safe->detail->toFront (false);
             safe->resized(); safe->repaint();
         });
     }
+    void reportCopyResult (int source, const AnyvocAudioProcessor::ModulationCopyResult& result, bool editCopy)
+    {
+        getProperties().set ("MatrixCopyStatus", modulationCopyStatusName (result.status));
+        getProperties().set ("MatrixCopyDestination", result.destination);
+        const juce::Component::SafePointer<ModulationMatrix> safe (this);
+        const auto notify = onStatus;
+        if (notify) notify (modulationCopyMessage (source, result));
+        if (safe == nullptr || result.status != AnyvocAudioProcessor::ModulationCopyStatus::copied
+            || result.destination < 0 || result.destination >= matrixRouteCount || ! matrixHierarchyVisible (safe.getComponent())) return;
+        copiedRoute = result.destination;
+        copiedRevision = processor.getHistoryRevision();
+        copiedSnapshot = matrixRouteSnapshot (processor, copiedRoute);
+        if (editCopy) { showDetail (copiedRoute); return; }
+
+        // Page/scroll/focus changes may finish another control's callback. Defer
+        // navigation until the originating COPY button has returned, and discard
+        // it if either the view or copied route changed in the meantime.
+        const auto request = ++detailRequest;
+        const auto revision = copiedRevision;
+        const auto snapshot = copiedSnapshot;
+        const int route = copiedRoute;
+        juce::MessageManager::callAsync ([safe, route, request, revision, snapshot]
+        {
+            if (safe == nullptr || safe->detailRequest != request || ! matrixHierarchyVisible (safe.getComponent())
+                || safe->processor.getHistoryRevision() != revision || safe->processor.isUserEditActive()
+                || matrixRouteSnapshot (safe->processor, route) != snapshot) return;
+            if (! safe->expanded) safe->setPage (route / 8);
+            else safe->viewport.setViewPosition (0, juce::jlimit (0, safe->content.getHeight() - safe->viewport.getHeight(),
+                                                                route * 30 - safe->viewport.getHeight() / 2));
+            if (safe == nullptr) return;
+            safe->refresh();
+            if (safe == nullptr) return;
+            safe->repaint();
+            safe->rows[(size_t) route]->focusDestination();
+        });
+    }
+    std::function<void (const juce::String&)> onStatus;
     void resized() override
     {
         const bool editing = detail != nullptr && detail->isVisible();
@@ -1370,20 +1469,49 @@ public:
         drawText (g, "DESTINATION", { 334, top + 13, 243, 22 }, 9, secondaryText, true);
         drawText (g, "AMOUNT", { 597, top + 13, 160, 22 }, 9, secondaryText, true);
         drawText (g, expanded ? "32 ROUTES" : juce::String (page + 1) + " / 4", { expanded ? 778 : 807, top + 13, expanded ? 113 : 55, 22 }, 10, primaryText, true, juce::Justification::centred);
-        if (expanded) drawText (g, "Drag a handle to move the full route. EDIT opens shaping and AUX; X clears a row.", { 20, 441, 1030, 16 }, 9.5f);
+        if (expanded) drawText (g, "Drag to move. COPY keeps every setting in the first empty row; EDIT opens shaping and AUX; X clears a row.", { 20, 441, 1030, 16 }, 9.5f);
     }
     void paintOverChildren (juce::Graphics& g) override
     {
-        if (dragTarget < 0 || ! viewport.isVisible()) return;
-        const auto bounds = getLocalArea (&content, rows[(size_t) dragTarget]->getBounds());
-        g.reduceClipRegion (viewport.getBounds()); g.setColour (mint.withAlpha (0.7f));
+        if (! viewport.isVisible()) return;
+        const bool copyCurrent = copiedRoute >= 0 && processor.getHistoryRevision() == copiedRevision
+                                 && matrixRouteSnapshot (processor, copiedRoute) == copiedSnapshot;
+        const int highlighted = dragTarget >= 0 ? dragTarget : copyCurrent ? copiedRoute : -1;
+        if (highlighted < 0) return;
+        const auto bounds = getLocalArea (&content, rows[(size_t) highlighted]->getBounds());
+        g.reduceClipRegion (viewport.getBounds()); g.setColour ((dragTarget >= 0 ? mint : lilac).withAlpha (0.7f));
         g.drawRoundedRectangle (bounds.toFloat().reduced (1), 4, 2);
     }
 private:
-    void setPage (int index) { page = juce::jlimit (0, 3, index); resized(); repaint(); }
+    void copyRoute (int route, juce::Component* origin, bool fromDetail)
+    {
+        if (route < 0 || route >= matrixRouteCount || origin == nullptr) return;
+        const juce::Component::SafePointer<ModulationMatrix> safe (this);
+        const juce::Component::SafePointer<juce::Component> safeOrigin (origin);
+        const auto request = detailRequest;
+        const auto viewPosition = viewport.getViewPosition();
+        const auto isCurrent = [safe, safeOrigin, request, viewPosition, fromDetail, route]
+        {
+            if (safe == nullptr || safeOrigin == nullptr || safe->detailRequest != request
+                || ! matrixHierarchyVisible (safeOrigin.getComponent()) || ! safeOrigin->isEnabled()) return false;
+            if (fromDetail) return safe->detail != nullptr && safe->detail->isParentOf (safeOrigin.getComponent());
+            return safe->viewport.isVisible() && safe->viewport.getViewPosition() == viewPosition
+                && safe->viewport.getViewArea().intersects (safe->rows[(size_t) route]->getBounds());
+        };
+        if (! isCurrent()) return;
+        auto result = processor.copyModulationRoute (route, isCurrent);
+        if (safe == nullptr) return;
+        if (result.status == AnyvocAudioProcessor::ModulationCopyStatus::copied && ! isCurrent())
+            result = { AnyvocAudioProcessor::ModulationCopyStatus::cancelled, -1 };
+        // The processor reports cancellations even if some destination fields
+        // were written before a host callback; never describe that as rollback.
+        safe->reportCopyResult (route, result, fromDetail);
+    }
+    void setPage (int index) { cancelPendingNavigation(); page = juce::jlimit (0, 3, index); resized(); repaint(); }
     void setExpanded (bool shouldExpand)
     {
         if (expanded == shouldExpand) return;
+        cancelPendingNavigation();
         if (! shouldExpand) page = juce::jlimit (0, 3, viewport.getViewPositionY() / (30 * 8));
         expanded = shouldExpand; resized();
         if (expanded) viewport.setViewPosition (0, page * 8 * 30);
@@ -1447,8 +1575,9 @@ private:
     std::unique_ptr<ModulationRouteDetail> detail;
     juce::TextButton previous, next, expand, compact;
     std::array<MatrixRouteSnapshot, matrixRouteCount> dragSnapshot;
-    uint64_t dragRevision = 0, detailRequest = 0;
-    int page = 0, dragSource = -1, dragTarget = -1;
+    uint64_t dragRevision = 0, detailRequest = 0, copiedRevision = 0;
+    MatrixRouteSnapshot copiedSnapshot{};
+    int page = 0, dragSource = -1, dragTarget = -1, copiedRoute = -1;
     juce::Point<int> dragPoint;
     bool expanded = false, dragActive = false;
 };
@@ -4921,13 +5050,13 @@ public:
         g.setColour (cardColour); g.fillRoundedRectangle (180, 145, 760, 466, 18);
         g.setColour (borderColour); g.drawRoundedRectangle (180, 145, 760, 466, 18, 1);
         drawText (g, "MAKE YOUR FIRST SOUND", { 210, 171, 580, 26 }, 21, primaryText, true);
-        drawText (g, "A small guide to a very large palette.", { 210, 206, 680, 22 }, 13);
-        const juce::StringArray titles { "01   START WITH A PRESET", "02   CHOOSE YOUR SOURCE", "03   GIVE IT MOVEMENT", "04   ADD SPACE & SAVE" };
+        drawText (g, "Start by listening. Open the full editors when you want to go further.", { 210, 206, 680, 22 }, 13);
+        const juce::StringArray titles { "01   CHOOSE A SOUND & PLAY", "02   SHAPE WHAT YOU HEAR", "03   MAKE IT MOVE", "04   BUILD YOUR OWN INSTRUMENT" };
         const juce::StringArray descriptions {
-            "Open BROWSE to search factory and user sounds, then choose LOAD SOUND.\nClick the piano keys or send MIDI. INIT gives you a simple sound to build from.",
-            "Choose Wavetable, Sample or Granular. Drop in a WAV; EDIT opens source controls.\nWARP reshapes wavetables; FM / PM / AM / RM use another source, even at LEVEL 0.",
-            "SOURCES: 10 LFOs, 4 envelopes, 8 macros. Macros can also receive modulation; EV shows the actual voice value.\nMOD: 32 routes with curve and AUX. LFO TOOLS: grid, selection, transforms and .anycurve files.",
-            "Envelope EDIT opens six stages, draggable curves, BPM timing and Legato retrigger.\nTry FX for space, then SAVE your sound as an .anyvoc file."
+            "On PLAY, choose a sound in BROWSE, then LOAD SOUND. Click the piano keys or send MIDI.\nYour keyboard, output volume and performance macros stay available in every editor.",
+            "TONE changes Filter A. NOTE SHAPE sets how a note starts, holds and fades away.\nSPACE adds echoes and reverb. These are the same parameters as the full editors.",
+            "Drag an LFO chip above onto CUTOFF. Drag the coloured outer ring to set its depth.\nMOD SOURCES offers more sources; MOD opens curves and the complete routing matrix.",
+            "SYNTH chooses waveforms, samples and granular layers. FILTER shapes their spectrum; FX adds space.\nUse INIT for a clean starting point. SAVE keeps your sound; UNDO lets you explore freely."
         };
         for (int i = 0; i < 4; ++i)
         {
@@ -4963,7 +5092,7 @@ public:
           tooltip (this, 650)
     {
         setLookAndFeel (&lookAndFeel);
-        for (auto* page : { &synthPage, &modPage, &fxPage, &filterPage })
+        for (auto* page : { &synthPage, &modPage, &fxPage, &filterPage, &playPage })
         {
             addAndMakeVisible (page);
             page->setBounds (0, 0, designWidth, designHeight);
@@ -4974,6 +5103,7 @@ public:
         buildModulation();
         buildEffects();
         buildFilters();
+        buildPlay();
         buildFooter();
         buildSourceDetails();
         buildLfoDetails();
@@ -4993,7 +5123,7 @@ public:
         refreshPresetIdentity();
         addChildComponent (help);
         help.setBounds (0, 0, designWidth, designHeight);
-        showPage (0);
+        showPage (4);
         setSize (designWidth, designHeight);
         startTimerHz (24);
     }
@@ -5016,7 +5146,8 @@ public:
         if (currentPage == 0) paintSynth (g);
         else if (currentPage == 1) paintModulation (g);
         else if (currentPage == 2) paintEffects (g);
-        else paintFilters (g);
+        else if (currentPage == 3) paintFilters (g);
+        else paintPlay (g);
         paintFooter (g);
     }
 
@@ -5151,14 +5282,24 @@ private:
             if (! dismissEnvelopeLab()) return;
             help.setVisible (true); help.toFront (false);
         }, "A quick guide to making your first sound");
-        const juce::StringArray names { "SYNTH", "MOD", "FX", "FILTER" };
-        for (int i = 0; i < 4; ++i)
+        // Keep the editor indices stable; order navigation around the sound-design workflow.
+        const juce::StringArray names { "SYNTH", "MOD", "FX", "FILTER", "PLAY" };
+        const juce::StringArray ids { "pageSynth", "pageMod", "pageFx", "pageFilter", "pagePlay" };
+        const juce::StringArray tips { "Choose and layer sound sources; edit waves, samples, granular texture and voicing.",
+            "Make parameters move with envelopes and LFOs; inspect and edit every modulation route.",
+            "Finish your sound with saturation, chorus, delay and reverb.",
+            "Shape tone with two filters and choose how each source passes through them.",
+            "Play and shape a sound with the essential controls. All full editors remain one click away." };
+        constexpr std::array<int, 5> order { 4, 0, 3, 1, 2 };
+        for (int position = 0; position < 5; ++position)
         {
-            button (*this, tabs[(size_t) i], names[i], { 24 + i * 104, 78, 96, 27 }, [this, i] { showPage (i); });
+            const int i = order[(size_t) position];
+            button (*this, tabs[(size_t) i], names[i], { 24 + position * 80, 78, 72, 27 }, [this, i] { showPage (i); }, tips[i]);
+            tabs[(size_t) i].setComponentID (ids[i]);
             tabs[(size_t) i].setRadioGroupId (100);
             tabs[(size_t) i].setClickingTogglesState (true);
         }
-        button (*this, sourcePaletteButton, "SOURCES", { 462, 78, 72, 27 }, [this] { openModulationSources(); },
+        button (*this, sourcePaletteButton, "MOD SOURCES", { 432, 78, 102, 27 }, [this] { openModulationSources(); },
                 "Open all ten LFOs, four envelopes, eight macros and performance sources. Drag a source onto a knob to assign it.");
         sourcePaletteButton.setComponentID ("openModulationSources");
         const juce::StringArray sourceNames { "LFO 1", "LFO 2", "FILTER ENV", "MACRO 1", "MACRO 2", "MACRO 3", "MACRO 4" };
@@ -5170,6 +5311,121 @@ private:
             addAndMakeVisible (*chip); chip->setBounds (542 + i * 80, 78, 74, 27);
             sourceChips.push_back (std::move (chip));
         }
+    }
+
+    void buildPlay()
+    {
+        playPage.setComponentID ("playPage");
+        playPage.setTitle ("Play and shape your sound");
+        button (playPage, playBrowse, "CHOOSE A SOUND", { 862, 135, 218, 36 }, [this] { openPresetBrowser(); },
+                "Browse sounds by name or category, then choose LOAD SOUND. Your current sound stays until you load another.");
+        playBrowse.setComponentID ("playBrowse");
+        button (playPage, playFilters, "EDIT", { 288, 215, 64, 25 }, [this] { showPage (3); },
+                "Open both filters and their routing. Filter A affects only the sources sent to it.");
+        playFilters.setComponentID ("playFilters");
+        playPage.addAndMakeVisible (playFilterEnabled);
+        playFilterEnabled.setBounds (211, 215, 70, 25);
+        playFilterEnabled.setComponentID ("playFilterEnabled");
+        playFilterEnabled.setTitle ("Enable Filter A");
+        playFilterEnabled.setTooltip ("Enable or bypass Filter A. This does not change source routing or Filter B.");
+        playFilterAttachment = std::make_unique<SoundButtonAttachment> (processor, "filterEnabled", playFilterEnabled);
+        playCutoff = &knob (playPage, "cutoff", "CUTOFF", "Filter A frequency. With a low-pass filter, turn left for a darker sound and right for a brighter sound.",
+                            Unit::hertz, { 58, 272, 130, 137 });
+        playCutoff->slider.setComponentID ("playCutoff");
+        playCutoff->setComponentID ("playCutoffControl");
+        playCutoff->ring.setComponentID ("playCutoffModulationRing");
+        playResonance = &knob (playPage, "resonance", "RESONANCE", "Emphasize the frequencies around Filter A's cutoff. Try small amounts first.",
+                               Unit::percent, { 212, 272, 130, 137 });
+        playResonance->slider.setComponentID ("playResonance");
+        playResonance->setComponentID ("playResonanceControl");
+        playResonance->ring.setComponentID ("playResonanceModulationRing");
+        for (auto* control : { playCutoff, playResonance })
+        {
+            const juce::Component::SafePointer<Knob> target (control);
+            control->slider.userEditAllowed = [owner = &processor, target]
+            { return target != nullptr && matrixHierarchyVisible (target.getComponent()) && value (*owner, "filterEnabled") > .5f; };
+        }
+        button (playPage, playEnvelopeEdit, "EDIT", { 652, 215, 64, 25 }, [this] { openEnvelopeLab (0); },
+                "Open the full amplitude envelope, including curves and beat-synchronized stage lengths.");
+        playEnvelopeEdit.setComponentID ("playEnvelopeEdit");
+        playEnvelope = std::make_unique<EnvelopeDisplay> (processor, "amp", lilac);
+        playPage.addAndMakeVisible (*playEnvelope);
+        playEnvelope->setBounds (407, 266, 310, 52);
+        playEnvelope->onOpen = [this] { openEnvelopeLab (0); };
+        const auto firstEnvelopeKnob = knobs.size();
+        envelopeKnobs (playPage, "amp", 398, 332, 80, 89, lilac);
+        const juce::StringArray envelopeIds { "playAttack", "playDecay", "playSustain", "playRelease" };
+        for (int i = 0; i < 4; ++i) knobs[firstEnvelopeKnob + (size_t) i]->slider.setComponentID (envelopeIds[i]);
+        button (playPage, playEffects, "EDIT", { 1016, 215, 64, 25 }, [this] { showPage (2); },
+                "Open all effects, including echo timing, feedback, reverb size, chorus and saturation.");
+        playEffects.setComponentID ("playEffects");
+        auto& echo = knob (playPage, "delayMix", "ECHO", "Delay mix: blend rhythmic repeats with your dry sound. EDIT opens delay time and feedback.",
+                           Unit::percent, { 786, 272, 130, 137 }, blue);
+        echo.slider.setComponentID ("playEcho");
+        auto& space = knob (playPage, "reverbMix", "REVERB", "Reverb mix: blend a room or long tail with your dry sound. EDIT opens room size.",
+                            Unit::percent, { 940, 272, 130, 137 }, blue);
+        space.slider.setComponentID ("playReverb");
+
+        const juce::StringArray labels { "SOURCES / SYNTH", "TONE / FILTER", "MOVEMENT / MOD", "FINISH / FX" };
+        const juce::StringArray ids { "playOpenSynth", "playOpenFilter", "playOpenMod", "playOpenFx" };
+        constexpr std::array<int, 4> destinations { 0, 3, 1, 2 };
+        for (int i = 0; i < 4; ++i)
+        {
+            const int destination = destinations[(size_t) i];
+            button (playPage, playEditors[(size_t) i], labels[i], { 42 + i * 264, 537, 248, 27 },
+                    [this, destination] { showPage (destination); }, "Open the full editor. Switching pages keeps every sound setting.");
+            playEditors[(size_t) i].setComponentID (ids[i]);
+        }
+        refreshPlay();
+    }
+
+    bool refreshPlay()
+    {
+        const juce::Component::SafePointer<Interface> safe (this);
+        const bool enabled = value (processor, "filterEnabled") > .5f;
+        playFilterEnabled.setButtonText (enabled ? "ON" : "OFF");
+        for (auto* control : { playCutoff, playResonance })
+        {
+            // JUCE does not end a drag on mouse-up once its slider is disabled.
+            // Finish the sound edit first if automation bypassed A mid-gesture.
+            if (! enabled && control->slider.onEditCancelled)
+            {
+                const auto cancel = control->slider.onEditCancelled;
+                cancel();
+                if (safe == nullptr) return false;
+            }
+            control->setEnabled (enabled);
+            if (safe == nullptr) return false;
+            control->setAlpha (enabled ? 1.0f : 0.45f);
+        }
+        playEnvelope->repaint();
+        repaint (24, 117, 1076, 461);
+        return true;
+    }
+
+    void paintPlay (juce::Graphics& g)
+    {
+        drawCard (g, { 24, 117, 1076, 74 }, "", "", mint);
+        drawText (g, processor.getLoadedPresetName(), { 48, 130, 792, 28 }, 23, primaryText, true);
+        drawText (g, "Choose a sound. Play a note. Make it yours.", { 48, 160, 792, 18 }, 12);
+        drawCard (g, { 24, 204, 348, 270 }, "TONE", "", mint);
+        const bool enabled = value (processor, "filterEnabled") > .5f;
+        const juce::StringArray types { "Low pass / brightness", "High pass / low end", "Band pass / focus" };
+        drawText (g, enabled ? "Filter A: " + types[juce::jlimit (0, 2, (int) value (processor, "filterType"))]
+                            : "Filter A bypassed / switch ON to shape tone", { 42, 247, 312, 18 }, 11);
+        drawText (g, enabled ? "Drag an LFO chip onto CUTOFF to add movement."
+                            : "Your filter settings are kept while bypassed.", { 42, 431, 312, 18 }, 10.5f, mint);
+        drawText (g, "Only sources routed through Filter A are affected.", { 42, 450, 312, 15 }, 9.5f);
+        drawCard (g, { 388, 204, 348, 270 }, "NOTE SHAPE", "Amplitude envelope / how a note unfolds", lilac);
+        const bool synced = value (processor, "ampTempoSync") > .5f;
+        drawText (g, synced ? "BPM timing is on. Use EDIT to change stage lengths."
+                           : "ATTACK: fade in. RELEASE: fade out after a key.", { 406, 431, 312, 18 }, 10.5f, lilac);
+        drawText (g, "SUSTAIN sets the level while you hold a note.", { 406, 450, 312, 15 }, 9.5f);
+        drawCard (g, { 752, 204, 348, 270 }, "SPACE", "Delay and reverb / the final atmosphere", blue);
+        drawText (g, "ECHO adds repeats. REVERB adds a room or tail.", { 770, 431, 312, 18 }, 10.5f, blue);
+        drawText (g, "Start with a little; keep the original sound clear.", { 770, 450, 312, 15 }, 9.5f);
+        drawCard (g, { 24, 486, 1076, 92 }, "GO DEEPER", "", blue);
+        drawText (g, "One instrument. Open any editor to explore the same sound in more detail.", { 204, 500, 872, 20 }, 11);
     }
 
     void buildSynth()
@@ -5403,6 +5659,7 @@ private:
             }
         };
         modulationMatrix = std::make_unique<ModulationMatrix> (processor);
+        modulationMatrix->onStatus = [this] (const juce::String& message) { status = message; repaint(); };
         modPage.addAndMakeVisible (*modulationMatrix);
         modulationMatrix->setBounds (24, 117, 1076, 461);
         refreshLfoCards();
@@ -5527,6 +5784,7 @@ private:
             auto& select = macroBankButtons[(size_t) bank];
             button (*this, select, bank == 0 ? "1 - 4" : "5 - 8", { 250 + bank * 54, 606, 48, 24 }, [this, bank]
             {
+                ++copyNavigationGeneration;
                 const juce::Component::SafePointer<Interface> safe (this);
                 for (int i = 0; i < 2; ++i)
                 {
@@ -5842,6 +6100,7 @@ private:
             const int base = 100 + i * 10;
             route.addItem (base + 6, "Edit this route on the knob");
             route.addItem (base + 8, "Edit curve and auxiliary source");
+            route.addItem (base + 9, "Copy route and edit copy");
             route.addItem (base + 7, menuRoutes[(size_t) i].enabled ? "Bypass this route" : "Enable this route");
             route.addSeparator();
             route.addItem (base + 1, "Set amount to +10%");
@@ -5858,7 +6117,8 @@ private:
         auto safe = juce::Component::SafePointer<Interface> (this);
         const juce::Component::SafePointer<juce::Component> safeTarget (target);
         const auto menuRevision = processor.getHistoryRevision();
-        menu.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (target), [safe, safeTarget, macroTarget, destination, menuSources, menuRoutes, menuSnapshots, menuRevision] (int result)
+        const auto menuNavigation = copyNavigationGeneration;
+        menu.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (target), [safe, safeTarget, macroTarget, destination, menuSources, menuRoutes, menuSnapshots, menuRevision, menuNavigation] (int result)
         {
             if (safe == nullptr || result == 0) return;
             if (macroTarget && (safeTarget == nullptr || ! matrixHierarchyVisible (safeTarget.getComponent()))) return;
@@ -5868,16 +6128,17 @@ private:
                 if (matrixRouteSnapshot (safe->processor, i) != menuSnapshots[(size_t) i]) return;
             if (result == 2)
             {
-                ScopedSoundEdit edit (safe->processor, "Remove modulation from " + safe->destinationName (destination));
-                for (int i = 0; i < matrixRouteCount; ++i)
-                    if (menuSources[(size_t) i] != 0)
-                    {
-                        if (matrixRouteSnapshot (safe->processor, i) != menuSnapshots[(size_t) i]) return;
-                        safe->clearRoute (i);
-                        if (safe == nullptr || safe->processor.getHistoryRevision() != menuRevision) return;
-                        if (macroTarget && (safeTarget == nullptr || ! matrixHierarchyVisible (safeTarget.getComponent()))) return;
-                    }
-                safe->status = "Removed modulation from " + safe->destinationName (destination) + ".";
+                const auto isCurrent = [safe, safeTarget, menuNavigation, menuRevision]
+                {
+                    return safe != nullptr && safeTarget != nullptr && safe->copyNavigationGeneration == menuNavigation
+                        && safe->processor.getHistoryRevision() == menuRevision
+                        && matrixHierarchyVisible (safeTarget.getComponent()) && safeTarget->isEnabled();
+                };
+                if (! isCurrent()) return;
+                const bool removed = safe->processor.resetModulationRoutesToDestination (destination, isCurrent);
+                if (safe == nullptr) return;
+                safe->status = removed ? "Removed modulation from " + safe->destinationName (destination) + "."
+                                       : "Removal interrupted; review current routes";
             }
             else if (result >= 100)
             {
@@ -5886,6 +6147,29 @@ private:
                 const auto prefix = "mod" + juce::String (route + 1);
                 if (safe->processor.getModulationDestination (route) != destination
                     || matrixRouteSnapshot (safe->processor, route) != menuSnapshots[(size_t) route]) return;
+                if (action == 9)
+                {
+                    const auto isCurrent = [safe, safeTarget, menuNavigation]
+                    {
+                        return safe != nullptr && safeTarget != nullptr && safe->copyNavigationGeneration == menuNavigation
+                            && matrixHierarchyVisible (safeTarget.getComponent()) && safeTarget->isEnabled();
+                    };
+                    if (! isCurrent()) return;
+                    auto copied = safe->processor.copyModulationRoute (route, isCurrent);
+                    if (safe == nullptr) return;
+                    if (copied.status == AnyvocAudioProcessor::ModulationCopyStatus::copied && ! isCurrent())
+                        copied = { AnyvocAudioProcessor::ModulationCopyStatus::cancelled, -1 };
+                    if (copied.status == AnyvocAudioProcessor::ModulationCopyStatus::copied)
+                    {
+                        const auto revision = safe->processor.getHistoryRevision();
+                        const auto snapshot = matrixRouteSnapshot (safe->processor, copied.destination);
+                        safe->showPage (1);
+                        if (safe == nullptr || safe->processor.getHistoryRevision() != revision
+                            || matrixRouteSnapshot (safe->processor, copied.destination) != snapshot) return;
+                    }
+                    safe->modulationMatrix->reportCopyResult (route, copied, true);
+                    return;
+                }
                 if (action == 8)
                 {
                     safe->showPage (1); if (safe != nullptr) safe->modulationMatrix->showDetail (route); return;
@@ -5958,6 +6242,8 @@ private:
     void dragOperationStarted (const juce::DragAndDropTarget::SourceDetails&) override
     {
         const juce::Component::SafePointer<Interface> safe (this);
+        // PLAY stays in place, but the envelope editor must not cover its drop targets.
+        if (! dismissEnvelopeLab() || safe == nullptr) return;
         if (sourcePalette != nullptr) sourcePalette->setVisible (false);
         if (voicingPanel != nullptr) voicingPanel->setVisible (false);
         if (browser != nullptr) browser->setVisible (false);
@@ -5966,12 +6252,13 @@ private:
         if (safe == nullptr) return;
         const bool warpOpen = warpDetailIsVisible();
         const bool lfoOpen = std::any_of (lfoDetails.begin(), lfoDetails.end(), [] (const auto& detail) { return detail->isVisible(); });
-        if (! warpOpen && ! lfoOpen && currentPage != 3) showPage (0);
+        if (! warpOpen && ! lfoOpen && currentPage != 3 && currentPage != 4) showPage (0);
         if (safe == nullptr) return;
         for (auto* target : modulationTargets) target->setTargetHighlighted (true);
         status = lfoOpen ? "Drop onto a MACRO, or START PHASE for a periodic LFO. Random and Chaos have no phase target."
                  : warpOpen ? "Drop onto a MACRO, WARP AMOUNT or WAVE. Choose an active warp mode; right-click to edit routes."
                  : currentPage == 3 ? "Drop onto a MACRO or highlighted filter knob. Right-click the target to edit routes."
+                 : currentPage == 4 ? "Drop onto CUTOFF, RESONANCE or a MACRO. Drag the coloured outer ring to change the modulation depth."
                                   : "Drop onto a MACRO, WAVE / START / CENTRE or filter knob. A macro can be both a source and a target.";
     }
 
@@ -5997,7 +6284,7 @@ private:
         drawText (g, value (processor, "filterEnabled") > 0.5f ? "A ACTIVE" : "A BYPASSED", { 42, 553, 180, 18 }, 9,
                   value (processor, "filterEnabled") > 0.5f ? mint : secondaryText, true);
         drawCard (g, { 388, 398, 348, 180 }, "AMP ENVELOPE", "", lilac);
-        drawCard (g, { 752, 398, 348, 180 }, "PERFORMANCE", "", blue);
+        drawCard (g, { 752, 398, 348, 180 }, "VOICE & TEXTURE", "", blue);
         const int voiceMode = juce::jlimit (0, 2, (int) value (processor, "voiceMode"));
         const juce::StringArray voiceNames { "POLY", "MONO", "LEGATO" };
         drawText (g, voiceNames[voiceMode], { 893, 405, 75, 14 }, 8.5f, blue, true, juce::Justification::centred);
@@ -6067,24 +6354,30 @@ private:
         drawText (g, "-60", { 1081, 710, 18, 12 }, 7);
         drawText (g, "0", { 1081, 647, 16, 12 }, 7);
         drawText (g, status, { 26, 744, 930, 13 }, 9, secondaryText);
-        drawText (g, "ANYVOC  /  0.19", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
+        drawText (g, "ANYVOC  /  0.20", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
     }
 
     void showPage (int index)
     {
+        if (index < 0 || index >= (int) tabs.size()) return;
+        ++copyNavigationGeneration;
+        if (modulationMatrix != nullptr) modulationMatrix->cancelPendingNavigation();
         if (! dismissEnvelopeLab()) return;
         if (sourcePalette != nullptr) sourcePalette->setVisible (false);
         if (index != 1 && modulationMatrix != nullptr) modulationMatrix->dismissDetail();
         if (voicingPanel != nullptr) voicingPanel->setVisible (false);
         if (browser != nullptr) browser->setVisible (false);
+        help.setVisible (false);
         currentPage = index;
         if (index != 0) dismissWarpDetails();
         if (index != 0) dismissWavetableDetails();
         if (index != 0) for (auto& detail : details) if (detail != nullptr) detail->setVisible (false);
         if (index != 1 && ! dismissLfoDetails()) return;
         synthPage.setVisible (index == 0); modPage.setVisible (index == 1); fxPage.setVisible (index == 2); filterPage.setVisible (index == 3);
-        for (int i = 0; i < 4; ++i) tabs[(size_t) i].setToggleState (i == index, juce::dontSendNotification);
+        playPage.setVisible (index == 4);
+        for (int i = 0; i < (int) tabs.size(); ++i) tabs[(size_t) i].setToggleState (i == index, juce::dontSendNotification);
         if (index == 3) refreshFilters();
+        if (index == 4) { if (! refreshPlay() || ! refreshEnvelopeControls()) return; }
         repaint();
     }
 
@@ -6285,7 +6578,8 @@ private:
             repaint (24, 128, 712, 26);
         }
         else if (currentPage == 2) for (auto& effect : effects) effect->repaint();
-        else refreshFilters();
+        else if (currentPage == 3) refreshFilters();
+        else if (! refreshPlay()) return;
         repaint (974, 640, 126, 90);
         repaint (24, 744, 1076, 15);
         if (currentPage == 0) { repaint (24, 150, 1076, 20); repaint (24, 363, 1076, 14); repaint (893, 405, 75, 26); repaint (42, 553, 180, 18); }
@@ -6295,8 +6589,15 @@ private:
     anyvoc::PresetLibrary presetLibrary;
     std::shared_ptr<LfoCurveServices> curveServices;
     InstrumentLookAndFeel lookAndFeel;
-    juce::Component synthPage, modPage, fxPage, filterPage;
-    std::array<juce::TextButton, 4> tabs;
+    juce::Component synthPage, modPage, fxPage, filterPage, playPage;
+    std::array<juce::TextButton, 5> tabs;
+    juce::TextButton playBrowse, playFilters, playEnvelopeEdit, playEffects;
+    std::array<juce::TextButton, 4> playEditors;
+    juce::ToggleButton playFilterEnabled;
+    std::unique_ptr<SoundButtonAttachment> playFilterAttachment;
+    std::unique_ptr<EnvelopeDisplay> playEnvelope;
+    Knob* playCutoff = nullptr;
+    Knob* playResonance = nullptr;
     std::array<juce::TextButton, 3> importButtons, detailButtons, warpButtons;
     juce::TextButton previousPreset, nextPreset, save, load, init, helpButton, panicButton, openFiltersButton, voicingButton;
     juce::TextButton presetName, browseButton, soundUndo, soundRedo;
@@ -6355,9 +6656,9 @@ private:
     juce::TooltipWindow tooltip;
     HelpOverlay help;
     std::unique_ptr<juce::FileChooser> chooser;
-    int currentPage = 0, previousProgram = -1, routeRefreshTicks = 0;
+    int currentPage = 4, previousProgram = -1, routeRefreshTicks = 0;
     juce::String previousPresetId, previousPresetName;
-    uint64_t displayedHistoryRevision = std::numeric_limits<uint64_t>::max();
+    uint64_t displayedHistoryRevision = std::numeric_limits<uint64_t>::max(), copyNavigationGeneration = 0;
     bool historyWasActive = false;
     float meter = 0;
     juce::String status = "Ready. Choose a preset, play a note, and make it yours.";

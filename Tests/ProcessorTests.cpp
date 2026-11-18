@@ -1697,6 +1697,13 @@ juce::Button* findButton (juce::Component& component, const juce::String& text)
     return nullptr;
 }
 
+void showSynthForTest (juce::Component& editor)
+{
+    auto* synth = findButton (editor, "SYNTH");
+    require (synth != nullptr && static_cast<bool> (synth->onClick), "SYNTH navigation was unavailable");
+    synth->onClick();
+}
+
 template <typename Type>
 Type* findComponent (juce::Component& component, const juce::String& id)
 {
@@ -1853,7 +1860,7 @@ void testOpenWavetableEditorStateReplacement()
     std::unique_ptr<juce::AudioProcessorEditor> editor (processor.createEditor());
     require (editor != nullptr, "Processor did not create an editor for state-replacement validation");
     editor->setVisible (true);
-    editor->setSize (1120, 760);
+    editor->setSize (1120, 760); showSynthForTest (*editor);
     auto* edit = findButton (*editor, "EDIT");
     require (edit != nullptr && static_cast<bool> (edit->onClick), "Wavetable editor button was unavailable");
     edit->onClick();
@@ -1881,7 +1888,7 @@ void testVoicingEditorControls()
     AnyvocAudioProcessor processor;
     auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor, files.directory,
                                                               files.directory.getChildFile ("Settings.xml"));
-    editor->setVisible (true); editor->setSize (1120, 760);
+    editor->setVisible (true); editor->setSize (1120, 760); showSynthForTest (*editor);
     auto* open = findComponent<juce::Button> (*editor, "openVoicing");
     require (open != nullptr && static_cast<bool> (open->onClick), "Voicing entry point was missing");
     open->onClick();
@@ -2590,7 +2597,7 @@ void testHistoryUiProvenanceAndGestures()
     AnyvocAudioProcessor processor;
     auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor, files.directory,
                                                               files.directory.getChildFile ("Settings.xml"));
-    editor->setVisible (true); editor->setSize (1120, 760);
+    editor->setVisible (true); editor->setSize (1120, 760); showSynthForTest (*editor);
     auto* undo = findComponent<juce::Button> (*editor, "soundUndo");
     auto* redo = findComponent<juce::Button> (*editor, "soundRedo");
     auto* cutoff = findComponent<juce::Slider> (*editor, "cutoff");
@@ -2711,7 +2718,7 @@ void testHistoryWavetableRevisionAndStaleLab()
     processor.setStateInformation (project.getData(), static_cast<int> (project.getSize()));
     auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor, files.directory,
                                                               files.directory.getChildFile ("Settings.xml"));
-    editor->setVisible (true); editor->setSize (1120, 760);
+    editor->setVisible (true); editor->setSize (1120, 760); showSynthForTest (*editor);
     auto* edit = findButton (*editor, "EDIT");
     require (edit != nullptr && static_cast<bool> (edit->onClick), "Wavetable Lab was unavailable for history test");
     edit->onClick();
@@ -2880,7 +2887,7 @@ void testSpectralEditorPagesAndPhaseHistory()
     {
         editor = std::make_unique<AnyvocAudioProcessorEditor> (processor, files.directory,
                                                             files.directory.getChildFile ("Settings.xml"));
-        editor->setVisible (true); editor->setSize (1120, 760);
+        editor->setVisible (true); editor->setSize (1120, 760); showSynthForTest (*editor);
         clickVisible (*editor, "EDIT");
     };
     const auto selectPage = [&] (const char* view)
@@ -2973,7 +2980,7 @@ void testSpectralMorphUiIntegration()
         const auto before = processor.getEditableWavetable (0);
         auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor, files.directory,
                                                                 files.directory.getChildFile ("Settings.xml"));
-        editor->setVisible (true); editor->setSize (1120, 760); clickVisible (*editor, "EDIT");
+        editor->setVisible (true); editor->setSize (1120, 760); showSynthForTest (*editor); clickVisible (*editor, "EDIT");
         auto* mode = findComponent<juce::ComboBox> (*editor, "wavetableMorphMode");
         auto* from = findComponent<juce::ComboBox> (*editor, "wavetableMorphFrom");
         auto* to = findComponent<juce::ComboBox> (*editor, "wavetableMorphTo");
@@ -3129,7 +3136,7 @@ void testModulationRingSelectionAndHistory()
                  + historyStateDiagnostic (processor, save (reference)));
     auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor, files.directory,
                                                               files.directory.getChildFile ("Settings.xml"));
-    editor->setVisible (true); editor->setSize (1120, 760);
+    editor->setVisible (true); editor->setSize (1120, 760); showSynthForTest (*editor);
     const auto before = save (processor);
     const auto revision = processor.getHistoryRevision();
     require (parameters (processor) == parameters (reference),
@@ -3236,7 +3243,7 @@ void testModulationRingHostReplacement()
         const auto expected = normallyRestoredProjectState (project);
         auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor, files.directory,
                                                                   files.directory.getChildFile ("Settings.xml"));
-        editor->setVisible (true); editor->setSize (1120, 760);
+        editor->setVisible (true); editor->setSize (1120, 760); showSynthForTest (*editor);
         auto* ring = findComponent<juce::Component> (*editor, "cutoffModulationRing");
         require (modulationControlVisible (ring), "Restore test modulation ring unavailable");
         const auto point = modulationRingPoint (*ring);
@@ -3281,7 +3288,7 @@ void testModulationRingAutomationAndCancellation()
         installModulationRingFixture (processor);
         auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor, files.directory,
                                                                   files.directory.getChildFile ("Settings.xml"));
-        editor->setVisible (true); editor->setSize (1120, 760);
+        editor->setVisible (true); editor->setSize (1120, 760); showSynthForTest (*editor);
         auto* ring = findComponent<juce::Component> (*editor, "cutoffModulationRing");
         require (modulationControlVisible (ring), "Automation test modulation ring unavailable");
         const auto point = modulationRingPoint (*ring);
@@ -3310,7 +3317,7 @@ void testModulationRingAutomationAndCancellation()
         installModulationRingFixture (processor);
         auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor, files.directory,
                                                                   files.directory.getChildFile ("Settings.xml"));
-        editor->setVisible (true); editor->setSize (1120, 760);
+        editor->setVisible (true); editor->setSize (1120, 760); showSynthForTest (*editor);
         auto* ring = findComponent<juce::Component> (*editor, "cutoffModulationRing");
         require (modulationControlVisible (ring), "Cancellation test modulation ring unavailable");
         const auto point = modulationRingPoint (*ring);
@@ -3610,7 +3617,7 @@ void testUnifiedWarpEditorControls()
     AnyvocAudioProcessor processor;
     auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor, files.directory,
                                                               files.directory.getChildFile ("Settings.xml"));
-    editor->setVisible (true); editor->setSize (1120, 760); clickVisible (*editor, "WARP");
+    editor->setVisible (true); editor->setSize (1120, 760); showSynthForTest (*editor); clickVisible (*editor, "WARP");
     auto* mode = findComponent<juce::ComboBox> (*editor, "osc1Warp1Mode");
     auto* source = findComponent<juce::ComboBox> (*editor, "osc1Warp1CrossSource");
     require (mode != nullptr && mode->getNumItems() == 11 && source != nullptr && source->getNumItems() == 5,
@@ -5095,7 +5102,7 @@ void testExpandedSourceDropHostCallbacks()
             auto& trigger = *probes[static_cast<size_t> (scenario == 0 ? 1 : scenario == 1 ? 13 : 7)];
             std::unique_ptr<juce::AudioProcessorEditor> editor (
                 new AnyvocAudioProcessorEditor (processor, files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml")));
-            editor->setVisible (true); editor->setSize (1008, 684);
+            editor->setVisible (true); editor->setSize (1008, 684); showSynthForTest (*editor);
             clickMatrixControl (*editor, "openModulationSources");
             auto* chip = findComponent<juce::Component> (*editor, "paletteModSource17");
             auto* slider = findComponent<juce::Slider> (*editor, "cutoff");
@@ -5357,6 +5364,7 @@ void testAdvancedEnvelopeLegatoIsolation()
 
 void openEnvelopeLab (juce::Component& editor, int envelope)
 {
+    showSynthForTest (editor);
     clickMatrixControl (editor, "openAmpEnvelopeLab");
     auto* selector = findComponent<juce::ComboBox> (editor, "EnvelopeLabSelect");
     require (modulationControlVisible (selector) && selector->getNumItems() == 4, "Envelope Lab navigator was unavailable");
@@ -7001,6 +7009,639 @@ void testMacroDestinationUiHostCallbacks()
         }
 }
 
+void testRouteCopyPayloadHistoryAndPersistence()
+{
+    using Status = AnyvocAudioProcessor::ModulationCopyStatus;
+    PresetTestDirectory files;
+    AnyvocAudioProcessor processor;
+    require (processor.getParameters().size() == 1256 && static_cast<int> (stateTree (processor).getProperty ("schemaVersion")) == 14,
+             "Route copy unexpectedly changed the host layout or state schema");
+    configureMatrixPayload (processor, 0);
+    // An Off, bypassed draft still owns all its remembered selectors and depth.
+    setParameter (processor, "mod1Source", 0); setParameter (processor, "mod1SourceExtra", 0);
+    setParameter (processor, "mod1Dest", 0); setParameter (processor, "mod1Enabled", 0);
+    setParameter (processor, "mod1Amount", -.83137f);
+    setParameter (processor, "mod1LfoPhaseEnabled", 1); setParameter (processor, "mod1LfoPhaseTarget", 9);
+    setParameter (processor, "mod1MacroEnabled", 1); setParameter (processor, "mod1MacroTarget", 7);
+    setParameter (processor, "mod2Curve", .31f); // Source Off is not the same as a default empty row.
+    setParameter (processor, "mod3Enabled", 0);
+    clearMatrixHistory (processor);
+    const auto before = parameters (processor);
+    const auto source = matrixPayload (processor, 0);
+    std::vector<std::unique_ptr<ModulationGestureProbe>> sourceProbes;
+    for (const auto* suffix : matrixRouteFields)
+        sourceProbes.push_back (std::make_unique<ModulationGestureProbe> (*processor.apvts.getParameter ("mod1" + juce::String (suffix))));
+    const auto copied = processor.copyModulationRoute (0);
+    require (copied.status == Status::copied && copied.destination == 3,
+             "Copy overwrote a bypassed/Off draft instead of finding the first fully default row");
+    require (matrixPayload (processor, 0) == source && matrixPayload (processor, 3) == source,
+             "Copy quantized or omitted one of the nineteen fields");
+    for (const auto& probe : sourceProbes)
+        require (probe->starts == 0 && probe->ends == 0 && probe->values == 0, "Copy wrote or gestured the original route");
+    require (processor.getUndoCount() == 1 && ! processor.isUserEditActive(), "Copy was not one completed user action");
+    const auto after = parameters (processor);
+    expectHistoryResult (processor.undoUserEdit(), "Undo independent route copy"); expectParameters (processor, before);
+    expectHistoryResult (processor.redoUserEdit(), "Redo independent route copy"); expectParameters (processor, after);
+    const auto duplicate = processor.copyModulationRoute (0);
+    require (duplicate.status == Status::copied && duplicate.destination == 4 && matrixPayload (processor, 4) == source,
+             "Copy merged an existing identical route instead of creating an independent row");
+    processor.setUserParameter ("mod4Amount", .12345f);
+    require (matrixPayload (processor, 0) == source && matrixPayload (processor, 4) == source
+                 && matrixPayload (processor, 3) != source, "Editing a copy changed its source or sibling");
+    const auto project = save (processor);
+    AnyvocAudioProcessor restored;
+    restored.setStateInformation (project.getData(), static_cast<int> (project.getSize()));
+    expectParameters (restored, parameters (processor));
+    const auto preset = files.directory.getChildFile ("Independent routes.anyvoc");
+    require (processor.savePreset (preset) && restored.loadPreset (preset), "Copied route preset could not roundtrip");
+    expectParameters (restored, parameters (processor));
+    for (int row = 0; row < 32; ++row) require (matrixPayload (restored, row) == matrixPayload (processor, row),
+                                              "Preset roundtrip changed a copied or hidden route field");
+}
+
+void testRouteCopyCapacityAndHostBoundaries()
+{
+    using Status = AnyvocAudioProcessor::ModulationCopyStatus;
+    AnyvocAudioProcessor processor;
+    const auto empty = parameters (processor);
+    require (processor.copyModulationRoute (-1).status == Status::invalidRoute
+                 && processor.copyModulationRoute (32).status == Status::invalidRoute
+                 && processor.copyModulationRoute (0).status == Status::emptySource
+                 && parameters (processor) == empty && ! processor.canUndo(), "Invalid/empty copy changed the sound");
+    for (int row = 0; row < 31; ++row)
+        setParameter (processor, ("mod" + juce::String (row + 1) + "Curve").toRawUTF8(), .25f);
+    clearMatrixHistory (processor);
+    processor.beginUserEdit ("Unfinished physical drag");
+    require (processor.copyModulationRoute (0).status == Status::busy, "Copy entered an already active physical gesture");
+    processor.endUserEdit();
+    const auto last = processor.copyModulationRoute (0);
+    require (last.status == Status::copied && last.destination == 31, "Copy could not use the last empty row");
+    const auto full = parameters (processor); const int count = processor.getUndoCount();
+    require (processor.copyModulationRoute (0).status == Status::noEmptySlot
+                 && parameters (processor) == full && processor.getUndoCount() == count, "Full-matrix copy overwrote a draft or added history");
+
+    for (int boundary = 0; boundary < 3; ++boundary) for (int interruption = 0; interruption < 4; ++interruption)
+    {
+        AnyvocAudioProcessor p;
+        configureMatrixPayload (p, 0); clearMatrixHistory (p);
+        const auto replacement = save (p);
+        std::vector<std::unique_ptr<ModulationGestureProbe>> probes;
+        for (int row = 0; row < 2; ++row) for (const auto* suffix : matrixRouteFields)
+            probes.push_back (std::make_unique<ModulationGestureProbe> (*p.apvts.getParameter ("mod" + juce::String (row + 1) + suffix)));
+        std::vector<float> hostState;
+        bool alive = true;
+        const auto interrupt = [&]
+        {
+            if (interruption == 0) setParameter (p, "mod1MacroTarget", 7);
+            else if (interruption == 1) setParameter (p, "mod2AuxCurve", -.93f);
+            else if (interruption == 2) p.setStateInformation (replacement.getData(), static_cast<int> (replacement.getSize()));
+            else alive = false;
+            hostState = parameters (p);
+        };
+        auto& trigger = *probes[matrixRouteFields.size()]; // Destination Source is the first actual copied field.
+        if (boundary == 0) trigger.onStart = interrupt;
+        else if (boundary == 1) trigger.onValue = interrupt;
+        else trigger.onEnd = interrupt;
+        const auto result = p.copyModulationRoute (0, [&] { return alive; });
+        require (! hostState.empty() && result.status == Status::cancelled && result.destination == -1,
+                 "Copy did not cancel at the requested source/target/project/lifetime boundary");
+        expectParameters (p, hostState);
+        require (! p.isUserEditActive(), "Cancelled copy retained an open transaction");
+        for (const auto& probe : probes) require (probe->starts == probe->ends, "Cancelled copy left a host gesture open");
+    }
+    // The second validity call occurs after source/empty-target capture but
+    // before applyModulationEdits takes its own expected-value snapshot.
+    for (const bool sourceConflict : { false, true })
+    {
+        AnyvocAudioProcessor p; configureMatrixPayload (p, 0); clearMatrixHistory (p);
+        int checks = 0; std::vector<float> authoritative;
+        const auto result = p.copyModulationRoute (0, [&]
+        {
+            if (++checks == 2)
+            {
+                setParameter (p, sourceConflict ? "mod1Amount" : "mod2Curve", .93f);
+                authoritative = parameters (p);
+            }
+            return true;
+        });
+        require (! authoritative.empty() && result.status == Status::cancelled && ! p.canUndo(),
+                 "Copy treated stale input as a new write after its initial snapshot");
+        expectParameters (p, authoritative);
+    }
+}
+
+// The writer runs on the real message thread. Its notification is suspended
+// while one worker exclusively owns processBlock; the audio worker never waits
+// for the writer after it starts rendering. Every exit releases and joins it.
+void renderDuringRouteNotification (AnyvocAudioProcessor& processor, const char* parameterId, int boundary,
+                                    const std::function<void()>& operation, const std::function<void()>& audioCheck)
+{
+    auto* parameter = processor.apvts.getParameter (parameterId);
+    require (parameter != nullptr, "Concurrent route gate parameter missing");
+    ModulationGestureProbe probe (*parameter);
+    juce::WaitableEvent entered, release;
+    std::atomic<bool> timedOut { false };
+    const auto pause = [&] { entered.signal(); if (! release.wait (5000)) timedOut.store (true); };
+    if (boundary == 0) probe.onStart = pause;
+    else if (boundary == 1) probe.onValue = pause;
+    else probe.onEnd = pause;
+    std::exception_ptr workerError;
+    std::thread worker ([&]
+    {
+        try
+        {
+            require (entered.wait (5000), "Writer did not reach the requested concurrent route boundary");
+            audioCheck();
+        }
+        catch (...) { workerError = std::current_exception(); }
+        release.signal();
+    });
+    struct Join { juce::WaitableEvent& release; std::thread& worker; ~Join() { release.signal(); if (worker.joinable()) worker.join(); } } join { release, worker };
+    operation();
+    worker.join();
+    require (! timedOut.load(), "Audio processing waited for a paused message-thread route publication");
+    if (workerError) std::rethrow_exception (workerError);
+    require (boundary == 0 ? probe.startFired : boundary == 1 ? probe.valueFired : probe.endFired,
+             "Concurrent route test did not actually enter its callback");
+    require (probe.starts == probe.ends, "Concurrent route operation left a gesture open");
+}
+
+void prepareRoutePublicationFixture (AnyvocAudioProcessor& processor)
+{
+    prepareCrossModulationFixture (processor);
+    setParameter (processor, "macro1", .25f); setParameter (processor, "macro2", .25f);
+    setParameter (processor, "mod1Source", 4); // Note velocity = 1.
+    setParameter (processor, "mod1Amount", .25f);
+    setParameter (processor, "mod1MacroEnabled", 1); setParameter (processor, "mod1MacroTarget", 1);
+    setParameter (processor, "mod32Source", 7); setParameter (processor, "mod32Dest", 2); setParameter (processor, "mod32Amount", .5f);
+    clearMatrixHistory (processor);
+    processor.prepareToPlay (48000, 128);
+    render (processor, 8192, { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } });
+}
+
+void expectRouteMacroValues (AnyvocAudioProcessor& processor, float first, float second, const std::string& context)
+{
+    const auto snapshot = processor.getMacroModulationSnapshot();
+    require (snapshot.hasActiveVoice && std::abs (snapshot.values[0] - first) < 2.0e-6f
+                 && std::abs (snapshot.values[1] - second) < 2.0e-6f,
+             "Route publication exposed a partial/stale graph: " + context + " macro1=" + std::to_string (snapshot.values[0])
+                 + " macro2=" + std::to_string (snapshot.values[1]));
+}
+
+struct RouteDepthOracle
+{
+    // Independent 15 ms, 48 kHz one-pole recurrence. In float arithmetic the
+    // depth can stop a few ULP below its target; waiting longer does not make
+    // an instantaneous nominal .25/.5 expectation correct for a new slot.
+    void advance (int samples)
+    {
+        const float coefficient = 1.0f - std::exp (-1.0f / 720.0f);
+        for (int sample = 0; sample < samples; ++sample) value += coefficient * (target - value);
+    }
+    float value = 0, target = 0;
+};
+
+void testRoutePublicationCopyResetUndoAndRestore()
+{
+    using Status = AnyvocAudioProcessor::ModulationCopyStatus;
+    AnyvocAudioProcessor processor;
+    prepareRoutePublicationFixture (processor);
+    const auto singleRouteProject = save (processor);
+    RouteDepthOracle secondDepth;
+    const auto checkOld = [&] (bool hasDuplicate)
+    {
+        const auto audio = render (processor, 2048);
+        secondDepth.advance (2048);
+        require (rms (audio) > .005, "Concurrent route test did not render an audible held note");
+        expectRouteMacroValues (processor, .25f, .5f + (hasDuplicate ? secondDepth.value : 0), "paused compound edit");
+    };
+    // At MacroEnabled's end callback the copied row temporarily targets Macro
+    // 1; the intended Macro 2 selector is the final field, still not written.
+    renderDuringRouteNotification (processor, "mod2MacroEnabled", 2, [&]
+    {
+        const auto result = processor.copyModulationRoute (0);
+        require (result.status == Status::copied && result.destination == 1, "Concurrent copy did not run on the message thread");
+    }, [&] { checkOld (false); });
+    secondDepth.target = .25f; secondDepth.advance (8192);
+    render (processor, 8192); expectRouteMacroValues (processor, .25f, .5f + secondDepth.value, "committed duplicate");
+    renderDuringRouteNotification (processor, "mod2Amount", 2, [&] { processor.resetModulationRoute (1); }, [&] { checkOld (true); });
+    secondDepth.target = 0; secondDepth.advance (8192);
+    render (processor, 8192); expectRouteMacroValues (processor, .25f, .5f, "committed reset");
+    renderDuringRouteNotification (processor, "mod2MacroEnabled", 2,
+        [&] { expectHistoryResult (processor.undoUserEdit(), "Concurrent Undo route reset"); }, [&] { checkOld (false); });
+    secondDepth.target = .25f; secondDepth.advance (8192);
+    render (processor, 8192); expectRouteMacroValues (processor, .25f, .5f + secondDepth.value, "committed Undo");
+    renderDuringRouteNotification (processor, "mod2Amount", 2,
+        [&] { expectHistoryResult (processor.redoUserEdit(), "Concurrent Redo route reset"); }, [&] { checkOld (true); });
+    secondDepth.target = 0; secondDepth.advance (8192);
+    render (processor, 8192); expectRouteMacroValues (processor, .25f, .5f, "committed Redo");
+    require (processor.copyModulationRoute (0).status == Status::copied, "Restore fixture could not recreate duplicate");
+    secondDepth.target = .25f; secondDepth.advance (8192);
+    render (processor, 8192);
+    renderDuringRouteNotification (processor, "mod2Amount", 1,
+        [&] { processor.setStateInformation (singleRouteProject.getData(), static_cast<int> (singleRouteProject.getSize())); },
+        [&] { checkOld (true); });
+    render (processor, 8192, { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } });
+    expectRouteMacroValues (processor, .25f, .5f, "committed host restore");
+    require (! processor.canUndo() && ! processor.canRedo(), "Host restore retained compound route history");
+}
+
+void testRoutePublicationMoveDuringSmoothing()
+{
+    for (const char* pauseParameter : { "mod1Amount", "mod32Amount" })
+    {
+        AnyvocAudioProcessor moved, reference;
+        for (auto* p : { &moved, &reference })
+        {
+            prepareCrossModulationFixture (*p);
+            setParameter (*p, "macro1", .25f);
+            require (p->assignModulation (1, 28, .25f) && p->assignModulation (6, 2, .5f), "Concurrent move fixture failed");
+            clearMatrixHistory (*p); p->prepareToPlay (48000, 128);
+            render (*p, 4096, { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } });
+            setParameter (*p, "mod1Amount", .75f); render (*p, 37);
+        }
+        const auto compare = [&]
+        {
+            const auto actual = render (moved, 769, {}, 73), expected = render (reference, 769, {}, 73);
+            require (rms (actual) > .005 && crossAudioDifference (actual, expected) == 0,
+                     std::string ("A partially moved graph changed sample-exact smoothing/audio at ") + pauseParameter);
+        };
+        renderDuringRouteNotification (moved, pauseParameter, 2, [&] { moved.moveModulationRoute (0, 31); }, compare);
+        compare();
+        renderDuringRouteNotification (moved, pauseParameter, 2,
+            [&] { expectHistoryResult (moved.undoUserEdit(), "Concurrent Undo route move"); }, compare);
+        compare();
+    }
+}
+
+void testRoutePublicationHostNotificationsAndLiveGestures()
+{
+    AnyvocAudioProcessor processor;
+    prepareRoutePublicationFixture (processor);
+    RouteDepthOracle depth { .25f, .25f };
+    renderDuringRouteNotification (processor, "mod1Amount", 1,
+        [&] { setParameter (processor, "mod1Amount", .5f); }, [&]
+        {
+            depth.advance (2048);
+            render (processor, 2048); expectRouteMacroValues (processor, .25f, .5f, "host actual write before notification mirror");
+        });
+    depth.target = .5f; depth.advance (8192);
+    render (processor, 8192); expectRouteMacroValues (processor, .25f, .25f + depth.value, "completed host event");
+    require (! processor.canUndo(), "Host route automation became user history");
+    {
+        ModulationGestureProbe nested (*processor.apvts.getParameter ("mod1Amount"));
+        nested.onValue = [&] { setParameter (processor, "mod1Amount", .25f); };
+        setParameter (processor, "mod1Amount", .75f);
+        require (nested.valueFired && plainParameter (processor, "mod1Amount") == .25f,
+                 "Nested same-parameter host fixture did not restore its authoritative value");
+    }
+    depth.target = .25f; depth.advance (8192);
+    render (processor, 8192); expectRouteMacroValues (processor, .25f, .25f + depth.value, "stale outgoing host notification");
+    processor.beginUserEdit ("Live route depth drag");
+    for (const float amount : { .125f, .375f, .25f })
+    {
+        processor.setUserParameter ("mod1Amount", amount);
+        require (processor.isUserEditActive(), "Live gesture fixture unexpectedly ended before audio");
+        depth.target = amount; depth.advance (8192);
+        render (processor, 8192); expectRouteMacroValues (processor, .25f, .25f + depth.value, "ongoing physical gesture");
+    }
+    processor.endUserEdit();
+    require (! processor.isUserEditActive(), "Live gesture was not balanced");
+}
+
+void testRouteCopyEditorNavigationAndCancellation()
+{
+    PresetTestDirectory files;
+    AnyvocAudioProcessor processor;
+    configureMatrixPayload (processor, 0);
+    for (int row = 1; row < 31; ++row)
+        setParameter (processor, ("mod" + juce::String (row + 1) + "Curve").toRawUTF8(), .25f);
+    clearMatrixHistory (processor);
+    const auto original = matrixPayload (processor, 0);
+    std::unique_ptr<juce::AudioProcessorEditor> editor (new AnyvocAudioProcessorEditor (
+        processor, files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml")));
+    editor->setVisible (true); editor->setSize (1008, 684); findButton (*editor, "MOD")->onClick();
+    clickMatrixControl (*editor, "mod1Copy");
+    auto* matrix = findComponent<juce::Component> (*editor, "ModulationMatrix");
+    auto* viewport = findComponent<juce::Viewport> (*editor, "MatrixViewport");
+    auto* lastCopy = findComponent<juce::Button> (*editor, "mod32Copy");
+    require (matrix != nullptr && viewport != nullptr && modulationControlVisible (lastCopy)
+                 && viewport->getLocalBounds().contains (viewport->getLocalArea (lastCopy, lastCopy->getLocalBounds()))
+                 && matrix->getProperties()["MatrixCopyStatus"].toString() == "copied"
+                 && static_cast<int> (matrix->getProperties()["MatrixCopyDestination"]) == 31
+                 && matrixPayload (processor, 31) == original && matrixPayload (processor, 0) == original
+                 && processor.getUndoCount() == 1,
+             "Actual row COPY did not preserve its payload and reveal the last-row result at minimum size");
+    const auto full = parameters (processor);
+    clickMatrixControl (*editor, "mod32Copy");
+    require (parameters (processor) == full && processor.getUndoCount() == 1
+                 && matrix->getProperties()["MatrixCopyStatus"].toString() == "noEmptySlot",
+             "Full-matrix COPY UI silently reused an occupied draft");
+    expectHistoryResult (processor.undoUserEdit(), "Undo row COPY UI");
+    for (int page = 0; page < 3; ++page) clickMatrixControl (*editor, "MatrixPreviousPage");
+    clickMatrixControl (*editor, "mod1Edit"); clickMatrixControl (*editor, "mod1CopyDetail");
+    require (modulationControlVisible (findComponent<juce::Button> (*editor, "mod32CopyDetail"))
+                 && matrixPayload (processor, 31) == original && processor.getUndoCount() == 1,
+             "Detail COPY did not open the independently copied last route");
+    const auto hiddenDetailAction = findComponent<juce::Button> (*editor, "mod32CopyDetail")->onClick;
+    clickMatrixControl (*editor, "MatrixDetailClose");
+    const auto beforeHidden = parameters (processor); const auto beforeHiddenHistory = processor.getUndoCount();
+    hiddenDetailAction();
+    require (parameters (processor) == beforeHidden && processor.getUndoCount() == beforeHiddenHistory,
+             "A late hidden detail COPY changed the sound");
+    auto* offPage = findComponent<juce::Button> (*editor, "mod32Copy");
+    require (offPage != nullptr && ! viewport->getViewArea().intersects (offPage->getParentComponent()->getBounds()),
+             "Hidden-page COPY fixture did not place its button outside the current viewport");
+    offPage->onClick();
+    require (parameters (processor) == beforeHidden && processor.getUndoCount() == beforeHiddenHistory,
+             "A clipped off-page COPY callback changed the sound");
+    editor.reset(); dispatchEditorActions();
+
+    for (int boundary = 0; boundary < 3; ++boundary) for (int interruption = 0; interruption < 4; ++interruption)
+    {
+        AnyvocAudioProcessor p; configureMatrixPayload (p, 0); clearMatrixHistory (p);
+        // JUCE visits parameter listeners in reverse registration order. Install
+        // the host probe before GUI attachments so deleting the editor inside a
+        // notification cannot shift this probe down and notify it a second time.
+        ModulationGestureProbe destination (*p.apvts.getParameter ("mod2Source"));
+        std::unique_ptr<juce::AudioProcessorEditor> view (new AnyvocAudioProcessorEditor (
+            p, files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml")));
+        view->setVisible (true); view->setSize (1008, 684); findButton (*view, "MOD")->onClick();
+        auto* copy = findComponent<juce::Button> (*view, "mod1Copy");
+        require (modulationControlVisible (copy) && copy->onClick, "Copy callback fixture was not a real visible button");
+        const auto click = copy->onClick;
+        // Switching to SYNTH hides this matrix; the visible-only finder must
+        // not be used to check its cancellation result after that navigation.
+        const juce::Component::SafePointer<juce::Component> callbackMatrix (
+            findComponent<juce::Component> (*view, "ModulationMatrix"));
+        std::vector<float> authoritative;
+        const auto interrupt = [&]
+        {
+            if (interruption == 0) view.reset();
+            else if (interruption == 1) findButton (*view, "SYNTH")->onClick();
+            else if (interruption == 2) findComponent<juce::Button> (*view, "MatrixNextPage")->onClick();
+            else setParameter (p, "mod1AuxCurve", -.93f);
+            authoritative = parameters (p);
+        };
+        if (boundary == 0) destination.onStart = interrupt;
+        else if (boundary == 1) destination.onValue = interrupt;
+        else destination.onEnd = interrupt;
+        click(); dispatchEditorActions();
+        const auto context = " boundary=" + std::to_string (boundary) + " interruption=" + std::to_string (interruption)
+            + " starts=" + std::to_string (destination.starts) + " ends=" + std::to_string (destination.ends)
+            + " values=" + std::to_string (destination.values) + " active=" + std::to_string (p.isUserEditActive());
+        require (! authoritative.empty(), "UI copy did not enter its host notification/lifetime boundary;" + context);
+        expectParameters (p, authoritative, context);
+        require (! p.isUserEditActive() && destination.starts == destination.ends,
+                 "COPY UI left a stale write or gesture after editor destruction, navigation or host automation;" + context);
+        if (view != nullptr)
+        {
+            auto* currentMatrix = callbackMatrix.getComponent();
+            require (currentMatrix != nullptr && currentMatrix->getProperties()["MatrixCopyStatus"].toString() == "cancelled",
+                     "Cancelled COPY UI reported a successful duplicate;" + context + " status="
+                         + (currentMatrix != nullptr ? currentMatrix->getProperties()["MatrixCopyStatus"].toString().toStdString() : "missing-matrix"));
+        }
+    }
+    // A successful copy is independent of its deferred navigation. A newer
+    // host edit to the result must prevent the queued action stealing the view.
+    AnyvocAudioProcessor p; configureMatrixPayload (p, 0);
+    for (int row = 1; row < 31; ++row) setParameter (p, ("mod" + juce::String (row + 1) + "Curve").toRawUTF8(), .25f);
+    clearMatrixHistory (p);
+    std::unique_ptr<juce::AudioProcessorEditor> view (new AnyvocAudioProcessorEditor (
+        p, files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml")));
+    view->setVisible (true); findButton (*view, "MOD")->onClick();
+    auto* firstCopy = findComponent<juce::Button> (*view, "mod1Copy");
+    require (modulationControlVisible (firstCopy), "Deferred COPY fixture was hidden");
+    firstCopy->onClick();
+    setParameter (p, "mod32AuxCurve", -.93f);
+    dispatchEditorActions();
+    auto* currentViewport = findComponent<juce::Viewport> (*view, "MatrixViewport");
+    require (currentViewport != nullptr && currentViewport->getViewPositionY() == 0
+                 && std::abs (plainParameter (p, "mod32AuxCurve") + .93f) < 2.0e-6f,
+             "Queued COPY navigation ignored a newer host edit to the copied row");
+}
+
+void testPlayPageDefaultNavigationAndParameterBindings()
+{
+    PresetTestDirectory files;
+    AnyvocAudioProcessor processor, reference;
+    audibleSettings (processor); audibleSettings (reference);
+    const auto initial = save (processor);
+    auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor,
+        files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml"));
+    editor->setVisible (true); editor->setSize (1008, 684);
+    const std::array<const char*, 5> pageIds { "pagePlay", "pageSynth", "pageFilter", "pageMod", "pageFx" };
+    const std::array<const char*, 5> pageLabels { "PLAY", "SYNTH", "FILTER", "MOD", "FX" };
+    int previousX = -1;
+    for (size_t index = 0; index < pageIds.size(); ++index)
+    {
+        auto* button = findComponent<juce::Button> (*editor, pageIds[index]);
+        require (modulationControlVisible (button) && button->getButtonText() == pageLabels[index]
+                     && button->getX() > previousX && button->getToggleState() == (index == 0),
+                 "PLAY-first navigation changed old page labels/IDs or selected the wrong default page");
+        previousX = button->getX();
+    }
+    require (findComponent<juce::Component> (*editor, "playPage") != nullptr
+                 && findComponent<juce::Slider> (*editor, "osc1Position") == nullptr
+                 && save (processor) == initial && ! processor.canUndo(), "Opening PLAY changed sound or exposed a different default page");
+    for (const auto* id : { "playBrowse", "playFilters", "playFilterEnabled", "playCutoff", "playResonance", "playEnvelopeEdit",
+                           "playAttack", "playDecay", "playSustain", "playRelease", "playEffects", "playEcho", "playReverb",
+                           "playOpenSynth", "playOpenFilter", "playOpenMod", "playOpenFx", "master", "macro1", "openModulationSources" })
+    {
+        auto* control = findComponent<juce::Component> (*editor, id);
+        require (modulationControlVisible (control) && editor->getLocalBounds().contains (editor->getLocalArea (control, control->getLocalBounds())),
+                 std::string ("PLAY control is missing or clipped at minimum size: ") + id);
+    }
+    processor.prepareToPlay (48000, 128); reference.prepareToPlay (48000, 128);
+    const std::vector<Event> notes { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } };
+    render (processor, 4096, notes); render (reference, 4096, notes);
+    for (const auto* id : pageIds) clickMatrixControl (*editor, id);
+    for (const auto* id : { "playOpenSynth", "playOpenFilter", "playOpenMod", "playOpenFx" })
+    {
+        clickMatrixControl (*editor, "pagePlay"); clickMatrixControl (*editor, id);
+    }
+    clickMatrixControl (*editor, "pagePlay");
+    const auto actual = render (processor, 4096), expected = render (reference, 4096);
+    require (crossAudioDifference (actual, expected) == 0 && save (processor) == initial && ! processor.canUndo(),
+             "Page navigation changed parameters, history or ongoing audio");
+
+    struct Binding { const char* play; const char* parameter; const char* fullPage; float value; };
+    const std::array<Binding, 8> bindings {{
+        { "playCutoff", "cutoff", "pageSynth", 1750 }, { "playResonance", "resonance", "pageSynth", .31f },
+        { "playAttack", "ampAttack", "pageSynth", .2f }, { "playDecay", "ampDecay", "pageSynth", .4f },
+        { "playSustain", "ampSustain", "pageSynth", .6f }, { "playRelease", "ampRelease", "pageSynth", .7f },
+        { "playEcho", "delayMix", "pageFx", .27f }, { "playReverb", "reverbMix", "pageFx", .33f }
+    }};
+    for (const auto& binding : bindings)
+    {
+        clickMatrixControl (*editor, "pagePlay"); clearMatrixHistory (processor); refreshEditorTimers();
+        const auto before = parameters (processor);
+        auto* slider = findComponent<juce::Slider> (*editor, binding.play);
+        require (modulationControlVisible (slider) && slider->isEnabled() && slider->onDragStart && slider->onDragEnd,
+                 std::string ("PLAY binding cannot begin a real user gesture: ") + binding.play);
+        slider->onDragStart(); slider->setValue (binding.value * .8f, juce::sendNotificationSync);
+        slider->setValue (binding.value, juce::sendNotificationSync); slider->onDragEnd();
+        const auto target = plainParameter (processor, binding.parameter);
+        require (std::abs (target - binding.value) < (binding.value > 1 ? .01f : 2.0e-5f)
+                     && processor.getUndoCount() == 1 && ! processor.isUserEditActive(),
+                 std::string ("PLAY control is not attached to one undoable parameter: ") + binding.play);
+        const auto after = parameters (processor);
+        const int editedIndex = processor.apvts.getParameter (binding.parameter)->getParameterIndex();
+        for (size_t index = 0; index < before.size(); ++index)
+            require (index == static_cast<size_t> (editedIndex) || before[index] == after[index], "A PLAY knob changed an unrelated parameter");
+        clickMatrixControl (*editor, binding.fullPage);
+        auto* fullSlider = findComponent<juce::Slider> (*editor, binding.parameter);
+        require (modulationControlVisible (fullSlider) && std::abs (fullSlider->getValue() - target) < .01,
+                 "The full editor did not display the same parameter changed on PLAY");
+        expectHistoryResult (processor.undoUserEdit(), "Undo PLAY knob"); expectParameters (processor, before);
+        expectHistoryResult (processor.redoUserEdit(), "Redo PLAY knob"); expectParameters (processor, after);
+        clickMatrixControl (*editor, "pagePlay");
+        const int history = processor.getUndoCount();
+        setParameter (processor, binding.parameter, binding.value * .5f); refreshEditorTimers();
+        slider = findComponent<juce::Slider> (*editor, binding.play);
+        require (std::abs (slider->getValue() - plainParameter (processor, binding.parameter)) < .01
+                     && processor.getUndoCount() == history, "Host automation did not update PLAY or became a user edit");
+    }
+}
+
+void testPlayPageFilterTempoAndModulationGuards()
+{
+    PresetTestDirectory files; AnyvocAudioProcessor processor;
+    auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor,
+        files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml"));
+    editor->setVisible (true); editor->setSize (1008, 684);
+    auto* filter = findComponent<juce::Button> (*editor, "playFilterEnabled");
+    auto* cutoff = findComponent<juce::Slider> (*editor, "playCutoff");
+    auto* resonance = findComponent<juce::Slider> (*editor, "playResonance");
+    require (modulationControlVisible (filter) && cutoff != nullptr && resonance != nullptr, "PLAY filter controls unavailable");
+    setParameter (processor, "cutoff", 1500); setParameter (processor, "resonance", .32f); clearMatrixHistory (processor);
+    const auto origin = cutoff->getLocalBounds().toFloat().getCentre();
+    cutoff->mouseDown (modulationMouseEvent (*cutoff, origin, origin));
+    cutoff->mouseDrag (modulationMouseEvent (*cutoff, origin.translated (0, -22), origin));
+    require (processor.isUserEditActive() && std::abs (plainParameter (processor, "cutoff") - 1500) > 1,
+             "Filter-off fixture did not start an actual changing mouse drag");
+    setParameter (processor, "filterEnabled", 0); refreshEditorTimers();
+    cutoff->mouseUp (modulationMouseEvent (*cutoff, origin.translated (0, -22), origin));
+    require (! cutoff->isEnabled() && ! resonance->isEnabled() && filter->getButtonText() == "OFF"
+                 && ! processor.isUserEditActive() && processor.canUndo(),
+             "Host bypass during a PLAY drag left an active transaction or failed to mark the filter off");
+    expectHistoryResult (processor.undoUserEdit(), "Undo PLAY cutoff drag cancelled by host bypass");
+    require (std::abs (plainParameter (processor, "cutoff") - 1500) < .01f && plainParameter (processor, "filterEnabled") == 0,
+             "Undo of the cancelled drag rolled back unrelated host bypass");
+    const auto bypassed = parameters (processor);
+    cutoff->setValue (6000, juce::sendNotificationSync); resonance->setValue (.9, juce::sendNotificationSync);
+    expectParameters (processor, bypassed);
+    filter->setToggleState (true, juce::sendNotificationSync); refreshEditorTimers();
+    require (cutoff->isEnabled() && resonance->isEnabled() && filter->getButtonText() == "ON"
+                 && std::abs (cutoff->getValue() - 1500) < .01 && std::abs (resonance->getValue() - .32) < 2.0e-5,
+             "Re-enabling Filter A lost its saved settings or left PLAY disabled");
+
+    setParameter (processor, "ampTempoSync", 1);
+    setParameter (processor, "ampAttackDivision", 10); setParameter (processor, "ampDecayDivision", 12); setParameter (processor, "ampReleaseDivision", 9);
+    clearMatrixHistory (processor); refreshEditorTimers();
+    const auto synced = parameters (processor);
+    const std::array<const char*, 3> ids { "playAttack", "playDecay", "playRelease" };
+    const std::array<const char*, 3> divisions { "1/8 T", "1/8 D", "4 bars" };
+    for (size_t index = 0; index < ids.size(); ++index)
+    {
+        auto* slider = findComponent<juce::Slider> (*editor, ids[index]);
+        require (modulationControlVisible (slider) && ! slider->isEnabled()
+                     && slider->getTextFromValue (slider->getValue()) == divisions[index], "PLAY BPM envelope displayed/editable seconds instead of its musical division");
+        slider->setValue (1.23, juce::sendNotificationSync);
+    }
+    expectParameters (processor, synced);
+    require (! processor.canUndo() && findComponent<juce::Slider> (*editor, "playSustain")->isEnabled(),
+             "Read-only BPM times created history or disabled the independent sustain level");
+    clickMatrixControl (*editor, "playEnvelopeEdit");
+    require (modulationControlVisible (findComponent<juce::Component> (*editor, "ampEnvelopeLabPage")), "PLAY EDIT did not open the real amplitude Envelope Lab");
+    clickMatrixControl (*editor, "EnvelopeLabClose");
+    setParameter (processor, "ampTempoSync", 0); refreshEditorTimers();
+    require (findComponent<juce::Slider> (*editor, "playAttack")->isEnabled(), "Turning BPM off did not restore PLAY time editing");
+
+    clearMatrixHistory (processor);
+    clickMatrixControl (*editor, "openModulationSources");
+    auto* chip = findComponent<juce::Component> (*editor, "paletteModSource1");
+    cutoff = findComponent<juce::Slider> (*editor, "playCutoff");
+    require (modulationControlVisible (chip) && modulationControlVisible (cutoff)
+                 && findComponent<juce::Button> (*editor, "pagePlay")->getToggleState(), "Opening modulation sources unexpectedly left PLAY");
+    auto* target = dynamic_cast<juce::DragAndDropTarget*> (cutoff->getParentComponent());
+    const juce::DragAndDropTarget::SourceDetails drop { "anyvoc.mod:1", chip, { 20, 20 } };
+    require (target != nullptr && target->isInterestedInDragSource (drop), "PLAY cutoff is not an actual modulation drop target");
+    target->itemDragEnter (drop); target->itemDropped (drop);
+    clickMatrixControl (*editor, "SourcePaletteClose");
+    require (processor.getModulationSource (0) == 1 && processor.getModulationDestination (0) == 1
+                 && processor.getUndoCount() == 1 && findComponent<juce::Button> (*editor, "pagePlay")->getToggleState()
+                 && modulationControlVisible (findComponent<juce::Component> (*editor, "playCutoffModulationRing")),
+             "PLAY modulation drop changed pages, lost its target or did not expose its route ring");
+}
+
+void testRemoveDestinationRoutesAtomicAudioAndGuards()
+{
+    AnyvocAudioProcessor processor;
+    prepareRoutePublicationFixture (processor);
+    require (processor.copyModulationRoute (0).status == AnyvocAudioProcessor::ModulationCopyStatus::copied,
+             "Remove-all fixture could not duplicate the incoming macro route");
+    setParameter (processor, "mod3MacroEnabled", 1); setParameter (processor, "mod3MacroTarget", 1); setParameter (processor, "mod3Amount", .5f);
+    setParameter (processor, "mod4Source", 4); setParameter (processor, "mod4MacroEnabled", 1);
+    setParameter (processor, "mod4MacroTarget", 1); setParameter (processor, "mod4Enabled", 0);
+    clearMatrixHistory (processor); processor.prepareToPlay (48000, 128);
+    render (processor, 8192, { { 0, juce::MidiMessage::noteOn (1, 60, 1.0f) } });
+    expectRouteMacroValues (processor, .25f, .75f, "remove-all initial graph");
+    const auto before = parameters (processor);
+    const auto draft = matrixPayload (processor, 2), outgoing = matrixPayload (processor, 31);
+    renderDuringRouteNotification (processor, "mod2Source", 0, [&]
+    {
+        require (processor.resetModulationRoutesToDestination (29), "Remove-all rejected a valid target");
+    }, [&]
+    {
+        require (processor.apvts.getParameter ("mod1Source")->getValue() == 0
+                     && processor.apvts.getParameter ("mod2Source")->getValue() != 0,
+                 "Remove-all test was not paused between two actual row clears");
+        render (processor, 2048); expectRouteMacroValues (processor, .25f, .75f, "remove-all paused after first row");
+    });
+    require (processor.isModulationRouteEmpty (0) && processor.isModulationRouteEmpty (1) && processor.isModulationRouteEmpty (3)
+                 && matrixPayload (processor, 2) == draft && matrixPayload (processor, 31) == outgoing
+                 && processor.getUndoCount() == 1, "Remove-all omitted bypassed rows, cleared Off drafts or fragmented history");
+    RouteDepthOracle depth { .25f, 0 }; depth.advance (8192);
+    render (processor, 8192); expectRouteMacroValues (processor, .25f, .25f, "remove-all committed graph");
+    renderDuringRouteNotification (processor, "mod2Source", 0,
+        [&] { expectHistoryResult (processor.undoUserEdit(), "Undo compound target removal"); }, [&]
+        {
+            depth.advance (2048); render (processor, 2048);
+            expectRouteMacroValues (processor, .25f, .25f, "remove-all Undo paused after first restored row");
+        });
+    expectParameters (processor, before);
+    depth.target = .25f; depth.advance (8192); render (processor, 8192);
+    expectRouteMacroValues (processor, .25f, .25f + depth.value + depth.value, "remove-all Undo committed graph");
+    for (int boundary = 0; boundary < 3; ++boundary)
+    {
+        AnyvocAudioProcessor p;
+        for (int row = 1; row <= 2; ++row)
+        {
+            const auto prefix = "mod" + juce::String (row);
+            setParameter (p, (prefix + "Source").toRawUTF8(), 4);
+            setParameter (p, (prefix + "Dest").toRawUTF8(), 2);
+            setParameter (p, (prefix + "Amount").toRawUTF8(), .25f);
+        }
+        setParameter (p, "mod3Dest", 2); clearMatrixHistory (p);
+        ModulationGestureProbe probe (*p.apvts.getParameter ("mod2Source"));
+        std::vector<float> authoritative;
+        const auto interrupt = [&] { setParameter (p, "mod3Source", 4); authoritative = parameters (p); };
+        if (boundary == 0) probe.onStart = interrupt; else if (boundary == 1) probe.onValue = interrupt; else probe.onEnd = interrupt;
+        require (! p.resetModulationRoutesToDestination (2) && ! authoritative.empty(), "Remove-all followed a new host route instead of cancelling its captured candidate set");
+        expectParameters (p, authoritative);
+        require (! p.isUserEditActive() && probe.starts == probe.ends, "Cancelled remove-all left an open transaction");
+    }
+    AnyvocAudioProcessor untouched;
+    const auto unchanged = parameters (untouched);
+    require (! untouched.resetModulationRoutesToDestination (0) && ! untouched.resetModulationRoutesToDestination (36)
+                 && untouched.resetModulationRoutesToDestination (1) && parameters (untouched) == unchanged && ! untouched.canUndo(),
+             "Invalid/no-match target removal changed parameters or history");
+    untouched.beginUserEdit ("Unfinished drag");
+    require (! untouched.resetModulationRoutesToDestination (1), "Remove-all entered an existing physical gesture");
+    untouched.endUserEdit();
+}
+
 struct MemoryLfoCurveServices final : LfoCurveServices
 {
     juce::String clipboard;
@@ -7756,6 +8397,11 @@ void createPreviews (const juce::File& directory)
     };
 
     editor->setSize (1120, 760);
+    selectPage ("PLAY");
+    capture ("Play.png");
+    editor->setSize (1008, 684);
+    capture ("Play-small.png");
+    editor->setSize (1120, 760);
     selectPage ("SYNTH");
     capture ("Synth.png");
     selectPage ("MOD");
@@ -7820,6 +8466,7 @@ void createPreviews (const juce::File& directory)
     setParameter (processor, "osc1Position", 0);
     editor.reset (new AnyvocAudioProcessorEditor (processor, previewLibrary, previewSettings));
     editor->setVisible (true); editor->setSize (1120, 760);
+    selectPage ("SYNTH");
     selectPage ("EDIT"); selectPage ("PHASE");
     capture ("Wavetable-Phase.png");
     editor->setSize (1008, 684);
@@ -7839,6 +8486,7 @@ void createPreviews (const juce::File& directory)
     setParameter (processor, "osc1Position", .5f);
     editor.reset (new AnyvocAudioProcessorEditor (processor, previewLibrary, previewSettings));
     editor->setVisible (true); editor->setSize (1120, 760);
+    selectPage ("SYNTH");
     selectPage ("EDIT");
     auto* morphMode = findComponent<juce::ComboBox> (*editor, "wavetableMorphMode");
     require (morphMode != nullptr, "Morph method selector missing from preview");
@@ -8495,7 +9143,9 @@ void createVoicingDemo (const juce::File& file)
 int main (int argc, char* argv[])
 {
     juce::ScopedJuceInitialiser_GUI initialiseJuce;
-    if (argc > 1)
+    const bool filtering = argc == 3 && std::string (argv[1]) == "--filter";
+    const juce::String filter = filtering ? juce::String (argv[2]) : juce::String();
+    if (argc > 1 && ! filtering)
     {
         if (argc != 3 || (std::string (argv[1]) != "--preview" && std::string (argv[1]) != "--demo"
                           && std::string (argv[1]) != "--warp-demo" && std::string (argv[1]) != "--voicing-demo"
@@ -8504,7 +9154,7 @@ int main (int argc, char* argv[])
                           && std::string (argv[1]) != "--lfo-motion-demo" && std::string (argv[1]) != "--chaos-demo"
                           && std::string (argv[1]) != "--macro-demo"))
         {
-            std::cerr << "Usage: AnyvocProcessorTests [--preview <directory> | --demo <wav-file> | --warp-demo <wav-file> | --voicing-demo <wav-file> | --crossmod-demo <wav-file> | --matrix-demo <wav-file> | --sources-demo <wav-file> | --envelopes-demo <wav-file> | --lfo-motion-demo <wav-file> | --chaos-demo <wav-file> | --macro-demo <wav-file>]\n";
+            std::cerr << "Usage: AnyvocProcessorTests [--filter <test-name-substring> | --preview <directory> | --demo <wav-file> | --warp-demo <wav-file> | --voicing-demo <wav-file> | --crossmod-demo <wav-file> | --matrix-demo <wav-file> | --sources-demo <wav-file> | --envelopes-demo <wav-file> | --lfo-motion-demo <wav-file> | --chaos-demo <wav-file> | --macro-demo <wav-file>]\n";
             return 2;
         }
         try
@@ -8632,6 +9282,15 @@ int main (int argc, char* argv[])
         { "All eight macro targets match independent audio values and publish actual voice snapshots", testMacroDestinationsReachAudioAndSnapshots },
         { "Actual macro drops, hidden banks, matrix targets and live labels preserve stored bases", testMacroDestinationEditorRoutingAndLiveValues },
         { "Macro drops and matrix choices survive host callbacks, hidden pages and editor destruction", testMacroDestinationUiHostCallbacks },
+        { "Route copy preserves all nineteen fields, independent drafts, single history and persisted state", testRouteCopyPayloadHistoryAndPersistence },
+        { "Route copy respects full capacity, active gestures and source/target/host snapshot boundaries", testRouteCopyCapacityAndHostBoundaries },
+        { "Route copy controls reveal independent rows and cancel hidden, stale or destroyed views", testRouteCopyEditorNavigationAndCancellation },
+        { "Audio keeps a complete route graph during paused copy, reset, Undo, Redo and host restore", testRoutePublicationCopyResetUndoAndRestore },
+        { "Concurrent route moves preserve sample-exact audio while modulation amounts are smoothing", testRoutePublicationMoveDuringSmoothing },
+        { "Route publication preserves host notifications, nested actual values and ongoing live gestures", testRoutePublicationHostNotificationsAndLiveGestures },
+        { "PLAY opens by default with stable navigation, minimum-size controls and shared undoable parameters", testPlayPageDefaultNavigationAndParameterBindings },
+        { "PLAY filter bypass cancels real drags, BPM times stay read-only and modulation drops stay on page", testPlayPageFilterTempoAndModulationGuards },
+        { "Removing all routes to one target publishes one complete audio graph and guards every captured row", testRemoveDestinationRoutesAtomicAudioAndGuards },
         { "Unified warp editor modes, sources and host automation", testUnifiedWarpEditorControls },
         { "Host BPM, PPQ and manual tempo fallback", testProcessorHostAndManualTempo },
         { "Invalid sample imports and embedded sample rollback", testSampleImportRejection },
@@ -8641,8 +9300,11 @@ int main (int argc, char* argv[])
         { "Arp block partition invariance and cross-channel panic", testArpBlockPartitionAndChannelPanic },
         { "Random and boundary parameter rendering", testParameterStress }
     };
-    int failures = 0;
+    int failures = 0, executed = 0;
     for (const auto& test : tests)
+    {
+        if (filtering && ! juce::String (test.first).containsIgnoreCase (filter)) continue;
+        ++executed;
         try
         {
             test.second();
@@ -8653,6 +9315,8 @@ int main (int argc, char* argv[])
             ++failures;
             std::cerr << "FAIL " << test.first << ": " << error.what() << '\n';
         }
-    std::cout << "Processor validation: " << tests.size() << " cases, " << failures << " failure(s)\n";
+    }
+    std::cout << "Processor validation: " << executed << " cases, " << failures << " failure(s)\n";
+    if (executed == 0) { std::cerr << "No test names matched the requested filter\n"; return 2; }
     return failures == 0 ? 0 : 1;
 }

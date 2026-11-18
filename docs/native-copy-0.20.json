@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-18",
+  "version": "0.20.0",
+  "surface": "Windows Standalone; native mouse and UI Automation through computer-use sky API",
+  "binary": "build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe",
+  "binary_sha256": "c366f6a6e829fa30d424252dae802024257a69d19f2388a0d7db0d947a25dcb9",
+  "initial_preset": "Lead / Neon Skyline, existing local state",
+  "checks": [
+    {"name": "Matrix COPY", "result": "PASS", "evidence": "Set route 1 to LFO 2 -> Filter A Cutoff, +25%. COPY produced route 2 with the same source, destination and depth, selected the copy and retained route 1."},
+    {"name": "Single Undo and Redo", "result": "PASS", "evidence": "Undo removed route 2, leaving route 1 unchanged. Redo restored route 2 at +25%."},
+    {"name": "Independent editing", "result": "PASS", "evidence": "Set route 2 to -10% through the native accessibility slider. Route 1 remained +25%."},
+    {"name": "Detail COPY", "result": "PASS", "evidence": "Opened route 2 detail and clicked COPY. Route 03 detail opened with LFO 2 -> Filter A Cutoff at -10%."},
+    {"name": "Minimum layout", "result": "PASS", "evidence": "At 1010x712 outer window / 1008x684 editor, detail COPY, navigation, controls and footer remained visible. BACK showed matrix rows 1-3 with correct depths."},
+    {"name": "Knob menu COPY", "result": "PASS", "evidence": "From PLAY cutoff's route 1 submenu, Copy route and edit copy opened MOD Route 04 detail at +25%."},
+    {"name": "Remove all and single Undo", "result": "PASS", "evidence": "PLAY cutoff menu Remove all routes to this target cleared all four matching rows to Off/Off/0. One Undo restored LFO 2 -> Filter A Cutoff with depths +25%, -10%, -10%, +25%."}
+  ],
+  "settings": {
+    "existing_instance_before_test": false,
+    "test_instance_closed": true,
+    "original_bytes_restored": true,
+    "before_and_after_sha256": "5000f1074d6b885621afabb357a32e2ba2050f8661ad38c3fb92bc520674ab7e"
+  },
+  "static_preview_review": {
+    "result": "PASS",
+    "files": ["images/Matrix-detail-small.png", "images/Matrix-expanded-small.png", "images/Matrix-last-page-small.png"],
+    "scope": "COPY, row controls, detail navigation and persistent footer fit at 1008x684. This does not claim every generated preview was visually reviewed."
+  },
+  "local_raw_observations": "build/validation-baseline/copy-native-observations-0.20.json (local only)",
+  "observation_note": "Some immediate accessibility trees lagged the rendered screen; settled observations confirmed final values. A popup lost focus during the first knob-menu attempt; the app was reselected and the action repeated successfully. No input was sent using the unrelated window capture. Native screenshots were inspected in-session, not exported.",
+  "not_tested_here": ["all 19 copied fields through native controls", "full matrix with no free slot", "page-4 copy navigation", "host callback interruption", "save/load/restart", "DAW workflow", "external MIDI", "human listening"]
+}

@@ -1,0 +1,20 @@
+{
+  "version": "0.20.0",
+  "baseline_commit": "bf3efc6ecde3044409ec6693c6b98f7eb65371b3",
+  "scope": "Exact source definition equality after LF normalization; runtime behavior requires separate tests",
+  "definitions": {
+    "parameter_layout": {
+      "byte_identical_lf": true,
+      "sha256": "babd19e8ece001f0c6944501fe608edbd037ed3c08aa3cd6258d122103513530",
+      "utf8_bytes": 20774
+    },
+    "factory_presets": {
+      "byte_identical_lf": true,
+      "sha256": "3e38083c5e7d5522c2f59b68ae2d6cf5d06565e0e5f2251d3ae435f997b96d4e",
+      "utf8_bytes": 12984
+    }
+  },
+  "parameter_count": 1256,
+  "schema_version": 14,
+  "factory_preset_count": 28
+}

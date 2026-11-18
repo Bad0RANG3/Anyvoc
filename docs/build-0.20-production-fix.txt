@@ -1,0 +1,35 @@
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Anyvoc_rc_lib.vcxproj -> D:\Anyvoc\build\Anyvoc_rc_lib.dir\Release\Anyvoc_rc_lib.lib
+  PluginEditor.cpp
+  juce_graphics_Sheenbidi.c
+  Anyvoc.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Anyvoc_SharedCode.lib
+  juce_audio_plugin_client_AAX.cpp
+  juce_audio_plugin_client_AAX_utils.cpp
+  juce_audio_plugin_client_ARA.cpp
+  juce_audio_plugin_client_LV2.cpp
+  juce_audio_plugin_client_Standalone.cpp
+  juce_audio_plugin_client_Unity.cpp
+  juce_audio_plugin_client_VST2.cpp
+  juce_audio_plugin_client_VST3.cpp
+  Anyvoc_Standalone.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Standalone\Anyvoc.exe
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Anyvoc_rc_lib.vcxproj -> D:\Anyvoc\build\Anyvoc_rc_lib.dir\Release\Anyvoc_rc_lib.lib
+  Anyvoc.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Anyvoc_SharedCode.lib
+  juce_VST3ManifestHelper.cpp
+  Anyvoc_vst3_helper.vcxproj -> D:\Anyvoc\build\Release\Anyvoc_vst3_helper.exe
+  juce_audio_plugin_client_AAX.cpp
+  juce_audio_plugin_client_AAX_utils.cpp
+  juce_audio_plugin_client_ARA.cpp
+  juce_audio_plugin_client_LV2.cpp
+  juce_audio_plugin_client_Standalone.cpp
+  juce_audio_plugin_client_Unity.cpp
+  juce_audio_plugin_client_VST2.cpp
+  juce_audio_plugin_client_VST3.cpp
+    正在创建库 D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.lib 和对象 D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.exp
+  Anyvoc_VST3.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\VST3\Anyvoc.vst3\Contents\x86_64-win\Anyvoc.vst3
+  removing moduleinfo.json
+  creating D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.vst3

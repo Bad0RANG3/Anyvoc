@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-18",
+  "timezone": "Asia/Shanghai",
+  "version": "0.20.0 candidate",
+  "surface": "Windows Standalone, computer-use sky API",
+  "binary": "build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe",
+  "binary_sha256": "C366F6A6E829FA30D424252DAE802024257A69D19F2388A0D7DB0D947A25DCB9",
+  "initial_preset_identity": "Lead / Neon Skyline (existing local state)",
+  "checks": [
+    { "name": "Default PLAY", "result": "PASS", "evidence": "PLAY selected on launch; tone, note shape, space and full-editor navigation visible." },
+    { "name": "Filter bypass and undo", "result": "PASS", "evidence": "OFF disabled cutoff/resonance and retained 6500.0009765625 Hz / 0.15000000596046448. Undo restored ON and editable controls." },
+    { "name": "Cross-page parameter and history", "result": "PASS", "evidence": "Mouse drag changed PLAY cutoff to 1259.7159423828125 Hz; FILTER showed the same value. Undo in FILTER restored 6500.0009765625 Hz on PLAY." },
+    { "name": "BPM envelope display", "result": "PASS", "evidence": "PLAY envelope EDIT opened Amp Envelope. Enabling BPM and closing Lab showed Attack 1/16, Decay 1/4, Release 1/4, all disabled for seconds editing; Sustain 70% remained enabled." },
+    { "name": "PLAY modulation with Lab open", "result": "PASS", "evidence": "Dragging LFO 2 from the open Amp Lab to the resonance position closed Lab and kept PLAY. MOD showed route 2: LFO 2 -> Filter A Resonance, +25%. Returning to PLAY showed the corresponding outer ring." },
+    { "name": "Minimum window", "result": "PASS", "evidence": "Resized to minimum: captured outer window 1010x712, editor 1008x684. Main controls, explanations, navigation, macros, keyboard and output remained visible without clipping." },
+    { "name": "Keyboard at minimum size", "result": "PASS", "evidence": "Clicked C4; screenshot showed active key, green output meter and EV: latest voice. This is UI/engine activity evidence, not human listening." },
+    { "name": "Preset entry point", "result": "PASS", "evidence": "CHOOSE A SOUND opened the existing Preset Library at minimum size, with search, list, LOAD SOUND and persistent keyboard visible. No preset was loaded in this check." }
+  ],
+  "settings": {
+    "existing_instance_before_test": false,
+    "test_instance_closed": true,
+    "original_bytes_restored": true,
+    "before_and_after_sha256": "5000F1074D6B885621AFABB357A32E2BA2050F8661AD38C3FB92BC520674AB7E"
+  },
+  "local_raw_observations": "build/validation-ui/play-native-observations.json (local, not tracked)",
+  "static_preview_review": {
+    "result": "PASS",
+    "files": ["build/previews-0.20-initial/Play.png", "build/previews-0.20-initial/Play-small.png", "build/previews-0.20-initial/Synth.png"],
+    "scope": "Visually inspected PLAY at 1120x760 and 1008x684: navigation, controls, explanatory text and persistent footer fit. SYNTH at 1120x760: VOICE & TEXTURE title does not overlap POLY/GLIDE or VOICING. This is layout evidence, separate from native interaction checks."
+  },
+  "observation_note": "Some immediate UI Automation trees lagged the rendered screenshot; later observations confirmed final control values. Native screenshots were inspected in the tool session, not exported as files.",
+  "not_tested_here": ["DAW workflow", "external MIDI", "human listening", "full preset save/restart/restore", "host bypass during an active mouse gesture", "all other editors at all sizes", "route copy workflow"]
+}

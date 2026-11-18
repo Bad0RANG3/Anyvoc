@@ -57,6 +57,14 @@ FEATURE_POLICIES = {
                     "Source/LfoModel.h", "Source/ChaosLfoModel.h",
                     "Source/LfoCurveDocument.h", "Source/LfoCurveDocument.cpp"),
     },
+    "0.20.0": {
+        "demos": (MOTION_DEMO, CHAOS_DEMO, MACRO_DEMO),
+        "headers": ("Source/ModulationRoute.h", "Source/EnvelopeModel.h",
+                    "Source/LfoModel.h", "Source/ChaosLfoModel.h",
+                    "Source/LfoCurveDocument.h", "Source/LfoCurveDocument.cpp",
+                    "Source/PluginProcessor.h", "Source/PluginProcessor.cpp",
+                    "Source/PluginEditor.cpp"),
+    },
 }
 CHUNK_SIZE = 1024 * 1024
 

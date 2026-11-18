@@ -1,4 +1,4 @@
-"""Independently measure the completed 0.19 macro demo and legacy regression.
+"""Independently measure the macro demo and a supplied legacy regression baseline.
 
 Uses only standard-library WAV decoding and the shared numerical utilities in
 analyze-chaos-demo.py. No plugin implementation or audio generation is imported.
@@ -31,6 +31,10 @@ def main():
     parser.add_argument("--legacy-before", type=Path, required=True)
     parser.add_argument("--legacy-after", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--version", default="0.19.0",
+                        help="Version of the tested binary (default: 0.19.0)")
+    parser.add_argument("--baseline-version", default="0.18.0",
+                        help="Version of the supplied legacy reference (default: 0.18.0)")
     args = parser.parse_args()
     for path in (args.demo, args.legacy_before, args.legacy_after):
         if not path.is_file():
@@ -58,7 +62,7 @@ def main():
     overall = pcm.metrics(data)
     failures = []
     if not identical or before_sha != after_sha:
-        failures.append("Legacy WAV bytes / SHA-256 changed from supplied 0.18 baseline")
+        failures.append(f"Legacy WAV bytes / SHA-256 changed from supplied {args.baseline_version} baseline")
     if overall["decoded_nonfinite_samples"] != 0:
         failures.append("Non-finite decoded samples")
     if overall["full_scale_or_clipped_samples"] != 0:
@@ -70,7 +74,7 @@ def main():
         if comparison["decoded_samples_identical"]:
             failures.append(f"Segments {comparison['first_segment']}/{comparison['second_segment']} are identical")
     report = {
-        "version": "0.19.0", "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "version": args.version, "generated_utc": datetime.now(timezone.utc).isoformat(),
         "status": "PASS" if not failures else "FAIL", "failures": failures,
         "scope": "Independent PCM measurements and legacy byte comparison; no synthesizer helpers used",
         "limitations": [
@@ -87,6 +91,7 @@ def main():
             "overall": overall, "segments": segments, "segment_comparisons": comparisons,
         },
         "legacy_regression": {
+            "baseline_version": args.baseline_version,
             "before_path": str(args.legacy_before.resolve()), "after_path": str(args.legacy_after.resolve()),
             "before_sha256": before_sha, "after_sha256": after_sha,
             "before_bytes": args.legacy_before.stat().st_size, "after_bytes": args.legacy_after.stat().st_size,

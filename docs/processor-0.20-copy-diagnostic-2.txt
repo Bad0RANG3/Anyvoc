@@ -1,0 +1,2 @@
+FAIL Route copy controls reveal independent rows and cancel hidden, stale or destroyed views: Cancelled COPY UI reported a successful duplicate; boundary=0 interruption=1 starts=1 ends=1 values=0 active=0 status=missing-matrix
+Processor validation: 1 cases, 1 failure(s)

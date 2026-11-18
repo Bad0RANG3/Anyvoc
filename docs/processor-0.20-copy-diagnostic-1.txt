@@ -1,0 +1,2 @@
+FAIL Route copy controls reveal independent rows and cancel hidden, stale or destroyed views: COPY UI left a stale write or gesture after editor destruction, navigation or host automation; boundary=0 interruption=0 starts=2 ends=1 values=0 active=0
+Processor validation: 1 cases, 1 failure(s)

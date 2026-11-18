@@ -1,0 +1,73 @@
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Generating Anyvoc_artefacts/JuceLibraryCode/Anyvoc_resources.rc
+  Anyvoc_rc_lib.vcxproj -> D:\Anyvoc\build\Anyvoc_rc_lib.dir\Release\Anyvoc_rc_lib.lib
+  Generating Anyvoc_artefacts/JuceLibraryCode/JuceHeader.h
+  PluginProcessor.cpp
+  PluginEditor.cpp
+  SynthEngine.cpp
+  WavetableDocument.cpp
+  PresetLibrary.cpp
+  LfoCurveDocument.cpp
+  juce_audio_processors.cpp
+  juce_gui_extra.cpp
+  juce_gui_basics.cpp
+  juce_graphics.cpp
+  juce_graphics_Harfbuzz.cpp
+  juce_events.cpp
+  juce_core.cpp
+  juce_core_CompilationTime.cpp
+  juce_data_structures.cpp
+  juce_audio_processors_headless.cpp
+  juce_audio_processors_headless_ara.cpp
+  juce_audio_processors_headless_lv2_libs.cpp
+  juce_audio_basics.cpp
+  juce_audio_utils.cpp
+  juce_audio_formats.cpp
+D:\Anyvoc\third_party\JUCE\modules\juce_gui_basics\juce_gui_basics.cpp(61): warning : This version of JUCE does not use the splash screen, the flag JUCE_DISPLAY_SPLASH_SCREEN is ignored [D:\Anyvoc\build\Anyvoc.vcxproj]
+  juce_audio_devices.cpp
+  juce_dsp.cpp
+D:\Anyvoc\Source\PluginEditor.cpp(1306,71): error C2248: “`anonymous-namespace'::ModulationDestinationChoice::box”: 无法访问 private 成员(在“`anonymous-namespace'::ModulationDestinationChoice”类中声明) [D:\Anyvoc\build\Anyvoc.vcxproj]
+      D:\Anyvoc\Source\PluginEditor.cpp(987,20):
+      参见“`anonymous-namespace'::ModulationDestinationChoice::box”的声明
+      D:\Anyvoc\Source\PluginEditor.cpp(946,7):
+      参见“`anonymous-namespace'::ModulationDestinationChoice”的声明
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244: “初始化”: 从“_Ty”转换到“_Ty2”，可能丢失数据 [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         with [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         [ [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:             _Ty=int [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         ] [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         and [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         [ [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:             _Ty2=float [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         ] [D:\Anyvoc\build\Anyvoc.vcxproj]
+  (编译源文件“../Source/PluginProcessor.cpp”)
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54):
+      模板实例化上下文(最早的实例化上下文)为
+          D:\Anyvoc\Source\PluginProcessor.cpp(13,93):
+          查看对正在编译的函数 模板 实例化“std::pair<const char *,float>::pair<const char(&)[9],int,0>(_Other1,_Other2 &&) noexcept”的引用
+          with
+          [
+              _Other1=const char (&)[9],
+              _Other2=int
+          ]
+              D:\Anyvoc\Source\PluginProcessor.cpp(11,29):
+              请参阅 "void __cdecl `anonymous namespace'::`dynamic initializer for 'presets''(void)" 中对 "std::pair<const char *,float>::pair" 的第一个引用
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244: “参数”: 从“_Ty”转换到“float”，可能丢失数据 [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:         with [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:         [ [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:             _Ty=int [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:         ] [D:\Anyvoc\build\Anyvoc.vcxproj]
+  (编译源文件“../Source/PluginProcessor.cpp”)
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56):
+      模板实例化上下文(最早的实例化上下文)为
+          D:\Anyvoc\Source\PluginProcessor.cpp(671,21):
+          查看对正在编译的函数 模板 实例化“std::unique_ptr<juce::AudioParameterFloat,std::default_delete<juce::AudioParameterFloat>> std::make_unique<juce::AudioParameterFloat,juce::ParameterID,const char(&)[17],juce::NormalisableRange<float>,int,Object,0>(juce::ParameterID &&,const char (&)[17],juce::NormalisableRange<float> &&,int &&,Object &&)”的引用
+          with
+          [
+              Object=juce::AudioParameterFloatAttributes
+          ]
+  

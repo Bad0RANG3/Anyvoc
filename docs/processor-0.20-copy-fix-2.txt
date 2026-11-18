@@ -1,0 +1,2 @@
+PASS Route copy controls reveal independent rows and cancel hidden, stale or destroyed views
+Processor validation: 1 cases, 0 failure(s)

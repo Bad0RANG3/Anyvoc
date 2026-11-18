@@ -112,6 +112,16 @@ constexpr std::array<const char*,19> modulationRouteSuffixes {
     "Enabled", "Polarity", "Curve", "AuxSource", "AuxPolarity", "AuxCurve", "SourceExtra", "AuxSourceExtra",
     "LfoPhaseEnabled", "LfoPhaseTarget", "MacroEnabled", "MacroTarget"
 };
+enum RouteField : size_t {
+    routeSource, routeDestination, routeAmount, routeDestinationBank, routeFilterTarget,
+    routeWarpEnabled, routeWarpTarget, routeEnabled, routePolarity, routeCurve,
+    routeAuxSource, routeAuxPolarity, routeAuxCurve, routeSourceExtra, routeAuxSourceExtra,
+    routeLfoPhaseEnabled, routeLfoPhaseTarget, routeMacroEnabled, routeMacroTarget, routeFieldCount
+};
+static_assert(routeFieldCount==modulationRouteSuffixes.size());
+static_assert(std::atomic<float>::is_always_lock_free && std::atomic<std::uint32_t>::is_always_lock_free
+              && std::atomic<std::uint64_t>::is_always_lock_free,
+              "Route publication requires lock-free scalar atomics on the target platform.");
 bool isAdvancedModulationParameter(const juce::String& id)
 {
     for(int route=1;route<=static_cast<int>(anyvoc::modulationRouteCount);++route){
@@ -203,6 +213,26 @@ juce::AudioBuffer<float> toSampleRate48k(const juce::AudioBuffer<float>& input,d
     return output;
 }
 }
+
+class AnyvocAudioProcessor::RoutePublicationScope
+{
+public:
+    explicit RoutePublicationScope(AnyvocAudioProcessor& p) : owner(p)
+    {
+        owner.routePublications.fetch_add(1);
+    }
+    ~RoutePublicationScope()
+    {
+        // Advance before releasing the writer count. This also detects an
+        // entire nested/concurrent publication between the reader's checks.
+        owner.routePublicationRevision.fetch_add(1);
+        owner.routePublications.fetch_sub(1);
+    }
+    RoutePublicationScope(const RoutePublicationScope&) = delete;
+    RoutePublicationScope& operator=(const RoutePublicationScope&) = delete;
+private:
+    AnyvocAudioProcessor& owner;
+};
 
 class AnyvocAudioProcessor::SoundHistory : private juce::AudioProcessorParameter::Listener
 {
@@ -362,6 +392,7 @@ public:
                 list.push_back ({ index, before, before, epochs[static_cast<size_t> (index)].load() });
             }
         }
+        RoutePublicationScope publication (owner);
         WriteOrigin origin (*this, index, normalized);
         parameter.setValueNotifyingHost (normalized);
         synchronize();
@@ -411,6 +442,7 @@ public:
                 clear();
                 return juce::Result::fail ("An asset in this edit changed. Stale sound history was cleared.");
             }
+        RoutePublicationScope publication (owner);
         const juce::ScopedValueSetter<bool> inReplay (replaying, true);
         auto interrupted = [&]
         {
@@ -484,6 +516,7 @@ private:
     };
     void parameterValueChanged (int index, float value) override
     {
+        owner.publishModulationParameter(index);
         if (writer == this && writeIndex == index && writeValue == value) return;
         if (juce::isPositiveAndBelow (index, parameterCount)) epochs[static_cast<size_t> (index)].fetch_add (1, std::memory_order_relaxed);
     }
@@ -840,6 +873,14 @@ AnyvocAudioProcessor::AnyvocAudioProcessor()
             {p(id+"DelayDivision"),p(id+"AttackDivision"),p(id+"HoldDivision"),p(id+"DecayDivision"),p(id+"ReleaseDivision")},p(id+"RetriggerLegato")};
     }
     for(size_t n=0;n<routeParams.size();++n) { auto id="mod"+juce::String(static_cast<int>(n)+1);routeParams[n]={p(id+"Source"),p(id+"Dest"),p(id+"Amount"),p(id+"DestBank"),p(id+"FilterTarget"),p(id+"WarpEnabled"),p(id+"WarpTarget"),p(id+"Enabled"),p(id+"Polarity"),p(id+"Curve"),p(id+"AuxSource"),p(id+"AuxPolarity"),p(id+"AuxCurve"),p(id+"SourceExtra"),p(id+"AuxSourceExtra"),p(id+"LfoPhaseEnabled"),p(id+"LfoPhaseTarget"),p(id+"MacroEnabled"),p(id+"MacroTarget")}; }
+    static_assert(storedRouteFieldCount==routeFieldCount);
+    routeFieldForParameter.assign(static_cast<size_t>(getParameters().size()),-1);
+    for(size_t row=0;row<routeParams.size();++row)for(size_t field=0;field<storedRouteFieldCount;++field){
+        auto* parameter=apvts.getParameter("mod"+juce::String(static_cast<int>(row)+1)+modulationRouteSuffixes[field]);
+        const auto slot=row*storedRouteFieldCount+field;
+        routeFieldForParameter[static_cast<size_t>(parameter->getParameterIndex())]=static_cast<int>(slot);
+        publishedRouteFields[slot].store(parameter->convertFrom0to1(parameter->getValue()));
+    }
     for(size_t osc=0;osc<3;++osc)for(size_t slot=0;slot<2;++slot){
         const auto id="osc"+juce::String(static_cast<int>(osc)+1)+"Warp"+juce::String(static_cast<int>(slot)+1);
         warpModes[osc][slot]=p(id+"Mode");warpAmounts[osc][slot]=p(id+"Amount");
@@ -908,7 +949,48 @@ size_t AnyvocAudioProcessor::getHistoryBytes() const { return history->bytes(); 
 bool AnyvocAudioProcessor::isUserEditActive() const { return history->active(); }
 void AnyvocAudioProcessor::setHistoryLimits(int entries,size_t bytes) { history->setLimits(entries,bytes); }
 
-anyvoc::SynthSettings AnyvocAudioProcessor::readSettings() const
+void AnyvocAudioProcessor::publishModulationParameter(int index) noexcept
+{
+    if(index<0 || static_cast<size_t>(index)>=routeFieldForParameter.size())return;
+    const auto slot=routeFieldForParameter[static_cast<size_t>(index)];
+    if(slot<0)return;
+    RoutePublicationScope publication(*this);
+    const auto* parameter=static_cast<const juce::RangedAudioParameter*>(getParameters()[index]);
+    // Read the actual parameter, not the callback payload or APVTS's later raw
+    // update. Nested host restores can make an older notification stale. JUCE's
+    // pinned per-parameter listener lock serializes same-field callbacks, and
+    // this read/store contains no external callout, allocation, or new lock.
+    publishedRouteFields[static_cast<size_t>(slot)].store(parameter->convertFrom0to1(parameter->getValue()));
+}
+
+void AnyvocAudioProcessor::readAudioModulationRoutes(
+    std::array<anyvoc::ModRoute,anyvoc::modulationRouteCount>& result)
+{
+    // All bookkeeping and these route loads use sequential consistency. There
+    // is one fixed-size attempt, never a wait for the message/host thread.
+    const auto revision=routePublicationRevision.load();
+    if(routePublications.load()==0){
+        std::array<float,anyvoc::modulationRouteCount*storedRouteFieldCount> fields;
+        for(size_t i=0;i<fields.size();++i)fields[i]=publishedRouteFields[i].load();
+        if(routePublications.load()==0 && revision==routePublicationRevision.load()){
+            for(size_t n=0;n<audioRoutes.size();++n){
+                const auto* p=fields.data()+n*storedRouteFieldCount;auto& route=audioRoutes[n];
+                route.source=p[routeSourceExtra]>0?static_cast<int>(p[routeSourceExtra])+9:static_cast<int>(p[routeSource]);
+                route.auxSource=p[routeAuxSourceExtra]>0?static_cast<int>(p[routeAuxSourceExtra])+9:static_cast<int>(p[routeAuxSource]);
+                if(p[routeMacroEnabled]>.5f)route.destination=anyvoc::macroDestinationId(static_cast<int>(p[routeMacroTarget]));
+                else if(p[routeLfoPhaseEnabled]>.5f)route.destination=18+static_cast<int>(p[routeLfoPhaseTarget]);
+                else if(p[routeWarpEnabled]>.5f)route.destination=12+static_cast<int>(p[routeWarpTarget]);
+                else route.destination=p[routeDestinationBank]>.5f?8+static_cast<int>(p[routeFilterTarget]):static_cast<int>(p[routeDestination]);
+                route.amount=p[routeAmount];route.enabled=p[routeEnabled]>.5f;
+                route.polarity=static_cast<int>(p[routePolarity]);route.curve=p[routeCurve];
+                route.auxPolarity=static_cast<int>(p[routeAuxPolarity]);route.auxCurve=p[routeAuxCurve];
+            }
+        }
+    }
+    result=audioRoutes;
+}
+
+anyvoc::SynthSettings AnyvocAudioProcessor::readSettings()
 {
     anyvoc::SynthSettings s;
     s.voiceMode=static_cast<int>(v(voiceMode));s.glideTime=v(glideTime);s.glideAlways=v(glideAlways)>.5f;
@@ -938,7 +1020,7 @@ anyvoc::SynthSettings AnyvocAudioProcessor::readSettings() const
     }
     s.swingAmount=v(swingAmount);s.swingDivision=static_cast<int>(v(swingDivision));
     for(size_t n=0;n<macroParams.size();++n)s.macros[n]=v(macroParams[n]);
-    for(size_t n=0;n<routeParams.size();++n)s.routes[n]=getModulationRoute(static_cast<int>(n));
+    readAudioModulationRoutes(s.routes);
     s.chorus=v(chorus);s.delayMix=v(delayMix);s.delayTime=v(delayTime);s.delayFeedback=v(delayFeedback);s.reverb=v(reverb);s.reverbSize=v(reverbSize);
     return s;
 }
@@ -1052,6 +1134,7 @@ void AnyvocAudioProcessor::selectFactoryPreset(int index)
 void AnyvocAudioProcessor::applyProgram(int index,bool userEdit)
 {
     if(index<0 || index>=getNumPrograms())return;
+    RoutePublicationScope routePublication(*this);
     SoundHistory::ExternalPublication publication(history.get(),!userEdit);
     const auto generation=history->generation();
     auto write=[&](juce::RangedAudioParameter& parameter,float normalized){
@@ -1182,6 +1265,7 @@ bool AnyvocAudioProcessor::restoreState(const juce::ValueTree& incoming,bool use
         cleaned.getChildWithProperty("id",param->paramID).setProperty("value",param->convertFrom0to1(param->getDefaultValue()),nullptr);
     }
     if(recordUserEdit && (history->isPublishing() || history->generation()!=initialGeneration))return false;
+    RoutePublicationScope routePublication(*this);
     SoundHistory::ExternalPublication publication(history.get(),!recordUserEdit);
     if(recordUserEdit){
         history->fullSound();
@@ -1518,17 +1602,22 @@ anyvoc::ModRoute AnyvocAudioProcessor::getModulationRoute(int route) const
 }
 
 bool AnyvocAudioProcessor::applyModulationEdits(const juce::String& label,
-    const std::vector<std::pair<juce::RangedAudioParameter*,float>>& edits,const std::function<bool()>& isCurrent)
+    const std::vector<std::pair<juce::RangedAudioParameter*,float>>& edits,const std::function<bool()>& isCurrent,
+    const std::vector<float>* requiredBefore)
 {
     if((isCurrent && !isCurrent()) || history->isPublishing())return false;
+    if(requiredBefore!=nullptr && requiredBefore->size()!=edits.size())return false;
     const auto generation=history->generation();
     std::vector<float> expected;expected.reserve(edits.size());
     bool changed=false;
     for(const auto& edit:edits){
         if(edit.first==nullptr || !std::isfinite(edit.second) || edit.second<0 || edit.second>1)return false;
-        expected.push_back(edit.first->getValue());changed=changed || expected.back()!=edit.second;
+        const auto current=edit.first->getValue();
+        if(requiredBefore!=nullptr && current!=(*requiredBefore)[expected.size()])return false;
+        expected.push_back(current);changed=changed || expected.back()!=edit.second;
     }
     if(!changed)return true;
+    RoutePublicationScope routePublication(*this);
     SoundHistory::Scope transaction(history.get(),label);
     auto valid=[&]{
         if((isCurrent && !isCurrent()) || history->generation()!=generation || history->isPublishing())return false;
@@ -1562,6 +1651,43 @@ void AnyvocAudioProcessor::resetModulationRoute(int route)
     applyModulationEdits("Remove modulation route",edits);
 }
 
+bool AnyvocAudioProcessor::resetModulationRoutesToDestination(
+    int destination,const std::function<bool()>& isCurrent)
+{
+    if(destination<1 || destination>=static_cast<int>(anyvoc::modulationDestinationCount)
+       || !SoundHistory::onMessageThread() || history->isPublishing() || history->active())return false;
+    if(isCurrent && !isCurrent())return false;
+    std::vector<std::pair<juce::RangedAudioParameter*,float>> edits;
+    std::vector<float> before;
+    edits.reserve(routeParams.size()*modulationRouteSuffixes.size());
+    before.reserve(routeParams.size()*modulationRouteSuffixes.size());
+    for(size_t row=0;row<routeParams.size();++row){
+        std::array<juce::RangedAudioParameter*,routeFieldCount> parameters{};
+        std::array<float,routeFieldCount> captured{};
+        const auto prefix="mod"+juce::String(static_cast<int>(row)+1);
+        for(size_t field=0;field<parameters.size();++field){
+            parameters[field]=apvts.getParameter(prefix+modulationRouteSuffixes[field]);
+            captured[field]=parameters[field]->getValue();
+        }
+        const auto plain=[&](size_t field){return parameters[field]->convertFrom0to1(captured[field]);};
+        const int extra=static_cast<int>(plain(routeSourceExtra));
+        const int source=extra>0?extra+9:static_cast<int>(plain(routeSource));
+        const int target=plain(routeMacroEnabled)>.5f?anyvoc::macroDestinationId(static_cast<int>(plain(routeMacroTarget)))
+            :plain(routeLfoPhaseEnabled)>.5f?18+static_cast<int>(plain(routeLfoPhaseTarget))
+            :plain(routeWarpEnabled)>.5f?12+static_cast<int>(plain(routeWarpTarget))
+            :plain(routeDestinationBank)>.5f?8+static_cast<int>(plain(routeFilterTarget)):static_cast<int>(plain(routeDestination));
+        const bool remove=source!=0 && target==destination;
+        for(size_t field=0;field<parameters.size();++field){
+            // Unmatched rows remain unchanged guards. A host edit cannot add a
+            // new matching route mid-command or repurpose a captured candidate.
+            edits.emplace_back(parameters[field],remove?parameters[field]->getDefaultValue():captured[field]);
+            before.push_back(captured[field]);
+        }
+    }
+    if(history->isPublishing() || history->active())return false;
+    return applyModulationEdits("Remove modulation routes",edits,isCurrent,&before);
+}
+
 void AnyvocAudioProcessor::moveModulationRoute(int from,int to)
 {
     const auto count=static_cast<int>(routeParams.size());
@@ -1577,6 +1703,47 @@ void AnyvocAudioProcessor::moveModulationRoute(int from,int to)
     }
     applyModulationEdits("Move modulation route",edits);
 }
+bool AnyvocAudioProcessor::isModulationRouteEmpty(int route) const
+{
+    if(route<0 || route>=static_cast<int>(routeParams.size()))return false;
+    const auto prefix="mod"+juce::String(route+1);
+    for(const auto* suffix:modulationRouteSuffixes){
+        const auto* parameter=apvts.getParameter(prefix+suffix);
+        if(parameter->getValue()!=parameter->getDefaultValue())return false;
+    }
+    return true;
+}
+
+AnyvocAudioProcessor::ModulationCopyResult AnyvocAudioProcessor::copyModulationRoute(
+    int source,const std::function<bool()>& isCurrent)
+{
+    using Status=ModulationCopyStatus;
+    if(source<0 || source>=static_cast<int>(routeParams.size()))return {Status::invalidRoute};
+    if(!SoundHistory::onMessageThread() || history->isPublishing() || history->active())return {Status::busy};
+    if(isCurrent && !isCurrent())return {Status::cancelled};
+    if(isModulationRouteEmpty(source))return {Status::emptySource};
+    int destination=-1;
+    for(int row=0;row<static_cast<int>(routeParams.size());++row)
+        if(row!=source && isModulationRouteEmpty(row)){destination=row;break;}
+    if(destination<0)return {Status::noEmptySlot};
+    std::vector<std::pair<juce::RangedAudioParameter*,float>> edits;
+    edits.reserve(modulationRouteSuffixes.size()*2);
+    std::vector<float> before;before.reserve(modulationRouteSuffixes.size()*2);
+    for(const auto* suffix:modulationRouteSuffixes){
+        auto* original=apvts.getParameter("mod"+juce::String(source+1)+suffix);
+        const float value=original->getValue();
+        // Unchanged source entries guard every remembered field across host
+        // callbacks, but never emit a gesture or write to the original row.
+        edits.emplace_back(original,value);
+        before.push_back(value);
+        auto* target=apvts.getParameter("mod"+juce::String(destination+1)+suffix);
+        edits.emplace_back(target,value);
+        before.push_back(target->getDefaultValue());
+    }
+    const bool copied=applyModulationEdits("Copy modulation route",edits,isCurrent,&before);
+    return {copied?Status::copied:Status::cancelled,copied?destination:-1};
+}
+
 bool AnyvocAudioProcessor::assignModulation(int source,int destination,float amount,const std::function<bool()>& isCurrent)
 {
     if(source<1 || source>=static_cast<int>(anyvoc::modulationSourceCount) || destination<1 || destination>=static_cast<int>(anyvoc::modulationDestinationCount) || !std::isfinite(amount))return false;

@@ -1,0 +1,39 @@
+{
+  "version": "0.20.0",
+  "baseline": "frozen Anyvoc-0.19.0-Windows-x64.zip",
+  "demos": [
+    {
+      "name": "Legacy",
+      "baseline_archive_member": "Anyvoc-Demo.wav",
+      "current_path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.20-Legacy.wav",
+      "current_sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+      "baseline_sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+      "byte_identical": true
+    },
+    {
+      "name": "Motion",
+      "baseline_archive_member": "Anyvoc-v0.16-Lfo-Motion-Demo.wav",
+      "current_path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.20-Motion.wav",
+      "current_sha256": "29a826a0882498a1935b90c00232e4db76ab11d77dc04b7c4aa3caae9aa3d7b6",
+      "baseline_sha256": "29a826a0882498a1935b90c00232e4db76ab11d77dc04b7c4aa3caae9aa3d7b6",
+      "byte_identical": true
+    },
+    {
+      "name": "Chaos",
+      "baseline_archive_member": "Anyvoc-v0.17-Chaos-Demo.wav",
+      "current_path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.20-Chaos.wav",
+      "current_sha256": "4885d2a3de312d88bc890840560eff45139b5c4d43de694c9d9fdeb232d18488",
+      "baseline_sha256": "4885d2a3de312d88bc890840560eff45139b5c4d43de694c9d9fdeb232d18488",
+      "byte_identical": true
+    },
+    {
+      "name": "Macro",
+      "baseline_archive_member": "Anyvoc-v0.19-Macro-Demo.wav",
+      "current_path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.20-Macro.wav",
+      "current_sha256": "1d5e9aa554bbaea088eb89b47e6ccafced972c4c06b43d60926e5696b24c8621",
+      "baseline_sha256": "1d5e9aa554bbaea088eb89b47e6ccafced972c4c06b43d60926e5696b24c8621",
+      "byte_identical": true
+    }
+  ],
+  "status": "PASS"
+}

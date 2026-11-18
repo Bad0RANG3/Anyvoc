@@ -1,0 +1,1 @@
+DEMO D:\Anyvoc\build\validation-baseline\Anyvoc-v0.20-Motion.wav (0-4s Swing Carousel straight, 4-8s swing 60%, 8-12s swing 60%/reverse, all 120 BPM; 12-16s Phase Lantern audio LFO 110 Hz, 16-20s 220 Hz; fixed gain)

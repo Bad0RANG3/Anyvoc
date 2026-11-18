@@ -1,0 +1,55 @@
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Anyvoc_rc_lib.vcxproj -> D:\Anyvoc\build\Anyvoc_rc_lib.dir\Release\Anyvoc_rc_lib.lib
+  PluginEditor.cpp
+  PluginProcessor.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244: “初始化”: 从“_Ty”转换到“_Ty2”，可能丢失数据 [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         with [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         [ [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:             _Ty=int [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         ] [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         and [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         [ [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:             _Ty2=float [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54): warning C4244:         ] [D:\Anyvoc\build\Anyvoc.vcxproj]
+  (编译源文件“../Source/PluginProcessor.cpp”)
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\utility(274,54):
+      模板实例化上下文(最早的实例化上下文)为
+          D:\Anyvoc\Source\PluginProcessor.cpp(13,93):
+          查看对正在编译的函数 模板 实例化“std::pair<const char *,float>::pair<const char(&)[9],int,0>(_Other1,_Other2 &&) noexcept”的引用
+          with
+          [
+              _Other1=const char (&)[9],
+              _Other2=int
+          ]
+              D:\Anyvoc\Source\PluginProcessor.cpp(11,29):
+              请参阅 "void __cdecl `anonymous namespace'::`dynamic initializer for 'presets''(void)" 中对 "std::pair<const char *,float>::pair" 的第一个引用
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244: “参数”: 从“_Ty”转换到“float”，可能丢失数据 [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:         with [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:         [ [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:             _Ty=int [D:\Anyvoc\build\Anyvoc.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56): warning C4244:         ] [D:\Anyvoc\build\Anyvoc.vcxproj]
+  (编译源文件“../Source/PluginProcessor.cpp”)
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630,56):
+      模板实例化上下文(最早的实例化上下文)为
+          D:\Anyvoc\Source\PluginProcessor.cpp(671,21):
+          查看对正在编译的函数 模板 实例化“std::unique_ptr<juce::AudioParameterFloat,std::default_delete<juce::AudioParameterFloat>> std::make_unique<juce::AudioParameterFloat,juce::ParameterID,const char(&)[17],juce::NormalisableRange<float>,int,Object,0>(juce::ParameterID &&,const char (&)[17],juce::NormalisableRange<float> &&,int &&,Object &&)”的引用
+          with
+          [
+              Object=juce::AudioParameterFloatAttributes
+          ]
+  
+  Anyvoc.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Anyvoc_SharedCode.lib
+  Anyvoc_Standalone.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Standalone\Anyvoc.exe
+适用于 .NET Framework MSBuild 版本 17.14.51+25f168cee
+
+  Checking File Globs
+  Anyvoc_rc_lib.vcxproj -> D:\Anyvoc\build\Anyvoc_rc_lib.dir\Release\Anyvoc_rc_lib.lib
+  Anyvoc.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\Anyvoc_SharedCode.lib
+  Anyvoc_vst3_helper.vcxproj -> D:\Anyvoc\build\Release\Anyvoc_vst3_helper.exe
+    正在创建库 D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.lib 和对象 D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.exp
+  Anyvoc_VST3.vcxproj -> D:\Anyvoc\build\Anyvoc_artefacts\Release\VST3\Anyvoc.vst3\Contents\x86_64-win\Anyvoc.vst3
+  removing moduleinfo.json
+  creating D:/Anyvoc/build/Anyvoc_artefacts/Release/VST3/Anyvoc.vst3
