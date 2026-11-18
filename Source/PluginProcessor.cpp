@@ -1062,6 +1062,13 @@ void AnyvocAudioProcessor::processArp(juce::MidiBuffer& midi,int samples,double 
             if(m.isNoteOn()){held[static_cast<size_t>(m.getNoteNumber())]=m.getFloatVelocity();keyDown[static_cast<size_t>(m.getNoteNumber())]=true;}
             else if(m.isNoteOff()){keyDown[static_cast<size_t>(m.getNoteNumber())]=false;if(!arpSustain)held[static_cast<size_t>(m.getNoteNumber())]=0;}
             else if(m.isAllNotesOff() || m.isAllSoundOff()){clearArp();arpMidi.addEvent(m,pos);arpMidi.addEvent(m.isAllSoundOff()?juce::MidiMessage::allSoundOff(1):juce::MidiMessage::allNotesOff(1),pos);}
+            else if(m.isController() && m.getControllerNumber()==121){
+                // RP-015 resets the pedal as well as voice-engine controllers.
+                // Keep physically held keys and the existing step position.
+                arpSustain=false;
+                for(size_t n=0;n<128;++n)if(!keyDown[n])held[n]=0;
+                arpMidi.addEvent(m,pos);
+            }
             else if(m.isController() && m.getControllerNumber()==64){arpSustain=m.getControllerValue()>=64;if(!arpSustain)for(size_t n=0;n<128;++n)if(!keyDown[n])held[n]=0;}
             else arpMidi.addEvent(m,pos);
         }

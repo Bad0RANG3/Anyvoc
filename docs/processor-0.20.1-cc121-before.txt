@@ -1,0 +1,4 @@
+FAIL Arp CC121 releases latched notes at the MIDI offset with a finite release: CC121 retained a pedal-latched ARP note after release; rate=44100 block=127 lateRms=0.023040
+FAIL Arp CC121 preserves held keys and subsequent pedal cycles in all voice modes: CC121 kept sustain armed for a later note-off; voice mode=0
+PASS Arp CC121 forwards pitch and modulation resets without killing held keys
+Processor validation: 3 cases, 2 failure(s)

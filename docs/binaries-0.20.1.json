@@ -1,0 +1,51 @@
+[
+  {
+    "path": "D:\\Anyvoc\\build\\Anyvoc_artefacts\\Release\\Standalone\\Anyvoc.exe",
+    "bytes": 9682944,
+    "file_version": "0.20.1",
+    "product_version": "0.20.1",
+    "sha256": "dfd63b975675ab7ef712d5d57495e73c283d71119a915569b25b12e61b69862a"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\Anyvoc_artefacts\\Release\\VST3\\Anyvoc.vst3\\Contents\\x86_64-win\\Anyvoc.vst3",
+    "bytes": 10222592,
+    "file_version": "0.20.1",
+    "product_version": "0.20.1",
+    "sha256": "975c1c5e87246e2c60d616241335a027dacc7b9cb291c3892ef1b7e5f3bbcd5b"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\AnyvocEngineTests_artefacts\\Release\\AnyvocEngineTests.exe",
+    "bytes": 9144832,
+    "file_version": "0.20.1",
+    "product_version": "0.20.1",
+    "sha256": "f268b6f5a0660bd581a67150def65d447b71de13ad2181da7dea9c6a23713d4e"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\AnyvocProcessorTests_artefacts\\Release\\AnyvocProcessorTests.exe",
+    "bytes": 10920448,
+    "file_version": "0.20.1",
+    "product_version": "0.20.1",
+    "sha256": "be79d16b9359880b05a7c690a702741ba201dfe1b39c2a376b1acbb1ae0018de"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\AnyvocWavetableTests_artefacts\\Release\\AnyvocWavetableTests.exe",
+    "bytes": 8406016,
+    "file_version": "0.20.1",
+    "product_version": "0.20.1",
+    "sha256": "779faa0e02675a6ca5f51c092709bb49d84995df5dda422ed5ebc583e2136b3e"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\AnyvocPresetLibraryTests_artefacts\\Release\\AnyvocPresetLibraryTests.exe",
+    "bytes": 1190400,
+    "file_version": "0.20.1",
+    "product_version": "0.20.1",
+    "sha256": "b86bfa3d37c085ddb23067c77396537aad041d4af8a951be74c2197557d1a95e"
+  },
+  {
+    "path": "D:\\Anyvoc\\tools\\pluginval\\pluginval.exe",
+    "bytes": 5909504,
+    "file_version": "1.0.4",
+    "product_version": "1.0.4",
+    "sha256": "f4ac5c31c5544a434f73e686b816861d92c22ae849d69ad693681cbc9522fcd8"
+  }
+]

@@ -54,7 +54,7 @@ Copy-Item -LiteralPath $motionDemo -Destination $destination -Force
 $chaosDemo = Join-Path $projectRoot 'dist/Anyvoc-v0.17-Chaos-Demo.wav'
 if (!(Test-Path -LiteralPath $chaosDemo)) { throw 'Render the Chaos demo before packaging.' }
 Copy-Item -LiteralPath $chaosDemo -Destination $destination -Force
-if ($version -in @('0.19.0', '0.20.0')) {
+if ($version -in @('0.19.0', '0.20.0', '0.20.1')) {
     $macroDemo = Join-Path $projectRoot 'dist/Anyvoc-v0.19-Macro-Demo.wav'
     if (!(Test-Path -LiteralPath $macroDemo)) { throw 'Render the Macro demo before packaging.' }
     Copy-Item -LiteralPath $macroDemo -Destination $destination -Force

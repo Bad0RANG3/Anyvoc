@@ -1,0 +1,189 @@
+{
+  "version": "0.20.1",
+  "generated_utc": "2026-11-18T09:02:21.485285+00:00",
+  "status": "PASS",
+  "failures": [],
+  "scope": "Independent PCM measurements and legacy byte comparison; no synthesizer helpers used",
+  "limitations": [
+    "Integer PCM cannot contain NaN/Inf; this does not inspect pre-encoding floating-point buffers.",
+    "No PCM full-scale sample does not certify absence of upstream limiting.",
+    "Waveform differences do not establish subjective sound quality or Serum equivalence.",
+    "Only segments 0/1 isolate a single added route; later segments change the documented routing combination."
+  ],
+  "demo": {
+    "path": "D:\\Anyvoc\\build\\validation-0.20.1\\Anyvoc-v0.20.1-Macro.wav",
+    "file_bytes": 5760104,
+    "sha256": "1d5e9aa554bbaea088eb89b47e6ccafced972c4c06b43d60926e5696b24c8621",
+    "encoding": "signed little-endian integer PCM",
+    "bits_per_sample": 24,
+    "sample_rate_hz": 48000,
+    "channel_count": 2,
+    "frames": 960000,
+    "duration_seconds": 20.0,
+    "overall": {
+      "rms": 0.013233500571105162,
+      "rms_dbfs": -37.56650519089538,
+      "peak": 0.04728972911834717,
+      "peak_dbfs": -26.504663473442378,
+      "decoded_nonfinite_samples": 0,
+      "full_scale_or_clipped_samples": 0,
+      "channels": [
+        {
+          "channel": "left",
+          "rms": 0.013059374187415847,
+          "peak": 0.0435938835144043,
+          "dc_mean": -6.597453976670901e-06
+        },
+        {
+          "channel": "right",
+          "rms": 0.013405365364805912,
+          "peak": 0.04728972911834717,
+          "dc_mean": -6.981592501203219e-06
+        }
+      ]
+    },
+    "segments": [
+      {
+        "index": 0,
+        "start_seconds": 0,
+        "end_seconds": 5,
+        "label": "Fixed Macro 1 base 0.4; three outgoing routes",
+        "rms": 0.014012183641332552,
+        "rms_dbfs": -37.06988359052574,
+        "peak": 0.04376339912414551,
+        "peak_dbfs": -27.177779070088114,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.01372689914763035,
+            "peak": 0.0429074764251709,
+            "dc_mean": -6.347800294558207e-07
+          },
+          {
+            "channel": "right",
+            "rms": 0.014291774577974576,
+            "peak": 0.04376339912414551,
+            "dc_mean": -7.204989592234294e-07
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "start_seconds": 5,
+        "end_seconds": 10,
+        "label": "Add Trigger Triangle LFO 1 (0.4 Hz, unipolar) to Macro 1, amount 0.4",
+        "rms": 0.013153902474012005,
+        "rms_dbfs": -37.6189076484336,
+        "peak": 0.044384121894836426,
+        "peak_dbfs": -27.05544735751193,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.012901292369848159,
+            "peak": 0.0435938835144043,
+            "dc_mean": -8.237586915493012e-06
+          },
+          {
+            "channel": "right",
+            "rms": 0.013401751966789117,
+            "peak": 0.044384121894836426,
+            "dc_mean": -8.322987457116445e-06
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "start_seconds": 10,
+        "end_seconds": 15,
+        "label": "Also add LFO 2 (1.2 Hz) to Pan, amount 0.65, effective Macro 1 as AUX",
+        "rms": 0.013067222175892379,
+        "rms_dbfs": -37.676334494601605,
+        "peak": 0.04728972911834717,
+        "peak_dbfs": -26.504663473442378,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.01302270676302193,
+            "peak": 0.04169940948486328,
+            "dc_mean": -7.897811631361643e-06
+          },
+          {
+            "channel": "right",
+            "rms": 0.013111586454453556,
+            "peak": 0.04728972911834717,
+            "dc_mean": -8.48397066195806e-06
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "start_seconds": 15,
+        "end_seconds": 20,
+        "label": "Also add Macro 1 to Macro 8 (base 0.1, amount 0.5), Macro 8 to Macro 1 (0.2); Pan AUX becomes Macro 8",
+        "rms": 0.012664257316297002,
+        "rms_dbfs": -37.948405478529004,
+        "peak": 0.045601725578308105,
+        "peak_dbfs": -26.820374464712078,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.012558941842790699,
+            "peak": 0.041582465171813965,
+            "dc_mean": -9.619637330373129e-06
+          },
+          {
+            "channel": "right",
+            "rms": 0.012768704183908613,
+            "peak": 0.045601725578308105,
+            "dc_mean": -1.0398912926514944e-05
+          }
+        ]
+      }
+    ],
+    "segment_comparisons": [
+      {
+        "first_segment": 0,
+        "second_segment": 1,
+        "comparison": "Add one macro input route",
+        "waveform_difference_rms": 0.0036146450573094754,
+        "waveform_difference_peak": 0.015708088874816895,
+        "decoded_samples_identical": false
+      },
+      {
+        "first_segment": 1,
+        "second_segment": 2,
+        "comparison": "Documented multi-parameter routing change",
+        "waveform_difference_rms": 0.0025615612519374054,
+        "waveform_difference_peak": 0.008771896362304688,
+        "decoded_samples_identical": false
+      },
+      {
+        "first_segment": 2,
+        "second_segment": 3,
+        "comparison": "Documented multi-parameter routing change",
+        "waveform_difference_rms": 0.0014285687859013903,
+        "waveform_difference_peak": 0.007722616195678711,
+        "decoded_samples_identical": false
+      }
+    ]
+  },
+  "legacy_regression": {
+    "baseline_version": "0.20.0",
+    "before_path": "D:\\Anyvoc\\build\\validation-0.20.1\\Anyvoc-v0.20.0-Legacy-from-frozen-zip.wav",
+    "after_path": "D:\\Anyvoc\\build\\validation-0.20.1\\Anyvoc-v0.20.1-Legacy.wav",
+    "before_sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+    "after_sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+    "before_bytes": 4320104,
+    "after_bytes": 4320104,
+    "sha256_identical": true,
+    "byte_identical": true
+  }
+}

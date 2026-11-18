@@ -1,0 +1,4 @@
+PASS Arp CC121 releases latched notes at the MIDI offset with a finite release
+PASS Arp CC121 preserves held keys and subsequent pedal cycles in all voice modes
+PASS Arp CC121 forwards pitch and modulation resets without killing held keys
+Processor validation: 3 cases, 0 failure(s)

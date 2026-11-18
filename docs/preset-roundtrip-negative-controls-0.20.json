@@ -1,0 +1,189 @@
+{
+  "status": "PASS",
+  "meaning": "Both intentional corruptions were detected; each validator invocation correctly returned FAIL/exit 1.",
+  "script_sha256": "a5dbfcb5d00156051ab0e06735f7376194282c10ac389b26aa7cc93e67ae5f60",
+  "cases": [
+    {
+      "case": "negative-parameter-legal",
+      "description": "One in-range parameter change; all asset bytes unchanged",
+      "mutation": {
+        "id": "mod1Amount",
+        "before": 0.25,
+        "after": 0.26
+      },
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "status": "FAIL",
+      "failures": [
+        "1 parameters differ (no numerical tolerance applied)"
+      ],
+      "comparison": {
+        "root_state_equal_except_preset_name_and_id": true,
+        "ignored_identity_changes": {
+          "presetId": {
+            "before": "user:d:/anyvoc/build/validation-restart-0.20/native20-embedded.anyvoc",
+            "after": "user:d:/anyvoc/build/validation-restart-0.20/native20-restored.anyvoc"
+          },
+          "presetName": {
+            "before": "Native20-Embedded",
+            "after": "Native20-Restored"
+          }
+        },
+        "parameter_id_sets_equal": true,
+        "missing_parameter_ids": [],
+        "added_parameter_ids": [],
+        "parameter_values_and_other_attributes_equal": false,
+        "parameter_differences": [
+          {
+            "id": "mod1Amount",
+            "before": {
+              "value": 0.25,
+              "text": "0.25",
+              "attributes": {
+                "id": "mod1Amount"
+              }
+            },
+            "after": {
+              "value": 0.26,
+              "text": "0.26",
+              "attributes": {
+                "id": "mod1Amount"
+              }
+            }
+          }
+        ],
+        "asset_sets_equal": true,
+        "asset_comparisons": [
+          {
+            "type": "SAMPLE",
+            "osc": 0,
+            "attributes_equal": true,
+            "wav_byte_identical": true,
+            "before_sha256": "e32b91837e840af1b6885c7c59d0bcf8c1b677b732693616809884024f43f550",
+            "after_sha256": "e32b91837e840af1b6885c7c59d0bcf8c1b677b732693616809884024f43f550"
+          }
+        ]
+      },
+      "source_pcm": {
+        "frames_compared": 96000,
+        "maximum_normalized_error": 0.0,
+        "exact_conversion_mismatch_count": 0,
+        "first_mismatches": []
+      },
+      "local_raw_report": {
+        "local_file": "negative-parameter-legal.json",
+        "bytes": 7143,
+        "sha256": "9d3f0bb8f2c123a4bd2297115e67c94fa1ccc8b2fa8adadf14f5ece9c6c1a43c"
+      },
+      "local_raw_stdout": {
+        "local_file": "negative-parameter-legal.txt",
+        "bytes": 279,
+        "sha256": "1fbd9d578ed7b0745bdf714f3d6fcdd4647e79c6ddf47cff32e688e13b8ce5d2"
+      },
+      "before_file_sha256": "b76d0b97f5a3cc878b09e248b91d644a703854d6efeb7879c344f5799b991187",
+      "after_file_sha256": "307de11024c5acba213baeffcc2d2b69eff0299cf3ac6f48734768af65c109b6"
+    },
+    {
+      "case": "negative-asset-byte",
+      "description": "One valid PCM payload byte changed; metadata and all parameter values unchanged",
+      "mutation": {
+        "asset": "SAMPLE",
+        "osc": 0,
+        "wav_byte_offset": 404,
+        "pcm_frame": 100,
+        "byte_within_frame": 0,
+        "operation": "xor 1",
+        "changed_wav_bytes": 1
+      },
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "status": "FAIL",
+      "failures": [
+        "Embedded SAMPLE oscillator 0 metadata or WAV bytes differ",
+        "Source PCM does not match the documented JUCE PCM16-to-PCM24 conversion"
+      ],
+      "comparison": {
+        "root_state_equal_except_preset_name_and_id": true,
+        "ignored_identity_changes": {
+          "presetId": {
+            "before": "user:d:/anyvoc/build/validation-restart-0.20/native20-embedded.anyvoc",
+            "after": "user:d:/anyvoc/build/validation-restart-0.20/native20-restored.anyvoc"
+          },
+          "presetName": {
+            "before": "Native20-Embedded",
+            "after": "Native20-Restored"
+          }
+        },
+        "parameter_id_sets_equal": true,
+        "missing_parameter_ids": [],
+        "added_parameter_ids": [],
+        "parameter_values_and_other_attributes_equal": true,
+        "parameter_differences": [],
+        "asset_sets_equal": true,
+        "asset_comparisons": [
+          {
+            "type": "SAMPLE",
+            "osc": 0,
+            "attributes_equal": true,
+            "wav_byte_identical": false,
+            "before_sha256": "e32b91837e840af1b6885c7c59d0bcf8c1b677b732693616809884024f43f550",
+            "after_sha256": "1eb23ea5867e4513d0a8f7ce87f520b482787ee36d8ae2751e32239077a6bacb"
+          }
+        ]
+      },
+      "source_pcm": {
+        "frames_compared": 96000,
+        "maximum_normalized_error": 1.1920928955078125e-07,
+        "exact_conversion_mismatch_count": 1,
+        "first_mismatches": [
+          {
+            "frame": 100,
+            "source_pcm16": -23,
+            "expected_pcm24": -5888,
+            "actual_pcm24": -5887
+          }
+        ]
+      },
+      "local_raw_report": {
+        "local_file": "negative-asset-byte.json",
+        "bytes": 7030,
+        "sha256": "6cea4874c579ca0fb594d4aa56dcefb058bff6f4a28af38326ce5fef822e54c5"
+      },
+      "local_raw_stdout": {
+        "local_file": "negative-asset-byte.txt",
+        "bytes": 373,
+        "sha256": "0763f1e22f3b2ae1ac4e41d8a121147a1a14dc4301a5b46090b0d2eacb567e70"
+      },
+      "before_file_sha256": "b76d0b97f5a3cc878b09e248b91d644a703854d6efeb7879c344f5799b991187",
+      "after_file_sha256": "98bb6fd166eef21156629e9162b3d97109e3844b67efdf846d030ea4fddf8a99"
+    }
+  ],
+  "preserved_local_additional_evidence": [
+    {
+      "local_file": "preset-roundtrip-initial.json",
+      "bytes": 6686,
+      "sha256": "0b1e099bdefe9cc617583b784e619c86c85d478f7e05f601fc9cfcf88075f6e4"
+    },
+    {
+      "local_file": "preset-roundtrip-initial.txt",
+      "bytes": 220,
+      "sha256": "f89f91862b7620c4b14fa3e6a0a894e744ef92f30fec558ce62be676883c8f08"
+    },
+    {
+      "local_file": "negative-parameter.json",
+      "bytes": 7137,
+      "sha256": "ab9240e02d1fbaa78df483590678f5d82ad6fdf36692d7b64ec607b62f01050c"
+    },
+    {
+      "local_file": "negative-parameter.txt",
+      "bytes": 273,
+      "sha256": "844c84bfe003fc56573483ac9074c80da550d0ea4771edf324aa5828d52ec2e0"
+    },
+    {
+      "local_file": "negative-controls-final-manifest.json",
+      "bytes": 5001,
+      "sha256": "ec6d32ac7656d7b6cf2edfc131802b65d149c2c8c0318f6afa831ada7e482c5e"
+    }
+  ],
+  "note": "The earlier additional parameter control used 0.25 -> 1.25 and is retained locally; the documented primary control uses the in-range 0.25 -> 0.26 change. No original input was overwritten."
+}

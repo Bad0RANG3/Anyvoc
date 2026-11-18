@@ -1,4 +1,4 @@
-Anyvoc 0.20 独立版 · 新手开始
+Anyvoc 0.20.1 独立版 · 新手开始
 
 从 PLAY 页面开始：选一个音色，弹奏，再试着调出自己的声音。
 
@@ -48,6 +48,6 @@ PLAY 下方 GO DEEPER 也能进入完整页面：
 
 版本与更多说明
 包内 PLAY 说明见 docs/UI_WORKFLOW.md；完整功能说明见 docs/USER_GUIDE.md。
-本版测试、发行包检查和音色格式兼容记录见 docs/VALIDATION-0.20.md。
+本版测试、发行包检查和音色格式兼容记录见 docs/VALIDATION-0.20.1.md。
 需要自行构建时再看 docs/BUILDING.md。
 如果从源码的 docs 目录打开本文件，上述说明就在同一目录。

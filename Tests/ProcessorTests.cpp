@@ -1660,6 +1660,137 @@ void testArpBlockPartitionAndChannelPanic()
     }
 }
 
+void prepareArpControllerResetFixture (AnyvocAudioProcessor& processor, double rate, int mode = 0)
+{
+    processor.setCurrentProgram (0);
+    audibleSettings (processor);
+    for (const auto* id : { "osc2Level", "osc3Level", "subLevel", "noiseLevel", "drive", "filterEnabled", "filter2Enabled" })
+        setParameter (processor, id, 0);
+    setParameter (processor, "osc1Level", .5f);
+    setParameter (processor, "osc1Position", 0);
+    setParameter (processor, "osc1Unison", 1);
+    setParameter (processor, "master", .5f);
+    setParameter (processor, "ampSustain", 1);
+    setParameter (processor, "voiceMode", static_cast<float> (mode));
+    setParameter (processor, "tempo", 120);
+    setParameter (processor, "arpEnabled", 1);
+    setParameter (processor, "arpRate", 0);
+    setParameter (processor, "arpOctaves", 1);
+    setParameter (processor, "arpGate", .95f);
+    processor.prepareToPlay (rate, 512);
+    render (processor, 4096); // Settle the existing effects startup and ARP enable reset.
+}
+
+void expectArpResetAudio (const juce::AudioBuffer<float>& actual,
+                         const juce::AudioBuffer<float>& expected, const std::string& context)
+{
+    require (actual.getNumSamples() == expected.getNumSamples() && actual.getNumChannels() == expected.getNumChannels(),
+             "ARP reset reference dimensions differ: " + context);
+    for (int channel = 0; channel < actual.getNumChannels(); ++channel)
+        for (int sample = 0; sample < actual.getNumSamples(); ++sample)
+            require (actual.getSample (channel, sample) == expected.getSample (channel, sample),
+                     "ARP reset differs from explicit controller defaults: " + context + " sample=" + std::to_string (sample));
+}
+
+void testArpControllerResetLatchedRelease()
+{
+    // MIDI Association RP-015 explicitly resets pedal CC64 to zero. The
+    // reference sends that ordinary pedal-up event, not the CC121 under test.
+    // https://midi.org/response-to-reset-all-controllers
+    for (const double rate : { 44100.0, 48000.0, 96000.0 }) for (const int block : { 127, 257, 512 })
+    {
+        AnyvocAudioProcessor actual, reference;
+        prepareArpControllerResetFixture (actual, rate);
+        prepareArpControllerResetFixture (reference, rate);
+        const auto before = parameters (actual);
+        const int resetAt = static_cast<int> (rate * .08) + 13;
+        const int samples = static_cast<int> (rate * .8);
+        std::vector<Event> events {
+            { 0, juce::MidiMessage::noteOn (1, 60, .8f) },
+            { 100, juce::MidiMessage::controllerEvent (1, 64, 127) },
+            { 1000, juce::MidiMessage::noteOff (1, 60) },
+            { resetAt, juce::MidiMessage::controllerEvent (1, 121, 0) }
+        };
+        const auto audio = render (actual, samples, events, block);
+        events.back().message = juce::MidiMessage::controllerEvent (1, 64, 0);
+        const auto expected = render (reference, samples, events, block);
+        const auto context = "rate=" + std::to_string (static_cast<int> (rate)) + " block=" + std::to_string (block);
+        const int quietFrom = resetAt + static_cast<int> (rate * .1);
+        const auto lateRms = audio.getRMSLevel (0, quietFrom, samples - quietFrom);
+        require (lateRms < 1.0e-6f, "CC121 retained a pedal-latched ARP note after release; " + context
+                                     + " lateRms=" + std::to_string (lateRms));
+        require (audio.getRMSLevel (0, resetAt, 128) > .001f,
+                 "CC121 hard-killed the ordinary amplitude release instead of lifting the pedal; " + context);
+        expectArpResetAudio (audio, expected, context);
+        expectParameters (actual, before, "CC121 must not reset the sound's saved controls");
+        require (! actual.getMacroModulationSnapshot().hasActiveVoice,
+                 "CC121 left an active voice after its finite release; " + context);
+    }
+}
+
+void testArpControllerResetHeldKeysAndLaterPedal()
+{
+    for (const int mode : { 0, 1, 2 })
+    {
+        AnyvocAudioProcessor actual, reference;
+        prepareArpControllerResetFixture (actual, 48000, mode);
+        prepareArpControllerResetFixture (reference, 48000, mode);
+        setParameter (actual, "arpRate", 2); setParameter (reference, "arpRate", 2);
+        const std::vector<Event> prefix {
+            { 0, juce::MidiMessage::noteOn (1, 60, .8f) },
+            { 100, juce::MidiMessage::controllerEvent (1, 64, 127) },
+            { 1000, juce::MidiMessage::noteOn (1, 67, .8f) },
+            { 1500, juce::MidiMessage::noteOff (1, 60) }
+        };
+        auto actualEvents = prefix, referenceEvents = prefix;
+        actualEvents.push_back ({ 4501, juce::MidiMessage::controllerEvent (1, 121, 0) });
+        referenceEvents.push_back ({ 4501, juce::MidiMessage::controllerEvent (1, 64, 0) });
+        const std::vector<Event> suffix {
+            { 17001, juce::MidiMessage::noteOff (1, 67) }, // No new pedal-down: this must release.
+            { 22001, juce::MidiMessage::controllerEvent (1, 64, 127) },
+            { 22501, juce::MidiMessage::noteOn (1, 72, .8f) },
+            { 24001, juce::MidiMessage::noteOff (1, 72) },
+            { 35001, juce::MidiMessage::controllerEvent (1, 64, 0) }
+        };
+        actualEvents.insert (actualEvents.end(), suffix.begin(), suffix.end());
+        referenceEvents.insert (referenceEvents.end(), suffix.begin(), suffix.end());
+        const auto audio = render (actual, 40000, actualEvents, 127);
+        const auto expected = render (reference, 40000, referenceEvents, 257);
+        const auto context = "voice mode=" + std::to_string (mode);
+        require (audio.getRMSLevel (0, 7000, 8000) > .005f, "CC121 discarded a physically held ARP key; " + context);
+        require (audio.getRMSLevel (0, 20000, 1500) < 1.0e-6f, "CC121 kept sustain armed for a later note-off; " + context);
+        require (audio.getRMSLevel (0, 27000, 6000) > .005f, "A subsequent pedal-down could no longer hold ARP notes; " + context);
+        require (audio.getRMSLevel (0, 38000, 2000) < 1.0e-6f, "Subsequent pedal-up left ARP notes active; " + context);
+        expectArpResetAudio (audio, expected, context);
+    }
+}
+
+void testArpControllerResetForwardsEngineControllers()
+{
+    AnyvocAudioProcessor actual, reference;
+    for (auto* processor : { &actual, &reference })
+    {
+        prepareArpControllerResetFixture (*processor, 48000);
+        require (processor->assignModulation (5, 5, .25f), "Could not route the mod wheel for the CC121 forwarding oracle");
+        render (*processor, 4096);
+    }
+    const std::vector<Event> common {
+        { 0, juce::MidiMessage::pitchWheel (1, 16383) },
+        { 0, juce::MidiMessage::controllerEvent (1, 1, 127) },
+        { 0, juce::MidiMessage::noteOn (1, 60, .8f) },
+        { 100, juce::MidiMessage::controllerEvent (1, 64, 127) }
+    };
+    auto actualEvents = common, referenceEvents = common;
+    actualEvents.push_back ({ 4501, juce::MidiMessage::controllerEvent (1, 121, 0) });
+    referenceEvents.push_back ({ 4501, juce::MidiMessage::controllerEvent (1, 64, 0) });
+    referenceEvents.push_back ({ 4501, juce::MidiMessage::controllerEvent (1, 1, 0) });
+    referenceEvents.push_back ({ 4501, juce::MidiMessage::pitchWheel (1, 8192) });
+    const auto audio = render (actual, 18000, actualEvents, 127);
+    const auto expected = render (reference, 18000, referenceEvents, 257);
+    require (audio.getRMSLevel (0, 10000, 6000) > .005f, "Controller reset incorrectly removed the physically held note");
+    expectArpResetAudio (audio, expected, "pitch bend and mod wheel must still reset in the voice engine");
+}
+
 void testParameterStress()
 {
     AnyvocAudioProcessor processor;
@@ -9298,6 +9429,9 @@ int main (int argc, char* argv[])
         { "Malformed state rejection with atomic rollback", testMalformedStateRejection },
         { "Arpeggiator notes, release and sustain", testArpeggiatorLifecycle },
         { "Arp block partition invariance and cross-channel panic", testArpBlockPartitionAndChannelPanic },
+        { "Arp CC121 releases latched notes at the MIDI offset with a finite release", testArpControllerResetLatchedRelease },
+        { "Arp CC121 preserves held keys and subsequent pedal cycles in all voice modes", testArpControllerResetHeldKeysAndLaterPedal },
+        { "Arp CC121 forwards pitch and modulation resets without killing held keys", testArpControllerResetForwardsEngineControllers },
         { "Random and boundary parameter rendering", testParameterStress }
     };
     int failures = 0, executed = 0;

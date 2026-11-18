@@ -1,0 +1,2 @@
+PASS Arpeggiator notes, release and sustain
+Processor validation: 1 cases, 0 failure(s)

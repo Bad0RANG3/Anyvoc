@@ -1,0 +1,1 @@
+DEMO D:\Anyvoc\build\validation-0.20.1\Anyvoc-v0.20.1-Macro.wav (0-5s fixed Macro 1 .4; 5-10s add LFO 1 to Macro 1; 10-15s add LFO 2 pan with Macro 1 AUX; 15-20s Macro 1/8 feedback and Macro 8 AUX; same C4/base voice and fixed gain, later sections change multiple routes)

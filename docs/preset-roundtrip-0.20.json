@@ -1,0 +1,201 @@
+{
+  "generated_utc": "2026-11-18T08:56:58.942076+00:00",
+  "status": "PASS",
+  "failures": [],
+  "scope": "Independent schema-14 stored-state and embedded-WAV comparison; Python standard library only",
+  "limitations": [
+    "Does not execute Anyvoc, prove native exit/restart, or prove the original path was unavailable.",
+    "Does not measure rendered audio, listening quality, real-time performance, or DAW compatibility.",
+    "Checks 1256 unique parameter IDs and exact saved values against each other, not a production parameter registry or ranges.",
+    "Optional source comparison covers only 48-kHz PCM16 mono to embedded PCM24 mono; resampling is outside scope.",
+    "Runtime voices, modulation history, GUI navigation, and undo history are not preset assets."
+  ],
+  "before": {
+    "path": "D:\\Anyvoc\\build\\validation-restart-0.20\\Native20-Embedded.anyvoc",
+    "file_bytes": 443256,
+    "sha256": "b76d0b97f5a3cc878b09e248b91d644a703854d6efeb7879c344f5799b991187",
+    "schema_version": 14,
+    "parameter_count": 1256,
+    "root_attributes": {
+      "schemaVersion": "14",
+      "program": "0",
+      "presetName": "Native20-Embedded",
+      "presetId": "user:d:/anyvoc/build/validation-restart-0.20/native20-embedded.anyvoc"
+    },
+    "assets": [
+      {
+        "type": "SAMPLE",
+        "osc": 0,
+        "attributes": {
+          "osc": "0",
+          "name": "Restart-Source"
+        },
+        "wav": {
+          "encoding": "integer PCM",
+          "sample_rate_hz": 48000,
+          "channels": 1,
+          "bits_per_sample": 24,
+          "frames": 96000,
+          "pcm_bytes": 288000,
+          "wav_bytes": 288104,
+          "wav_sha256": "e32b91837e840af1b6885c7c59d0bcf8c1b677b732693616809884024f43f550",
+          "pcm_sha256": "0f7b7b8ced13fba3a6dbd69bbc5be70f2c895e63009e1bfa5df170a008256559",
+          "channel_mask": null,
+          "chunks": [
+            {
+              "id": "JUNK",
+              "bytes": 52
+            },
+            {
+              "id": "fmt ",
+              "bytes": 16
+            },
+            {
+              "id": "data",
+              "bytes": 288000
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "after": {
+    "path": "D:\\Anyvoc\\build\\validation-restart-0.20\\Native20-Restored.anyvoc",
+    "file_bytes": 443256,
+    "sha256": "88608cf007a1248add6cbf784ae41f1358381d401cf7c1304d9f33c356ed381b",
+    "schema_version": 14,
+    "parameter_count": 1256,
+    "root_attributes": {
+      "schemaVersion": "14",
+      "program": "0",
+      "presetName": "Native20-Restored",
+      "presetId": "user:d:/anyvoc/build/validation-restart-0.20/native20-restored.anyvoc"
+    },
+    "assets": [
+      {
+        "type": "SAMPLE",
+        "osc": 0,
+        "attributes": {
+          "osc": "0",
+          "name": "Restart-Source"
+        },
+        "wav": {
+          "encoding": "integer PCM",
+          "sample_rate_hz": 48000,
+          "channels": 1,
+          "bits_per_sample": 24,
+          "frames": 96000,
+          "pcm_bytes": 288000,
+          "wav_bytes": 288104,
+          "wav_sha256": "e32b91837e840af1b6885c7c59d0bcf8c1b677b732693616809884024f43f550",
+          "pcm_sha256": "0f7b7b8ced13fba3a6dbd69bbc5be70f2c895e63009e1bfa5df170a008256559",
+          "channel_mask": null,
+          "chunks": [
+            {
+              "id": "JUNK",
+              "bytes": 52
+            },
+            {
+              "id": "fmt ",
+              "bytes": 16
+            },
+            {
+              "id": "data",
+              "bytes": 288000
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "root_state_equal_except_preset_name_and_id": true,
+    "ignored_identity_changes": {
+      "presetId": {
+        "before": "user:d:/anyvoc/build/validation-restart-0.20/native20-embedded.anyvoc",
+        "after": "user:d:/anyvoc/build/validation-restart-0.20/native20-restored.anyvoc"
+      },
+      "presetName": {
+        "before": "Native20-Embedded",
+        "after": "Native20-Restored"
+      }
+    },
+    "parameter_id_sets_equal": true,
+    "missing_parameter_ids": [],
+    "added_parameter_ids": [],
+    "parameter_values_and_other_attributes_equal": true,
+    "parameter_differences": [],
+    "asset_sets_equal": true,
+    "asset_comparisons": [
+      {
+        "type": "SAMPLE",
+        "osc": 0,
+        "attributes_equal": true,
+        "wav_byte_identical": true,
+        "before_sha256": "e32b91837e840af1b6885c7c59d0bcf8c1b677b732693616809884024f43f550",
+        "after_sha256": "e32b91837e840af1b6885c7c59d0bcf8c1b677b732693616809884024f43f550"
+      }
+    ]
+  },
+  "source_pcm_comparison": {
+    "source_path": "D:\\Anyvoc\\build\\validation-restart-0.20\\Restart-Source.offline.wav",
+    "source_wav": {
+      "encoding": "integer PCM",
+      "sample_rate_hz": 48000,
+      "channels": 1,
+      "bits_per_sample": 16,
+      "frames": 96000,
+      "pcm_bytes": 192000,
+      "wav_bytes": 192044,
+      "wav_sha256": "2afb4a71bb54fb14aee36db536d2aec81ddee8cb4de497e2241392fa94d7dc92",
+      "pcm_sha256": "f62128e9d848b7e374b9394ac9bea54deb95c68386114ed07362cc1c2b023646",
+      "channel_mask": null,
+      "chunks": [
+        {
+          "id": "fmt ",
+          "bytes": 16
+        },
+        {
+          "id": "data",
+          "bytes": 192000
+        }
+      ]
+    },
+    "osc": 0,
+    "embedded_wav": {
+      "encoding": "integer PCM",
+      "sample_rate_hz": 48000,
+      "channels": 1,
+      "bits_per_sample": 24,
+      "frames": 96000,
+      "pcm_bytes": 288000,
+      "wav_bytes": 288104,
+      "wav_sha256": "e32b91837e840af1b6885c7c59d0bcf8c1b677b732693616809884024f43f550",
+      "pcm_sha256": "0f7b7b8ced13fba3a6dbd69bbc5be70f2c895e63009e1bfa5df170a008256559",
+      "channel_mask": null,
+      "chunks": [
+        {
+          "id": "JUNK",
+          "bytes": 52
+        },
+        {
+          "id": "fmt ",
+          "bytes": 16
+        },
+        {
+          "id": "data",
+          "bytes": 288000
+        }
+      ]
+    },
+    "frames_compared": 96000,
+    "maximum_normalized_error": 0.0,
+    "rms_normalized_error": 0.0,
+    "allowed_maximum_normalized_error": 1.1920928955078125e-07,
+    "changed_by_quantization_samples": 0,
+    "exact_conversion_mismatch_count": 0,
+    "first_mismatches": [],
+    "quantization_rule": "PCM16/32768; saturate/round-even to signed PCM32 using 2147483647; arithmetic shift right 8",
+    "basis": "JUCE 8.0.12 AudioFormatReader.cpp, AudioFormatWriter.cpp, AudioDataConverters.h; no imported runtime helpers"
+  }
+}

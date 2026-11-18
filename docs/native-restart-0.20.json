@@ -1,0 +1,158 @@
+{
+  "scope": "Native Windows standalone 0.20.0 save, actual exit, offline source, restart, explicit INIT/LOAD, resave; not 0.20.1",
+  "application": {
+    "version": "0.20.0",
+    "path_relative_to_repository": "dist/Anyvoc-0.20.0-Windows/Anyvoc.exe",
+    "sha256": "c366f6a6e829fa30d424252dae802024257a69d19f2388a0d7db0d947a25dcb9"
+  },
+  "process_before": {
+    "Id": 209108,
+    "Path": "D:\\anyvoc\\dist\\anyvoc-0.20.0-windows\\anyvoc.exe",
+    "StartTime": "2026-11-18T16:43:20.7333177+08:00"
+  },
+  "restart_boundary": {
+    "checked_at": "2026-11-18T16:49:17.3867085+08:00",
+    "previous_process_ended": true,
+    "offline_source_sha256": "2afb4a71bb54fb14aee36db536d2aec81ddee8cb4de497e2241392fa94d7dc92",
+    "original_source_path_exists": false
+  },
+  "process_after": {
+    "Id": 224724,
+    "Path": "D:\\anyvoc\\dist\\anyvoc-0.20.0-windows\\anyvoc.exe",
+    "StartTime": "2026-11-18T16:49:31.7410706+08:00"
+  },
+  "native_observations": [
+    {
+      "step": "initial"
+    },
+    {
+      "step": "imported-sample"
+    },
+    {
+      "step": "sample-start17-loop-on"
+    },
+    {
+      "step": "sample-settings-settled"
+    },
+    {
+      "step": "routes-before-save"
+    },
+    {
+      "step": "C4-before-save"
+    },
+    {
+      "step": "saved-first-file"
+    },
+    {
+      "step": "new-process-auto-restored-before-init"
+    },
+    {
+      "step": "new-process-init"
+    },
+    {
+      "step": "init-sample-slot-empty",
+      "visual": "Osc A Sample shows Drop a WAV sample and a flat line; original recording absent"
+    },
+    {
+      "step": "init-routes-empty-before-load"
+    },
+    {
+      "step": "file-load-restored-routes"
+    },
+    {
+      "step": "loaded-sample-source",
+      "visual": "Restart-Source waveform restored, Start 17%, Sub 0%, OSC B/C level 0%"
+    },
+    {
+      "step": "loaded-sample-loop-and-start"
+    },
+    {
+      "step": "reloaded-source-lab",
+      "at": "2026-11-18T08:54:20.011Z",
+      "visual": "Source Lab shows Restart-Source waveform, Start 17%, Root C4, Loop enabled."
+    },
+    {
+      "step": "reloaded-c4",
+      "at": "2026-11-18T08:54:26.790Z",
+      "visual": "C4 highlighted, EV latest voice, green output meter after note; this is UI output observation, not a listening verdict."
+    },
+    {
+      "step": "second-save",
+      "at": "2026-11-18T08:55:07.418Z",
+      "visual": "Native20-Restored preset label and saved status visible."
+    }
+  ],
+  "selected_control_values": {
+    "saved_and_loaded_routes": [
+      {
+        "row": 1,
+        "source": "LFO 1",
+        "destination": "Filter A Cutoff",
+        "amount": 0.25
+      },
+      {
+        "row": 2,
+        "source": "LFO 1",
+        "destination": "Filter A Cutoff",
+        "amount": -0.10000002384185791
+      }
+    ],
+    "after_init_before_manual_load": {
+      "sample_slot_empty": true,
+      "visible_modulation_rows_off": true
+    },
+    "after_manual_load": {
+      "sample_name": "Restart-Source",
+      "start_display_percent": 17,
+      "root_midi_note": 60,
+      "root_display": "C4",
+      "loop": true
+    },
+    "note_observation": "C4 highlighted; EV latest voice and green output meter observed. No human listening or captured-output PCM comparison."
+  },
+  "cleanup": {
+    "testProcessExited": true,
+    "originalSettingsRestored": true,
+    "sha256": "5000f1074d6b885621afabb357a32e2ba2050f8661ad38c3fb92bc520674ab7e",
+    "time": "2026-11-18T16:55:17.5075088+08:00"
+  },
+  "settings_backup_sha256": "5000f1074d6b885621afabb357a32e2ba2050f8661ad38c3fb92bc520674ab7e",
+  "settings_hashes_equal": true,
+  "local_raw_evidence": [
+    {
+      "local_file": "process-before.json",
+      "bytes": 141,
+      "sha256": "4faf6c3d78efb916ca2db3be46867342458b52b7f9a72267defdc8d8a2b8033a"
+    },
+    {
+      "local_file": "restart-boundary.json",
+      "bytes": 231,
+      "sha256": "e1df023ccb70f94992f147ac8d2f3f8392d16a9bfd3aa6ff94e58ff3c9274794"
+    },
+    {
+      "local_file": "process-after.json",
+      "bytes": 141,
+      "sha256": "3cc2db4c95691babc0137f876bb4cdd0e00a187f72b4e4b2fe6dcae4f2e3ed11"
+    },
+    {
+      "local_file": "native-observations.json",
+      "bytes": 556532,
+      "sha256": "00bf8126372203d79679f32d6cb1cf9cb5c7bd0cd5dd383ecd718d898092b540"
+    },
+    {
+      "local_file": "cleanup.json",
+      "bytes": 201,
+      "sha256": "eb55da7bc5f94e8e978069655e8f37f720eccae1e37434426d1cae1cae529812"
+    },
+    {
+      "local_file": "source-reference.json",
+      "bytes": 441,
+      "sha256": "596b5aa159613924c9a5661ef81812fff6683a5d7832337a5125c3ff342c7ab5"
+    }
+  ],
+  "publication_limits": [
+    "Raw UI trees, settings contents, .anyvoc inputs and WAV assets remain local and are not included here.",
+    "Repository-only checkout cannot repeat this particular file comparison without the retained local input files.",
+    "This native workflow was executed with the original 0.20.0 executable, not a later 0.20.1 build."
+  ]
+}
