@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "exe_sha256": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+  "concurrent_results": [
+    {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "exit_code": 1,
+      "stderr": "INVALID measurement: Output namespace is occupied or unavailable (including a stale crash lock); use a new basename\r\n"
+    }
+  ],
+  "completed_files_unchanged": {
+    ".json": "bd7822de14185811f0faa033b8d7312d0d0ede99426a8cf0902fca8780cdc8d8",
+    ".csv": "28bc28a8a51726b87dde3861bceb5917ba42b38b638311bc1d99f9835364726f"
+  },
+  "checks": [
+    "one winner, one atomic-lock rejection",
+    "winner report valid",
+    "completed capture refuses overwrite with byte-identical files",
+    "stale lock refuses without writing",
+    "invalid CLI exits before creating artifacts"
+  ],
+  "scope": "Tool guards plus one 1-second silent device capture, excluded from formal performance data"
+}

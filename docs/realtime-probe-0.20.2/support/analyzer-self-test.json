@@ -1,0 +1,113 @@
+{
+  "status": "PASS",
+  "self_test": true,
+  "passed": 20,
+  "failed": 0,
+  "cases": [
+    {
+      "name": "handwritten timing, nearest-rank, warmup exclusion and separate budget counts",
+      "status": "PASS"
+    },
+    {
+      "name": "independent 20-value percentile boundaries and singleton",
+      "status": "PASS"
+    },
+    {
+      "name": "actual device deadline and strict greater-than boundary",
+      "status": "PASS"
+    },
+    {
+      "name": "supported native counter separated from manager estimate",
+      "status": "PASS"
+    },
+    {
+      "name": "single callback without inventing interval or jitter observations",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit sample-rate request was not honoured",
+      "status": "PASS",
+      "expected_rejection": "Actual sample rate did not honour the explicit requested rate"
+    },
+    {
+      "name": "explicit buffer-size request was not honoured",
+      "status": "PASS",
+      "expected_rejection": "Actual buffer size did not honour the explicit requested size"
+    },
+    {
+      "name": "nonfinite CSV metric",
+      "status": "PASS",
+      "expected_rejection": "CSV line 4 sum_squares must be a finite number"
+    },
+    {
+      "name": "missing callback row",
+      "status": "PASS",
+      "expected_rejection": "CSV callback row count differs from recording"
+    },
+    {
+      "name": "tampered summary percentile",
+      "status": "PASS",
+      "expected_rejection": "summary.process.p50_ms differs: reported 0.3, recomputed 0.2"
+    },
+    {
+      "name": "unsupported native counter labelled supported",
+      "status": "PASS",
+      "expected_rejection": "Native xrun support flag disagrees with the returned counts"
+    },
+    {
+      "name": "unsupported native counter falsely reported as zero",
+      "status": "PASS",
+      "expected_rejection": "Native xrun delta disagrees with support / source counters"
+    },
+    {
+      "name": "warmup row relabelled measured",
+      "status": "PASS",
+      "expected_rejection": "CSV row 0: wrong warmup / measured phase"
+    },
+    {
+      "name": "hardware output not silenced",
+      "status": "PASS",
+      "expected_rejection": "CSV row 3: hardware output was not fully silenced"
+    },
+    {
+      "name": "nonfinite pre-clear output",
+      "status": "PASS",
+      "expected_rejection": "CSV row 3: pre-clear samples are non-finite"
+    },
+    {
+      "name": "timing boundaries overlap",
+      "status": "PASS",
+      "expected_rejection": "CSV row 2: timing boundaries are not nested"
+    },
+    {
+      "name": "incorrect interval",
+      "status": "PASS",
+      "expected_rejection": "CSV row 2: interval_ticks differs from entries"
+    },
+    {
+      "name": "tampered manager overrun estimate",
+      "status": "PASS",
+      "expected_rejection": "Manager estimated overrun count disagrees with source counters"
+    },
+    {
+      "name": "duplicate parameter ID",
+      "status": "PASS",
+      "expected_rejection": "Parameter IDs must be nonempty and unique"
+    },
+    {
+      "name": "silent workload despite internally consistent summary",
+      "status": "PASS",
+      "expected_rejection": "Measured workload was silent or below the probe's RMS floor"
+    }
+  ],
+  "scope": "Synthetic script validation only; no audio device or production DSP was run",
+  "generated_utc": "2026-11-18T10:03:20.141428+00:00",
+  "limitations": [
+    "Checks consistency of supplied records; hashes bind these inputs but do not independently attest the binary or physical device.",
+    "Body timing ends before final record publication and excludes device/driver work outside the probe callback.",
+    "Interval jitter is callback-entry spacing, not a hardware clock or proof of audio dropouts.",
+    "Native xrun -1 means unsupported; manager estimates and elapsed-time budgets are different observations.",
+    "Pre-clear finite/nonzero checks inspect processor output, not all internal DSP values; production output already sanitises non-finite values.",
+    "Output was intentionally silenced; no listening, playback PCM capture, DAW validation or zero-allocation claim is made."
+  ]
+}

@@ -12,6 +12,8 @@
 
 ## 1. 准备开发环境
 
+0.20.2 冻结后的开发源码另提供默认关闭的真实设备回调探针。构建、静音测量和独立复算见[性能测量指南](REALTIME_PROFILING.md)；该工具不在原 0.20.2 ZIP 中，也不作为第五套自动回归或 DAW 通过证明。
+
 - Git，且可以访问 GitHub。
 - Visual Studio 2022 或 Build Tools 2022，安装“使用 C++ 的桌面开发”、MSVC v143 和 Windows SDK。
 - CMake 3.22 或更新版本，加入 PATH。已验证本机组合是 CMake 4.4.4、MSVC 19.44、Windows SDK 10.0.26100.0；其他组合需自行构建测试。

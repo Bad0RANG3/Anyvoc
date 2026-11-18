@@ -65,3 +65,10 @@ docs/preset-roundtrip-0.20.json -text -whitespace
 # Preserve the downloaded 0.20.1 CI evidence byte-for-byte.
 docs/test-details-github-ci-0.20.1.txt -text -whitespace
 docs/test-results-github-ci-0.20.1.xml -text -whitespace
+
+# Preserve the downloaded 0.20.2 CI evidence byte-for-byte.
+docs/test-details-github-ci-0.20.2.txt -text -whitespace
+docs/test-results-github-ci-0.20.2.xml -text -whitespace
+
+# Preserve the post-release device measurements and their recorded input hashes.
+docs/realtime-probe-0.20.2/** -text -whitespace

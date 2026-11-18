@@ -1,0 +1,1 @@
+CLI error: Invalid finite numeric argument: nan

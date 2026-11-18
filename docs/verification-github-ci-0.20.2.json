@@ -1,0 +1,137 @@
+{
+  "scope": "Independent post-release evidence for the exact 0.20.2 commit below; does not validate later real audio callback probes or other changes and does not modify frozen release archives.",
+  "recorded_at": "2026-11-18T09:54:59.169774+00:00",
+  "commit": "2acc71db00b8e70fb2fb5456d3207d2a0cf0096e",
+  "run": {
+    "id": 44278368789,
+    "url": "https://github.com/Bad0RANG3/Anyvoc/actions/runs/44278368789",
+    "attempt": 1,
+    "event": "push",
+    "branch": "main",
+    "created_at": "2026-11-18T09:42:00Z",
+    "conclusion": "success"
+  },
+  "job": {
+    "id": 134712234012,
+    "url": "https://github.com/Bad0RANG3/Anyvoc/actions/runs/44278368789/job/134712234012",
+    "name": "windows",
+    "labels": [
+      "windows-2022"
+    ],
+    "started_at": "2026-11-18T09:42:03Z",
+    "completed_at": "2026-11-18T09:53:32Z",
+    "steps_total": 9,
+    "all_steps_success": true,
+    "key_steps": [
+      {
+        "name": "Configure",
+        "started_at": "2026-11-18T09:42:24Z",
+        "completed_at": "2026-11-18T09:44:00Z",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build Release",
+        "started_at": "2026-11-18T09:44:00Z",
+        "completed_at": "2026-11-18T09:50:28Z",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run all four test suites",
+        "started_at": "2026-11-18T09:50:28Z",
+        "completed_at": "2026-11-18T09:53:29Z",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "artifact": {
+    "id": 14417190401,
+    "name": "windows-test-evidence",
+    "bytes": 8433,
+    "created_at": "2026-11-18T09:53:29Z",
+    "sha256": "7d238cf7471b8f9cc283d436e88386ec225d42abc2b5c3b88e04f4bd2409a5ed",
+    "github_api_digest": "sha256:7d238cf7471b8f9cc283d436e88386ec225d42abc2b5c3b88e04f4bd2409a5ed",
+    "digest_matches": true,
+    "zip_crc": "PASS",
+    "safe_unique_paths": "PASS",
+    "exact_file_set": "PASS"
+  },
+  "junit": {
+    "programs": 4,
+    "failures": 0,
+    "disabled": 0,
+    "skipped": 0,
+    "reported_root_seconds": 179,
+    "case_seconds_total": 179.5283989
+  },
+  "complete_log": {
+    "pass": 220,
+    "fail": 0,
+    "ctest_passed_programs": 4,
+    "count_source": "Complete LastTest.log, not the truncated EngineTests/ProcessorTests JUnit system-out."
+  },
+  "programs": [
+    {
+      "name": "EngineTests",
+      "complete_log_pass": 75,
+      "complete_log_fail": 0,
+      "complete_log_ctest_passed": true,
+      "junit_status": "run",
+      "junit_seconds": 8.58332,
+      "junit_failure_error_skipped_nodes": 0,
+      "junit_output_truncated": true,
+      "junit_output_visible_pass_lines": 22
+    },
+    {
+      "name": "ProcessorTests",
+      "complete_log_pass": 129,
+      "complete_log_fail": 0,
+      "complete_log_ctest_passed": true,
+      "junit_status": "run",
+      "junit_seconds": 170.266,
+      "junit_failure_error_skipped_nodes": 0,
+      "junit_output_truncated": true,
+      "junit_output_visible_pass_lines": 18
+    },
+    {
+      "name": "WavetableTests",
+      "complete_log_pass": 10,
+      "complete_log_fail": 0,
+      "complete_log_ctest_passed": true,
+      "junit_status": "run",
+      "junit_seconds": 0.0572539,
+      "junit_failure_error_skipped_nodes": 0,
+      "junit_output_truncated": false,
+      "junit_output_visible_pass_lines": 10
+    },
+    {
+      "name": "PresetLibraryTests",
+      "complete_log_pass": 6,
+      "complete_log_fail": 0,
+      "complete_log_ctest_passed": true,
+      "junit_status": "run",
+      "junit_seconds": 0.621825,
+      "junit_failure_error_skipped_nodes": 0,
+      "junit_output_truncated": false,
+      "junit_output_visible_pass_lines": 6
+    }
+  ],
+  "raw_evidence": [
+    {
+      "repository_path": "docs/test-details-github-ci-0.20.2.txt",
+      "artifact_path": "Testing/Temporary/LastTest.log",
+      "bytes": 20054,
+      "sha256": "8e34ef341df95cb7f6e7457e2aca2ddc87e3a15986a58b9dd4af64ab279a85da"
+    },
+    {
+      "repository_path": "docs/test-results-github-ci-0.20.2.xml",
+      "artifact_path": "test-results.xml",
+      "bytes": 4163,
+      "sha256": "09b64d9031ac3e46d514c4dfe9c5bb6ee1ce74255e0c7422557c7307bf2f85cd"
+    }
+  ],
+  "limitations": [
+    "CI does not run pluginval, native UI, external MIDI, listening or DAW acceptance.",
+    "These results apply only to the recorded commit, not later real audio callback probes or other changes.",
+    "Downloaded ZIP and full API responses remain local; no release ZIP was regenerated."
+  ]
+}

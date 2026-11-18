@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "measurementValid": true,
+  "failures": [],
+  "inputs": {
+    "report": {
+      "path": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\simultaneous.json",
+      "bytes": 127069,
+      "sha256": "bd7822de14185811f0faa033b8d7312d0d0ede99426a8cf0902fca8780cdc8d8"
+    },
+    "csv": {
+      "path": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\simultaneous.csv",
+      "bytes": 17411,
+      "sha256": "28bc28a8a51726b87dde3861bceb5917ba42b38b638311bc1d99f9835364726f"
+    }
+  },
+  "case": "baseline",
+  "anyvoc_version": "0.20.2",
+  "percentile_method": "nearest-rank: sorted[ceil(p * N) - 1]",
+  "summary_comparison_tolerance": {
+    "relative": 1e-09,
+    "absolute": 1e-10
+  },
+  "recording": {
+    "warmup_blocks_requested": 20,
+    "measured_blocks_requested": 100,
+    "capacity": 120,
+    "recorded_blocks": 120,
+    "warmup_blocks": 20,
+    "measured_blocks": 100,
+    "warmup_excluded": true,
+    "warmup_audio_seconds": 0.2,
+    "capture_body_span_seconds": 1.1910232
+  },
+  "actual": {
+    "device_type": "Windows Audio",
+    "device_name": "扬声器 (NICEHCK HiFi Audio)",
+    "sample_rate": 48000.0,
+    "buffer_size": 480,
+    "input_channels": 0,
+    "output_channels": 2,
+    "output_latency_samples": 480
+  },
+  "observedPerformance": {
+    "process": {
+      "count": 100,
+      "mean_ms": 1.049109,
+      "p50_ms": 1.0091,
+      "p95_ms": 1.2894,
+      "p99_ms": 1.6799,
+      "max_ms": 1.8407,
+      "over_budget_callbacks": 0
+    },
+    "body": {
+      "count": 100,
+      "mean_ms": 1.051334,
+      "p50_ms": 1.0112,
+      "p95_ms": 1.2929,
+      "p99_ms": 1.6821,
+      "max_ms": 1.845,
+      "over_budget_callbacks": 0
+    },
+    "interval": {
+      "count": 100,
+      "mean_ms": 10.000194,
+      "p50_ms": 9.9998,
+      "p95_ms": 10.0342,
+      "p99_ms": 10.0898,
+      "max_ms": 10.1035,
+      "over_budget_callbacks": null
+    },
+    "measured_frames": 48000,
+    "finite_samples": 96000,
+    "nonfinite_samples": 0,
+    "nonzero_samples": 96000,
+    "sum_squares": 20.587029686293583,
+    "peak": 0.04392741248011589,
+    "hardware_nonzero_after_clear": 0,
+    "measured_audio_seconds": 1.0,
+    "rms": 0.014644050870537547,
+    "interval_jitter_ms": {
+      "count": 100,
+      "mean_signed": 0.00019400000000000973,
+      "minimum_signed": -0.17149999999999999,
+      "maximum_signed": 0.10350000000000037,
+      "maximum_absolute": 0.17149999999999999
+    },
+    "native_xruns": {
+      "supported": false,
+      "count_delta": null,
+      "interpretation": "Unsupported; not a zero-dropout result"
+    },
+    "manager_estimated_overruns": 0,
+    "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+    "no_dropouts_proven": false
+  },
+  "generated_utc": "2026-11-18T10:25:06.644948+00:00",
+  "limitations": [
+    "Checks consistency of supplied records; hashes bind these inputs but do not independently attest the binary or physical device.",
+    "Body timing ends before final record publication and excludes device/driver work outside the probe callback.",
+    "Interval jitter is callback-entry spacing, not a hardware clock or proof of audio dropouts.",
+    "Native xrun -1 means unsupported; manager estimates and elapsed-time budgets are different observations.",
+    "Pre-clear finite/nonzero checks inspect processor output, not all internal DSP values; production output already sanitises non-finite values.",
+    "Output was intentionally silenced; no listening, playback PCM capture, DAW validation or zero-allocation claim is made."
+  ]
+}

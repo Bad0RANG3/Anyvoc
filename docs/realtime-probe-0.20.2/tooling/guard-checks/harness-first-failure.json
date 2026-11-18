@@ -1,0 +1,8 @@
+{
+  "status": "FAIL",
+  "scope": "Test harness, not production probe",
+  "observedExitCode": 1,
+  "failure": "UnicodeDecodeError: default Python Windows gbk decoding rejected the UTF-8 JSON device name",
+  "completedObservations": "Concurrent child exit codes 0 and 1 with namespace-is-occupied rejection; winner JSON exists",
+  "fix": "Read JSON with explicit utf-8-sig and use a new output directory; keep first artifacts"
+}

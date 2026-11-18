@@ -17,7 +17,7 @@
 | 音频／预览 | [四份 0.20.2 新渲染与冻结 0.20.1 ZIP 成员逐字节一致](demo-compatibility-0.20.2.json)；真实留存 0.20.1 EXE 另行新渲染 Legacy，也逐字节一致。[独立宏分析 PASS](audio-analysis-0.20.2.json)，显式 current `0.20.2`／baseline `0.20.1`。本轮未记录重新生成 92 张预览；历史截图不改称本轮结果。 |
 | 原生 smoke | [0.20.2 限定检查通过](native-smoke-0.20.2.json)：真实启动 PLAY／页脚、INIT、屏幕 C4 绿色电平与 EV latest voice，松键后 idle／电平熄灭。测试进程已退出，原设置恢复且 SHA 相同。未做外接 MIDI、实际多通道／重复键／踏板控制器输入、SAVE／重启／LOAD、真人听音、DAW、最小尺寸／DPI 巡检或回调峰值测量。 |
 | 发行包 | Windows／完整源码包首轮校验通过：CRC、安全唯一路径、精确集合、逐文件内容、二进制版本及必需演示均通过。当前入口 `dist/Anyvoc-0.20.2-Windows/Anyvoc.exe`；包外 `dist/Anyvoc-0.20.2-PackageVerification.json` 为最终权威记录。文档或其他输入更新后须重新打包逐文件复验。 |
-| 云端 | 本版本尚无云端记录；历史 [0.20.1 f37169e9 CI](GITHUB-CI-0.20.1.md)已通过 213 组，仅覆盖该提交。 |
+| 云端 | [0.20.2 的 2acc71db CI](GITHUB-CI-0.20.2.md)已通过 220 组，JUnit 合计 179.53 秒；不覆盖之后新增的回调探针。历史 [0.20.1 f37169e9 CI](GITHUB-CI-0.20.1.md)为 213 组，仅覆盖其提交。 |
 
 ### 0.20.1：已交付历史结果，不是本轮结果
 
@@ -348,6 +348,8 @@ Get-Content -LiteralPath (Join-Path $validationDir 'pluginval-stderr.txt')
 **CPU 必须测量，不能设一个未经测量的“低于 10% 就通过”。**记录 CPU 型号/核心数、电源模式、操作系统、音频设备/驱动、采样率、缓冲、宿主版本、实例数、复音、Unison、颗粒密度、Warp、调制/效果配置及 UI 是否打开。用固定 MIDI 和同一音色分别测单音、16 复音、三振荡器/高 Unison、颗粒、32 路调制、Audio Rate/相位反馈等代表性负载。
 
 建议预热后每项持续演奏至少 60 秒、重复三次，报告平均值、峰值、掉音/underrun 次数和测量工具。宿主 DSP 百分比与任务管理器 CPU 百分比要分开记录。音频回调时间若有测量，报告最坏块；块期限为 `缓冲样本数 / 采样率`，例如 48 kHz、256 样本约 5.33 ms。平均离线渲染时间不能证明所有音频块都按时完成。
+
+开发源码中的 [AnyvocRealtimeProbe](REALTIME_PROFILING.md)可在真实 WASAPI 共享回调中静音测量六种固定负载，并输出完整参数及逐块 CSV；默认不构建。独立 Python 分析器重算分位、峰值、完整性和超预算块数。仅输出 WASAPI 的原生 xrun 返回 -1，必须记为不支持；manager 耗时估计和入口间隔不能代替驱动掉音计数。这些额外工具不增加四套 CTest 的内部组数，也不补成 UI／DAW／真人听音验收。
 
 Chaos 的可复现离线基准入口如下。它不属于当前 75 组 EngineTests，退出 0 只说明基准完成且测试音频未意外静音，没有内置“实时性能通过”阈值。[0.17 基准记录](benchmark-chaos-0.17.txt)仅对应当时产物，不能作为本轮新测量。
 

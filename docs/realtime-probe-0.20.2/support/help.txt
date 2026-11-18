@@ -1,0 +1,18 @@
+AnyvocRealtimeProbe - developer-only silent WASAPI shared callback measurement
+  --list                       List shared output endpoints/rates/buffers; no stream opened
+  --case baseline|unison|matrix|chaos|chaos-rossler|granular  (default baseline)
+  --seconds N                  Measured audio seconds, 0.1..3600 (default 60)
+  --warmup N                   Excluded warmup seconds, 0..60 (default 3)
+  --sample-rate N              Requested Hz, or 0 for device default (default 48000)
+  --buffer-size N              Requested frames, or 0 for default (default 256)
+  --output ABSBASE             Required absolute basename; writes ABSBASE.json/.csv
+  --help
+
+One case per invocation. Fixed 16-voice fixture; no external MIDI/input, editor,
+user settings, or audible test output. Existing result files are never overwritten.
+An atomic ABSBASE.capture-lock directory reserves the output namespace; a stale
+lock after a crash is rejected. Use a new basename for every attempt.
+Warmup/measurement round up to whole actual device blocks; raw CSV keeps both.
+Exit 0 means a complete valid measurement, even when deadlines were exceeded.
+Exit 1 means invalid/error; exit 2 means invalid CLI. Native driver xruns may be
+unsupported; callback overruns and scheduling gaps do not prove audible dropouts.

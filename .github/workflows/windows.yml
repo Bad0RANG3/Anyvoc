@@ -27,11 +27,20 @@ jobs:
             throw 'Unexpected JUCE commit'
           }
       - name: Configure
-        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DANYVOC_BUILD_TESTS=ON
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DANYVOC_BUILD_TESTS=ON -DANYVOC_BUILD_REALTIME_PROBE=ON
       - name: Build Release
         run: cmake --build build --config Release --parallel 2
       - name: Run all four test suites
         run: ctest --test-dir build -C Release --output-on-failure --output-junit test-results.xml
+      - name: Check profiler tooling without opening an audio device
+        shell: pwsh
+        run: |
+          & build/AnyvocRealtimeProbe_artefacts/Release/AnyvocRealtimeProbe.exe --help
+          if ($LASTEXITCODE -ne 0) { throw 'Profiler help failed' }
+          python scripts/analyze_realtime_probe.py --self-test --output build/realtime-probe-analyzer-self-test.json
+          if ($LASTEXITCODE -ne 0) { throw 'Profiler analyzer self-test failed' }
+          python Tests/RealtimeRunnerTests.py 2>&1 | Tee-Object -FilePath build/realtime-runner-tests.txt
+          if ($LASTEXITCODE -ne 0) { throw 'Profiler runner tests failed' }
       - name: Keep test evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -40,4 +49,6 @@ jobs:
           path: |
             build/Testing/Temporary/
             build/test-results.xml
+            build/realtime-probe-analyzer-self-test.json
+            build/realtime-runner-tests.txt
           if-no-files-found: warn

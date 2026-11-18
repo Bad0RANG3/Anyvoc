@@ -1,0 +1,305 @@
+{
+  "started_utc": "2026-11-18T10:03:20.259472+00:00",
+  "source_base_commit": "2acc71db00b8e70fb2fb5456d3207d2a0cf0096e",
+  "juce_commit": "29396c22c93392d6738e021b83196283d6e4d850",
+  "exe_sha256": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+  "source_sha256": {
+    "Tests/RealtimeProbe.cpp": "bd76ec4fae1c979665105063afb3af77748485522d8be3d04c557b125deccc91",
+    "CMakeLists.txt": "0c600cd9491237a5fe107f56c491d8118c4ee72b06a01f1aeb82b065478f71d1",
+    "Source/LfoCurveDocument.cpp": "9493955958762b154af417245fb3405e7b9e72bf28072269a281d28208a87d2f",
+    "Source/PluginEditor.cpp": "0e2d35b614e159f5ee60fd8edf29ef7999769cd3d664fb4b212fd81fba48ee24",
+    "Source/PluginProcessor.cpp": "6848e06d7f21bde8d738b5da9aba3f45b86abbe93842469eabc2cb7683d47eb3",
+    "Source/PresetLibrary.cpp": "71461c681c94f197405bf072dfda501f585edd2b0a8770eb8535858664214149",
+    "Source/SynthEngine.cpp": "1f68ed79b6b30531032a19656362f7f9a50fa8cb7c4e1f3960f9727203437917",
+    "Source/WavetableDocument.cpp": "c22900e5b3ec7b221f0c95be7846a12158d7357240230735a4cd8533ed3b5115",
+    "Source/ChaosLfoModel.h": "ab86808e750242675560b63fbb3f2582e09da531f8cbd0713937aa7e3aaed760",
+    "Source/EnvelopeModel.h": "bfd2fbff74879847f8d7bbc4428456b1b4d2b33b8d4d05e8069d9b08c139ef5f",
+    "Source/LfoCurveDocument.h": "3776f35d3c6b4b5c26620307e4e8f7eb855a0768e6ee030cca64e724923b7576",
+    "Source/LfoModel.h": "78c28454083260eea5c313b64c81aec11c82080e556acf0e20701976cd5bd71e",
+    "Source/ModulationRoute.h": "97756e999cb37ba498096c25a14ea855a5e78156306902e6fe81d75ffa6f802a",
+    "Source/ModulationView.h": "2078efc485b12d192067d5d5ca588ce87491cce888a15c773dab8cf29e86e07c",
+    "Source/PluginEditor.h": "2b98b7d3d766165f2118b10969dd46670dacf22f16865531b3fa0329a5a548d7",
+    "Source/PluginProcessor.h": "dee12afeed094732e158e552d89a91b0529d2896f18fbc090d039f384f1fa902",
+    "Source/PresetLibrary.h": "1f2839dd2bc62fa3a4d6aaaa3d27e72cc940a2f86e57584cf98e1867e88b5d66",
+    "Source/SynthEngine.h": "598a3be7ed90acd7cface7df7548609c764798041f590c6785d644c52f9d558c",
+    "Source/WavetableDocument.h": "6a3fb47a7e9b8227b83d9b0ca138e8f7edfe60be69b1047465c54702f4eb632e"
+  },
+  "driver_sha256": "f12de64fa3061747ab1ce23891f9ebe250d741373a85b3b1f6f985ded15494be",
+  "requested": {
+    "sample_rate": 48000,
+    "buffer_size": 256,
+    "seconds": 3,
+    "warmup": 1,
+    "rounds": 1
+  },
+  "cases": [
+    "baseline",
+    "unison",
+    "matrix",
+    "chaos",
+    "chaos-rossler",
+    "granular"
+  ],
+  "runs": [
+    {
+      "round": 1,
+      "case": "baseline",
+      "command": [
+        "D:\\Anyvoc\\build\\AnyvocRealtimeProbe_artefacts\\Release\\AnyvocRealtimeProbe.exe",
+        "--case",
+        "baseline",
+        "--seconds",
+        "3",
+        "--warmup",
+        "1",
+        "--sample-rate",
+        "48000",
+        "--buffer-size",
+        "256",
+        "--output",
+        "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-baseline"
+      ],
+      "status": "valid",
+      "exit_code": 0,
+      "started_utc": "2026-11-18T10:03:20.324041+00:00",
+      "exe_sha256_before": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "wall_seconds": 4.2888504000002285,
+      "exe_sha256_after": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "artifacts": {
+        "round-1-baseline.json": {
+          "bytes": 127160,
+          "sha256": "64280286e059c5e8ca9cfbd335b666febc56598e7b502de66881e8f0e7a9e8ae"
+        },
+        "round-1-baseline.csv": {
+          "bytes": 108206,
+          "sha256": "0a7d917f3586ebececc05a069214e9e813f47aa9e7636ac484089801c15cb2d6"
+        },
+        "round-1-baseline.stdout.txt": {
+          "bytes": 265,
+          "sha256": "0c2028ae3036d055d6d7e9a94aaa166892a7d632f4e6eb5a8318613ac7d4008a"
+        },
+        "round-1-baseline.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "round": 1,
+      "case": "unison",
+      "command": [
+        "D:\\Anyvoc\\build\\AnyvocRealtimeProbe_artefacts\\Release\\AnyvocRealtimeProbe.exe",
+        "--case",
+        "unison",
+        "--seconds",
+        "3",
+        "--warmup",
+        "1",
+        "--sample-rate",
+        "48000",
+        "--buffer-size",
+        "256",
+        "--output",
+        "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-unison"
+      ],
+      "status": "valid",
+      "exit_code": 0,
+      "started_utc": "2026-11-18T10:03:24.620620+00:00",
+      "exe_sha256_before": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "wall_seconds": 4.288532999999006,
+      "exe_sha256_after": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "artifacts": {
+        "round-1-unison.json": {
+          "bytes": 127216,
+          "sha256": "76f5d1c2ad0090eeccee0bce92b536732d80716a5095d14a736ea6fe2b07745b"
+        },
+        "round-1-unison.csv": {
+          "bytes": 108037,
+          "sha256": "9b3854396d5951291f3591636679d22aa38ec7f0d2eb56ac97da53ca13d427d0"
+        },
+        "round-1-unison.stdout.txt": {
+          "bytes": 261,
+          "sha256": "5d7184e6e9509231c548733c960aceaf58e80b357b25286a5029d61b055a4b5c"
+        },
+        "round-1-unison.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "round": 1,
+      "case": "matrix",
+      "command": [
+        "D:\\Anyvoc\\build\\AnyvocRealtimeProbe_artefacts\\Release\\AnyvocRealtimeProbe.exe",
+        "--case",
+        "matrix",
+        "--seconds",
+        "3",
+        "--warmup",
+        "1",
+        "--sample-rate",
+        "48000",
+        "--buffer-size",
+        "256",
+        "--output",
+        "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-matrix"
+      ],
+      "status": "valid",
+      "exit_code": 0,
+      "started_utc": "2026-11-18T10:03:28.916232+00:00",
+      "exe_sha256_before": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "wall_seconds": 4.2840265999984695,
+      "exe_sha256_after": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "artifacts": {
+        "round-1-matrix.json": {
+          "bytes": 130900,
+          "sha256": "cbb32ffdb3642a80a33f68f8790c490c2cf8c63265a67948e2386dfac8e43a31"
+        },
+        "round-1-matrix.csv": {
+          "bytes": 108525,
+          "sha256": "6b0407596fec20f92fcd4510b5382d3102200922eeb2b3a6b8f07cceeb89a37c"
+        },
+        "round-1-matrix.stdout.txt": {
+          "bytes": 261,
+          "sha256": "ce9068ca1713fb56c5f54efe579b30873fab9e72d00563bff6d71efd961fde0a"
+        },
+        "round-1-matrix.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "round": 1,
+      "case": "chaos",
+      "command": [
+        "D:\\Anyvoc\\build\\AnyvocRealtimeProbe_artefacts\\Release\\AnyvocRealtimeProbe.exe",
+        "--case",
+        "chaos",
+        "--seconds",
+        "3",
+        "--warmup",
+        "1",
+        "--sample-rate",
+        "48000",
+        "--buffer-size",
+        "256",
+        "--output",
+        "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos"
+      ],
+      "status": "valid",
+      "exit_code": 0,
+      "started_utc": "2026-11-18T10:03:33.207487+00:00",
+      "exe_sha256_before": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "wall_seconds": 4.276924399993732,
+      "exe_sha256_after": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "artifacts": {
+        "round-1-chaos.json": {
+          "bytes": 127295,
+          "sha256": "8807feaf3f34dc56be48ab1fbf61b8dcb333e742730ef8a0d042ed9513915fc5"
+        },
+        "round-1-chaos.csv": {
+          "bytes": 108547,
+          "sha256": "3604109e664ce5cd051cb5928723780d1b7693e6c146d043d3a4a03fa465b896"
+        },
+        "round-1-chaos.stdout.txt": {
+          "bytes": 259,
+          "sha256": "8bf03c9642887375f5c3f79819ac953620e1c61a359ec2197599da6746ba3a99"
+        },
+        "round-1-chaos.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "round": 1,
+      "case": "chaos-rossler",
+      "command": [
+        "D:\\Anyvoc\\build\\AnyvocRealtimeProbe_artefacts\\Release\\AnyvocRealtimeProbe.exe",
+        "--case",
+        "chaos-rossler",
+        "--seconds",
+        "3",
+        "--warmup",
+        "1",
+        "--sample-rate",
+        "48000",
+        "--buffer-size",
+        "256",
+        "--output",
+        "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos-rossler"
+      ],
+      "status": "valid",
+      "exit_code": 0,
+      "started_utc": "2026-11-18T10:03:37.491280+00:00",
+      "exe_sha256_before": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "wall_seconds": 4.286982399993576,
+      "exe_sha256_after": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "artifacts": {
+        "round-1-chaos-rossler.json": {
+          "bytes": 127333,
+          "sha256": "9e9fe620c6cffc71f56033f908295b486205390a21fac6bcfa4684c9a358f7b0"
+        },
+        "round-1-chaos-rossler.csv": {
+          "bytes": 108524,
+          "sha256": "0418173c9675252a19260ec459cd73f53e5dfe72a0cbb6982f487d619c90cc64"
+        },
+        "round-1-chaos-rossler.stdout.txt": {
+          "bytes": 275,
+          "sha256": "c8ad270adf92f5b521f0e6f17d78c85cbc104432612a649ba42fd7f161b8ab63"
+        },
+        "round-1-chaos-rossler.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "round": 1,
+      "case": "granular",
+      "command": [
+        "D:\\Anyvoc\\build\\AnyvocRealtimeProbe_artefacts\\Release\\AnyvocRealtimeProbe.exe",
+        "--case",
+        "granular",
+        "--seconds",
+        "3",
+        "--warmup",
+        "1",
+        "--sample-rate",
+        "48000",
+        "--buffer-size",
+        "256",
+        "--output",
+        "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-granular"
+      ],
+      "status": "valid",
+      "exit_code": 0,
+      "started_utc": "2026-11-18T10:03:41.785193+00:00",
+      "exe_sha256_before": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "wall_seconds": 4.304439400002593,
+      "exe_sha256_after": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+      "artifacts": {
+        "round-1-granular.json": {
+          "bytes": 127233,
+          "sha256": "f2ee76dd2709e0fa6de19bf1c67395044fb50d7f145ba2c709e2fa0b49dda378"
+        },
+        "round-1-granular.csv": {
+          "bytes": 111054,
+          "sha256": "00498b44efcc2138d28089d0ebc102bcf645a36d9a0680cb9371920e3de2cd38"
+        },
+        "round-1-granular.stdout.txt": {
+          "bytes": 265,
+          "sha256": "6d2dc1260f4dca53e56e3bba048fc645b05fa7b8bfbcd2b1a06b3e3bbeeb0882"
+        },
+        "round-1-granular.stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "complete": true,
+  "finished_utc": "2026-11-18T10:03:46.096582+00:00"
+}

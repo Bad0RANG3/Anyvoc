@@ -1,0 +1,22 @@
+{
+  "file_count": 205,
+  "total_bytes": 35964797,
+  "set_sha256": "3e183debdbf9abd2ab3420e802ae9ea8463896728f557d876aae2f41eb03ef6a",
+  "set_hash_format": "SHA256 of sorted UTF-8 relative-path TAB decimal-bytes TAB lowercase-sha256 LF",
+  "checked_utc": "2026-11-18T10:28:53.120524+00:00",
+  "exact_file_set": true,
+  "file_count_including_verification": 205,
+  "original_files_compared_byte_for_byte": 147,
+  "all_18_analysis_inputs_match_archived_raw": true,
+  "all_source_snapshot_files_still_identical": true,
+  "source_snapshot_file_count": 19,
+  "no_symbolic_links": true,
+  "all_supplemental_evidence_received": true,
+  "formal_statistics_unchanged": true,
+  "process_over_budget": 206,
+  "body_over_budget": 206,
+  "manager_estimated_overruns": 211,
+  "native_xruns": "unsupported; unknown",
+  "measurementValid": true,
+  "real_time_pass_claim": false
+}

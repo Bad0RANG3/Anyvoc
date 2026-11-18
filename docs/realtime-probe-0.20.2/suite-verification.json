@@ -1,0 +1,2993 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-11-18T10:24:22.896702+00:00",
+  "measurementValid": true,
+  "verification_status": "consistent",
+  "real_time_pass_claim": false,
+  "protocol": {
+    "sample_rate": 48000,
+    "buffer_size": 256,
+    "seconds": 60,
+    "warmup": 3,
+    "rounds": 3
+  },
+  "actual": {
+    "device_type": "Windows Audio",
+    "device_name": "扬声器 (NICEHCK HiFi Audio)",
+    "sample_rate": 48000.0,
+    "buffer_size": 256,
+    "input_channels": 0,
+    "output_channels": 2,
+    "output_latency_samples": 256
+  },
+  "formal_run_count": 18,
+  "formal_measured_callbacks": 202500,
+  "formal_measured_audio_seconds": 1080.0,
+  "source_base_commit": "2acc71db00b8e70fb2fb5456d3207d2a0cf0096e",
+  "juce_commit": "29396c22c93392d6738e021b83196283d6e4d850",
+  "executable_sha256": "a480fcb05a8f8279ab7356063cebb02c9938865db0023c6476bf26b7c618b027",
+  "source_snapshot_matches_current": true,
+  "source_sha256": {
+    "Tests/RealtimeProbe.cpp": "bd76ec4fae1c979665105063afb3af77748485522d8be3d04c557b125deccc91",
+    "CMakeLists.txt": "0c600cd9491237a5fe107f56c491d8118c4ee72b06a01f1aeb82b065478f71d1",
+    "Source/LfoCurveDocument.cpp": "9493955958762b154af417245fb3405e7b9e72bf28072269a281d28208a87d2f",
+    "Source/PluginEditor.cpp": "0e2d35b614e159f5ee60fd8edf29ef7999769cd3d664fb4b212fd81fba48ee24",
+    "Source/PluginProcessor.cpp": "6848e06d7f21bde8d738b5da9aba3f45b86abbe93842469eabc2cb7683d47eb3",
+    "Source/PresetLibrary.cpp": "71461c681c94f197405bf072dfda501f585edd2b0a8770eb8535858664214149",
+    "Source/SynthEngine.cpp": "1f68ed79b6b30531032a19656362f7f9a50fa8cb7c4e1f3960f9727203437917",
+    "Source/WavetableDocument.cpp": "c22900e5b3ec7b221f0c95be7846a12158d7357240230735a4cd8533ed3b5115",
+    "Source/ChaosLfoModel.h": "ab86808e750242675560b63fbb3f2582e09da531f8cbd0713937aa7e3aaed760",
+    "Source/EnvelopeModel.h": "bfd2fbff74879847f8d7bbc4428456b1b4d2b33b8d4d05e8069d9b08c139ef5f",
+    "Source/LfoCurveDocument.h": "3776f35d3c6b4b5c26620307e4e8f7eb855a0768e6ee030cca64e724923b7576",
+    "Source/LfoModel.h": "78c28454083260eea5c313b64c81aec11c82080e556acf0e20701976cd5bd71e",
+    "Source/ModulationRoute.h": "97756e999cb37ba498096c25a14ea855a5e78156306902e6fe81d75ffa6f802a",
+    "Source/ModulationView.h": "2078efc485b12d192067d5d5ca588ce87491cce888a15c773dab8cf29e86e07c",
+    "Source/PluginEditor.h": "2b98b7d3d766165f2118b10969dd46670dacf22f16865531b3fa0329a5a548d7",
+    "Source/PluginProcessor.h": "dee12afeed094732e158e552d89a91b0529d2896f18fbc090d039f384f1fa902",
+    "Source/PresetLibrary.h": "1f2839dd2bc62fa3a4d6aaaa3d27e72cc940a2f86e57584cf98e1867e88b5d66",
+    "Source/SynthEngine.h": "598a3be7ed90acd7cface7df7548609c764798041f590c6785d644c52f9d558c",
+    "Source/WavetableDocument.h": "6a3fb47a7e9b8227b83d9b0ca138e8f7edfe60be69b1047465c54702f4eb632e"
+  },
+  "runner_sha256": "f12de64fa3061747ab1ce23891f9ebe250d741373a85b3b1f6f985ded15494be",
+  "analyzer": {
+    "bytes": 32877,
+    "sha256": "10af1920740569c33669f39cb78c2159991a1b2c012967e6aad37b1e7a9d333f"
+  },
+  "python_version": "3.14.8 (tags/v3.14.8:8e6e75d, Sep 30 2026, 18:19:33) [MSC v.1944 64 bit (AMD64)]",
+  "per_case_parameters_and_workloads_identical_across_three_rounds": true,
+  "parameter_count_each": 1256,
+  "parameter_id_set_sha256": "bf8e353cacdfe317c6acca5ad49f6c86c4b2fc935623ee719829c1a19e476a8d",
+  "granular_sample_sha256_all_rounds": "ae66f9c162d0bf895b90e3af249ec2ab40581112224dafb9dff5eb9600ffaaa8",
+  "case_summary": [
+    {
+      "case": "baseline",
+      "rounds": 3,
+      "measurementValid": true,
+      "measured_callbacks": 33750,
+      "measured_audio_seconds": 180.0,
+      "manager_estimated_overruns": 0,
+      "native_xruns": {
+        "supported": false,
+        "count_delta": null
+      },
+      "process": {
+        "mean_min_ms": 0.5536597422222223,
+        "mean_max_ms": 0.5554636622222222,
+        "largest_p99_ms": 0.8098,
+        "max_ms": 1.5425,
+        "over_budget_callbacks": 0
+      },
+      "body": {
+        "mean_min_ms": 0.5548370222222222,
+        "mean_max_ms": 0.5566447377777778,
+        "largest_p99_ms": 0.8112,
+        "max_ms": 1.5461,
+        "over_budget_callbacks": 0
+      }
+    },
+    {
+      "case": "unison",
+      "rounds": 3,
+      "measurementValid": true,
+      "measured_callbacks": 33750,
+      "measured_audio_seconds": 180.0,
+      "manager_estimated_overruns": 0,
+      "native_xruns": {
+        "supported": false,
+        "count_delta": null
+      },
+      "process": {
+        "mean_min_ms": 0.9682804977777778,
+        "mean_max_ms": 0.9867857244444445,
+        "largest_p99_ms": 1.6699,
+        "max_ms": 2.9174,
+        "over_budget_callbacks": 0
+      },
+      "body": {
+        "mean_min_ms": 0.96946088,
+        "mean_max_ms": 0.9880372444444444,
+        "largest_p99_ms": 1.6721,
+        "max_ms": 2.921,
+        "over_budget_callbacks": 0
+      }
+    },
+    {
+      "case": "matrix",
+      "rounds": 3,
+      "measurementValid": true,
+      "measured_callbacks": 33750,
+      "measured_audio_seconds": 180.0,
+      "manager_estimated_overruns": 28,
+      "native_xruns": {
+        "supported": false,
+        "count_delta": null
+      },
+      "process": {
+        "mean_min_ms": 2.972829031111111,
+        "mean_max_ms": 3.0064378488888885,
+        "largest_p99_ms": 3.6036,
+        "max_ms": 8.39,
+        "over_budget_callbacks": 27
+      },
+      "body": {
+        "mean_min_ms": 2.974012471111111,
+        "mean_max_ms": 3.0076320711111113,
+        "largest_p99_ms": 3.6049,
+        "max_ms": 8.3933,
+        "over_budget_callbacks": 27
+      }
+    },
+    {
+      "case": "chaos",
+      "rounds": 3,
+      "measurementValid": true,
+      "measured_callbacks": 33750,
+      "measured_audio_seconds": 180.0,
+      "manager_estimated_overruns": 40,
+      "native_xruns": {
+        "supported": false,
+        "count_delta": null
+      },
+      "process": {
+        "mean_min_ms": 3.287423048888889,
+        "mean_max_ms": 3.2985678133333334,
+        "largest_p99_ms": 3.9447,
+        "max_ms": 7.2257,
+        "over_budget_callbacks": 40
+      },
+      "body": {
+        "mean_min_ms": 3.2886949333333333,
+        "mean_max_ms": 3.2997750311111114,
+        "largest_p99_ms": 3.946,
+        "max_ms": 7.229,
+        "over_budget_callbacks": 40
+      }
+    },
+    {
+      "case": "chaos-rossler",
+      "rounds": 3,
+      "measurementValid": true,
+      "measured_callbacks": 33750,
+      "measured_audio_seconds": 180.0,
+      "manager_estimated_overruns": 58,
+      "native_xruns": {
+        "supported": false,
+        "count_delta": null
+      },
+      "process": {
+        "mean_min_ms": 3.246762062222222,
+        "mean_max_ms": 3.2563769155555553,
+        "largest_p99_ms": 3.8314,
+        "max_ms": 7.1827,
+        "over_budget_callbacks": 58
+      },
+      "body": {
+        "mean_min_ms": 3.247967457777778,
+        "mean_max_ms": 3.257562506666667,
+        "largest_p99_ms": 3.8325,
+        "max_ms": 7.1864,
+        "over_budget_callbacks": 58
+      }
+    },
+    {
+      "case": "granular",
+      "rounds": 3,
+      "measurementValid": true,
+      "measured_callbacks": 33750,
+      "measured_audio_seconds": 180.0,
+      "manager_estimated_overruns": 85,
+      "native_xruns": {
+        "supported": false,
+        "count_delta": null
+      },
+      "process": {
+        "mean_min_ms": 3.7265279377777776,
+        "mean_max_ms": 3.7470023911111108,
+        "largest_p99_ms": 4.6677,
+        "max_ms": 9.4703,
+        "over_budget_callbacks": 81
+      },
+      "body": {
+        "mean_min_ms": 3.7277215022222223,
+        "mean_max_ms": 3.74819384,
+        "largest_p99_ms": 4.669,
+        "max_ms": 9.4735,
+        "over_budget_callbacks": 81
+      }
+    }
+  ],
+  "runs": [
+    {
+      "round": 1,
+      "case": "baseline",
+      "measurementValid": true,
+      "analysis": "analysis/round-1-baseline.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "a080544fb232ecb7c25b2913f635ab8d1469ae1f45c3dbc1ea5b3f777238300a",
+      "workload_sha256": "a9034d1c07c9e7f222821da86f829bec6fc0897955958d0ba6e0a3fb25fb98e2",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 0.5554636622222222,
+          "p50_ms": 0.5476,
+          "p95_ms": 0.596,
+          "p99_ms": 0.8098,
+          "max_ms": 1.4965,
+          "over_budget_callbacks": 0
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 0.5566447377777778,
+          "p50_ms": 0.5487,
+          "p95_ms": 0.5974,
+          "p99_ms": 0.8112,
+          "max_ms": 1.4999,
+          "over_budget_callbacks": 0
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333435271111111,
+          "p50_ms": 9.3977,
+          "p95_ms": 9.9962,
+          "p99_ms": 10.0054,
+          "max_ms": 10.2673,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.1012476550452,
+        "peak": 0.0685005784034729,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625541583366363,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010193777777807667,
+          "minimum_signed": -4.846333333333333,
+          "maximum_signed": 4.9339666666666675,
+          "maximum_absolute": 4.9339666666666675
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 0,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 1,
+      "case": "unison",
+      "measurementValid": true,
+      "analysis": "analysis/round-1-unison.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "9d551a693fc82f1cea6b0cfa3f96d0e7850ac2262f3e5dc3cd98d45c112ec46a",
+      "workload_sha256": "9687cdf9d2ce56b0378b32ecf4d48b6a9cc9644717dd6eb5c05814a4e8963a2f",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 0.9749012355555555,
+          "p50_ms": 0.9609,
+          "p95_ms": 1.0404,
+          "p99_ms": 1.2757,
+          "max_ms": 2.595,
+          "over_budget_callbacks": 0
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 0.9760802755555555,
+          "p50_ms": 0.962,
+          "p95_ms": 1.0421,
+          "p99_ms": 1.2769,
+          "max_ms": 2.598,
+          "over_budget_callbacks": 0
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333436551111111,
+          "p50_ms": 8.9722,
+          "p95_ms": 9.9966,
+          "p99_ms": 10.006,
+          "max_ms": 10.1862,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1762.0681339387882,
+        "peak": 0.08391597121953964,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.01749041470596381,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010321777777808067,
+          "minimum_signed": -4.438533333333333,
+          "maximum_signed": 4.852866666666666,
+          "maximum_absolute": 4.852866666666666
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 0,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 1,
+      "case": "matrix",
+      "measurementValid": true,
+      "analysis": "analysis/round-1-matrix.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "486db38ba803018662fe9af3f20abb13547c8380b70425c7cc9619eecc692eab",
+      "workload_sha256": "3b76711e405e0e78b1427d4043d64524098f7a4f600cf46d1a6019cbdaa07981",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 2.972829031111111,
+          "p50_ms": 2.9469,
+          "p95_ms": 3.1072,
+          "p99_ms": 3.5406,
+          "max_ms": 8.2721,
+          "over_budget_callbacks": 9
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 2.974012471111111,
+          "p50_ms": 2.9481,
+          "p95_ms": 3.1084,
+          "p99_ms": 3.5419,
+          "max_ms": 8.2754,
+          "over_budget_callbacks": 9
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333442693333334,
+          "p50_ms": 6.9246,
+          "p95_ms": 9.9964,
+          "p99_ms": 10.0056,
+          "max_ms": 10.5856,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.0846780269303,
+        "peak": 0.0685657188296318,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625443238932315,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010936000000029094,
+          "minimum_signed": -2.5190333333333332,
+          "maximum_signed": 5.252266666666666,
+          "maximum_absolute": 5.252266666666666
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 9,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 1,
+      "case": "chaos",
+      "measurementValid": true,
+      "analysis": "analysis/round-1-chaos.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "8d4f7c0148ad1f32a2333523f510c0f3cc816947aab2e51f3431e5074b01f6db",
+      "workload_sha256": "859327a949c482a425f93bf39a528e1a1a476d15c82075a762b04117186c74f7",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 3.2900514222222226,
+          "p50_ms": 3.2598,
+          "p95_ms": 3.4213,
+          "p99_ms": 3.9447,
+          "max_ms": 7.1952,
+          "over_budget_callbacks": 14
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 3.291288284444444,
+          "p50_ms": 3.2611,
+          "p95_ms": 3.4227,
+          "p99_ms": 3.946,
+          "max_ms": 7.1984,
+          "over_budget_callbacks": 14
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333440711111111,
+          "p50_ms": 6.6075,
+          "p95_ms": 9.9969,
+          "p99_ms": 10.006,
+          "max_ms": 10.2686,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.0875646519503,
+        "peak": 0.06859484314918518,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625460371742425,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010737777777807618,
+          "minimum_signed": -2.126133333333333,
+          "maximum_signed": 4.935266666666666,
+          "maximum_absolute": 4.935266666666666
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 14,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 1,
+      "case": "chaos-rossler",
+      "measurementValid": true,
+      "analysis": "analysis/round-1-chaos-rossler.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "41ad44c20a32d3b112a867219476d8c94694ac273d79e51430dbd9b04a92874a",
+      "workload_sha256": "c07ed0575b33908cbe32d5b75b47448c6dd2b7143de2948e9230a4484d44ffc8",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 3.249616328888889,
+          "p50_ms": 3.2219,
+          "p95_ms": 3.3431,
+          "p99_ms": 3.8009,
+          "max_ms": 7.146,
+          "over_budget_callbacks": 15
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 3.250795848888889,
+          "p50_ms": 3.2231,
+          "p95_ms": 3.3442,
+          "p99_ms": 3.8032,
+          "max_ms": 7.1496,
+          "over_budget_callbacks": 15
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333440017777778,
+          "p50_ms": 6.6882,
+          "p95_ms": 9.9964,
+          "p99_ms": 10.0058,
+          "max_ms": 10.3195,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.0819267675827,
+        "peak": 0.06862659752368927,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625426909531176,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010668444444473946,
+          "minimum_signed": -2.142733333333333,
+          "maximum_signed": 4.986166666666667,
+          "maximum_absolute": 4.986166666666667
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 15,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 1,
+      "case": "granular",
+      "measurementValid": true,
+      "analysis": "analysis/round-1-granular.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "128803372bb246edaea0769b66065312804f50e36dc79297b641c7f8a2fd7280",
+      "workload_sha256": "66c179719aed2b698d2edd47e337afd35f54c49e3d822b713082c79ce10cb2dd",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 3.7265279377777776,
+          "p50_ms": 3.6762,
+          "p95_ms": 3.9631,
+          "p99_ms": 4.6354,
+          "max_ms": 9.4681,
+          "over_budget_callbacks": 36
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 3.7277215022222223,
+          "p50_ms": 3.6774,
+          "p95_ms": 3.9643,
+          "p99_ms": 4.6367,
+          "max_ms": 9.4713,
+          "over_budget_callbacks": 36
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.334325644444444,
+          "p50_ms": 6.1627,
+          "p95_ms": 9.9969,
+          "p99_ms": 10.0056,
+          "max_ms": 10.2254,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 7.333170611137723,
+        "peak": 0.005137049593031406,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.0011283261486675588,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.0009923111111114031,
+          "minimum_signed": -1.752733333333333,
+          "maximum_signed": 4.8920666666666675,
+          "maximum_absolute": 4.8920666666666675
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 36,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 2,
+      "case": "unison",
+      "measurementValid": true,
+      "analysis": "analysis/round-2-unison.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "9d551a693fc82f1cea6b0cfa3f96d0e7850ac2262f3e5dc3cd98d45c112ec46a",
+      "workload_sha256": "9687cdf9d2ce56b0378b32ecf4d48b6a9cc9644717dd6eb5c05814a4e8963a2f",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 0.9682804977777778,
+          "p50_ms": 0.9555,
+          "p95_ms": 1.0239,
+          "p99_ms": 1.2452,
+          "max_ms": 2.8284,
+          "over_budget_callbacks": 0
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 0.96946088,
+          "p50_ms": 0.9567,
+          "p95_ms": 1.0251,
+          "p99_ms": 1.2465,
+          "max_ms": 2.8316,
+          "over_budget_callbacks": 0
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333437733333334,
+          "p50_ms": 8.9838,
+          "p95_ms": 9.9965,
+          "p99_ms": 10.006,
+          "max_ms": 10.3179,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1762.0681339387882,
+        "peak": 0.08391597121953964,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.01749041470596381,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010440000000029884,
+          "minimum_signed": -4.440933333333333,
+          "maximum_signed": 4.984566666666667,
+          "maximum_absolute": 4.984566666666667
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 0,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 2,
+      "case": "matrix",
+      "measurementValid": true,
+      "analysis": "analysis/round-2-matrix.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "486db38ba803018662fe9af3f20abb13547c8380b70425c7cc9619eecc692eab",
+      "workload_sha256": "3b76711e405e0e78b1427d4043d64524098f7a4f600cf46d1a6019cbdaa07981",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 2.985521742222222,
+          "p50_ms": 2.9615,
+          "p95_ms": 3.1055,
+          "p99_ms": 3.5208,
+          "max_ms": 8.2763,
+          "over_budget_callbacks": 6
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 2.986694862222222,
+          "p50_ms": 2.9626,
+          "p95_ms": 3.1068,
+          "p99_ms": 3.5222,
+          "max_ms": 8.2798,
+          "over_budget_callbacks": 6
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333433511111111,
+          "p50_ms": 6.9138,
+          "p95_ms": 9.9967,
+          "p99_ms": 10.006,
+          "max_ms": 10.3156,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.0846780269303,
+        "peak": 0.0685657188296318,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625443238932315,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010017777777807342,
+          "minimum_signed": -2.482533333333333,
+          "maximum_signed": 4.982266666666667,
+          "maximum_absolute": 4.982266666666667
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 6,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 2,
+      "case": "chaos",
+      "measurementValid": true,
+      "analysis": "analysis/round-2-chaos.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "8d4f7c0148ad1f32a2333523f510c0f3cc816947aab2e51f3431e5074b01f6db",
+      "workload_sha256": "859327a949c482a425f93bf39a528e1a1a476d15c82075a762b04117186c74f7",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 3.287423048888889,
+          "p50_ms": 3.2624,
+          "p95_ms": 3.4055,
+          "p99_ms": 3.837,
+          "max_ms": 7.1643,
+          "over_budget_callbacks": 5
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 3.2886949333333333,
+          "p50_ms": 3.2637,
+          "p95_ms": 3.4071,
+          "p99_ms": 3.8406,
+          "max_ms": 7.1674,
+          "over_budget_callbacks": 5
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333434293333333,
+          "p50_ms": 6.6108,
+          "p95_ms": 9.9961,
+          "p99_ms": 10.0056,
+          "max_ms": 10.3098,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.0875646519503,
+        "peak": 0.06859484314918518,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625460371742425,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010096000000029315,
+          "minimum_signed": -2.120033333333333,
+          "maximum_signed": 4.976466666666666,
+          "maximum_absolute": 4.976466666666666
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 5,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 2,
+      "case": "chaos-rossler",
+      "measurementValid": true,
+      "analysis": "analysis/round-2-chaos-rossler.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "41ad44c20a32d3b112a867219476d8c94694ac273d79e51430dbd9b04a92874a",
+      "workload_sha256": "c07ed0575b33908cbe32d5b75b47448c6dd2b7143de2948e9230a4484d44ffc8",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 3.2563769155555553,
+          "p50_ms": 3.2241,
+          "p95_ms": 3.3598,
+          "p99_ms": 3.8314,
+          "max_ms": 7.1256,
+          "over_budget_callbacks": 27
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 3.257562506666667,
+          "p50_ms": 3.2252,
+          "p95_ms": 3.3611,
+          "p99_ms": 3.8325,
+          "max_ms": 7.1289,
+          "over_budget_callbacks": 27
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333435146666667,
+          "p50_ms": 6.678,
+          "p95_ms": 9.9972,
+          "p99_ms": 10.0062,
+          "max_ms": 10.3232,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.0819267675827,
+        "peak": 0.06862659752368927,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625426909531176,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010181333333362682,
+          "minimum_signed": -2.142933333333333,
+          "maximum_signed": 4.989866666666667,
+          "maximum_absolute": 4.989866666666667
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 27,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 2,
+      "case": "granular",
+      "measurementValid": true,
+      "analysis": "analysis/round-2-granular.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "128803372bb246edaea0769b66065312804f50e36dc79297b641c7f8a2fd7280",
+      "workload_sha256": "66c179719aed2b698d2edd47e337afd35f54c49e3d822b713082c79ce10cb2dd",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 3.7470023911111108,
+          "p50_ms": 3.7053,
+          "p95_ms": 3.9476,
+          "p99_ms": 4.6607,
+          "max_ms": 9.4122,
+          "over_budget_callbacks": 8
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 3.74819384,
+          "p50_ms": 3.7066,
+          "p95_ms": 3.9489,
+          "p99_ms": 4.662,
+          "max_ms": 9.4155,
+          "over_budget_callbacks": 8
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333437262222222,
+          "p50_ms": 6.1358,
+          "p95_ms": 9.9967,
+          "p99_ms": 10.0052,
+          "max_ms": 10.3064,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 7.333170611137723,
+        "peak": 0.005137049593031406,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.0011283261486675588,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010392888888918582,
+          "minimum_signed": -1.728733333333333,
+          "maximum_signed": 4.973066666666667,
+          "maximum_absolute": 4.973066666666667
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 8,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 2,
+      "case": "baseline",
+      "measurementValid": true,
+      "analysis": "analysis/round-2-baseline.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "a080544fb232ecb7c25b2913f635ab8d1469ae1f45c3dbc1ea5b3f777238300a",
+      "workload_sha256": "a9034d1c07c9e7f222821da86f829bec6fc0897955958d0ba6e0a3fb25fb98e2",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 0.55489656,
+          "p50_ms": 0.5477,
+          "p95_ms": 0.5936,
+          "p99_ms": 0.7974,
+          "max_ms": 1.4907,
+          "over_budget_callbacks": 0
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 0.5561193422222223,
+          "p50_ms": 0.5489,
+          "p95_ms": 0.5949,
+          "p99_ms": 0.8012,
+          "max_ms": 1.4939,
+          "over_budget_callbacks": 0
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333437066666667,
+          "p50_ms": 9.4031,
+          "p95_ms": 9.9966,
+          "p99_ms": 10.0062,
+          "max_ms": 10.2539,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.1012476550452,
+        "peak": 0.0685005784034729,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625541583366363,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010373333333362542,
+          "minimum_signed": -4.8457333333333334,
+          "maximum_signed": 4.920566666666667,
+          "maximum_absolute": 4.920566666666667
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 0,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 3,
+      "case": "matrix",
+      "measurementValid": true,
+      "analysis": "analysis/round-3-matrix.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "486db38ba803018662fe9af3f20abb13547c8380b70425c7cc9619eecc692eab",
+      "workload_sha256": "3b76711e405e0e78b1427d4043d64524098f7a4f600cf46d1a6019cbdaa07981",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 3.0064378488888885,
+          "p50_ms": 2.9785,
+          "p95_ms": 3.1416,
+          "p99_ms": 3.6036,
+          "max_ms": 8.39,
+          "over_budget_callbacks": 12
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 3.0076320711111113,
+          "p50_ms": 2.9797,
+          "p95_ms": 3.1428,
+          "p99_ms": 3.6049,
+          "max_ms": 8.3933,
+          "over_budget_callbacks": 12
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333436737777777,
+          "p50_ms": 6.8875,
+          "p95_ms": 9.9966,
+          "p99_ms": 10.0059,
+          "max_ms": 10.2104,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.0846780269303,
+        "peak": 0.0685657188296318,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625443238932315,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010340444444474015,
+          "minimum_signed": -2.4767333333333332,
+          "maximum_signed": 4.877066666666667,
+          "maximum_absolute": 4.877066666666667
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 13,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 3,
+      "case": "chaos",
+      "measurementValid": true,
+      "analysis": "analysis/round-3-chaos.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "8d4f7c0148ad1f32a2333523f510c0f3cc816947aab2e51f3431e5074b01f6db",
+      "workload_sha256": "859327a949c482a425f93bf39a528e1a1a476d15c82075a762b04117186c74f7",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 3.2985678133333334,
+          "p50_ms": 3.2675,
+          "p95_ms": 3.4097,
+          "p99_ms": 3.8614,
+          "max_ms": 7.2257,
+          "over_budget_callbacks": 21
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 3.2997750311111114,
+          "p50_ms": 3.2686,
+          "p95_ms": 3.4117,
+          "p99_ms": 3.8627,
+          "max_ms": 7.229,
+          "over_budget_callbacks": 21
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333438737777778,
+          "p50_ms": 6.6303,
+          "p95_ms": 9.9966,
+          "p99_ms": 10.0056,
+          "max_ms": 10.303,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.0875646519503,
+        "peak": 0.06859484314918518,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625460371742425,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010540444444474374,
+          "minimum_signed": -2.118233333333333,
+          "maximum_signed": 4.969666666666668,
+          "maximum_absolute": 4.969666666666668
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 21,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 3,
+      "case": "chaos-rossler",
+      "measurementValid": true,
+      "analysis": "analysis/round-3-chaos-rossler.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "41ad44c20a32d3b112a867219476d8c94694ac273d79e51430dbd9b04a92874a",
+      "workload_sha256": "c07ed0575b33908cbe32d5b75b47448c6dd2b7143de2948e9230a4484d44ffc8",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 3.246762062222222,
+          "p50_ms": 3.2184,
+          "p95_ms": 3.3493,
+          "p99_ms": 3.8086,
+          "max_ms": 7.1827,
+          "over_budget_callbacks": 16
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 3.247967457777778,
+          "p50_ms": 3.2195,
+          "p95_ms": 3.3509,
+          "p99_ms": 3.8098,
+          "max_ms": 7.1864,
+          "over_budget_callbacks": 16
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333436088888889,
+          "p50_ms": 6.6811,
+          "p95_ms": 9.9966,
+          "p99_ms": 10.0056,
+          "max_ms": 10.3261,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.0819267675827,
+        "peak": 0.06862659752368927,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625426909531176,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010275555555584867,
+          "minimum_signed": -2.146433333333333,
+          "maximum_signed": 4.992766666666667,
+          "maximum_absolute": 4.992766666666667
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 16,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 3,
+      "case": "granular",
+      "measurementValid": true,
+      "analysis": "analysis/round-3-granular.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "128803372bb246edaea0769b66065312804f50e36dc79297b641c7f8a2fd7280",
+      "workload_sha256": "66c179719aed2b698d2edd47e337afd35f54c49e3d822b713082c79ce10cb2dd",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 3.729838186666667,
+          "p50_ms": 3.6809,
+          "p95_ms": 3.974,
+          "p99_ms": 4.6677,
+          "max_ms": 9.4703,
+          "over_budget_callbacks": 37
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 3.7310542844444443,
+          "p50_ms": 3.6822,
+          "p95_ms": 3.9758,
+          "p99_ms": 4.669,
+          "max_ms": 9.4735,
+          "over_budget_callbacks": 37
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333436577777778,
+          "p50_ms": 6.1465,
+          "p95_ms": 9.9965,
+          "p99_ms": 10.0057,
+          "max_ms": 10.3079,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 7.333170611137723,
+        "peak": 0.005137049593031406,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.0011283261486675588,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010324444444474194,
+          "minimum_signed": -1.7555333333333332,
+          "maximum_signed": 4.974566666666667,
+          "maximum_absolute": 4.974566666666667
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 41,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 3,
+      "case": "baseline",
+      "measurementValid": true,
+      "analysis": "analysis/round-3-baseline.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "a080544fb232ecb7c25b2913f635ab8d1469ae1f45c3dbc1ea5b3f777238300a",
+      "workload_sha256": "a9034d1c07c9e7f222821da86f829bec6fc0897955958d0ba6e0a3fb25fb98e2",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 0.5536597422222223,
+          "p50_ms": 0.546,
+          "p95_ms": 0.5953,
+          "p99_ms": 0.8023,
+          "max_ms": 1.5425,
+          "over_budget_callbacks": 0
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 0.5548370222222222,
+          "p50_ms": 0.5472,
+          "p95_ms": 0.5967,
+          "p99_ms": 0.8036,
+          "max_ms": 1.5461,
+          "over_budget_callbacks": 0
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333439688888888,
+          "p50_ms": 9.4019,
+          "p95_ms": 9.9968,
+          "p99_ms": 10.0063,
+          "max_ms": 10.3109,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1232.1012476550452,
+        "peak": 0.0685005784034729,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.014625541583366363,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010635555555584687,
+          "minimum_signed": -4.848033333333333,
+          "maximum_signed": 4.977566666666667,
+          "maximum_absolute": 4.977566666666667
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 0,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    },
+    {
+      "round": 3,
+      "case": "unison",
+      "measurementValid": true,
+      "analysis": "analysis/round-3-unison.analysis.json",
+      "parameter_count": 1256,
+      "parameters_sha256": "9d551a693fc82f1cea6b0cfa3f96d0e7850ac2262f3e5dc3cd98d45c112ec46a",
+      "workload_sha256": "9687cdf9d2ce56b0378b32ecf4d48b6a9cc9644717dd6eb5c05814a4e8963a2f",
+      "observedPerformance": {
+        "process": {
+          "count": 11250,
+          "mean_ms": 0.9867857244444445,
+          "p50_ms": 0.9576,
+          "p95_ms": 1.1081,
+          "p99_ms": 1.6699,
+          "max_ms": 2.9174,
+          "over_budget_callbacks": 0
+        },
+        "body": {
+          "count": 11250,
+          "mean_ms": 0.9880372444444444,
+          "p50_ms": 0.9588,
+          "p95_ms": 1.1097,
+          "p99_ms": 1.6721,
+          "max_ms": 2.921,
+          "over_budget_callbacks": 0
+        },
+        "interval": {
+          "count": 11250,
+          "mean_ms": 5.333437822222222,
+          "p50_ms": 8.933,
+          "p95_ms": 9.9955,
+          "p99_ms": 10.0067,
+          "max_ms": 10.2702,
+          "over_budget_callbacks": null
+        },
+        "measured_frames": 2880000,
+        "finite_samples": 5760000,
+        "nonfinite_samples": 0,
+        "nonzero_samples": 5760000,
+        "sum_squares": 1762.0681339387882,
+        "peak": 0.08391597121953964,
+        "hardware_nonzero_after_clear": 0,
+        "measured_audio_seconds": 60.0,
+        "rms": 0.01749041470596381,
+        "interval_jitter_ms": {
+          "count": 11250,
+          "mean_signed": 0.00010448888888918897,
+          "minimum_signed": -4.4402333333333335,
+          "maximum_signed": 4.936866666666668,
+          "maximum_absolute": 4.936866666666668
+        },
+        "native_xruns": {
+          "supported": false,
+          "count_delta": null,
+          "interpretation": "Unsupported; not a zero-dropout result"
+        },
+        "manager_estimated_overruns": 0,
+        "budget_interpretation": "Strict elapsed > num_samples / actual_sample_rate; not a hardware dropout detector",
+        "no_dropouts_proven": false
+      }
+    }
+  ],
+  "short_captures": {
+    "included_in_formal_statistics": false,
+    "suite": [
+      {
+        "case": "baseline",
+        "round": 1,
+        "process_over_budget": 0,
+        "body_over_budget": 0,
+        "included_in_formal_statistics": false
+      },
+      {
+        "case": "unison",
+        "round": 1,
+        "process_over_budget": 0,
+        "body_over_budget": 0,
+        "included_in_formal_statistics": false
+      },
+      {
+        "case": "matrix",
+        "round": 1,
+        "process_over_budget": 0,
+        "body_over_budget": 0,
+        "included_in_formal_statistics": false
+      },
+      {
+        "case": "chaos",
+        "round": 1,
+        "process_over_budget": 0,
+        "body_over_budget": 0,
+        "included_in_formal_statistics": false
+      },
+      {
+        "case": "chaos-rossler",
+        "round": 1,
+        "process_over_budget": 4,
+        "body_over_budget": 4,
+        "included_in_formal_statistics": false
+      },
+      {
+        "case": "granular",
+        "round": 1,
+        "process_over_budget": 0,
+        "body_over_budget": 0,
+        "included_in_formal_statistics": false
+      }
+    ],
+    "default": "Archived separately; existing analysis input hashes verified"
+  },
+  "original_byte_copies": {
+    "runs/round-1-baseline.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-baseline.json",
+      "bytes": 127127,
+      "sha256": "cd7aa54c953b804db4f4cfad9058916071a63b75e9d711ec3735dd41b7fe4aa6"
+    },
+    "runs/round-1-baseline.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-baseline.csv",
+      "bytes": 1731130,
+      "sha256": "60db1cad2c199648b377df15554f68e99aa7de77f2183b85b0a513c22e6ed810"
+    },
+    "runs/round-1-baseline.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-baseline.stdout.txt",
+      "bytes": 261,
+      "sha256": "05cdd728edc1b24c13dc9c2ccec88a96ae5d5d7865fa7b48dd7b087bf009a66f"
+    },
+    "runs/round-1-baseline.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-baseline.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-1-unison.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-unison.json",
+      "bytes": 127201,
+      "sha256": "7d14554d425ecd4a392d1f18a247511fbbb72f1ba9b4d4c8dbfea350db6d1de5"
+    },
+    "runs/round-1-unison.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-unison.csv",
+      "bytes": 1728941,
+      "sha256": "b06c9ff1cc2b241c7b804b50ca5860e3627d8f1ad74892f6c7e6fd13b6024947"
+    },
+    "runs/round-1-unison.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-unison.stdout.txt",
+      "bytes": 257,
+      "sha256": "cb4d7dcd97f7ee323ca52e56b472aa20730f845d3a932c5465dab4b2a0e2e292"
+    },
+    "runs/round-1-unison.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-unison.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-1-matrix.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-matrix.json",
+      "bytes": 130924,
+      "sha256": "75b65dbb0429973e78ebd0fac50681577f3a22979f31890b0835b2513fa6f0b5"
+    },
+    "runs/round-1-matrix.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-matrix.csv",
+      "bytes": 1736776,
+      "sha256": "cb2e91181106f56e22df90826a38975eedcb713fd73a5af5e14989e555f7e38d"
+    },
+    "runs/round-1-matrix.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-matrix.stdout.txt",
+      "bytes": 257,
+      "sha256": "232dc8cea862247b5ebb4220ac3c3b911713978a2eda688d693cf5885ce337ba"
+    },
+    "runs/round-1-matrix.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-matrix.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-1-chaos.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-chaos.json",
+      "bytes": 127309,
+      "sha256": "b019b4597a366cde269cb7ea91b5fd5bbe2d8dcf8ee6f3bc5e108c77a687dbfc"
+    },
+    "runs/round-1-chaos.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-chaos.csv",
+      "bytes": 1736749,
+      "sha256": "67ccffcdd10b497b734ed38148e755bc6d68300b7d94dbd8e910a530c4f2f78f"
+    },
+    "runs/round-1-chaos.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-chaos.stdout.txt",
+      "bytes": 256,
+      "sha256": "6cd53ddb6e3a60a0379ecf45b9567f4405f3af895291aacd538d4ec055007020"
+    },
+    "runs/round-1-chaos.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-chaos.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-1-chaos-rossler.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-chaos-rossler.json",
+      "bytes": 127325,
+      "sha256": "12c3091c8fa00189fcb1c422b48c22a7ca4ecd819a60b65ced7bab0b2979d3f9"
+    },
+    "runs/round-1-chaos-rossler.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-chaos-rossler.csv",
+      "bytes": 1736652,
+      "sha256": "5ea8af5aabdbdc540dba5384c443e2806a4f39ffe17b9a1fe16929a1700dec76"
+    },
+    "runs/round-1-chaos-rossler.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-chaos-rossler.stdout.txt",
+      "bytes": 272,
+      "sha256": "992032fa1a50c23dcc002113c4fc157ccd29566a1b827761bec7768109e56823"
+    },
+    "runs/round-1-chaos-rossler.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-chaos-rossler.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-1-granular.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-granular.json",
+      "bytes": 127246,
+      "sha256": "31d2ca2f1e9a1fe9f75566a9bf24efe4ec48b4e15adc31e535d1c4fb8766664b"
+    },
+    "runs/round-1-granular.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-granular.csv",
+      "bytes": 1775226,
+      "sha256": "b2966fff4c9cb7bcf884c4d885874a92d186f6d138b247df7819f1eef8a1470b"
+    },
+    "runs/round-1-granular.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-granular.stdout.txt",
+      "bytes": 262,
+      "sha256": "867d3aac246d80e7a16f538d6847724824bbb3e8ed2e47a573cd9c93f5dc3884"
+    },
+    "runs/round-1-granular.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-1-granular.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-2-unison.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-unison.json",
+      "bytes": 127182,
+      "sha256": "a8c727a2d654d5145173066aaf293724db96aba3743ce07cc13071d1c1027e2c"
+    },
+    "runs/round-2-unison.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-unison.csv",
+      "bytes": 1728822,
+      "sha256": "386b0f2154104faa4aef24eca6757504551844b6fec90e997f593d00ccfe30c0"
+    },
+    "runs/round-2-unison.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-unison.stdout.txt",
+      "bytes": 257,
+      "sha256": "d6428e0fb17e89d6cf47191b0e8cef859ad3d997d134457fe3d3547ee7260bfc"
+    },
+    "runs/round-2-unison.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-unison.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-2-matrix.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-matrix.json",
+      "bytes": 130912,
+      "sha256": "7c093680a4b5c953ab6f1fb681dcbd5e7020c451fb4ec9035c8cf4372436d8e8"
+    },
+    "runs/round-2-matrix.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-matrix.csv",
+      "bytes": 1736792,
+      "sha256": "7b928b311d4b6091b35a1675935821000e8c32193560360a126103645e137a92"
+    },
+    "runs/round-2-matrix.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-matrix.stdout.txt",
+      "bytes": 257,
+      "sha256": "47a55b31e6a06364ec2aefced120a7e87b9684d99ecd23a898dab8f1362630fa"
+    },
+    "runs/round-2-matrix.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-matrix.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-2-chaos.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-chaos.json",
+      "bytes": 127317,
+      "sha256": "dd3831b49260f2a87a674b82b5d7f8182b0e8a879a9f18cc56bebca8d5c911fd"
+    },
+    "runs/round-2-chaos.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-chaos.csv",
+      "bytes": 1736726,
+      "sha256": "84eef9e642e94b943dc058f95493506b2a0e48334b876b241a328364096dbb94"
+    },
+    "runs/round-2-chaos.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-chaos.stdout.txt",
+      "bytes": 255,
+      "sha256": "77e05257525cf43a7b021549fa5c815aa1917f71fcfc4330b192bcd81c3ddbe4"
+    },
+    "runs/round-2-chaos.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-chaos.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-2-chaos-rossler.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-chaos-rossler.json",
+      "bytes": 127327,
+      "sha256": "d20cc8a03422fa979cb3d6d3c63b7838f29d5616f70730051ae375c0052d1ca1"
+    },
+    "runs/round-2-chaos-rossler.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-chaos-rossler.csv",
+      "bytes": 1736694,
+      "sha256": "efa6ff6574aee81e534ac723858723e4b16007faafd4e86ffe6cf78eda333e14"
+    },
+    "runs/round-2-chaos-rossler.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-chaos-rossler.stdout.txt",
+      "bytes": 272,
+      "sha256": "9c12583fc681e082bf7f707737e6727bd32ba1e8d6bfced4487fd2838c059c7f"
+    },
+    "runs/round-2-chaos-rossler.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-chaos-rossler.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-2-granular.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-granular.json",
+      "bytes": 127231,
+      "sha256": "1e430886b2812c4cf1a2a47a986a66b4ea625c05327093734d279dcdea378ccc"
+    },
+    "runs/round-2-granular.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-granular.csv",
+      "bytes": 1775246,
+      "sha256": "f8158bbde6581c0139e4663299ccd2685bedde6980b275734c1b6bd0f08ab40a"
+    },
+    "runs/round-2-granular.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-granular.stdout.txt",
+      "bytes": 261,
+      "sha256": "03f3ca9ef37a09df3b6558c1ca121e1d7d07fdb940ab2ea17347a337d24b3cd7"
+    },
+    "runs/round-2-granular.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-granular.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-2-baseline.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-baseline.json",
+      "bytes": 127128,
+      "sha256": "f0a6cdb886d59deade6e0a518eab6faa304a1f6ae64ef03853c910d5fa07bb0e"
+    },
+    "runs/round-2-baseline.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-baseline.csv",
+      "bytes": 1731131,
+      "sha256": "5b9d65e7aa50ce41146d7285838416a4efa862fe199792b11804e329a6d35b8b"
+    },
+    "runs/round-2-baseline.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-baseline.stdout.txt",
+      "bytes": 261,
+      "sha256": "995074776a9083e38840fd651f072f75102127e4e7cbae8d26930a1a88850f29"
+    },
+    "runs/round-2-baseline.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-2-baseline.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-3-matrix.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-matrix.json",
+      "bytes": 130917,
+      "sha256": "a187c2eeed510035e6144fea9da789636b2f8cd04caba556ca862548f9c172bc"
+    },
+    "runs/round-3-matrix.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-matrix.csv",
+      "bytes": 1736799,
+      "sha256": "9edf807c1e322488d5352d2e2896726841bea19f2c394b2dffade3e54bd0172d"
+    },
+    "runs/round-3-matrix.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-matrix.stdout.txt",
+      "bytes": 258,
+      "sha256": "6bd187da380a13b87b13b81722f535292b7f4fc42dc73357caac26670356c79a"
+    },
+    "runs/round-3-matrix.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-matrix.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-3-chaos.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-chaos.json",
+      "bytes": 127331,
+      "sha256": "2bece0fa2c36a6fbecaed381b0b90224235219904bd2935feb4fa6a49236ed61"
+    },
+    "runs/round-3-chaos.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-chaos.csv",
+      "bytes": 1736723,
+      "sha256": "b5cbab285e6376784ca5f3cf84c5e976223d42cd2ee7b92f3b320d6e148f5a33"
+    },
+    "runs/round-3-chaos.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-chaos.stdout.txt",
+      "bytes": 256,
+      "sha256": "5aa584d5bb19fb62205ce6b175a2852d3602546bedf0d69a4055af555d9e4e2b"
+    },
+    "runs/round-3-chaos.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-chaos.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-3-chaos-rossler.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-chaos-rossler.json",
+      "bytes": 127339,
+      "sha256": "09ffb9a8ce62c2d1362ea366723f081e5ad15c9b0820d605776e29de557b5ea0"
+    },
+    "runs/round-3-chaos-rossler.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-chaos-rossler.csv",
+      "bytes": 1736672,
+      "sha256": "4914ba0e6697a16cb526fb0f2ceebfcbfab4c11d659a76c6966fb8fb8a30cd7f"
+    },
+    "runs/round-3-chaos-rossler.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-chaos-rossler.stdout.txt",
+      "bytes": 272,
+      "sha256": "075f1c4d4042e6034c9e416da8331cc075b78767eb2af18bc5e7ef04f950f068"
+    },
+    "runs/round-3-chaos-rossler.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-chaos-rossler.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-3-granular.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-granular.json",
+      "bytes": 127245,
+      "sha256": "ec9d4a2bba3a43b53bd5c72fcba1c587bc2a75e093d287c8ab79094fdf663b3b"
+    },
+    "runs/round-3-granular.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-granular.csv",
+      "bytes": 1775235,
+      "sha256": "d442190dc141db4b016554d5f50b0727eb7c8da945e198fe1fe71aeac5b2553b"
+    },
+    "runs/round-3-granular.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-granular.stdout.txt",
+      "bytes": 262,
+      "sha256": "a3cac0dc9f0c5546b7e406493d30a677aff06abd816385153ea31ae8da45a2f1"
+    },
+    "runs/round-3-granular.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-granular.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-3-baseline.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-baseline.json",
+      "bytes": 127127,
+      "sha256": "381194bcac3357232c832472d0341df34063a72f7ec77f726383d4c9c3f7468a"
+    },
+    "runs/round-3-baseline.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-baseline.csv",
+      "bytes": 1731150,
+      "sha256": "545be2471886ba24549f3ce896673c7a845eceea7d470962b5711f4742022628"
+    },
+    "runs/round-3-baseline.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-baseline.stdout.txt",
+      "bytes": 261,
+      "sha256": "6203ab8ee603d8f6f36dc76e8c794cddf6dd0e4040f715af9af8e557a38b41eb"
+    },
+    "runs/round-3-baseline.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-baseline.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs/round-3-unison.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-unison.json",
+      "bytes": 127182,
+      "sha256": "85f187be3330c1bc3fdc7e0f97af8479254b1d9c49ab9b69061178d4c3ea7094"
+    },
+    "runs/round-3-unison.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-unison.csv",
+      "bytes": 1729120,
+      "sha256": "386ada57882b34bd335cb4a7ca5eeb219581c5415700395a9b8762e9577180f9"
+    },
+    "runs/round-3-unison.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-unison.stdout.txt",
+      "bytes": 257,
+      "sha256": "084b9a4a2e29ecaf5d433b35c6316472af91f9674b97ddb548a24e736e105f48"
+    },
+    "runs/round-3-unison.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\round-3-unison.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "suite-manifest.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-48k256\\suite-manifest.json",
+      "bytes": 29935,
+      "sha256": "18f66ad4484de15f45484ae32adf31456d812c77a6884490c56bfcbf15c0410a"
+    },
+    "support/environment.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\environment.json",
+      "bytes": 748,
+      "sha256": "b4b9ba9268c3f9399b75e09c999e7d937aed9959fb20cbc64f46c28fe70ea1f5"
+    },
+    "support/configure.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\configure.txt",
+      "bytes": 310,
+      "sha256": "3886d023bb13715bbb337f88c2097fd39a2bee2276d4b63b16288fef1dc10b74"
+    },
+    "support/build-first.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\build-first.txt",
+      "bytes": 1446,
+      "sha256": "b325559bea6d886aad273073b7d58dd43131642601b68e5f9d744f0bdd09b804"
+    },
+    "support/help.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\help.txt",
+      "bytes": 1316,
+      "sha256": "be64e2f55b75b2a0f7858063fa48ea011260fa8d597bff3182116342b364ac28"
+    },
+    "support/devices.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\devices.txt",
+      "bytes": 705,
+      "sha256": "a999b14f3e5907a66b790501e19928ae72f39727ebf69d369b893f88f7408efc"
+    },
+    "support/analyzer-self-test.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\analyzer-self-test.json",
+      "bytes": 4241,
+      "sha256": "aa8fd0e103ee4b99cf97cbc982ad295ce6542756e54a544a150961abbc8f0234"
+    },
+    "support/analyzer-self-test-final.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\analyzer-self-test-final.json",
+      "bytes": 4241,
+      "sha256": "efd4c9506a447b41497eee51d8cb1bc4e3cf3fb67efa834b18b8292af96d0cd1"
+    },
+    "support/suite-console.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\suite-console.txt",
+      "bytes": 35157,
+      "sha256": "98d767e83830df47649578497c188a2d10ed5e24b309d7494880d3bee31e9e0f"
+    },
+    "support/short-suite-console.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-console.txt",
+      "bytes": 11775,
+      "sha256": "0670091fb5cf803c6138f35af4bb820e591b08f901c0b09c33c38d6634c01d29"
+    },
+    "short/suite-48k256/round-1-baseline.analysis.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-baseline.analysis.json",
+      "bytes": 3765,
+      "sha256": "03bd0db2eb2174aff8437897e648cf50afbed43664e32af7623237c7a57503fc"
+    },
+    "short/suite-48k256/round-1-baseline.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-baseline.csv",
+      "bytes": 108206,
+      "sha256": "0a7d917f3586ebececc05a069214e9e813f47aa9e7636ac484089801c15cb2d6"
+    },
+    "short/suite-48k256/round-1-baseline.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-baseline.json",
+      "bytes": 127160,
+      "sha256": "64280286e059c5e8ca9cfbd335b666febc56598e7b502de66881e8f0e7a9e8ae"
+    },
+    "short/suite-48k256/round-1-baseline.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-baseline.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "short/suite-48k256/round-1-baseline.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-baseline.stdout.txt",
+      "bytes": 265,
+      "sha256": "0c2028ae3036d055d6d7e9a94aaa166892a7d632f4e6eb5a8318613ac7d4008a"
+    },
+    "short/suite-48k256/round-1-chaos-rossler.analysis.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos-rossler.analysis.json",
+      "bytes": 3779,
+      "sha256": "95fcc200af44b71a87ca1ff0498023034a624e591eb6dc1a0a74b17254aa03a7"
+    },
+    "short/suite-48k256/round-1-chaos-rossler.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos-rossler.csv",
+      "bytes": 108524,
+      "sha256": "0418173c9675252a19260ec459cd73f53e5dfe72a0cbb6982f487d619c90cc64"
+    },
+    "short/suite-48k256/round-1-chaos-rossler.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos-rossler.json",
+      "bytes": 127333,
+      "sha256": "9e9fe620c6cffc71f56033f908295b486205390a21fac6bcfa4684c9a358f7b0"
+    },
+    "short/suite-48k256/round-1-chaos-rossler.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos-rossler.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "short/suite-48k256/round-1-chaos-rossler.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos-rossler.stdout.txt",
+      "bytes": 275,
+      "sha256": "c8ad270adf92f5b521f0e6f17d78c85cbc104432612a649ba42fd7f161b8ab63"
+    },
+    "short/suite-48k256/round-1-chaos.analysis.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos.analysis.json",
+      "bytes": 3758,
+      "sha256": "382c3d0d4921f7537a31a8926b5df9bdbe0aa1b3a71d2f13e2ec794197f30556"
+    },
+    "short/suite-48k256/round-1-chaos.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos.csv",
+      "bytes": 108547,
+      "sha256": "3604109e664ce5cd051cb5928723780d1b7693e6c146d043d3a4a03fa465b896"
+    },
+    "short/suite-48k256/round-1-chaos.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos.json",
+      "bytes": 127295,
+      "sha256": "8807feaf3f34dc56be48ab1fbf61b8dcb333e742730ef8a0d042ed9513915fc5"
+    },
+    "short/suite-48k256/round-1-chaos.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "short/suite-48k256/round-1-chaos.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-chaos.stdout.txt",
+      "bytes": 259,
+      "sha256": "8bf03c9642887375f5c3f79819ac953620e1c61a359ec2197599da6746ba3a99"
+    },
+    "short/suite-48k256/round-1-granular.analysis.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-granular.analysis.json",
+      "bytes": 3770,
+      "sha256": "2b5bbc19d536a479c9e5d37ae5a35304ef23d3f2db09e1f1ee90b018ba1d069f"
+    },
+    "short/suite-48k256/round-1-granular.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-granular.csv",
+      "bytes": 111054,
+      "sha256": "00498b44efcc2138d28089d0ebc102bcf645a36d9a0680cb9371920e3de2cd38"
+    },
+    "short/suite-48k256/round-1-granular.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-granular.json",
+      "bytes": 127233,
+      "sha256": "f2ee76dd2709e0fa6de19bf1c67395044fb50d7f145ba2c709e2fa0b49dda378"
+    },
+    "short/suite-48k256/round-1-granular.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-granular.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "short/suite-48k256/round-1-granular.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-granular.stdout.txt",
+      "bytes": 265,
+      "sha256": "6d2dc1260f4dca53e56e3bba048fc645b05fa7b8bfbcd2b1a06b3e3bbeeb0882"
+    },
+    "short/suite-48k256/round-1-matrix.analysis.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-matrix.analysis.json",
+      "bytes": 3761,
+      "sha256": "d79e4195dcf521fe64c5e3b011eca5730fc555b19556d6cc2d5a2acf0f193924"
+    },
+    "short/suite-48k256/round-1-matrix.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-matrix.csv",
+      "bytes": 108525,
+      "sha256": "6b0407596fec20f92fcd4510b5382d3102200922eeb2b3a6b8f07cceeb89a37c"
+    },
+    "short/suite-48k256/round-1-matrix.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-matrix.json",
+      "bytes": 130900,
+      "sha256": "cbb32ffdb3642a80a33f68f8790c490c2cf8c63265a67948e2386dfac8e43a31"
+    },
+    "short/suite-48k256/round-1-matrix.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-matrix.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "short/suite-48k256/round-1-matrix.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-matrix.stdout.txt",
+      "bytes": 261,
+      "sha256": "ce9068ca1713fb56c5f54efe579b30873fab9e72d00563bff6d71efd961fde0a"
+    },
+    "short/suite-48k256/round-1-unison.analysis.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-unison.analysis.json",
+      "bytes": 3759,
+      "sha256": "f26be87ba83a62f292e65c9500f163e3aa485013970c6e35b9fc6d6e4eb3fda2"
+    },
+    "short/suite-48k256/round-1-unison.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-unison.csv",
+      "bytes": 108037,
+      "sha256": "9b3854396d5951291f3591636679d22aa38ec7f0d2eb56ac97da53ca13d427d0"
+    },
+    "short/suite-48k256/round-1-unison.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-unison.json",
+      "bytes": 127216,
+      "sha256": "76f5d1c2ad0090eeccee0bce92b536732d80716a5095d14a736ea6fe2b07745b"
+    },
+    "short/suite-48k256/round-1-unison.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-unison.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "short/suite-48k256/round-1-unison.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\round-1-unison.stdout.txt",
+      "bytes": 261,
+      "sha256": "5d7184e6e9509231c548733c960aceaf58e80b357b25286a5029d61b055a4b5c"
+    },
+    "short/suite-48k256/suite-manifest.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-suite-48k256\\suite-manifest.json",
+      "bytes": 11755,
+      "sha256": "b74b2d1680cc2e04ef0f6a709bc461c92f41447c8f507a9a5b4d635d30fd8d45"
+    },
+    "short/short-default.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-default.json",
+      "bytes": 127098,
+      "sha256": "507d87eac66c062edd8bc0cec02b8fd464b1d05bd2a8225cc5f50f2664d36c8b"
+    },
+    "short/short-default.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-default.csv",
+      "bytes": 57904,
+      "sha256": "da1eb47671bdafb35a48f88e81d8cda13f2474d3ec99de66948fd1d1c21e266b"
+    },
+    "short/short-default-console.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-default-console.txt",
+      "bytes": 243,
+      "sha256": "0ebdd42ef01933af8e812122b5e5e55e4cdf4fd27c568664c72ca25e6e7a86ce"
+    },
+    "short/short-default-analysis.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\short-default-analysis.json",
+      "bytes": 3692,
+      "sha256": "c819b6f6c082644fea04d3b16cc15b05d783eb7a41258cc1724e2f02c001f288"
+    },
+    "tools/analyze_realtime_probe.py": {
+      "source": "D:\\Anyvoc\\scripts\\analyze_realtime_probe.py",
+      "bytes": 32877,
+      "sha256": "10af1920740569c33669f39cb78c2159991a1b2c012967e6aad37b1e7a9d333f"
+    },
+    "tools/run_realtime_probe.py": {
+      "source": "D:\\Anyvoc\\scripts\\run_realtime_probe.py",
+      "bytes": 6163,
+      "sha256": "f12de64fa3061747ab1ce23891f9ebe250d741373a85b3b1f6f985ded15494be"
+    },
+    "tools/analyze-suite.py": {
+      "source": "D:\\Anyvoc\\build\\validation-realtime-probe\\analyze-suite.py",
+      "bytes": 23156,
+      "sha256": "ae9394d853abdb83cda620988d7908628074b21d20118cb6dfb5310f038e5701"
+    },
+    "tooling/guard-checks/concurrent-0.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks\\concurrent-0.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tooling/guard-checks/concurrent-0.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks\\concurrent-0.stdout.txt",
+      "bytes": 255,
+      "sha256": "2b731a4f31440ecaba88ac911b185d724cd05d676b17d879871f0805ed3b1427"
+    },
+    "tooling/guard-checks/concurrent-1.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks\\concurrent-1.stderr.txt",
+      "bytes": 117,
+      "sha256": "a392a82c581d37474ef97c2844a01fdafbd37055fd8ea43a595550d5f90b7dda"
+    },
+    "tooling/guard-checks/concurrent-1.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks\\concurrent-1.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tooling/guard-checks/harness-first-failure.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks\\harness-first-failure.json",
+      "bytes": 435,
+      "sha256": "c9bd151f2e87e1c799c96a4226ae68e230d8caa86dff8fa2550d969771c5e436"
+    },
+    "tooling/guard-checks/simultaneous.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks\\simultaneous.csv",
+      "bytes": 17413,
+      "sha256": "fff5793221aa089c7b45b915a2da29787000772e9fe7415ec441ee4a9f0f12e1"
+    },
+    "tooling/guard-checks/simultaneous.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks\\simultaneous.json",
+      "bytes": 127060,
+      "sha256": "395d6f7906009cedb9e3721f2a88072d9e2b6a370bb6ea09267c3443231b6673"
+    },
+    "tooling/guard-checks-after/concurrent-0.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\concurrent-0.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tooling/guard-checks-after/concurrent-0.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\concurrent-0.stdout.txt",
+      "bytes": 261,
+      "sha256": "b92104c7aaf79e2b8cea16be73b2ba0d74367b9acb2b5d4609b167d1f8e23be3"
+    },
+    "tooling/guard-checks-after/concurrent-1.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\concurrent-1.stderr.txt",
+      "bytes": 117,
+      "sha256": "a392a82c581d37474ef97c2844a01fdafbd37055fd8ea43a595550d5f90b7dda"
+    },
+    "tooling/guard-checks-after/concurrent-1.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\concurrent-1.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tooling/guard-checks-after/guard-verification.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\guard-verification.json",
+      "bytes": 945,
+      "sha256": "efaf3e1619982209148d6fb462fe49c6221c1f25c0b96b91ac74c59d18c9cf2d"
+    },
+    "tooling/guard-checks-after/invalid-cli.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\invalid-cli.stderr.txt",
+      "bytes": 49,
+      "sha256": "05ed943cca94b5fead2ed86d97b994629d1d9288c39008cbc026cff34de53c3b"
+    },
+    "tooling/guard-checks-after/invalid-cli.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\invalid-cli.stdout.txt",
+      "bytes": 1316,
+      "sha256": "be64e2f55b75b2a0f7858063fa48ea011260fa8d597bff3182116342b364ac28"
+    },
+    "tooling/guard-checks-after/retry.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\retry.stderr.txt",
+      "bytes": 67,
+      "sha256": "3a4556ebf1fdc7716e06a2e0aa05b83467383c25b21f5495392321ca93f13576"
+    },
+    "tooling/guard-checks-after/retry.stdout.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\retry.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tooling/guard-checks-after/simultaneous.analysis.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\simultaneous.analysis.json",
+      "bytes": 3705,
+      "sha256": "806555d105c211acbebfbc8128c8619f16600fddcaf54c2db832ac7c79179547"
+    },
+    "tooling/guard-checks-after/simultaneous.csv": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\simultaneous.csv",
+      "bytes": 17411,
+      "sha256": "28bc28a8a51726b87dde3861bceb5917ba42b38b638311bc1d99f9835364726f"
+    },
+    "tooling/guard-checks-after/simultaneous.json": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\simultaneous.json",
+      "bytes": 127069,
+      "sha256": "bd7822de14185811f0faa033b8d7312d0d0ede99426a8cf0902fca8780cdc8d8"
+    },
+    "tooling/guard-checks-after/stale.stderr.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after\\stale.stderr.txt",
+      "bytes": 117,
+      "sha256": "a392a82c581d37474ef97c2844a01fdafbd37055fd8ea43a595550d5f90b7dda"
+    },
+    "tooling/guard-checks-after-console.txt": {
+      "source": "D:\\Anyvoc\\build\\realtime-probe-0.20.2\\guard-checks-after-console.txt",
+      "bytes": 945,
+      "sha256": "efaf3e1619982209148d6fb462fe49c6221c1f25c0b96b91ac74c59d18c9cf2d"
+    },
+    "tooling/check_probe_guards-before.py": {
+      "source": "D:\\Anyvoc\\build\\validation-realtime-probe\\check_probe_guards-before.py",
+      "bytes": 3020,
+      "sha256": "531c58a1fdc6e2dbbabac7f72cac7eca55d941adc8626354bd43c6efbd244f98"
+    },
+    "tooling/check_probe_guards.py": {
+      "source": "D:\\Anyvoc\\build\\validation-realtime-probe\\check_probe_guards.py",
+      "bytes": 3046,
+      "sha256": "56bdbd5815a32a7b212440f3975bf84170ebfe37ebe73d72cc6844b74ebb0437"
+    },
+    "tooling/RealtimeRunnerTests.py": {
+      "source": "D:\\Anyvoc\\Tests\\RealtimeRunnerTests.py",
+      "bytes": 11826,
+      "sha256": "e542e63aeb1852a37030c8b67146261c73415c15ee6a8c450bd66e79434b7f77"
+    },
+    "tooling/runner-tests.txt": {
+      "source": "D:\\Anyvoc\\build\\validation-realtime-probe\\runner-tests.txt",
+      "bytes": 1180,
+      "sha256": "77f7bebf12c534d63a604b61d215e13b82f149510b529c32820f5c2799bf1ce8"
+    },
+    "tooling/runner-tests.json": {
+      "source": "D:\\Anyvoc\\build\\validation-realtime-probe\\runner-tests.json",
+      "bytes": 949,
+      "sha256": "ebb89342cb64fba28ff6226a3efe9948b8cad060a790a1ddce873a1cd8f458aa"
+    },
+    "support/postrun-integrity.json": {
+      "source": "D:\\Anyvoc\\build\\validation-realtime-probe\\postrun-integrity.json",
+      "bytes": 2192,
+      "sha256": "66eee17eb70a9f096d3c9a9b957bc6464cd729e40cc3dbc6814408a4463c6176"
+    }
+  },
+  "archive_payload_before_this_verification": {
+    "file_count": 204,
+    "total_bytes": 35841191,
+    "set_sha256": "e29b6f3f9f3af6dc411a2b8d3b3f8a2c0f86006b93fa2936d49e130c97d144d8",
+    "set_hash_format": "SHA256 of sorted UTF-8 relative-path TAB decimal-bytes TAB lowercase-sha256 LF",
+    "files": {
+      "analysis/round-1-baseline.analysis.json": {
+        "bytes": 3765,
+        "sha256": "7dea75e8f110e96061032901967203662657653f0aad71d979816486244940fd"
+      },
+      "analysis/round-1-baseline.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-1-baseline.analysis.stdout.txt": {
+        "bytes": 207,
+        "sha256": "14c19909feb58e60472995c14f6d2b74ae50ad64f5aebf5ace906709acbca3f4"
+      },
+      "analysis/round-1-chaos-rossler.analysis.json": {
+        "bytes": 3780,
+        "sha256": "7c8da9813f15718ad48796b98b8e7feefe9237f1dc44cbaecefb6e1c515a3a41"
+      },
+      "analysis/round-1-chaos-rossler.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-1-chaos-rossler.analysis.stdout.txt": {
+        "bytes": 214,
+        "sha256": "868a39425ad83dbaee1a2e6e4858e7e527c68c6bcab11d4cc8ea2987a254f486"
+      },
+      "analysis/round-1-chaos.analysis.json": {
+        "bytes": 3756,
+        "sha256": "8d4db41b0004c64cef4f08982924532fafc158667b171a6c41c1c1d9442d9a7a"
+      },
+      "analysis/round-1-chaos.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-1-chaos.analysis.stdout.txt": {
+        "bytes": 206,
+        "sha256": "f205bf06ce27f5fa2df815e203ef83a9b3ba557928aea47c1fa9231ec8c77573"
+      },
+      "analysis/round-1-granular.analysis.json": {
+        "bytes": 3770,
+        "sha256": "6a74a2118d8891e87f5890d3933913283abcd1ab61260ba0b6ae82b5d0cb3dc8"
+      },
+      "analysis/round-1-granular.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-1-granular.analysis.stdout.txt": {
+        "bytes": 209,
+        "sha256": "d513e1098dc50446778b9fb602e13394002968d86be7ef5a90a2688d5de78aaa"
+      },
+      "analysis/round-1-matrix.analysis.json": {
+        "bytes": 3757,
+        "sha256": "90fd724c1514fa0ec62902a7ef1b0e213d4cce0869e9cf86bfffa0ae7d50df8c"
+      },
+      "analysis/round-1-matrix.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-1-matrix.analysis.stdout.txt": {
+        "bytes": 205,
+        "sha256": "a34506fa8332a52c50bef237f90d0125591b16cace4c9d0cd8d839eb69d340d8"
+      },
+      "analysis/round-1-unison.analysis.json": {
+        "bytes": 3754,
+        "sha256": "3a59407b1de24167c1c443b24d22438fa55e57b727be840d6f88c6a47fa70c2d"
+      },
+      "analysis/round-1-unison.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-1-unison.analysis.stdout.txt": {
+        "bytes": 205,
+        "sha256": "20fe2077f1a4a85326921f8426d238b63cadd6ff2da00c7c686740fe10e33e50"
+      },
+      "analysis/round-2-baseline.analysis.json": {
+        "bytes": 3757,
+        "sha256": "ddb8bb6fcdafd814238578a167018e2e62454a88abd4f8572847aeb6a0e3aaea"
+      },
+      "analysis/round-2-baseline.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-2-baseline.analysis.stdout.txt": {
+        "bytes": 207,
+        "sha256": "9cf140b3797f864087c6509b9009eb3aab34d0686a441ab214bc6860e6219db1"
+      },
+      "analysis/round-2-chaos-rossler.analysis.json": {
+        "bytes": 3781,
+        "sha256": "e447f24a0bf94bfdef2b800983f5f9aa452db814480d647e0f8455a6127bb21e"
+      },
+      "analysis/round-2-chaos-rossler.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-2-chaos-rossler.analysis.stdout.txt": {
+        "bytes": 214,
+        "sha256": "fb3c3c6e934c07fcca4eb9ea87e5d2886a5b864385da082f4864461889217847"
+      },
+      "analysis/round-2-chaos.analysis.json": {
+        "bytes": 3754,
+        "sha256": "5aaa0276d0a952240276d23ac923135787ae59e5f7a2a36678d49d8849242645"
+      },
+      "analysis/round-2-chaos.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-2-chaos.analysis.stdout.txt": {
+        "bytes": 204,
+        "sha256": "1e1089142cead6db46c75fa30bf2f947c355349c643899627f13c3386829f9c8"
+      },
+      "analysis/round-2-granular.analysis.json": {
+        "bytes": 3757,
+        "sha256": "5c94c8d453133f44e26e84a738af38720be65f2d9df1c17b6a1c33b2ce0bb96f"
+      },
+      "analysis/round-2-granular.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-2-granular.analysis.stdout.txt": {
+        "bytes": 207,
+        "sha256": "397b6da742f376544825b60d75d7f2664cec5591e1c1edf04b92c5d3dedad5b3"
+      },
+      "analysis/round-2-matrix.analysis.json": {
+        "bytes": 3755,
+        "sha256": "55e9ba328bfa0b91777e61e412332219a9edb0d95d88fcd0194d50f94eb816ee"
+      },
+      "analysis/round-2-matrix.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-2-matrix.analysis.stdout.txt": {
+        "bytes": 205,
+        "sha256": "ddb2e4fb61baae588d9754f865bb4d90bed34142f458109fd59c73ebfb2c654f"
+      },
+      "analysis/round-2-unison.analysis.json": {
+        "bytes": 3749,
+        "sha256": "13747937fe07514ce5422fc01253d880708510a787b78614dc20b2af0a409dc0"
+      },
+      "analysis/round-2-unison.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-2-unison.analysis.stdout.txt": {
+        "bytes": 205,
+        "sha256": "3002f5b68228f0a648fe8bb532d2e48a091c8b8e279bec6ca62d2b9c035ad613"
+      },
+      "analysis/round-3-baseline.analysis.json": {
+        "bytes": 3763,
+        "sha256": "494923f9e7be45495ccf2fb500b08109b903c61b9d421fa869c8b7f92abfd51d"
+      },
+      "analysis/round-3-baseline.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-3-baseline.analysis.stdout.txt": {
+        "bytes": 207,
+        "sha256": "7c85ec8a1539740ab9ad7005c1dbb719d2d262c857e8a80379f3b0e2e58d1d2f"
+      },
+      "analysis/round-3-chaos-rossler.analysis.json": {
+        "bytes": 3781,
+        "sha256": "706ef7042ec238013bc58dc9c117a5e6e4f7fb2ee5e26b3dc513a60686fd04d9"
+      },
+      "analysis/round-3-chaos-rossler.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-3-chaos-rossler.analysis.stdout.txt": {
+        "bytes": 214,
+        "sha256": "8c2b822ac5f96f8fe00aa630389aa2447aa7d5c5ca9a94659aa1daa35c52dc0d"
+      },
+      "analysis/round-3-chaos.analysis.json": {
+        "bytes": 3757,
+        "sha256": "509b054a83f500f19c22e02df43d3fb62f993a55b200db18a659681ebbc884d3"
+      },
+      "analysis/round-3-chaos.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-3-chaos.analysis.stdout.txt": {
+        "bytes": 206,
+        "sha256": "916b9fc8c67f649922c670009fac9e53e06c90b740446698fce8fbe012946330"
+      },
+      "analysis/round-3-granular.analysis.json": {
+        "bytes": 3767,
+        "sha256": "03f5931a4ca14aafd0ca45ddb58ea6a53fd6c0c69854534cf4a2a55f032fab5c"
+      },
+      "analysis/round-3-granular.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-3-granular.analysis.stdout.txt": {
+        "bytes": 209,
+        "sha256": "9228588559e0fbcc419cec7bb4e849022050a7930de9be67ef669fce41f54512"
+      },
+      "analysis/round-3-matrix.analysis.json": {
+        "bytes": 3760,
+        "sha256": "fe0051ae2215169b06396aceeabcd2fd212ca80d6bff23cad6f8d9551e82cbbd"
+      },
+      "analysis/round-3-matrix.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-3-matrix.analysis.stdout.txt": {
+        "bytes": 207,
+        "sha256": "7fc4f7d8c37ba6cedd87ce7de65a82c79b089681fe63d399679bf71ffba32148"
+      },
+      "analysis/round-3-unison.analysis.json": {
+        "bytes": 3757,
+        "sha256": "6da15b960e9f99768c6013ece0b7cd59d7646a4d85994c95797f26ca1c7c6269"
+      },
+      "analysis/round-3-unison.analysis.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analysis/round-3-unison.analysis.stdout.txt": {
+        "bytes": 205,
+        "sha256": "b16583a7e65ed14df70dd3213f56eb38c4920e17c8f2a817c70add635505e337"
+      },
+      "README.md": {
+        "bytes": 3344,
+        "sha256": "709b85444c37232e2f673c59017f52e3f218d21f82946d41b5e8cb184b1384b9"
+      },
+      "runs/round-1-baseline.csv": {
+        "bytes": 1731130,
+        "sha256": "60db1cad2c199648b377df15554f68e99aa7de77f2183b85b0a513c22e6ed810"
+      },
+      "runs/round-1-baseline.json": {
+        "bytes": 127127,
+        "sha256": "cd7aa54c953b804db4f4cfad9058916071a63b75e9d711ec3735dd41b7fe4aa6"
+      },
+      "runs/round-1-baseline.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-1-baseline.stdout.txt": {
+        "bytes": 261,
+        "sha256": "05cdd728edc1b24c13dc9c2ccec88a96ae5d5d7865fa7b48dd7b087bf009a66f"
+      },
+      "runs/round-1-chaos-rossler.csv": {
+        "bytes": 1736652,
+        "sha256": "5ea8af5aabdbdc540dba5384c443e2806a4f39ffe17b9a1fe16929a1700dec76"
+      },
+      "runs/round-1-chaos-rossler.json": {
+        "bytes": 127325,
+        "sha256": "12c3091c8fa00189fcb1c422b48c22a7ca4ecd819a60b65ced7bab0b2979d3f9"
+      },
+      "runs/round-1-chaos-rossler.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-1-chaos-rossler.stdout.txt": {
+        "bytes": 272,
+        "sha256": "992032fa1a50c23dcc002113c4fc157ccd29566a1b827761bec7768109e56823"
+      },
+      "runs/round-1-chaos.csv": {
+        "bytes": 1736749,
+        "sha256": "67ccffcdd10b497b734ed38148e755bc6d68300b7d94dbd8e910a530c4f2f78f"
+      },
+      "runs/round-1-chaos.json": {
+        "bytes": 127309,
+        "sha256": "b019b4597a366cde269cb7ea91b5fd5bbe2d8dcf8ee6f3bc5e108c77a687dbfc"
+      },
+      "runs/round-1-chaos.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-1-chaos.stdout.txt": {
+        "bytes": 256,
+        "sha256": "6cd53ddb6e3a60a0379ecf45b9567f4405f3af895291aacd538d4ec055007020"
+      },
+      "runs/round-1-granular.csv": {
+        "bytes": 1775226,
+        "sha256": "b2966fff4c9cb7bcf884c4d885874a92d186f6d138b247df7819f1eef8a1470b"
+      },
+      "runs/round-1-granular.json": {
+        "bytes": 127246,
+        "sha256": "31d2ca2f1e9a1fe9f75566a9bf24efe4ec48b4e15adc31e535d1c4fb8766664b"
+      },
+      "runs/round-1-granular.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-1-granular.stdout.txt": {
+        "bytes": 262,
+        "sha256": "867d3aac246d80e7a16f538d6847724824bbb3e8ed2e47a573cd9c93f5dc3884"
+      },
+      "runs/round-1-matrix.csv": {
+        "bytes": 1736776,
+        "sha256": "cb2e91181106f56e22df90826a38975eedcb713fd73a5af5e14989e555f7e38d"
+      },
+      "runs/round-1-matrix.json": {
+        "bytes": 130924,
+        "sha256": "75b65dbb0429973e78ebd0fac50681577f3a22979f31890b0835b2513fa6f0b5"
+      },
+      "runs/round-1-matrix.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-1-matrix.stdout.txt": {
+        "bytes": 257,
+        "sha256": "232dc8cea862247b5ebb4220ac3c3b911713978a2eda688d693cf5885ce337ba"
+      },
+      "runs/round-1-unison.csv": {
+        "bytes": 1728941,
+        "sha256": "b06c9ff1cc2b241c7b804b50ca5860e3627d8f1ad74892f6c7e6fd13b6024947"
+      },
+      "runs/round-1-unison.json": {
+        "bytes": 127201,
+        "sha256": "7d14554d425ecd4a392d1f18a247511fbbb72f1ba9b4d4c8dbfea350db6d1de5"
+      },
+      "runs/round-1-unison.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-1-unison.stdout.txt": {
+        "bytes": 257,
+        "sha256": "cb4d7dcd97f7ee323ca52e56b472aa20730f845d3a932c5465dab4b2a0e2e292"
+      },
+      "runs/round-2-baseline.csv": {
+        "bytes": 1731131,
+        "sha256": "5b9d65e7aa50ce41146d7285838416a4efa862fe199792b11804e329a6d35b8b"
+      },
+      "runs/round-2-baseline.json": {
+        "bytes": 127128,
+        "sha256": "f0a6cdb886d59deade6e0a518eab6faa304a1f6ae64ef03853c910d5fa07bb0e"
+      },
+      "runs/round-2-baseline.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-2-baseline.stdout.txt": {
+        "bytes": 261,
+        "sha256": "995074776a9083e38840fd651f072f75102127e4e7cbae8d26930a1a88850f29"
+      },
+      "runs/round-2-chaos-rossler.csv": {
+        "bytes": 1736694,
+        "sha256": "efa6ff6574aee81e534ac723858723e4b16007faafd4e86ffe6cf78eda333e14"
+      },
+      "runs/round-2-chaos-rossler.json": {
+        "bytes": 127327,
+        "sha256": "d20cc8a03422fa979cb3d6d3c63b7838f29d5616f70730051ae375c0052d1ca1"
+      },
+      "runs/round-2-chaos-rossler.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-2-chaos-rossler.stdout.txt": {
+        "bytes": 272,
+        "sha256": "9c12583fc681e082bf7f707737e6727bd32ba1e8d6bfced4487fd2838c059c7f"
+      },
+      "runs/round-2-chaos.csv": {
+        "bytes": 1736726,
+        "sha256": "84eef9e642e94b943dc058f95493506b2a0e48334b876b241a328364096dbb94"
+      },
+      "runs/round-2-chaos.json": {
+        "bytes": 127317,
+        "sha256": "dd3831b49260f2a87a674b82b5d7f8182b0e8a879a9f18cc56bebca8d5c911fd"
+      },
+      "runs/round-2-chaos.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-2-chaos.stdout.txt": {
+        "bytes": 255,
+        "sha256": "77e05257525cf43a7b021549fa5c815aa1917f71fcfc4330b192bcd81c3ddbe4"
+      },
+      "runs/round-2-granular.csv": {
+        "bytes": 1775246,
+        "sha256": "f8158bbde6581c0139e4663299ccd2685bedde6980b275734c1b6bd0f08ab40a"
+      },
+      "runs/round-2-granular.json": {
+        "bytes": 127231,
+        "sha256": "1e430886b2812c4cf1a2a47a986a66b4ea625c05327093734d279dcdea378ccc"
+      },
+      "runs/round-2-granular.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-2-granular.stdout.txt": {
+        "bytes": 261,
+        "sha256": "03f3ca9ef37a09df3b6558c1ca121e1d7d07fdb940ab2ea17347a337d24b3cd7"
+      },
+      "runs/round-2-matrix.csv": {
+        "bytes": 1736792,
+        "sha256": "7b928b311d4b6091b35a1675935821000e8c32193560360a126103645e137a92"
+      },
+      "runs/round-2-matrix.json": {
+        "bytes": 130912,
+        "sha256": "7c093680a4b5c953ab6f1fb681dcbd5e7020c451fb4ec9035c8cf4372436d8e8"
+      },
+      "runs/round-2-matrix.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-2-matrix.stdout.txt": {
+        "bytes": 257,
+        "sha256": "47a55b31e6a06364ec2aefced120a7e87b9684d99ecd23a898dab8f1362630fa"
+      },
+      "runs/round-2-unison.csv": {
+        "bytes": 1728822,
+        "sha256": "386b0f2154104faa4aef24eca6757504551844b6fec90e997f593d00ccfe30c0"
+      },
+      "runs/round-2-unison.json": {
+        "bytes": 127182,
+        "sha256": "a8c727a2d654d5145173066aaf293724db96aba3743ce07cc13071d1c1027e2c"
+      },
+      "runs/round-2-unison.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-2-unison.stdout.txt": {
+        "bytes": 257,
+        "sha256": "d6428e0fb17e89d6cf47191b0e8cef859ad3d997d134457fe3d3547ee7260bfc"
+      },
+      "runs/round-3-baseline.csv": {
+        "bytes": 1731150,
+        "sha256": "545be2471886ba24549f3ce896673c7a845eceea7d470962b5711f4742022628"
+      },
+      "runs/round-3-baseline.json": {
+        "bytes": 127127,
+        "sha256": "381194bcac3357232c832472d0341df34063a72f7ec77f726383d4c9c3f7468a"
+      },
+      "runs/round-3-baseline.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-3-baseline.stdout.txt": {
+        "bytes": 261,
+        "sha256": "6203ab8ee603d8f6f36dc76e8c794cddf6dd0e4040f715af9af8e557a38b41eb"
+      },
+      "runs/round-3-chaos-rossler.csv": {
+        "bytes": 1736672,
+        "sha256": "4914ba0e6697a16cb526fb0f2ceebfcbfab4c11d659a76c6966fb8fb8a30cd7f"
+      },
+      "runs/round-3-chaos-rossler.json": {
+        "bytes": 127339,
+        "sha256": "09ffb9a8ce62c2d1362ea366723f081e5ad15c9b0820d605776e29de557b5ea0"
+      },
+      "runs/round-3-chaos-rossler.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-3-chaos-rossler.stdout.txt": {
+        "bytes": 272,
+        "sha256": "075f1c4d4042e6034c9e416da8331cc075b78767eb2af18bc5e7ef04f950f068"
+      },
+      "runs/round-3-chaos.csv": {
+        "bytes": 1736723,
+        "sha256": "b5cbab285e6376784ca5f3cf84c5e976223d42cd2ee7b92f3b320d6e148f5a33"
+      },
+      "runs/round-3-chaos.json": {
+        "bytes": 127331,
+        "sha256": "2bece0fa2c36a6fbecaed381b0b90224235219904bd2935feb4fa6a49236ed61"
+      },
+      "runs/round-3-chaos.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-3-chaos.stdout.txt": {
+        "bytes": 256,
+        "sha256": "5aa584d5bb19fb62205ce6b175a2852d3602546bedf0d69a4055af555d9e4e2b"
+      },
+      "runs/round-3-granular.csv": {
+        "bytes": 1775235,
+        "sha256": "d442190dc141db4b016554d5f50b0727eb7c8da945e198fe1fe71aeac5b2553b"
+      },
+      "runs/round-3-granular.json": {
+        "bytes": 127245,
+        "sha256": "ec9d4a2bba3a43b53bd5c72fcba1c587bc2a75e093d287c8ab79094fdf663b3b"
+      },
+      "runs/round-3-granular.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-3-granular.stdout.txt": {
+        "bytes": 262,
+        "sha256": "a3cac0dc9f0c5546b7e406493d30a677aff06abd816385153ea31ae8da45a2f1"
+      },
+      "runs/round-3-matrix.csv": {
+        "bytes": 1736799,
+        "sha256": "9edf807c1e322488d5352d2e2896726841bea19f2c394b2dffade3e54bd0172d"
+      },
+      "runs/round-3-matrix.json": {
+        "bytes": 130917,
+        "sha256": "a187c2eeed510035e6144fea9da789636b2f8cd04caba556ca862548f9c172bc"
+      },
+      "runs/round-3-matrix.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-3-matrix.stdout.txt": {
+        "bytes": 258,
+        "sha256": "6bd187da380a13b87b13b81722f535292b7f4fc42dc73357caac26670356c79a"
+      },
+      "runs/round-3-unison.csv": {
+        "bytes": 1729120,
+        "sha256": "386ada57882b34bd335cb4a7ca5eeb219581c5415700395a9b8762e9577180f9"
+      },
+      "runs/round-3-unison.json": {
+        "bytes": 127182,
+        "sha256": "85f187be3330c1bc3fdc7e0f97af8479254b1d9c49ab9b69061178d4c3ea7094"
+      },
+      "runs/round-3-unison.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "runs/round-3-unison.stdout.txt": {
+        "bytes": 257,
+        "sha256": "084b9a4a2e29ecaf5d433b35c6316472af91f9674b97ddb548a24e736e105f48"
+      },
+      "short/short-default-analysis.json": {
+        "bytes": 3692,
+        "sha256": "c819b6f6c082644fea04d3b16cc15b05d783eb7a41258cc1724e2f02c001f288"
+      },
+      "short/short-default-console.txt": {
+        "bytes": 243,
+        "sha256": "0ebdd42ef01933af8e812122b5e5e55e4cdf4fd27c568664c72ca25e6e7a86ce"
+      },
+      "short/short-default.csv": {
+        "bytes": 57904,
+        "sha256": "da1eb47671bdafb35a48f88e81d8cda13f2474d3ec99de66948fd1d1c21e266b"
+      },
+      "short/short-default.json": {
+        "bytes": 127098,
+        "sha256": "507d87eac66c062edd8bc0cec02b8fd464b1d05bd2a8225cc5f50f2664d36c8b"
+      },
+      "short/suite-48k256/round-1-baseline.analysis.json": {
+        "bytes": 3765,
+        "sha256": "03bd0db2eb2174aff8437897e648cf50afbed43664e32af7623237c7a57503fc"
+      },
+      "short/suite-48k256/round-1-baseline.csv": {
+        "bytes": 108206,
+        "sha256": "0a7d917f3586ebececc05a069214e9e813f47aa9e7636ac484089801c15cb2d6"
+      },
+      "short/suite-48k256/round-1-baseline.json": {
+        "bytes": 127160,
+        "sha256": "64280286e059c5e8ca9cfbd335b666febc56598e7b502de66881e8f0e7a9e8ae"
+      },
+      "short/suite-48k256/round-1-baseline.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "short/suite-48k256/round-1-baseline.stdout.txt": {
+        "bytes": 265,
+        "sha256": "0c2028ae3036d055d6d7e9a94aaa166892a7d632f4e6eb5a8318613ac7d4008a"
+      },
+      "short/suite-48k256/round-1-chaos-rossler.analysis.json": {
+        "bytes": 3779,
+        "sha256": "95fcc200af44b71a87ca1ff0498023034a624e591eb6dc1a0a74b17254aa03a7"
+      },
+      "short/suite-48k256/round-1-chaos-rossler.csv": {
+        "bytes": 108524,
+        "sha256": "0418173c9675252a19260ec459cd73f53e5dfe72a0cbb6982f487d619c90cc64"
+      },
+      "short/suite-48k256/round-1-chaos-rossler.json": {
+        "bytes": 127333,
+        "sha256": "9e9fe620c6cffc71f56033f908295b486205390a21fac6bcfa4684c9a358f7b0"
+      },
+      "short/suite-48k256/round-1-chaos-rossler.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "short/suite-48k256/round-1-chaos-rossler.stdout.txt": {
+        "bytes": 275,
+        "sha256": "c8ad270adf92f5b521f0e6f17d78c85cbc104432612a649ba42fd7f161b8ab63"
+      },
+      "short/suite-48k256/round-1-chaos.analysis.json": {
+        "bytes": 3758,
+        "sha256": "382c3d0d4921f7537a31a8926b5df9bdbe0aa1b3a71d2f13e2ec794197f30556"
+      },
+      "short/suite-48k256/round-1-chaos.csv": {
+        "bytes": 108547,
+        "sha256": "3604109e664ce5cd051cb5928723780d1b7693e6c146d043d3a4a03fa465b896"
+      },
+      "short/suite-48k256/round-1-chaos.json": {
+        "bytes": 127295,
+        "sha256": "8807feaf3f34dc56be48ab1fbf61b8dcb333e742730ef8a0d042ed9513915fc5"
+      },
+      "short/suite-48k256/round-1-chaos.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "short/suite-48k256/round-1-chaos.stdout.txt": {
+        "bytes": 259,
+        "sha256": "8bf03c9642887375f5c3f79819ac953620e1c61a359ec2197599da6746ba3a99"
+      },
+      "short/suite-48k256/round-1-granular.analysis.json": {
+        "bytes": 3770,
+        "sha256": "2b5bbc19d536a479c9e5d37ae5a35304ef23d3f2db09e1f1ee90b018ba1d069f"
+      },
+      "short/suite-48k256/round-1-granular.csv": {
+        "bytes": 111054,
+        "sha256": "00498b44efcc2138d28089d0ebc102bcf645a36d9a0680cb9371920e3de2cd38"
+      },
+      "short/suite-48k256/round-1-granular.json": {
+        "bytes": 127233,
+        "sha256": "f2ee76dd2709e0fa6de19bf1c67395044fb50d7f145ba2c709e2fa0b49dda378"
+      },
+      "short/suite-48k256/round-1-granular.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "short/suite-48k256/round-1-granular.stdout.txt": {
+        "bytes": 265,
+        "sha256": "6d2dc1260f4dca53e56e3bba048fc645b05fa7b8bfbcd2b1a06b3e3bbeeb0882"
+      },
+      "short/suite-48k256/round-1-matrix.analysis.json": {
+        "bytes": 3761,
+        "sha256": "d79e4195dcf521fe64c5e3b011eca5730fc555b19556d6cc2d5a2acf0f193924"
+      },
+      "short/suite-48k256/round-1-matrix.csv": {
+        "bytes": 108525,
+        "sha256": "6b0407596fec20f92fcd4510b5382d3102200922eeb2b3a6b8f07cceeb89a37c"
+      },
+      "short/suite-48k256/round-1-matrix.json": {
+        "bytes": 130900,
+        "sha256": "cbb32ffdb3642a80a33f68f8790c490c2cf8c63265a67948e2386dfac8e43a31"
+      },
+      "short/suite-48k256/round-1-matrix.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "short/suite-48k256/round-1-matrix.stdout.txt": {
+        "bytes": 261,
+        "sha256": "ce9068ca1713fb56c5f54efe579b30873fab9e72d00563bff6d71efd961fde0a"
+      },
+      "short/suite-48k256/round-1-unison.analysis.json": {
+        "bytes": 3759,
+        "sha256": "f26be87ba83a62f292e65c9500f163e3aa485013970c6e35b9fc6d6e4eb3fda2"
+      },
+      "short/suite-48k256/round-1-unison.csv": {
+        "bytes": 108037,
+        "sha256": "9b3854396d5951291f3591636679d22aa38ec7f0d2eb56ac97da53ca13d427d0"
+      },
+      "short/suite-48k256/round-1-unison.json": {
+        "bytes": 127216,
+        "sha256": "76f5d1c2ad0090eeccee0bce92b536732d80716a5095d14a736ea6fe2b07745b"
+      },
+      "short/suite-48k256/round-1-unison.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "short/suite-48k256/round-1-unison.stdout.txt": {
+        "bytes": 261,
+        "sha256": "5d7184e6e9509231c548733c960aceaf58e80b357b25286a5029d61b055a4b5c"
+      },
+      "short/suite-48k256/suite-manifest.json": {
+        "bytes": 11755,
+        "sha256": "b74b2d1680cc2e04ef0f6a709bc461c92f41447c8f507a9a5b4d635d30fd8d45"
+      },
+      "suite-manifest.json": {
+        "bytes": 29935,
+        "sha256": "18f66ad4484de15f45484ae32adf31456d812c77a6884490c56bfcbf15c0410a"
+      },
+      "support/analyzer-self-test-final.json": {
+        "bytes": 4241,
+        "sha256": "efd4c9506a447b41497eee51d8cb1bc4e3cf3fb67efa834b18b8292af96d0cd1"
+      },
+      "support/analyzer-self-test.json": {
+        "bytes": 4241,
+        "sha256": "aa8fd0e103ee4b99cf97cbc982ad295ce6542756e54a544a150961abbc8f0234"
+      },
+      "support/build-first.txt": {
+        "bytes": 1446,
+        "sha256": "b325559bea6d886aad273073b7d58dd43131642601b68e5f9d744f0bdd09b804"
+      },
+      "support/configure.txt": {
+        "bytes": 310,
+        "sha256": "3886d023bb13715bbb337f88c2097fd39a2bee2276d4b63b16288fef1dc10b74"
+      },
+      "support/devices.txt": {
+        "bytes": 705,
+        "sha256": "a999b14f3e5907a66b790501e19928ae72f39727ebf69d369b893f88f7408efc"
+      },
+      "support/environment.json": {
+        "bytes": 748,
+        "sha256": "b4b9ba9268c3f9399b75e09c999e7d937aed9959fb20cbc64f46c28fe70ea1f5"
+      },
+      "support/help.txt": {
+        "bytes": 1316,
+        "sha256": "be64e2f55b75b2a0f7858063fa48ea011260fa8d597bff3182116342b364ac28"
+      },
+      "support/postrun-integrity.json": {
+        "bytes": 2192,
+        "sha256": "66eee17eb70a9f096d3c9a9b957bc6464cd729e40cc3dbc6814408a4463c6176"
+      },
+      "support/short-suite-console.txt": {
+        "bytes": 11775,
+        "sha256": "0670091fb5cf803c6138f35af4bb820e591b08f901c0b09c33c38d6634c01d29"
+      },
+      "support/suite-console.txt": {
+        "bytes": 35157,
+        "sha256": "98d767e83830df47649578497c188a2d10ed5e24b309d7494880d3bee31e9e0f"
+      },
+      "table-rows.md": {
+        "bytes": 5336,
+        "sha256": "7e9cf3e15265e94d47161a32cc9dccb3d67cd87909ab62af9a272cd1429903fc"
+      },
+      "tooling/check_probe_guards-before.py": {
+        "bytes": 3020,
+        "sha256": "531c58a1fdc6e2dbbabac7f72cac7eca55d941adc8626354bd43c6efbd244f98"
+      },
+      "tooling/check_probe_guards.py": {
+        "bytes": 3046,
+        "sha256": "56bdbd5815a32a7b212440f3975bf84170ebfe37ebe73d72cc6844b74ebb0437"
+      },
+      "tooling/guard-checks/concurrent-0.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tooling/guard-checks/concurrent-0.stdout.txt": {
+        "bytes": 255,
+        "sha256": "2b731a4f31440ecaba88ac911b185d724cd05d676b17d879871f0805ed3b1427"
+      },
+      "tooling/guard-checks/concurrent-1.stderr.txt": {
+        "bytes": 117,
+        "sha256": "a392a82c581d37474ef97c2844a01fdafbd37055fd8ea43a595550d5f90b7dda"
+      },
+      "tooling/guard-checks/concurrent-1.stdout.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tooling/guard-checks/harness-first-failure.json": {
+        "bytes": 435,
+        "sha256": "c9bd151f2e87e1c799c96a4226ae68e230d8caa86dff8fa2550d969771c5e436"
+      },
+      "tooling/guard-checks/simultaneous.csv": {
+        "bytes": 17413,
+        "sha256": "fff5793221aa089c7b45b915a2da29787000772e9fe7415ec441ee4a9f0f12e1"
+      },
+      "tooling/guard-checks/simultaneous.json": {
+        "bytes": 127060,
+        "sha256": "395d6f7906009cedb9e3721f2a88072d9e2b6a370bb6ea09267c3443231b6673"
+      },
+      "tooling/guard-checks-after/concurrent-0.stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tooling/guard-checks-after/concurrent-0.stdout.txt": {
+        "bytes": 261,
+        "sha256": "b92104c7aaf79e2b8cea16be73b2ba0d74367b9acb2b5d4609b167d1f8e23be3"
+      },
+      "tooling/guard-checks-after/concurrent-1.stderr.txt": {
+        "bytes": 117,
+        "sha256": "a392a82c581d37474ef97c2844a01fdafbd37055fd8ea43a595550d5f90b7dda"
+      },
+      "tooling/guard-checks-after/concurrent-1.stdout.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tooling/guard-checks-after/guard-verification.json": {
+        "bytes": 945,
+        "sha256": "efaf3e1619982209148d6fb462fe49c6221c1f25c0b96b91ac74c59d18c9cf2d"
+      },
+      "tooling/guard-checks-after/invalid-cli.stderr.txt": {
+        "bytes": 49,
+        "sha256": "05ed943cca94b5fead2ed86d97b994629d1d9288c39008cbc026cff34de53c3b"
+      },
+      "tooling/guard-checks-after/invalid-cli.stdout.txt": {
+        "bytes": 1316,
+        "sha256": "be64e2f55b75b2a0f7858063fa48ea011260fa8d597bff3182116342b364ac28"
+      },
+      "tooling/guard-checks-after/retry.stderr.txt": {
+        "bytes": 67,
+        "sha256": "3a4556ebf1fdc7716e06a2e0aa05b83467383c25b21f5495392321ca93f13576"
+      },
+      "tooling/guard-checks-after/retry.stdout.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tooling/guard-checks-after/simultaneous.analysis.json": {
+        "bytes": 3705,
+        "sha256": "806555d105c211acbebfbc8128c8619f16600fddcaf54c2db832ac7c79179547"
+      },
+      "tooling/guard-checks-after/simultaneous.csv": {
+        "bytes": 17411,
+        "sha256": "28bc28a8a51726b87dde3861bceb5917ba42b38b638311bc1d99f9835364726f"
+      },
+      "tooling/guard-checks-after/simultaneous.json": {
+        "bytes": 127069,
+        "sha256": "bd7822de14185811f0faa033b8d7312d0d0ede99426a8cf0902fca8780cdc8d8"
+      },
+      "tooling/guard-checks-after/stale.stderr.txt": {
+        "bytes": 117,
+        "sha256": "a392a82c581d37474ef97c2844a01fdafbd37055fd8ea43a595550d5f90b7dda"
+      },
+      "tooling/guard-checks-after-console.txt": {
+        "bytes": 945,
+        "sha256": "efaf3e1619982209148d6fb462fe49c6221c1f25c0b96b91ac74c59d18c9cf2d"
+      },
+      "tooling/README.md": {
+        "bytes": 1942,
+        "sha256": "adc1d5a04709532cf92ee4077c30dd72f9a34fe900961766a79b787b5bf15c7b"
+      },
+      "tooling/RealtimeRunnerTests.py": {
+        "bytes": 11826,
+        "sha256": "e542e63aeb1852a37030c8b67146261c73415c15ee6a8c450bd66e79434b7f77"
+      },
+      "tooling/runner-tests.json": {
+        "bytes": 949,
+        "sha256": "ebb89342cb64fba28ff6226a3efe9948b8cad060a790a1ddce873a1cd8f458aa"
+      },
+      "tooling/runner-tests.txt": {
+        "bytes": 1180,
+        "sha256": "77f7bebf12c534d63a604b61d215e13b82f149510b529c32820f5c2799bf1ce8"
+      },
+      "tools/analyze-suite.py": {
+        "bytes": 23156,
+        "sha256": "ae9394d853abdb83cda620988d7908628074b21d20118cb6dfb5310f038e5701"
+      },
+      "tools/analyze_realtime_probe.py": {
+        "bytes": 32877,
+        "sha256": "10af1920740569c33669f39cb78c2159991a1b2c012967e6aad37b1e7a9d333f"
+      },
+      "tools/run_realtime_probe.py": {
+        "bytes": 6163,
+        "sha256": "f12de64fa3061747ab1ce23891f9ebe250d741373a85b3b1f6f985ded15494be"
+      }
+    }
+  },
+  "limitations": [
+    "Consistency verification is not a real-time performance pass; over-budget observations are retained.",
+    "Native output xruns are unsupported (-1); absence of dropouts cannot be established.",
+    "Manager overrun estimates include warmup, outer-manager work and a short detach margin.",
+    "Machine/background load was not isolated or controlled; these runs describe this environment only.",
+    "Body excludes final record publication and outer JUCE/driver work; no zero-allocation or lock-freedom claim.",
+    "Pre-clear output was finite and nonzero; output was intentionally silenced. No listening or DAW validation.",
+    "Short captures are archived for provenance and excluded from every formal total and table.",
+    "Full final directory hash is written externally to avoid a self-referential digest."
+  ],
+  "tooling_checks": {
+    "included_in_formal_statistics": false,
+    "initial_attempt": "guard-checks: two subprocess results retained; first harness failed while decoding UTF-8 JSON with the Windows default GBK codec; not a probe failure",
+    "corrected_attempt": "guard-checks-after: explicit UTF-8 harness, all five namespace/CLI protections passed; winning one-second capture independently analysed",
+    "device_short_captures": 2,
+    "guard_result": "tooling/guard-checks-after/guard-verification.json",
+    "independent_analysis": "tooling/guard-checks-after/simultaneous.analysis.json",
+    "suite_runner": {
+      "tests": 7,
+      "result": "PASS",
+      "seconds": 0.152,
+      "used_device": false,
+      "used_production_DSP": false,
+      "included_in_formal_statistics": false,
+      "summary": "tooling/runner-tests.json",
+      "raw_log": "tooling/runner-tests.txt"
+    }
+  },
+  "postrun_integrity": {
+    "report": "support/postrun-integrity.json",
+    "recorded_result": "PASS",
+    "matching_files": 7,
+    "production_source_matches_base_commit": "2acc71db00b8e70fb2fb5456d3207d2a0cf0096e",
+    "scope": "Byte-preserved root verification report; this archive step does not rerun device or rebuild production."
+  },
+  "archive_final_audit": {
+    "checked_utc": "2026-11-18T10:28:53.120524+00:00",
+    "exact_file_set": true,
+    "file_count_including_verification": 205,
+    "original_files_compared_byte_for_byte": 147,
+    "all_18_analysis_inputs_match_archived_raw": true,
+    "all_source_snapshot_files_still_identical": true,
+    "source_snapshot_file_count": 19,
+    "no_symbolic_links": true,
+    "all_supplemental_evidence_received": true,
+    "formal_statistics_unchanged": true
+  }
+}

@@ -1,0 +1,3 @@
+Measuring unison: 扬声器 (NICEHCK HiFi Audio), 48000 Hz / 256 frames, output held at zero.
+VALID measurement: 11813 callbacks; body over budget=0; native driver xruns unsupported.
+D:\Anyvoc\build\realtime-probe-0.20.2\suite-48k256\round-1-unison.json

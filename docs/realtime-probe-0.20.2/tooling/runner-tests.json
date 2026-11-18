@@ -1,0 +1,21 @@
+{
+  "recorded_utc": "2026-11-18T10:26:09.647254+00:00",
+  "command": [
+    "python",
+    "Tests/RealtimeRunnerTests.py"
+  ],
+  "exit_code": 0,
+  "tests": 7,
+  "seconds": 0.152,
+  "result": "PASS",
+  "scope": "Standard-library simulated child processes and temporary fake executable only. No audio device, DSP, build or production code changes. These cases are separate from the four CTest suites and analyzer self-tests.",
+  "test_script_sha256": "e542e63aeb1852a37030c8b67146261c73415c15ee6a8c450bd66e79434b7f77",
+  "runner_script_sha256": "f12de64fa3061747ab1ce23891f9ebe250d741373a85b3b1f6f985ded15494be",
+  "raw_log": {
+    "path": "build/validation-realtime-probe/runner-tests.txt",
+    "bytes": 1180,
+    "sha256": "77f7bebf12c534d63a604b61d215e13b82f149510b529c32820f5c2799bf1ce8"
+  },
+  "summary_note": "Parsed the preserved Windows CRLF log without rewriting it; tests passed on their first execution.",
+  "interpreter_version": "3.14.8"
+}

@@ -1,0 +1,21 @@
+{
+  "capturedUtc": "2026-11-18T09:52:31.8079037Z",
+  "sourceBaseCommit": "2acc71db00b8e70fb2fb5456d3207d2a0cf0096e",
+  "os": {
+    "Caption": "Microsoft Windows 11 专业版",
+    "Version": "10.0.26300",
+    "BuildNumber": "26300"
+  },
+  "cpu": {
+    "Name": "AMD Ryzen 7 9800X3D 8-Core Processor           ",
+    "NumberOfCores": 8,
+    "NumberOfLogicalProcessors": 16
+  },
+  "activePowerScheme": "电源方案 GUID: 66666666-6666-6666-6666-666666666666  (PowerX v2)",
+  "uiOpen": false,
+  "outputMutedByProbe": true,
+  "inputRequestedChannels": 0,
+  "isolatedMachine": false,
+  "backgroundLoadControlled": false,
+  "context": "Codex and ordinary desktop applications remain running; no task-manager CPU percentage claim."
+}
