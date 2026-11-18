@@ -1,17 +1,17 @@
-﻿Anyvoc 0.20.3 候选版 · 新手开始
+﻿Anyvoc 0.20.4 候选版 · 新手开始
 
 从 PLAY 页面开始：选一个音色，弹奏，再试着调出自己的声音。
 
-当前候选已通过 220 组自动测试、27 例旧/新原始浮点音频逐字节比较和最终 pluginval strictness 5（seed 0x481d1f1）；四份最终演示与冻结 0.20.2 ZIP 逐字节一致，宏独立分析通过。
-原生只确认窗口、0.20.3 页脚、PLAY 和 INIT。当前输出设备无法打开，屏幕 C4 未见电平或 EV，演奏与正式实时测量尚未通过。
-新旧两版探针都遇到设备打开错误。用户确认同期有其他程序独占声卡，待释放后重验；尚未完成根因隔离，也未证明设备已恢复。程序已退出，原设置已恢复，旧版绿色电平不算本轮通过。
-Windows/完整源码候选包已完成最终复验并保持冻结；尚未宣布整体交付。没有真人听音、外接 MIDI 或 DAW 验收。
-指定提交 a956c5e3 的 CI（运行 44292647323）SUCCESS：220 组，以及独立工具 20/12/7 项全部通过；原件核对见 docs/GITHUB-CI-0.20.3.md。
-该结果不自动覆盖后续文档或正在开发的新 ARP 工具，也不表示后续修复已完成。本次后补 CI 文档不改写冻结候选包内快照。
-本版仍为 1,256 个参数、schema 14、28 个工厂音色。已交付的 0.20.2 目录与旧 ZIP 保持冻结，但不保证当前故障设备可用。
-当前候选入口：dist/Anyvoc-0.20.3-Windows/Anyvoc.exe（页脚 0.20.3）。收到 Windows ZIP 后完整解压，运行根目录 Anyvoc.exe。
-已交付旧版入口：dist/Anyvoc-0.20.2-Windows/Anyvoc.exe。
-以下保留正常操作步骤，设备恢复后再试听；验收范围见 docs/VALIDATION-0.20.3.md。
+本轮修复 ARP 私有 MIDI 缓冲的存储交换问题，保留 1,256 参数、schema 14 和 28 个工厂音色，界面操作不变。
+真实隔离诊断已通过：五类有界场景的私有分配 43→0，12 个原始音频文件逐字节一致；键盘与 SysEx 分配正控保留，不是全回调零分配证明。
+正式无插桩 0.20.4 Release、完整 220 组（210.62 秒）、pluginval strictness 5（seed 0xc83e3a）已通过。
+四份新演示与冻结 0.20.3 ZIP 逐字节相同，宏独立分析通过。候选包完整性校验 PASS；最新推送 CI 须按实际 head 另核，暂停时未确认，尚未宣布整版交付。
+用户确认其他程序独占声卡，尚未释放重测。本轮没有运行新的原生演奏或实时测量，没有真人听音、外接 MIDI 或 DAW 通过结论。
+0.20.3 的窗口观察和声卡打开失败保留为历史，不算 0.20.4 已测试；它的 a956 指定 CI 也不覆盖本次修复与工具。
+本机候选独立版：dist/Anyvoc-0.20.4-Windows/Anyvoc.exe。Windows ZIP 请完整解压，再运行根目录 Anyvoc.exe；不要把隔离诊断 EXE 当作独立版。
+冻结的上一版候选：dist/Anyvoc-0.20.3-Windows/Anyvoc.exe；此前已交付版：dist/Anyvoc-0.20.2-Windows/Anyvoc.exe。旧目录存在不表示当前声卡已恢复。
+收到经过校验的 Windows ZIP 后先完整解压，再运行根目录 Anyvoc.exe。
+以下保留正常操作步骤，设备恢复后再试听；本版分项证据与待验范围见 docs/VALIDATION-0.20.4.md。
 
 1. 先让它发出声音
 使用独立版 ZIP 时，先完整解压，再双击里面的 Anyvoc.exe，不要在压缩包内运行。
@@ -73,10 +73,10 @@ CC120/CC123 只停止本通道，保留其踏板值：CC120 立即停止，CC123
 
 版本与更多说明
 包内 PLAY 说明见 docs/UI_WORKFLOW.md；完整功能说明见 docs/USER_GUIDE.md。
-当前候选的分项测试、声卡受阻与待验范围见 docs/VALIDATION-0.20.3.md。
+当前候选的分项测试、声卡受阻与待验范围见 docs/VALIDATION-0.20.4.md；分配诊断方法见 docs/MIDI_ALLOCATION_PROFILING.md。
 0.20.2 的绿色电平、0.20 的 PLAY/COPY/采样重启和 0.20.1 启动检查都是旧版证据，不算本轮通过。
 已交付且冻结的 0.20.2 本机入口为 dist/Anyvoc-0.20.2-Windows/Anyvoc.exe；使用 ZIP 时先完整解压，再运行 Anyvoc.exe。
-0.20.3 候选包最终复验已通过；最终 ZIP 哈希和完整结果以包外 dist/Anyvoc-0.20.3-PackageVerification.json 为准。
+0.20.4 候选包完整性校验 PASS；最终 ZIP 哈希和完整结果以包外 dist/Anyvoc-0.20.4-PackageVerification.json 为准。最新推送 CI 须按实际 head 另核，暂停时未确认，不能套用旧版结论。
 真人听音、外接 MIDI、多通道设备和 DAW 仍需另外实测。
 需要自行构建时再看 docs/BUILDING.md。
 如果从源码的 docs 目录打开本文件，上述说明就在同一目录。

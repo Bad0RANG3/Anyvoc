@@ -5,7 +5,7 @@
 
   <p>
     <a href="https://github.com/Bad0RANG3/Anyvoc/actions/workflows/windows.yml"><img src="https://github.com/Bad0RANG3/Anyvoc/actions/workflows/windows.yml/badge.svg?branch=main" alt="Windows build and tests"></a>
-    <a href="docs/VALIDATION-0.20.3.md"><img src="https://img.shields.io/badge/version-0.20.3_candidate-e9ba78?style=flat-square&labelColor=1b2130" alt="源码版本 0.20.3 候选版"></a>
+    <a href="docs/VALIDATION-0.20.4.md"><img src="https://img.shields.io/badge/version-0.20.4_candidate-e9ba78?style=flat-square&labelColor=1b2130" alt="源码版本 0.20.4 候选版"></a>
     <img src="https://img.shields.io/badge/platform-Windows_x64-75baff?style=flat-square&labelColor=1b2130" alt="Windows x64">
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-b59bff?style=flat-square&labelColor=1b2130" alt="AGPL-3.0 license"></a>
   </p>
@@ -19,6 +19,8 @@
 
 <p align="center"><sub>PLAY 页面预览 · 图来自 0.20 文档快照，当前版本的实际验收范围见版本记录。</sub></p>
 
+**开发暂停（2026-11-18，用户要求）。** 恢复前先读[暂停交接](docs/HANDOFF.md)。当前候选未宣布整版发布，完整目标尚未完成。
+
 ## 🎹 先弹起来
 
 **选一个音色，按下琴键，再慢慢调出自己的声音。**
@@ -28,7 +30,7 @@
 3. 按住底部钢琴键，用 **TONE / NOTE SHAPE / SPACE** 调整明暗、起音和空间感。
 4. 点 **SAVE** 保存为 `.anyvoc`，用 **UNDO / REDO** 撤销或恢复修改。
 
-**当前源码为 0.20.3 候选版，真实声卡验收受阻；尚未宣布整版交付。** Windows／完整源码候选包已完成最终完整性复验，本机候选入口：`dist/Anyvoc-0.20.3-Windows/Anyvoc.exe`，权威记录为包外 `dist/Anyvoc-0.20.3-PackageVerification.json`。候选包和旧版包保持冻结；本次后补 CI 文档不改写包内快照。收到 Windows ZIP 后请先完整解压，再运行里面的程序。
+**当前源码为 0.20.4 候选版，尚未宣布整版交付。** ARP 私有 MIDI 存储修复已通过真实隔离诊断比较；正式 Release、完整 220 组、pluginval 与四份演示回归也已通过。Windows／完整源码候选包完整性校验 PASS；最新推送 CI 须按实际 head 另核，暂停时未确认，原生和实时验收仍未完成。候选独立版位于 **`dist/Anyvoc-0.20.4-Windows/Anyvoc.exe`**，收到 ZIP 请完整解压。既有 `dist/Anyvoc-0.20.3-Windows/Anyvoc.exe` 是冻结的上一版候选，`dist/Anyvoc-0.20.2-Windows/Anyvoc.exe` 是此前已交付版，均不代表本轮通过。声卡仍待占用程序释放后重验；收到已校验 Windows ZIP 时应完整解压再运行。
 
 > **关于下载**：GitHub 仓库目前提供源码、文档与验证记录，尚未上传可直接运行的 Release 附件。“Download ZIP” 下载的是源码。自行构建见[构建指南](docs/BUILDING.md)。
 
@@ -59,21 +61,19 @@ PLAY 集中常用控制，深入时再进入 **SYNTH / FILTER / MOD / FX**。所
 
 ## 🧪 当前进度
 
-**当前源码版本为 0.20.3 候选版：减少密集调制矩阵中重复的曲率计算，保留原声音公式。** [缓存合同](docs/MODULATION_CACHE.md)和[本版验证](docs/VALIDATION-0.20.3.md)分别说明改动与证据。
+**当前源码版本为 0.20.4 候选版：保留 ARP 私有 MIDI 缓冲的预留存储，避免随宿主缓冲交换而丢失。** [诊断方法](docs/MIDI_ALLOCATION_PROFILING.md)和[本版验证](docs/VALIDATION-0.20.4.md)分别说明范围与证据。
 
 | 验证项目 | 当前结果 |
 | :--- | :--- |
-| Windows Release 构建 | **通过**：最终独立版与 VST3 已重建。 |
-| 完整自动回归 | **220 / 220 通过**，218.75 秒；75 / 129 / 10 / 6 组。 |
-| 精确声音回归 | **27 / 27 原始 float32 文件逐字节相同**，最终版对修改前真实参考；不等于所有音色或硬件性能证明。 |
+| 真实隔离诊断 | before／after 各 **9 个 fixture valid**；五类有界 ARP 私有 HeapBlock 调用 **43→0**，累计请求字节 **4,096→0**。 |
+| 声音与正控 | **12 个原始 float32 文件及 fixture manifest 逐字节相同**，其中 3 个为手写 MIDI 参考；键盘宿主增长和 SysEx malloc 仍被捕获。 |
+| 构建身份 | 两侧各 4,405 输入核对通过，仅 Processor `.cpp/.h` 变化；诊断 CMake 都为 0.20.3，不能当作正式 0.20.4 二进制。 |
 | 参数与音色兼容 | 保持 **1,256 个宿主参数 · schema 14 · 28 个工厂音色**。 |
-| VST3 与四份固定演示 | 最终 pluginval strictness 5 **PASS**（seed `0x481d1f1`）；四演示最终新渲染与冻结 0.20.2 ZIP 全字节一致，宏独立分析 **PASS**。 |
-| 原生与实际声卡 | 窗口、PLAY、0.20.3 页脚和 INIT 已确认；**输出设备无法打开**，琴键未见电平／EV 活动，演奏及正式 6×3 回调复测受阻。用户确认同期有其他程序独占声卡，待释放后重验。 |
-| 0.20.3 包与 CI | 候选包最终复验 **PASS**；[指定 `a956c5e3` 的 CI](docs/GITHUB-CI-0.20.3.md) **SUCCESS**：220 组及独立工具 20／12／7 项全部通过。仅覆盖该 head，不声明整体验收通过。 |
-| 指定历史 CI | [`63a8192` 探针工具提交](docs/GITHUB-CI-REALTIME-0.20.2.md)整体 **失败**：220 组 CTest、20 项分析器通过，runner 6/7；本地路径别名回归已修复，不能改写旧云端结果。 |
-| 旧设备基线 | [0.20.2 的 6 种负载 × 3 轮](docs/REALTIME-0.20.2.md)共 206 个超预算块；不能据新离线数据称其已解决。 |
-
-本次 CI 不自动覆盖后续文档提交或 `feature/arp-midi-storage` 中开发的新 ARP 工具；尚无该后续工作的修复或验收结论。
+| 正式 0.20.4 检查 | 无插桩 Release、**220 组（75／129／10／6）全部通过，210.62 秒**；pluginval strictness 5（seed `0xc83e3a`）及四份演示对冻结 0.20.3 的字节回归通过。 |
+| 候选包与新 CI | Windows／完整源码候选包完整性校验 **PASS**；最终结果以包外 `dist/Anyvoc-0.20.4-PackageVerification.json` 为准。最新推送 CI 须按实际 head 另核，暂停时未确认；27 项比较器自检不计入 220 组。 |
+| 原生与实际声卡 | **待验／受阻**：用户确认其他程序独占声卡，尚未释放重测。上一版窗口启动不等于本版演奏通过。 |
+| 指定历史 CI | [0.20.3 的 `a956c5e3`](docs/GITHUB-CI-0.20.3.md) SUCCESS：220 组及独立工具 20／12／7；不覆盖本次 ARP 修复。[旧 `63a8192` 失败](docs/GITHUB-CI-REALTIME-0.20.2.md)保留。 |
+| 旧设备基线 | [0.20.2 的 6 种负载 × 3 轮](docs/REALTIME-0.20.2.md)共 206 个超预算块；本次分配诊断不证明实时准时、全回调零分配或零锁。 |
 
 **还在路上：**更多调制目标、多采样／SFZ、频谱声源、效果总线、Clip、MPE 和其他平台。FL Studio 等 DAW、外接 MIDI、真人听音及实时高负载仍待分别验收。完整缺口和完成条件见[项目现状](docs/STATUS.md)与[路线图](docs/ROADMAP.md)。
 
@@ -98,7 +98,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1
 | :--- | :--- |
 | [构建指南](docs/BUILDING.md) | 环境、编译、演示渲染与打包。 |
 | [测试与验收](docs/TESTING.md) | 操作步骤、通过标准、自动测试与人工验收边界。 |
-| [0.20.3 候选验证](docs/VALIDATION-0.20.3.md) | 已通过分项、声卡受阻情况与待验范围；[0.20.2 交付记录](docs/VALIDATION-0.20.2.md)独立保留。 |
+| [0.20.4 候选验证](docs/VALIDATION-0.20.4.md) | 已通过分项、声卡受阻情况与待验范围；[0.20.2 交付记录](docs/VALIDATION-0.20.2.md)独立保留。 |
 | [历史记录](docs/VALIDATION.md) | 各版本本机验证、指定提交 CI 与原生操作证据。 |
 
 ---

@@ -1,10 +1,10 @@
 # MIDI 缓冲分配诊断方法
 
-记录日期：2026-11-18。此工具用于开发中的 ARP MIDI 存储调查，**尚未完成真实 before／after 采集和修复验收**。它运行真实 Release 处理器与 CRT 分配调用，但只观测指定 JUCE 调用点；不是全回调零分配证明，也不是实际声卡性能测试。
+记录日期：2026-11-18。此工具用于 ARP MIDI 存储调查，**真实 before／after 隔离采集与独立比较已通过**：五个有界 fixture 私有分配 43→0，12 个音频文件逐字节相同，键盘与 SysEx 正控保留；详见 [0.20.4 验证记录](VALIDATION-0.20.4.md)。正式无插桩 0.20.4 Release、220 组、pluginval 和四演示回归也已通过；候选包完整性校验 PASS；最新推送 CI 暂停时未确认；原生／实时项仍待验。工具运行真实 Release 处理器与 CRT 分配调用，但只观测指定 JUCE 调用点；不是全回调零分配证明，也不是实际声卡性能测试。
 
 比较器的 **27 项工具自检已通过**，使用合成报告与音频文件，不计入既有 220 组生产回归。准备脚本的 19 项 mock／内存锚点检查另计。真实诊断构建经历两次失败：首次 `before` 因 C++ 记录器被强制包含进 `juce_graphics_Sheenbidi.c`，出现 `STL1003: expected C++ compiler`；第二次 `before2` 尝试语言条件宏，但 JUCE 根据 `target COMPILE_DEFINITIONS` 生成 `Defs.txt`，`COMPILE_LANGUAGE` 条件使同一路径生成不同内容，配置失败。两份失败快照和日志均保留，不属于正式生产源码回归失败。
 
-最终配置已取消语言条件生成表达式，宏和强制包含使用普通 target flags；记录器整个 C++ 实现由 `#ifdef __cplusplus` 包围，使 C 编译时该头文件为空。下一份 `before3` 全新副本仍须完成真实构建与采集，不能把前两次修正写成已通过。
+最终配置已取消语言条件生成表达式，宏和强制包含使用普通 target flags；记录器整个 C++ 实现由 `#ifdef __cplusplus` 包围，使 C 编译时该头文件为空。第三份 `before3` 以及修复后全新 `after` 副本随后完成真实构建与采集；前两次失败不改写为成功。
 
 ## 观测范围
 
@@ -88,7 +88,7 @@ python scripts/compare-midi-allocation-probe.py --before "$beforeCapture" --afte
 
 真实 allocator controls 必须观察到全部四个 site，包括 malloc、calloc、同尺寸／增长 realloc 和长 SysEx malloc；空捕获不能凭空产生事件。记录器的嵌套恢复与溢出行为另有小范围自检。所有 fixture 要求宿主输出 MIDI 清空、没有记录溢出、声音检查满足约定。
 
-拟验证的修复条件仅针对前五个有界 ARP fixture：before 的 `other-MidiBuffer` HeapBlock 调用**总数大于 0**，after 的这些调用**逐 fixture 等于 0**。不能把 `MidiMessage` malloc 混算为私有缓冲增长，也不要求每个旧 fixture 都单独大于 0。
+已通过的修复条件仅针对前五个有界 ARP fixture：before 的 `other-MidiBuffer` HeapBlock 调用**总数大于 0**，after 的这些调用**逐 fixture 等于 0**。不能把 `MidiMessage` malloc 混算为私有缓冲增长，也不要求每个旧 fixture 都单独大于 0。
 
 键盘两项仍必须观察到 `host` HeapBlock 分配，SysEx 两项仍必须观察到 `MidiMessage::allocateSpace` malloc；这些正向控制在两侧都应保留。删除它们来得到漂亮的“0”会使比较失败。即使有界私有缓冲条件通过，也只能说明这组输入下指定调用点的变化，不能宣称全处理器零分配、零锁或无掉音。
 
@@ -106,4 +106,4 @@ CMake 的 marker／hook／Recorder 哈希检查发生于 **configure**，不是�
 
 保留两个 prepare manifest、输入核对报告、工具／CMake 身份、EXE 身份、原始 stdout／stderr、全部 JSON 与 12 个音频文件、独立比较结果。所有失败快照及日志保留原字节；重试使用新目录，不覆盖旧证据、不删除失败后冒称首次通过。capture 目录里只放程序规定的 15 个成员，额外身份／日志存其外部。
 
-当前真实结果仍待补：未修复 before 完整构建与采集、修复后全新 after、两侧构建后输入／EXE 绑定、独立音频及分配比较、生产回归。此文的方法与工具检查不改变 [0.20.3 候选验收](VALIDATION-0.20.3.md)中的声卡受阻结论，也不属于 [a956 指定 CI](GITHUB-CI-0.20.3.md)已覆盖的源码范围。
+当前已完成两侧真实构建／采集、各 4,405 输入与 EXE 身份核对、精确 source delta 及独立比较。两侧诊断 CMake 均为 0.20.3，只有真实 Processor `.cpp/.h` 变化，不能将诊断 EXE 当作正式 0.20.4。正式无插桩 0.20.4 的 220 组、pluginval 与四演示回归已另行通过；候选包完整性校验 PASS，最终包结果以包外 `dist/Anyvoc-0.20.4-PackageVerification.json` 为准；原生／设备仍待验；最新推送 CI 须按实际 head 另核，暂停时未确认。[诊断原件](midi-allocation-0.20.4/README.md)与[正式验收原件](validation-0.20.4/README.md)分开归档，数值与边界见 [0.20.4 记录](VALIDATION-0.20.4.md)。这些结果不改变 [0.20.3 候选验收](VALIDATION-0.20.3.md)中的声卡受阻结论，也不属于 [a956 指定 CI](GITHUB-CI-0.20.3.md)已覆盖的源码范围。
