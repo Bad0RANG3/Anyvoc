@@ -1,0 +1,8 @@
+PASS Arp ownership counts repeats and treats zero velocity and unmatched offs correctly
+PASS Arp ownership keeps channel candidates ordered with independent velocities and octave clamp
+PASS Arp ownership isolates channel pedals and controller resets
+PASS Arp ownership preserves generated note channels for wheel and pitch
+PASS Arp ownership scopes panic and same-sample reentry without resetting the pedal
+PASS Arp ownership matches explicit sample-rate and block-boundary MIDI tables
+PASS Arp ownership clears global lifecycle state but preserves pool and clock across voice modes
+Processor validation: 7 cases, 0 failure(s)

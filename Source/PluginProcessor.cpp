@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <set>
 #include <algorithm>
+#include <limits>
 
 namespace {
 struct Preset { const char* name; std::initializer_list<std::pair<const char*,float>> values; };
@@ -1043,7 +1044,11 @@ double AnyvocAudioProcessor::getTailLengthSeconds() const
     return anyvoc::envelopeStageSeconds(ampEnvelope,4,tailTempo)+delayTail+(v(reverb)>0.0001f?15.0:0.0)+.1;
 }
 bool AnyvocAudioProcessor::isBusesLayoutSupported(const BusesLayout& l) const {return l.getMainInputChannelSet().isDisabled() && (l.getMainOutputChannelSet()==juce::AudioChannelSet::stereo() || l.getMainOutputChannelSet()==juce::AudioChannelSet::mono());}
-void AnyvocAudioProcessor::clearArp() { held.fill(0);keyDown.fill(false);arpNote=-1;arpIndex=0;stepRemaining=0;gateRemaining=0;arpSustain=false; }
+void AnyvocAudioProcessor::clearArp()
+{
+    arpKeys.fill(ArpKey{});arpSustain.fill(false);arpCandidateCount=0;
+    arpNote=-1;arpChannel=1;arpIndex=0;stepRemaining=0;gateRemaining=0;
+}
 
 void AnyvocAudioProcessor::processArp(juce::MidiBuffer& midi,int samples,double bpm)
 {
@@ -1053,34 +1058,72 @@ void AnyvocAudioProcessor::processArp(juce::MidiBuffer& midi,int samples,double 
     arpMidi.clear();
     auto it=midi.cbegin(),end=midi.cend();
     const double step=sampleRate*60.0/juce::jlimit(20.0,400.0,bpm)/std::pow(2.0,v(arpRate));
-    int count=0;for(auto velocity:held)if(velocity>0)++count;
     for(int pos=0;pos<samples;++pos){
-        bool receivedEvent=false;
+        bool candidatesDirty=false;
+        // Keep the host's ordering for simultaneous events, then advance the gate.
         while(it!=end && (*it).samplePosition<=pos){
-            receivedEvent=true;
             auto m=(*it).getMessage(); ++it;
-            if(m.isNoteOn()){held[static_cast<size_t>(m.getNoteNumber())]=m.getFloatVelocity();keyDown[static_cast<size_t>(m.getNoteNumber())]=true;}
-            else if(m.isNoteOff()){keyDown[static_cast<size_t>(m.getNoteNumber())]=false;if(!arpSustain)held[static_cast<size_t>(m.getNoteNumber())]=0;}
-            else if(m.isAllNotesOff() || m.isAllSoundOff()){clearArp();arpMidi.addEvent(m,pos);arpMidi.addEvent(m.isAllSoundOff()?juce::MidiMessage::allSoundOff(1):juce::MidiMessage::allNotesOff(1),pos);}
-            else if(m.isController() && m.getControllerNumber()==121){
-                // RP-015 resets the pedal as well as voice-engine controllers.
-                // Keep physically held keys and the existing step position.
-                arpSustain=false;
-                for(size_t n=0;n<128;++n)if(!keyDown[n])held[n]=0;
+            if(m.isNoteOn()){
+                auto& key=arpKeys[static_cast<size_t>((m.getChannel()-1)*128+m.getNoteNumber())];
+                const bool wasEligible=key.eligible();
+                if(key.pressCount<std::numeric_limits<std::uint32_t>::max())++key.pressCount;
+                key.velocity=m.getFloatVelocity();key.latched=false;
+                candidatesDirty|=wasEligible!=key.eligible();
+            }
+            else if(m.isNoteOff()){
+                const auto channel=static_cast<size_t>(m.getChannel()-1);
+                auto& key=arpKeys[channel*128+static_cast<size_t>(m.getNoteNumber())];
+                if(key.pressCount>0){
+                    const bool wasEligible=key.eligible();
+                    if(--key.pressCount==0)key.latched=arpSustain[channel];
+                    candidatesDirty|=wasEligible!=key.eligible();
+                }
+            }
+            else if(m.isAllNotesOff() || m.isAllSoundOff()){
+                const auto channel=static_cast<size_t>(m.getChannel()-1);
+                for(size_t n=0;n<128;++n){
+                    auto& key=arpKeys[channel*128+n];
+                    candidatesDirty|=key.eligible();key=ArpKey{};
+                }
+                // Channel panic clears its keys, not its controller state or other channels.
+                // The forwarded message releases (123) or kills (120) that channel's voices.
+                if(arpNote>=0 && arpChannel==m.getChannel()){arpNote=-1;gateRemaining=0;}
                 arpMidi.addEvent(m,pos);
             }
-            else if(m.isController() && m.getControllerNumber()==64){arpSustain=m.getControllerValue()>=64;if(!arpSustain)for(size_t n=0;n<128;++n)if(!keyDown[n])held[n]=0;}
+            else if(m.isController() && (m.getControllerNumber()==64 || m.getControllerNumber()==121)){
+                const auto channel=static_cast<size_t>(m.getChannel()-1);
+                const bool resetControllers=m.getControllerNumber()==121;
+                arpSustain[channel]=!resetControllers && m.getControllerValue()>=64;
+                if(!arpSustain[channel])for(size_t n=0;n<128;++n){
+                    auto& key=arpKeys[channel*128+n];
+                    const bool wasEligible=key.eligible();key.latched=false;
+                    candidatesDirty|=wasEligible!=key.eligible();
+                }
+                // CC64 holds source keys only; passing it on would sustain each generated gate.
+                // RP-015 also resets the voice engine's pitch/modulation controllers.
+                if(resetControllers)arpMidi.addEvent(m,pos);
+            }
             else arpMidi.addEvent(m,pos);
         }
-        if(receivedEvent){count=0;for(auto velocity:held)if(velocity>0)++count;}
-        if(arpNote>=0 && (gateRemaining<=0 || count==0)){arpMidi.addEvent(juce::MidiMessage::noteOff(1,arpNote),pos);arpNote=-1;}
+        if(candidatesDirty){
+            arpCandidateCount=0;
+            // Pitch first, then channel. A velocity update never invalidates these indices.
+            for(int note=0;note<128;++note)for(int channel=0;channel<16;++channel){
+                const int key=channel*128+note;
+                if(arpKeys[static_cast<size_t>(key)].eligible())
+                    arpCandidates[static_cast<size_t>(arpCandidateCount++)]=key;
+            }
+        }
+        const int count=arpCandidateCount;
+        if(arpNote>=0 && (gateRemaining<=0 || count==0)){
+            arpMidi.addEvent(juce::MidiMessage::noteOff(arpChannel,arpNote),pos);arpNote=-1;
+        }
         if(count>0 && stepRemaining<=0){
-            int sequence=arpIndex++ % (count*static_cast<int>(v(arpOctaves)));
-            int octave=sequence/count,selected=sequence%count,note=0;
-            for(int n=0;n<128;++n)if(held[static_cast<size_t>(n)]>0 && selected--==0){note=n;break;}
-            if(arpNote>=0)arpMidi.addEvent(juce::MidiMessage::noteOff(1,arpNote),pos);
-            arpNote=juce::jmin(127,note+12*octave);
-            arpMidi.addEvent(juce::MidiMessage::noteOn(1,arpNote,held[static_cast<size_t>(note)]),pos);
+            const int sequence=static_cast<int>(arpIndex++ % static_cast<std::uint64_t>(count*static_cast<int>(v(arpOctaves))));
+            const int octave=sequence/count,key=arpCandidates[static_cast<size_t>(sequence%count)];
+            if(arpNote>=0)arpMidi.addEvent(juce::MidiMessage::noteOff(arpChannel,arpNote),pos);
+            arpChannel=key/128+1;arpNote=juce::jmin(127,key%128+12*octave);
+            arpMidi.addEvent(juce::MidiMessage::noteOn(arpChannel,arpNote,arpKeys[static_cast<size_t>(key)].velocity),pos);
             stepRemaining+=step;gateRemaining=step*v(arpGate);
         }
         if(count==0){stepRemaining=0;arpIndex=0;}else --stepRemaining;

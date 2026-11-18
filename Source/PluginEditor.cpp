@@ -6354,7 +6354,7 @@ private:
         drawText (g, "-60", { 1081, 710, 18, 12 }, 7);
         drawText (g, "0", { 1081, 647, 16, 12 }, 7);
         drawText (g, status, { 26, 744, 930, 13 }, 9, secondaryText);
-        drawText (g, "ANYVOC  /  0.20.1", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
+        drawText (g, "ANYVOC  /  0.20.2", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
     }
 
     void showPage (int index)

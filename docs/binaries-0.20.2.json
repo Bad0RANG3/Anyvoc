@@ -1,0 +1,58 @@
+[
+  {
+    "path": "D:\\Anyvoc\\build\\Anyvoc_artefacts\\Release\\Standalone\\Anyvoc.exe",
+    "bytes": 9682432,
+    "file_version": "0.20.2",
+    "product_version": "0.20.2",
+    "sha256": "f0d3252e80e92561d8d8ef50dbcd2dde2edde12167b63e97c039d498a41ff323"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\Anyvoc_artefacts\\Release\\VST3\\Anyvoc.vst3\\Contents\\x86_64-win\\Anyvoc.vst3",
+    "bytes": 10221568,
+    "file_version": "0.20.2",
+    "product_version": "0.20.2",
+    "sha256": "3015c1c06691e71b581718016fa74271fb4118f44ba8f7d73e6cdd946d3228fe"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\AnyvocEngineTests_artefacts\\Release\\AnyvocEngineTests.exe",
+    "bytes": 9144832,
+    "file_version": "0.20.2",
+    "product_version": "0.20.2",
+    "sha256": "b5bdd7d8de02d822bdf67e2ef6315cbe28de5e6849961eed0226d1e5adf6f43f"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\AnyvocProcessorTests_artefacts\\Release\\AnyvocProcessorTests.exe",
+    "bytes": 10965504,
+    "file_version": "0.20.2",
+    "product_version": "0.20.2",
+    "sha256": "9cb6c29fb9fcff6666848c6b061f72183062802a034d2a7f8a712bf0339e44ab"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\AnyvocWavetableTests_artefacts\\Release\\AnyvocWavetableTests.exe",
+    "bytes": 8406016,
+    "file_version": "0.20.2",
+    "product_version": "0.20.2",
+    "sha256": "8b7b313856f509517cef1534779e0858b544a44de6b192f1cc916e7c99f0bfbb"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\AnyvocPresetLibraryTests_artefacts\\Release\\AnyvocPresetLibraryTests.exe",
+    "bytes": 1190400,
+    "file_version": "0.20.2",
+    "product_version": "0.20.2",
+    "sha256": "ef287d89ae741c81a96b3918ff02a4ef8b1b6e8005cef22ea61d734998b94fbc"
+  },
+  {
+    "path": "D:\\Anyvoc\\tools\\pluginval\\pluginval.exe",
+    "bytes": 5909504,
+    "file_version": "1.0.4",
+    "product_version": "1.0.4",
+    "sha256": "f4ac5c31c5544a434f73e686b816861d92c22ae849d69ad693681cbc9522fcd8"
+  },
+  {
+    "path": "D:\\Anyvoc\\build\\validation-baseline\\AnyvocProcessorTests-v0.20.1.exe",
+    "bytes": 10920448,
+    "file_version": "0.20.1",
+    "product_version": "0.20.1",
+    "sha256": "be79d16b9359880b05a7c690a702741ba201dfe1b39c2a376b1acbb1ae0018de"
+  }
+]

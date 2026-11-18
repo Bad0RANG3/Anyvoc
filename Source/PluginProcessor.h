@@ -169,10 +169,21 @@ private:
     anyvoc::SynthEngine engine;
     juce::AudioFormatManager formats;
     juce::MidiBuffer arpMidi;
-    std::array<float,128> held{};
-    std::array<bool,128> keyDown{};
-    bool arpWasEnabled=false,arpSustain=false,wasPlaying=false;
-    int arpNote=-1,arpIndex=0;
+    struct ArpKey
+    {
+        std::uint32_t pressCount=0;
+        float velocity=0;
+        bool latched=false;
+        bool eligible() const noexcept { return pressCount!=0 || latched; }
+    };
+    // One candidate per (channel, pitch); repeated presses retain one candidate.
+    std::array<ArpKey,16*128> arpKeys{};
+    std::array<int,16*128> arpCandidates{};
+    std::array<bool,16> arpSustain{};
+    int arpCandidateCount=0;
+    bool arpWasEnabled=false,wasPlaying=false;
+    int arpNote=-1,arpChannel=1;
+    std::uint64_t arpIndex=0;
     double stepRemaining=0,gateRemaining=0,sampleRate=44100;
     std::atomic<int> currentProgram{0};
     std::atomic<float> outputLevel{0};

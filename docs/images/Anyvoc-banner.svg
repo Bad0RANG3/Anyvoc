@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="280" viewBox="0 0 1280 280" role="img" aria-labelledby="title desc">
+  <title id="title">Anyvoc — Hybrid Instrument</title>
+  <desc id="desc">An original synthesizer with wavetable, sample and granular sound sources. Mint, violet and blue waveforms on a dark background.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#1b2734"/><stop offset="1" stop-color="#10131f"/></linearGradient>
+    <linearGradient id="wave" x2="1"><stop stop-color="#78e4c5"/><stop offset=".52" stop-color="#b59bff"/><stop offset="1" stop-color="#75baff"/></linearGradient>
+    <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0V44" fill="none" stroke="#8495b3" stroke-opacity=".10"/></pattern>
+    <clipPath id="round"><rect width="1280" height="280" rx="24"/></clipPath>
+  </defs>
+  <g clip-path="url(#round)">
+    <rect width="1280" height="280" fill="url(#bg)"/>
+    <rect x="650" width="630" height="280" fill="url(#grid)"/>
+    <path d="M660 140H1280" stroke="#6e7f9e" stroke-opacity=".25"/>
+    <path d="M680 140 C710 140 710 93 740 93 S770 187 800 187 S830 66 860 66 S890 214 920 214 S950 91 980 91 S1010 178 1040 178 S1070 113 1100 113 S1130 154 1160 154 S1190 140 1240 140" fill="none" stroke="url(#wave)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M680 153 C735 153 735 122 790 122 S845 177 900 177 S955 108 1010 108 S1065 164 1120 164 S1175 134 1240 134" fill="none" stroke="#78e4c5" stroke-opacity=".22" stroke-width="2"/>
+    <rect x="64" y="62" width="4" height="27" rx="2" fill="#78e4c5"/>
+    <text x="82" y="82" fill="#78e4c5" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="600" letter-spacing="3">HYBRID INSTRUMENT</text>
+    <text x="58" y="171" fill="#edf0fa" font-family="Segoe UI,Arial,sans-serif" font-size="86" font-weight="800" letter-spacing="3">ANYVOC</text>
+    <text x="65" y="219" fill="#a5b0c7" font-family="Segoe UI,Arial,sans-serif" font-size="15" letter-spacing="3">WAVETABLE  /  SAMPLE  /  GRANULAR</text>
+    <path d="M64 250H186" stroke="#78e4c5" stroke-width="2"/>
+    <path d="M194 250H228" stroke="#b59bff" stroke-width="2"/>
+    <path d="M236 250H256" stroke="#75baff" stroke-width="2"/>
+  </g>
+</svg>

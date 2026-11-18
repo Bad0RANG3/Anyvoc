@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="4"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="204"
+	timestamp="2026-11-18T17:22:04"
+	>
+	<testcase name="EngineTests" classname="EngineTests" time="10.0168" status="run">
+		<properties/>
+		<system-out>PASS MIDI note lifecycle and event timing
+PASS Sample rates and variable block lengths
+PASS Sustain pedal
+PASS A4 tuning and pitch wheel
+PASS Reset, effect tails and MIDI panic
+PASS Stereo unison
+PASS WAV wavetable import and musical pitch
+PASS Sample playback pitch and source sample rates
+PASS Sample one-shot, loop, stereo and note release
+PASS Sample start position and reverse playback
+PASS Granular scan position and note release
+PASS Sample/granular bounded polyphony stress
+PASS Drawable LFO point values reach the audio route
+PASS Drawable LFO linear and stepped interpolation
+PASS Per-note LFO trigger and one-shot endpoint
+PASS Host LFO tempo, triplets, seeks and block partition
+PASS Dual-filter spectral response, slopes and serial routing
+PASS Independent source buses, bypass and parallel balance
+PASS Filter key tracking and additional modulation targets
+PASS Rapid dual-filter automation and reset
+PASS Warp preview landmarks, identities and slot order
+PASS Warp identity and unaffected sample/granular play...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="ProcessorTests" classname="ProcessorTests" time="193.675" status="run">
+		<properties/>
+		<system-out>PASS DAW state roundtrip
+PASS Preset file identity, rename and self-contained DAW restore
+PASS Legacy preset identity and malformed metadata rollback
+PASS Failed preset save/load preserves sound, identity and existing files
+PASS Browser selection/favourites preserve audio and explicit actions load
+PASS Deterministic factory presets and defaults
+PASS First host MIDI after preset and project restore
+PASS Self-contained wavetable state and preset files
+PASS Edited wavetable amplitude, state and floating-point export
+PASS Invalid wavetable edits and atomic rollback
+PASS Legacy wavetable normalization across state versions
+PASS Open wavetable editor protects newer DAW state
+PASS Embedded stereo sample state and preset files
+PASS Version 1 migration and required parameter validation
+PASS Drawable LFO points and selection state roundtrip
+PASS Version 2 migration and legacy shape automation
+PASS Dual-filter state, preset defaults and host audio automation
+PASS Version 4 migration and legacy destination automation
+PAS...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="WavetableTests" classname="WavetableTests" time="0.0775372" status="run">
+		<properties/>
+		<system-out>PASS Canonical cycle conversion and invalid import rollback
+PASS Drawing, grouped gestures and redo invalidation
+PASS Harmonic amplitude, phase and independent partials
+PASS Frame duplicate/delete boundaries and endpoint morphing
+PASS Waveform generation and offline processing
+PASS Bounded undo history and document replacement
+PASS Full-spectrum amplitude/phase batches and untouched-bin preservation
+PASS Spectral batch validation, no-ops, bounded peaks and grouped history
+PASS Silent phase policy and large signed phase wrapping
+PASS Spectral shortest-arc morph and unchanged legacy waveform path
+Wavetable validation: 10 cases, 0 failure(s)
+</system-out>
+	</testcase>
+	<testcase name="PresetLibraryTests" classname="PresetLibraryTests" time="0.629222" status="run">
+		<properties/>
+		<system-out>PASS Recursive index, immediate factory sounds and stable IDs
+PASS Combined search, filters, favourites and deterministic sorting
+PASS Missing directories, unparsed files and coalesced refresh
+PASS Favourite persistence and cross-instance merge
+PASS Favourite write/read failure preserves memory and disk
+INFO Symbolic-link creation unavailable; depth boundary was still verified
+PASS Bounded recursion and external symbolic-link isolation
+Preset library validation: 6 cases, 0 failure(s)
+</system-out>
+	</testcase>
+</testsuite>

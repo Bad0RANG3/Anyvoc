@@ -58,5 +58,10 @@ docs/test-results-github-ci-0.20.xml -text -whitespace
 
 # Preserve the 0.20.1 configure log; other 0.20.1 logs match the 0.20* rules above.
 docs/configure-0.20.1.txt -text -whitespace
+docs/configure-0.20.2.txt -text -whitespace
 # The native roundtrip report is an archived original with an explicitly recorded file hash.
 docs/preset-roundtrip-0.20.json -text -whitespace
+
+# Preserve the downloaded 0.20.1 CI evidence byte-for-byte.
+docs/test-details-github-ci-0.20.1.txt -text -whitespace
+docs/test-results-github-ci-0.20.1.xml -text -whitespace

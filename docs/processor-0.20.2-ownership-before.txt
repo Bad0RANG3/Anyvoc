@@ -1,0 +1,6 @@
+FAIL Arp ownership counts repeats and treats zero velocity and unmatched offs correctly: ARP ownership differs from handwritten ARP-off MIDI; paired repeated notes, latest velocity, zero and unmatched off mode=0 channel=0 sample=1000 actual=0.016933 expected=0.016941
+FAIL Arp ownership keeps channel candidates ordered with independent velocities and octave clamp: ARP ownership differs from handwritten ARP-off MIDI; same pitch has independent channel owners mode=0 channel=0 sample=1000 actual=0.016933 expected=0.016941
+FAIL Arp ownership isolates channel pedals and controller resets: ARP ownership differs from handwritten ARP-off MIDI; another channel's pedal must not latch a released key mode=0 channel=0 sample=1000 actual=0.031491 expected=0.031474
+FAIL Arp ownership preserves generated note channels for wheel and pitch: ARP ownership differs from handwritten ARP-off MIDI; source-channel bend/wheel/reset channel=2 mode=0 channel=0 sample=38 actual=0.000001 expected=0.000001
+FAIL Arp ownership scopes panic and same-sample reentry without resetting the pedal: ARP ownership differs from handwritten ARP-off MIDI; targeted panic preserves another channel's step clock and ordered same-sample reentry CC=120 mode=0 channel=0 sample=3038 actual=0.000000 expected=0.000001
+Processor validation: 5 cases, 5 failure(s)

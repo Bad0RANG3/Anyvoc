@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "version": "0.20.2",
+  "date": "2026-11-18T17:33:47.9166234+08:00",
+  "executable": "build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe",
+  "executable_sha256": "f0d3252e80e92561d8d8ef50dbcd2dde2edde12167b63e97c039d498a41ff323",
+  "process_id": 123292,
+  "observed": [
+    "Launched real standalone; PLAY page and footer 0.20.2 visible",
+    "INIT loaded Init / Pure Canvas",
+    "Clicked screen C4: highlighted key, EV latest voice, green output meter",
+    "After release: EV idle base, dark output meter",
+    "Closed test process; original settings restored"
+  ],
+  "settings_before_sha256": "5000f1074d6b885621afabb357a32e2ba2050f8661ad38c3fb92bc520674ab7e",
+  "settings_after_sha256": "5000f1074d6b885621afabb357a32e2ba2050f8661ad38c3fb92bc520674ab7e",
+  "process_exited": true,
+  "limitations": [
+    "No human listening or captured playback PCM",
+    "No external MIDI or physical multi-channel/repeated-note/pedal/controller input",
+    "No SAVE/restart/load in this 0.20.2 session; separate 0.20 native report covers that historical session",
+    "No DAW, minimum-size sweep, DPI matrix or callback-peak measurement"
+  ]
+}

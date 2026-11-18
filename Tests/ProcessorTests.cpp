@@ -1791,6 +1791,332 @@ void testArpControllerResetForwardsEngineControllers()
     expectArpResetAudio (audio, expected, "pitch bend and mod wheel must still reset in the voice engine");
 }
 
+// The ownership oracle never runs an arpeggiator: it renders handwritten
+// output-note/controller events through a second processor with ARP disabled.
+// Both instances settle with ARP disabled, then panic before the first test
+// block. Enabling only the actual ARP adds an idempotent reset, not a different
+// smoothing/RNG history. No production scheduling or key-pool helper is used.
+Event ownershipOn (int sample, int channel, int note, int velocity)
+{
+    return { sample, juce::MidiMessage::noteOn (channel, note, static_cast<juce::uint8> (velocity)) };
+}
+Event ownershipOff (int sample, int channel, int note)
+{
+    return { sample, juce::MidiMessage::noteOff (channel, note) };
+}
+Event ownershipCc (int sample, int channel, int controller, int value)
+{
+    return { sample, juce::MidiMessage::controllerEvent (channel, controller, value) };
+}
+
+void prepareArpOwnershipFixture (AnyvocAudioProcessor& processor, bool enabled, int mode,
+                                 double rate, int octaves = 1, bool wheelRoute = false)
+{
+    processor.setCurrentProgram (0);
+    audibleSettings (processor);
+    for (const auto* id : { "osc2Level", "osc3Level", "subLevel", "noiseLevel", "drive", "filterEnabled", "filter2Enabled" })
+        setParameter (processor, id, 0);
+    setParameter (processor, "osc1Level", .5f);
+    setParameter (processor, "osc1Position", 0);
+    setParameter (processor, "osc1Unison", 1);
+    setParameter (processor, "master", .5f);
+    setParameter (processor, "ampSustain", 1);
+    setParameter (processor, "voiceMode", static_cast<float> (mode));
+    setParameter (processor, "tempo", 120);
+    setParameter (processor, "arpEnabled", 0);
+    setParameter (processor, "arpRate", 3); // 48 kHz: 3000 samples per step.
+    setParameter (processor, "arpOctaves", static_cast<float> (octaves));
+    setParameter (processor, "arpGate", .5f); // 48 kHz: 1500-sample pulse.
+    if (wheelRoute)
+        require (processor.assignModulation (5, 5, .25f), "ARP ownership wheel fixture could not add its route");
+    processor.prepareToPlay (rate, 512);
+    render (processor, 4096);
+    setParameter (processor, "arpEnabled", enabled ? 1.0f : 0.0f);
+    processor.panic();
+}
+
+void expectArpOwnershipAudio (const juce::AudioBuffer<float>& actual,
+                             const juce::AudioBuffer<float>& reference, const std::string& context)
+{
+    require (actual.getNumChannels() == reference.getNumChannels()
+                 && actual.getNumSamples() == reference.getNumSamples(), "ARP ownership reference dimensions differ");
+    for (int channel = 0; channel < actual.getNumChannels(); ++channel)
+        for (int sample = 0; sample < actual.getNumSamples(); ++sample)
+            require (actual.getSample (channel, sample) == reference.getSample (channel, sample),
+                     "ARP ownership differs from handwritten ARP-off MIDI; " + context
+                         + " channel=" + std::to_string (channel) + " sample=" + std::to_string (sample)
+                         + " actual=" + std::to_string (actual.getSample (channel, sample))
+                         + " expected=" + std::to_string (reference.getSample (channel, sample)));
+}
+
+void checkArpOwnershipCase (const std::vector<Event>& input, const std::vector<Event>& output,
+                           int samples, const std::string& context, int mode = 0,
+                           double rate = 48000, int block = 127, int octaves = 1, bool wheelRoute = false)
+{
+    AnyvocAudioProcessor actual, reference;
+    prepareArpOwnershipFixture (actual, true, mode, rate, octaves, wheelRoute);
+    prepareArpOwnershipFixture (reference, false, mode, rate, octaves, wheelRoute);
+    const auto savedControls = parameters (actual);
+    const auto rendered = render (actual, samples, input, block);
+    const auto expected = render (reference, samples, output, 257);
+    require (rms (expected) > .001, "ARP-off oracle was unexpectedly silent: " + context);
+    require (expected.getRMSLevel (0, samples - 512, 512) < 1.0e-6f,
+             "Handwritten ARP reference did not finish its release: " + context);
+    expectArpOwnershipAudio (rendered, expected, context + " mode=" + std::to_string (mode));
+    expectParameters (actual, savedControls, "MIDI ownership must not alter saved sound controls");
+    require (! actual.getMacroModulationSnapshot().hasActiveVoice,
+             "ARP ownership left a voice after the explicit reference ended: " + context);
+}
+
+void testArpRepeatedOwnershipAndZeroVelocity()
+{
+    const std::vector<Event> input {
+        ownershipOn (37, 1, 60, 32), ownershipOn (137, 1, 60, 96),
+        ownershipOff (1000, 1, 60), ownershipOff (2000, 2, 60),
+        ownershipOn (2500, 1, 61, 0), // Unmatched velocity-zero note-on is a note-off.
+        ownershipOn (6500, 1, 60, 0), ownershipOff (7000, 1, 60),
+        ownershipOn (9037, 1, 60, 64), ownershipOff (11500, 1, 60)
+    };
+    const std::vector<Event> output {
+        ownershipOn (37, 1, 60, 32), ownershipOff (1537, 1, 60),
+        ownershipOn (3037, 1, 60, 96), ownershipOff (4537, 1, 60),
+        ownershipOn (6037, 1, 60, 96), ownershipOff (6500, 1, 60),
+        ownershipOn (9037, 1, 60, 64), ownershipOff (10537, 1, 60)
+    };
+    for (const int mode : { 0, 1, 2 })
+        checkArpOwnershipCase (input, output, 15000, "paired repeated notes, latest velocity, zero and unmatched off", mode);
+}
+
+void testArpChannelCandidatesOrderingAndOctaves()
+{
+    const std::vector<Event> independent {
+        ownershipOn (37, 2, 60, 96), ownershipOn (37, 1, 60, 32),
+        ownershipOff (1000, 1, 60), ownershipOff (4000, 1, 60), ownershipOff (6500, 2, 60)
+    };
+    const std::vector<Event> independentOutput {
+        ownershipOn (37, 1, 60, 32), ownershipOff (1537, 1, 60),
+        ownershipOn (3037, 2, 60, 96), ownershipOff (4537, 2, 60),
+        ownershipOn (6037, 2, 60, 96), ownershipOff (6500, 2, 60)
+    };
+    // Input insertion order is deliberately not the required pitch/channel order.
+    const std::vector<Event> ordered {
+        ownershipOn (37, 2, 126, 96), ownershipOn (37, 1, 127, 112), ownershipOn (37, 1, 126, 32),
+        ownershipOff (16001, 1, 126), ownershipOff (16001, 2, 126), ownershipOff (16001, 1, 127)
+    };
+    const std::vector<Event> orderedOutput {
+        ownershipOn (37, 1, 126, 32), ownershipOff (1537, 1, 126),
+        ownershipOn (3037, 2, 126, 96), ownershipOff (4537, 2, 126),
+        ownershipOn (6037, 1, 127, 112), ownershipOff (7537, 1, 127),
+        ownershipOn (9037, 1, 127, 32), ownershipOff (10537, 1, 127),
+        ownershipOn (12037, 2, 127, 96), ownershipOff (13537, 2, 127),
+        ownershipOn (15037, 1, 127, 112), ownershipOff (16001, 1, 127)
+    };
+    for (const int mode : { 0, 1, 2 })
+    {
+        checkArpOwnershipCase (independent, independentOutput, 12000, "same pitch has independent channel owners", mode);
+        checkArpOwnershipCase (ordered, orderedOutput, 20000, "pitch/channel ordering, velocities and octave clamp", mode, 48000, 127, 2);
+    }
+}
+
+void testArpIndependentPedalsAndControllerReset()
+{
+    for (const int mode : { 0, 1, 2 })
+    {
+        checkArpOwnershipCase (
+            { ownershipOn (37, 2, 60, 96), ownershipCc (100, 1, 64, 127), ownershipOff (1000, 2, 60) },
+            { ownershipOn (37, 2, 60, 96), ownershipOff (1000, 2, 60) },
+            6000, "another channel's pedal must not latch a released key", mode);
+        checkArpOwnershipCase (
+            { ownershipOn (37, 1, 60, 64), ownershipOn (37, 2, 67, 96),
+              ownershipCc (100, 1, 64, 127), ownershipCc (100, 2, 64, 127),
+              ownershipOff (500, 1, 60), ownershipOff (500, 2, 67), ownershipCc (2000, 1, 64, 0),
+              ownershipCc (4000, 1, 121, 0), ownershipCc (6500, 2, 121, 0) },
+            { ownershipOn (37, 1, 60, 64), ownershipOff (1537, 1, 60),
+              ownershipOn (3037, 2, 67, 96), ownershipOff (4537, 2, 67),
+              ownershipCc (4000, 1, 64, 0), ownershipCc (4000, 1, 1, 0),
+              { 4000, juce::MidiMessage::pitchWheel (1, 8192) },
+              ownershipOn (6037, 2, 67, 96), ownershipCc (6500, 2, 64, 0), ownershipCc (6500, 2, 1, 0),
+              { 6500, juce::MidiMessage::pitchWheel (2, 8192) }, ownershipOff (6500, 2, 67) },
+            12000, "pedal-up and CC121 release only their own channel's latches", mode);
+        checkArpOwnershipCase (
+            { ownershipOn (37, 2, 60, 64), ownershipCc (100, 2, 64, 127), ownershipCc (2000, 2, 121, 0),
+              ownershipOff (3500, 2, 60), ownershipOn (6500, 2, 67, 96), ownershipCc (6600, 2, 64, 127),
+              ownershipOff (7000, 2, 67), ownershipCc (10500, 2, 64, 0) },
+            { ownershipOn (37, 2, 60, 64), ownershipOff (1537, 2, 60),
+              ownershipCc (2000, 2, 64, 0), ownershipCc (2000, 2, 1, 0),
+              { 2000, juce::MidiMessage::pitchWheel (2, 8192) },
+              ownershipOn (3037, 2, 60, 64), ownershipOff (3500, 2, 60),
+              ownershipOn (6500, 2, 67, 96), ownershipOff (8000, 2, 67),
+              ownershipOn (9500, 2, 67, 96), ownershipOff (10500, 2, 67) },
+            15000, "channel reset preserves physical keys and later independent pedal cycles", mode);
+    }
+}
+
+void testArpGeneratedChannelControllers()
+{
+    for (const int mode : { 0, 1, 2 }) for (const int channel : { 1, 2, 16 })
+    {
+        const int other = channel == 1 ? 2 : 1;
+        const std::vector<Event> controls {
+            { 0, juce::MidiMessage::pitchWheel (other, 0) }, ownershipCc (0, other, 1, 127),
+            { 0, juce::MidiMessage::pitchWheel (channel, 16383) }, ownershipCc (0, channel, 1, 127)
+        };
+        auto input = controls, output = controls;
+        input.insert (input.end(), { ownershipOn (37, channel, 60, 96), ownershipCc (1000, other, 121, 0),
+                                    ownershipCc (4000, channel, 121, 0), ownershipOff (6500, channel, 60) });
+        output.insert (output.end(), {
+            ownershipOn (37, channel, 60, 96), ownershipOff (1537, channel, 60),
+            ownershipCc (1000, other, 64, 0), ownershipCc (1000, other, 1, 0),
+            { 1000, juce::MidiMessage::pitchWheel (other, 8192) },
+            ownershipOn (3037, channel, 60, 96), ownershipOff (4537, channel, 60),
+            ownershipCc (4000, channel, 64, 0), ownershipCc (4000, channel, 1, 0),
+            { 4000, juce::MidiMessage::pitchWheel (channel, 8192) },
+            ownershipOn (6037, channel, 60, 96), ownershipOff (6500, channel, 60)
+        });
+        checkArpOwnershipCase (input, output, 12000, "source-channel bend/wheel/reset channel=" + std::to_string (channel),
+                               mode, 48000, 127, 1, true);
+    }
+}
+
+void testArpTargetedPanicAndSameSampleReentry()
+{
+    for (const int mode : { 0, 1, 2 }) for (const int controller : { 120, 123 })
+    {
+        checkArpOwnershipCase (
+            { ownershipOn (37, 1, 60, 64), ownershipOn (37, 2, 67, 96), ownershipCc (1000, 1, controller, 0),
+              ownershipCc (6037, 2, controller, 0), ownershipOn (6037, 2, 72, 112), ownershipOff (10000, 2, 72) },
+            { ownershipOn (37, 1, 60, 64), ownershipCc (1000, 1, controller, 0),
+              ownershipOn (3037, 2, 67, 96), ownershipOff (4537, 2, 67),
+              ownershipCc (6037, 2, controller, 0), ownershipOn (6037, 2, 72, 112), ownershipOff (7537, 2, 72),
+              ownershipOn (9037, 2, 72, 112), ownershipOff (10000, 2, 72) },
+            15000, "targeted panic preserves another channel's step clock and ordered same-sample reentry CC=" + std::to_string (controller), mode);
+        checkArpOwnershipCase (
+            { ownershipOn (37, 2, 60, 64), ownershipCc (100, 2, 64, 127), ownershipCc (2000, 2, controller, 0),
+              ownershipOn (2500, 2, 72, 96), ownershipOff (3000, 2, 72), ownershipCc (6500, 2, 64, 0) },
+            { ownershipOn (37, 2, 60, 64), ownershipOff (1537, 2, 60), ownershipCc (2000, 2, controller, 0),
+              ownershipOn (2500, 2, 72, 96), ownershipOff (4000, 2, 72),
+              ownershipOn (5500, 2, 72, 96), ownershipOff (6500, 2, 72) },
+            12000, "CC120/123 clears keys and latches without resetting that channel's pedal CC=" + std::to_string (controller), mode);
+    }
+}
+
+void testArpOwnershipSampleRatesAndBlockBoundaries()
+{
+    const std::vector<Event> input {
+        ownershipOn (1, 2, 60, 96), ownershipOff (127, 1, 60), ownershipOn (257, 2, 61, 0),
+        ownershipCc (511, 1, 64, 127), ownershipCc (512, 1, 64, 0), ownershipOff (12001, 2, 60)
+    };
+    // These are explicit event tables, not the production step/gate loop.
+    // At 44.1 kHz the eighth-of-a-beat step is 2756.25 samples; the
+    // 1378.125-sample gate ends 1379 samples after each actual note-on.
+    const std::vector<Event> output44100 {
+        ownershipOn (1, 2, 60, 96), ownershipOff (1380, 2, 60),
+        ownershipOn (2758, 2, 60, 96), ownershipOff (4137, 2, 60),
+        ownershipOn (5514, 2, 60, 96), ownershipOff (6893, 2, 60),
+        ownershipOn (8270, 2, 60, 96), ownershipOff (9649, 2, 60),
+        ownershipOn (11026, 2, 60, 96), ownershipOff (12001, 2, 60)
+    };
+    const std::vector<Event> output48000 {
+        ownershipOn (1, 2, 60, 96), ownershipOff (1501, 2, 60),
+        ownershipOn (3001, 2, 60, 96), ownershipOff (4501, 2, 60),
+        ownershipOn (6001, 2, 60, 96), ownershipOff (7501, 2, 60),
+        ownershipOn (9001, 2, 60, 96), ownershipOff (10501, 2, 60)
+    };
+    const std::vector<Event> output96000 {
+        ownershipOn (1, 2, 60, 96), ownershipOff (3001, 2, 60),
+        ownershipOn (6001, 2, 60, 96), ownershipOff (9001, 2, 60)
+    };
+    for (const double rate : { 44100.0, 48000.0, 96000.0 })
+        for (const int mode : { 0, 1, 2 }) for (const int block : { 127, 257, 512 })
+        {
+            const auto& output = rate == 44100.0 ? output44100 : rate == 48000.0 ? output48000 : output96000;
+            checkArpOwnershipCase (input, output, 18000,
+                "fractional/integer clock and boundary events rate=" + std::to_string (static_cast<int> (rate))
+                    + " block=" + std::to_string (block), mode, rate, block);
+        }
+    // Reversing the panic/note-on order at the same step boundary must also
+    // reverse whether the new candidate survives; no generated note may leak.
+    for (const int mode : { 0, 1, 2 }) for (const int controller : { 120, 123 })
+        checkArpOwnershipCase (
+            { ownershipOn (37, 2, 60, 96), ownershipOn (3037, 2, 72, 112), ownershipCc (3037, 2, controller, 0) },
+            { ownershipOn (37, 2, 60, 96), ownershipOff (1537, 2, 60), ownershipCc (3037, 2, controller, 0) },
+            9000, "same-sample note-on before panic is removed before step emission", mode);
+}
+
+void testArpOwnershipGlobalClearAndVoiceModeContinuity()
+{
+    // Voice mode changes clear engine voices, not the ARP key pool or clock.
+    {
+        AnyvocAudioProcessor actual, reference;
+        prepareArpOwnershipFixture (actual, true, 0, 48000);
+        prepareArpOwnershipFixture (reference, false, 0, 48000);
+        expectArpOwnershipAudio (
+            render (actual, 1000, { ownershipOn (37, 2, 60, 96) }, 127),
+            render (reference, 1000, { ownershipOn (37, 2, 60, 96) }, 257), "before voice-mode change");
+        setParameter (actual, "voiceMode", 1); setParameter (reference, "voiceMode", 1);
+        expectArpOwnershipAudio (render (actual, 6000, {}, 127),
+            render (reference, 6000,
+                { ownershipOff (537, 2, 60), ownershipOn (2037, 2, 60, 96), ownershipOff (3537, 2, 60),
+                  ownershipOn (5037, 2, 60, 96) }, 257), "Poly to Mono keeps the existing 3037/6037 step times");
+        setParameter (actual, "voiceMode", 2); setParameter (reference, "voiceMode", 2);
+        expectArpOwnershipAudio (render (actual, 6000, { ownershipOff (5500, 2, 60) }, 127),
+            render (reference, 6000,
+                { ownershipOff (537, 2, 60), ownershipOn (2037, 2, 60, 96), ownershipOff (3537, 2, 60),
+                  ownershipOn (5037, 2, 60, 96), ownershipOff (5500, 2, 60) }, 257),
+            "Mono to Legato keeps the existing 9037/12037 step times and final off");
+        expectArpOwnershipAudio (render (actual, 4000), render (reference, 4000), "voice-mode final release");
+        require (! actual.getMacroModulationSnapshot().hasActiveVoice, "Voice-mode changes left an ARP voice active");
+    }
+    const std::array<const char*, 5> actions { "global panic", "ARP disable", "prepare", "state restore", "transport stop" };
+    for (const int mode : { 0, 1, 2 }) for (size_t action = 0; action < actions.size(); ++action)
+    {
+        TestPlayHead actualHost, referenceHost;
+        AnyvocAudioProcessor actual, reference;
+        prepareArpOwnershipFixture (actual, true, mode, 48000);
+        prepareArpOwnershipFixture (reference, false, mode, 48000);
+        const auto actualState = save (actual), referenceState = save (reference);
+        if (action == 4)
+        {
+            actualHost.position.setBpm (120); referenceHost.position.setBpm (120);
+            actualHost.position.setIsPlaying (true); referenceHost.position.setIsPlaying (true);
+            actual.setPlayHead (&actualHost); reference.setPlayHead (&referenceHost);
+        }
+        expectArpOwnershipAudio (
+            render (actual, 2000, { ownershipOn (37, 2, 60, 96), ownershipCc (100, 2, 64, 127), ownershipOff (200, 2, 60) }, 127),
+            render (reference, 2000, { ownershipOn (37, 2, 60, 96), ownershipOff (1537, 2, 60) }, 257),
+            std::string ("before ") + actions[action]);
+        switch (action)
+        {
+            case 0: actual.panic(); reference.panic(); break;
+            case 1: setParameter (actual, "arpEnabled", 0); reference.panic(); break;
+            case 2: actual.prepareToPlay (48000, 512); reference.prepareToPlay (48000, 512); break;
+            case 3:
+                actual.setStateInformation (actualState.getData(), static_cast<int> (actualState.getSize()));
+                reference.setStateInformation (referenceState.getData(), static_cast<int> (referenceState.getSize()));
+                break;
+            case 4: actualHost.position.setIsPlaying (false); referenceHost.position.setIsPlaying (false); break;
+            default: require (false, "Unknown ARP cleanup fixture");
+        }
+        const auto silence = render (actual, 6000, {}, 127);
+        expectArpOwnershipAudio (silence, render (reference, 6000, {}, 257), std::string ("after ") + actions[action]);
+        require (rms (silence) < 1.0e-9 && ! actual.getMacroModulationSnapshot().hasActiveVoice,
+                 std::string ("Global reset retained latched ARP notes: ") + actions[action]);
+        if (action == 1)
+        {
+            setParameter (actual, "arpEnabled", 1);
+            reference.panic(); // Match the existing reset on ARP enable.
+        }
+        // Do not send pedal-up: if reset retained CC64 this new key would latch.
+        const auto fresh = render (actual, 6000,
+            { ownershipOff (20, 2, 60), ownershipOn (37, 2, 67, 64), ownershipOff (300, 2, 67) }, 127);
+        expectArpOwnershipAudio (fresh, render (reference, 6000,
+            { ownershipOn (37, 2, 67, 64), ownershipOff (300, 2, 67) }, 257), std::string ("fresh key after ") + actions[action]);
+        require (rms (fresh) > .001 && fresh.getRMSLevel (0, 5000, 1000) < 1.0e-6f,
+                 std::string ("Global reset retained pedal/clock or prevented fresh playback: ") + actions[action]);
+        actual.setPlayHead (nullptr); reference.setPlayHead (nullptr);
+    }
+}
+
 void testParameterStress()
 {
     AnyvocAudioProcessor processor;
@@ -9432,6 +9758,13 @@ int main (int argc, char* argv[])
         { "Arp CC121 releases latched notes at the MIDI offset with a finite release", testArpControllerResetLatchedRelease },
         { "Arp CC121 preserves held keys and subsequent pedal cycles in all voice modes", testArpControllerResetHeldKeysAndLaterPedal },
         { "Arp CC121 forwards pitch and modulation resets without killing held keys", testArpControllerResetForwardsEngineControllers },
+        { "Arp ownership counts repeats and treats zero velocity and unmatched offs correctly", testArpRepeatedOwnershipAndZeroVelocity },
+        { "Arp ownership keeps channel candidates ordered with independent velocities and octave clamp", testArpChannelCandidatesOrderingAndOctaves },
+        { "Arp ownership isolates channel pedals and controller resets", testArpIndependentPedalsAndControllerReset },
+        { "Arp ownership preserves generated note channels for wheel and pitch", testArpGeneratedChannelControllers },
+        { "Arp ownership scopes panic and same-sample reentry without resetting the pedal", testArpTargetedPanicAndSameSampleReentry },
+        { "Arp ownership matches explicit sample-rate and block-boundary MIDI tables", testArpOwnershipSampleRatesAndBlockBoundaries },
+        { "Arp ownership clears global lifecycle state but preserves pool and clock across voice modes", testArpOwnershipGlobalClearAndVoiceModeContinuity },
         { "Random and boundary parameter rendering", testParameterStress }
     };
     int failures = 0, executed = 0;
