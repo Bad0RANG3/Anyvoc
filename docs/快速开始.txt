@@ -6,7 +6,8 @@ pluginval strictness 5验证成功，音频回归和下述限定原生操作已�
 仍为1192个参数、schema 13、26个工厂音色，生产DSP不变。
 本地包已可用：dist/Anyvoc-0.18.0-Windows/Anyvoc.exe。使用Windows ZIP时先完整解压再运行。
 Windows包208个文件、完整源码包4600个文件，版本与逐文件内容校验通过；P1B当前约定范围已交付。
-0.18 GitHub CI尚未执行，不能沿用旧版本的云端结果；具体文件以本次打包报告为准。
+0.18提交45578ca的GitHub干净构建与188组测试已通过，零失败，合计约130.98秒；详见GITHUB_CI-0.18.md。
+此为发布后的仓库补充证据，不覆盖既有0.18包；原包保留原文档快照及打包报告哈希。
 自行构建的入口为 build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe。
 0.17及更早包继续保留；旧程序中没有0.18工具，旧验收和CI不替代本轮验证。
 详细结果见 VALIDATION-0.18.md 和 VALIDATION.md。

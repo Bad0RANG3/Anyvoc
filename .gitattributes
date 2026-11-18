@@ -19,3 +19,7 @@ docs/build-0.18*.txt -text -whitespace
 docs/ctest-0.18*.txt -text -whitespace
 docs/test-details-0.18*.txt -text -whitespace
 docs/pluginval-0.18.txt -text -whitespace
+
+# Preserve the downloaded 0.18 CI evidence byte-for-byte.
+docs/test-details-github-ci-0.18.txt -text -whitespace
+docs/test-results-github-ci-0.18.xml -text -whitespace

@@ -1,6 +1,6 @@
 # 构建、仓库结构与贡献
 
-适用版本：**Anyvoc 0.18.0，Windows x64**。版本来自根目录 `CMakeLists.txt`。当前 Release 构建和首次完整四套测试已通过，共 **188 组（68 + 104 + 10 + 6），161.94 秒**，见 [CTest](ctest-0.18-initial.txt)和[测试明细](test-details-0.18-initial.txt)。[pluginval strictness 5](pluginval-0.18.txt)（seed `0x4fc4b12`）及[独立音频分析](audio-analysis-0.18.json)已通过；84 张预览已生成，新工具四张逐张确认无裁切，独立版完成有限范围的原生操作。Windows 与完整源码包已生成并通过独立校验，分别含 **208 / 4600 个文件**，报告为 `dist/Anyvoc-0.18.0-PackageVerification.json`。0.18 云端 CI 未运行；系统剪贴板、真人听音、外部 MIDI、完整音色原生保存重开与 DAW 未测。具体范围见 [测试与验收](TESTING.md)及 [VALIDATION.md](VALIDATION.md)。[0.17 历史验证](VALIDATION-0.17.md)和更早发布包保留原样。
+适用版本：**Anyvoc 0.18.0，Windows x64**。版本来自根目录 `CMakeLists.txt`。当前 Release 构建和首次完整四套测试已通过，共 **188 组（68 + 104 + 10 + 6），161.94 秒**，见 [CTest](ctest-0.18-initial.txt)和[测试明细](test-details-0.18-initial.txt)。[pluginval strictness 5](pluginval-0.18.txt)（seed `0x4fc4b12`）及[独立音频分析](audio-analysis-0.18.json)已通过；84 张预览已生成，新工具四张逐张确认无裁切，独立版完成有限范围的原生操作。Windows 与完整源码包已生成并通过独立校验，分别含 **208 / 4600 个文件**，报告为 `dist/Anyvoc-0.18.0-PackageVerification.json`。[0.18 提交 45578ca 的云端干净构建及 188 组测试](GITHUB_CI-0.18.md)也已通过；系统剪贴板、真人听音、外部 MIDI、完整音色原生保存重开与 DAW 未测。具体范围见 [测试与验收](TESTING.md)及 [VALIDATION.md](VALIDATION.md)。[0.17 历史验证](VALIDATION-0.17.md)和更早发布包保留原样。
 
 ## 1. 准备开发环境
 
@@ -177,6 +177,8 @@ Git 默认忽略 `build/`、`dist/`、`tools/`。需要分发二进制时使用 
 [Windows workflow](../.github/workflows/windows.yml) 在推送 `main`、PR 或手动触发时，检出固定子模块，构建 Release 并运行四套 CTest。失败时仍上传 `windows-test-evidence`，其中包括 CTest 详细日志和 JUnit 结果。Actions 引用固定 commit，工作流只有读取仓库的权限。
 
 本工作流**不**自动安装 pluginval、不播放电脑扬声器、不启动 FL Studio，也不发布发行版；因此绿色状态只证明该云端 Windows 环境的构建及自动测试通过。当前提交是否成功要检查实际 Actions run，不能以 YAML 已存在代替结果。
+
+0.18 已有对应证据：[运行 44257671955](GITHUB_CI-0.18.md)检出 `45578ca2f770b21c99ec9aec59a3d9a0b0fc38e1`，构建成功，四套 188 组全部通过、零失败，测试合计约 130.98 秒。原始日志和 JUnit 保留下载字节。此为发布之后补充的仓库记录，未重新打包或覆盖既有 0.18 ZIP；原包仍保留发布时的文档与外置校验报告哈希。
 
 ## 7. 报告问题时提供什么
 
