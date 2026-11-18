@@ -14,7 +14,7 @@
 | 四份固定演示 | 最终新渲染与冻结 0.20.2 ZIP 四份成员全字节一致，宏独立分析 PASS。 |
 | 原生／声卡 | 确认 PLAY、0.20.3 页脚、INIT Pure Canvas；输出 none，选择设备报无法打开。C4 未见电平／EV，不能记演奏通过。退出后设置恢复。新旧探针均失败，正式六负载三轮采集未执行完成。 |
 | 性能 | 最终 EXE 离线基准已完成，汇总见版本报告；保留旧路线变慢，不等于所有路径加速或设备回调准时。 |
-| 候选包／CI | 包待创建／逐文件校验；新提交 CI 尚未触发。[旧 63a8192 CI](GITHUB-CI-REALTIME-0.20.2.md)的 runner 失败与本地 junction 修复分别记录，不改写旧 failure。 |
+| 候选包／CI | 首轮 Windows／完整源码候选包校验 **PASS**，文档收口后重打包复验；[`a956c5e3` 的 CI](https://github.com/Bad0RANG3/Anyvoc/actions/runs/44292647323) 记录时运行中，结果待核实。[旧 63a8192 CI](GITHUB-CI-REALTIME-0.20.2.md)的 runner 失败与本地 junction 修复分别记录，不改写旧 failure。 |
 
 原字节证据保留在[专项归档](modulation-cache-0.20.3/README.md)，具体文件和适用范围由[版本报告](VALIDATION-0.20.3.md)索引。用户确认同期有其他程序独占声卡；释放设备后的重测尚未执行，不能视为根因隔离验证完成，也不能把两个版本都失败解释为缓存改动导致或修好了它。
 
@@ -371,11 +371,11 @@ python ./scripts/verify-release.py
 if ($LASTEXITCODE -ne 0) { throw 'Release package verification failed' }
 ```
 
-Windows 打包脚本会检查二进制版本。0.20.3 必须包含 `Anyvoc-v0.16-Lfo-Motion-Demo.wav`、`Anyvoc-v0.17-Chaos-Demo.wav`、`Anyvoc-v0.19-Macro-Demo.wav` 三份演示；旧名字仅是资产约定，内容来自当前 0.20.3 重渲染。其他历史演示仅在已有时收录，不能用空文件满足要求。同版本打包会覆盖 ZIP 并更新输出目录，本轮只用独立 0.20.3 候选路径，已有候选先归档；**冻结的 0.20.2 及更早目录、ZIP 和历史报告不覆盖**。当前候选包待创建／核验，包通过也不代表受阻的原生演奏及实时测量已经通过。
+Windows 打包脚本会检查二进制版本。0.20.3 必须包含 `Anyvoc-v0.16-Lfo-Motion-Demo.wav`、`Anyvoc-v0.17-Chaos-Demo.wav`、`Anyvoc-v0.19-Macro-Demo.wav` 三份演示；旧名字仅是资产约定，内容来自当前 0.20.3 重渲染。其他历史演示仅在已有时收录，不能用空文件满足要求。同版本打包会覆盖 ZIP 并更新输出目录，本轮只用独立 0.20.3 候选路径，已有候选先归档；**冻结的 0.20.2 及更早目录、ZIP 和历史报告不覆盖**。首轮候选包已通过校验，ZIP 与报告保留在 `build/validation-cache-optimization/packaging-first/`；文档收口后仍须重打包复验。包通过不代表受阻的原生演奏及实时测量已经通过。
 
 [发布包校验脚本](../scripts/verify-release.py) 从 CMake 读取版本，核对两个 ZIP 的 CRC、Windows 安全且唯一的路径、精确文件集合与每个文件的原始字节；同时核对解压目录、两个产物与构建目录的四个 FileVersion、二进制哈希及三个必需演示的完整 20 秒/48 kHz/24-bit/双声道 PCM。源码包必须包含 `.gitattributes`、`.gitmodules`、`.github/`、Chaos 模型、`LfoCurveDocument.h/.cpp` 及固定 JUCE 源码/许可。脚本不替代 CTest、pluginval、听音或性能测试；未知将来版本不会自动获得某个新功能已验收的结论。
 
-**包校验通过标准：**脚本退出 0，包外 `dist/Anyvoc-0.20.3-PackageVerification.json` 的 CRC、安全唯一路径、精确集合、逐文件匹配全部通过，版本一致，三个必需 demo 有完整格式及哈希记录。本候选尚待达到该标准；不把 ZIP 哈希写入包内文档，报告在 ZIP 外避免自引用。`python scripts/verify-release.py --self-test-paths` 只验证路径逻辑，不是包验收。
+**包校验通过标准：**脚本退出 0，包外 `dist/Anyvoc-0.20.3-PackageVerification.json` 的 CRC、安全唯一路径、精确集合、逐文件匹配全部通过，版本一致，三个必需 demo 有完整格式及哈希记录。首轮候选包已达到该标准，当前文档变化后再次执行同样校验；候选入口为 `dist/Anyvoc-0.20.3-Windows/Anyvoc.exe`。不把 ZIP 哈希写入包内文档，报告在 ZIP 外避免自引用。`python scripts/verify-release.py --self-test-paths` 只验证路径逻辑，不是包验收。
 
 文档修改后重新打包会改变 ZIP 哈希；重新核对对应文件及包报告。若没有改变声音/生产代码，不需要为了文档重跑所有 DSP，但不得继续引用旧包哈希作为新包的校验值。
 

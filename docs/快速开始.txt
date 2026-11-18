@@ -5,9 +5,10 @@
 当前候选已通过 220 组自动测试、27 例旧/新原始浮点音频逐字节比较和最终 pluginval strictness 5（seed 0x481d1f1）；四份最终演示与冻结 0.20.2 ZIP 逐字节一致，宏独立分析通过。
 原生只确认窗口、0.20.3 页脚、PLAY 和 INIT。当前输出设备无法打开，屏幕 C4 未见电平或 EV，演奏与正式实时测量尚未通过。
 新旧两版探针都遇到设备打开错误。用户确认同期有其他程序独占声卡，待释放后重验；尚未完成根因隔离，也未证明设备已恢复。程序已退出，原设置已恢复，旧版绿色电平不算本轮通过。
-候选包待创建/校验，新提交 CI 尚未触发；尚未宣布整体交付。没有真人听音、外接 MIDI 或 DAW 验收。
+首轮 Windows/完整源码候选包校验已通过，文档收口后复验；尚未宣布整体交付。没有真人听音、外接 MIDI 或 DAW 验收。
+CI（a956c5e3，运行 44292647323）记录时运行中，结果待核实；详情见 docs/VALIDATION-0.20.3.md。
 本版仍为 1,256 个参数、schema 14、28 个工厂音色。已交付的 0.20.2 目录与旧 ZIP 保持冻结，但不保证当前故障设备可用。
-当前自行构建入口：build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe（页脚 0.20.3）。
+当前候选入口：dist/Anyvoc-0.20.3-Windows/Anyvoc.exe（页脚 0.20.3）。收到 Windows ZIP 后完整解压，运行根目录 Anyvoc.exe。
 已交付旧版入口：dist/Anyvoc-0.20.2-Windows/Anyvoc.exe。
 以下保留正常操作步骤，设备恢复后再试听；验收范围见 docs/VALIDATION-0.20.3.md。
 
@@ -74,7 +75,7 @@ CC120/CC123 只停止本通道，保留其踏板值：CC120 立即停止，CC123
 当前候选的分项测试、声卡受阻与待验范围见 docs/VALIDATION-0.20.3.md。
 0.20.2 的绿色电平、0.20 的 PLAY/COPY/采样重启和 0.20.1 启动检查都是旧版证据，不算本轮通过。
 已交付且冻结的 0.20.2 本机入口为 dist/Anyvoc-0.20.2-Windows/Anyvoc.exe；使用 ZIP 时先完整解压，再运行 Anyvoc.exe。
-0.20.3 候选包待创建/校验，最终结果以包外 dist/Anyvoc-0.20.3-PackageVerification.json 为准。
+0.20.3 首轮候选包校验已通过，文档收口后重打包复验；最终结果以包外 dist/Anyvoc-0.20.3-PackageVerification.json 为准。
 真人听音、外接 MIDI、多通道设备和 DAW 仍需另外实测。
 需要自行构建时再看 docs/BUILDING.md。
 如果从源码的 docs 目录打开本文件，上述说明就在同一目录。
