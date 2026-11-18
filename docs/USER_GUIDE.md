@@ -4,13 +4,15 @@
 
 本轮精确缓存优化保留原调制公式、1,256 个宿主参数、schema 14 和 28 个工厂音色；多通道琶音器、PLAY、COPY 与完整编辑功能继续沿用。最终完整 **220 组通过，218.75 秒**，27 例原始浮点音频与修改前真实参考逐字节一致；最终 pluginval strictness 5 PASS，seed `0x481d1f1`，四份最终演示与冻结 0.20.2 ZIP 全字节一致，宏独立分析 PASS。全部范围见[0.20.3 验证记录](VALIDATION-0.20.3.md)。
 
-**当前仍是候选版，原生演奏与正式实时复测受阻。** 已观察到真实窗口、0.20.3 页脚、PLAY 和 INIT Pure Canvas，但输出设备无法打开，屏幕 C4 没有电平／EV 活动。新旧两版探针同样打不开设备，用户已确认同期有其他程序独占声卡。待其释放后重验；目前不能认定设备已恢复或根因已隔离，也不能归因于缓存改动。程序已关闭、原设置恢复；没有真人听音、外接 MIDI 或 DAW 验收。首轮候选包校验已通过，文档收口后复验；[`a956c5e3` 的 CI](https://github.com/Bad0RANG3/Anyvoc/actions/runs/44292647323) 记录时运行中，结果待核实，不能称整体通过。
+**当前仍是候选版，原生演奏与正式实时复测受阻。** 已观察到真实窗口、0.20.3 页脚、PLAY 和 INIT Pure Canvas，但输出设备无法打开，屏幕 C4 没有电平／EV 活动。新旧两版探针同样打不开设备，用户已确认同期有其他程序独占声卡。待其释放后重验；目前不能认定设备已恢复或根因已隔离，也不能归因于缓存改动。程序已关闭、原设置恢复；没有真人听音、外接 MIDI 或 DAW 验收。候选包最终复验已通过；[指定 `a956c5e3` 的 CI](GITHUB-CI-0.20.3.md) **SUCCESS**，220 组及独立工具 20／12／7 项全部通过，不能称整体通过。
+
+指定 head 的 CI 不自动覆盖后续文档或 `feature/arp-midi-storage` 中开发的新 ARP 工具，尚无后续修复已验收的结论。本次后补 CI 文档不改写冻结候选包内快照。
 
 已交付的 `dist/Anyvoc-0.20.2-Windows/Anyvoc.exe` 与旧 ZIP 保持冻结，见[0.20.2 历史记录](VALIDATION-0.20.2.md)；目录保留不表示当前设备故障已经解决。0.20.2 当时的绿色电平、0.20 的 [PLAY](ui-play-native-0.20.json)、[COPY](native-copy-0.20.json)和[采样重启恢复](NATIVE_RESTART-0.20.md)均不作为本轮原生通过的证据。GitHub 尚无二进制 Release 附件；[63a8192 CI 失败](GITHUB-CI-REALTIME-0.20.2.md)也与本轮新提交分开记录。
 
 ## 先听到声音
 
-1. 当前候选入口为 `dist/Anyvoc-0.20.3-Windows/Anyvoc.exe`，页脚应为 0.20.3；首轮候选包已通过完整性校验，文档收口后重打包复验，结果以包外 `dist/Anyvoc-0.20.3-PackageVerification.json` 为准。收到 Windows ZIP 后请完整解压，再运行其中的 `Anyvoc.exe`，不要在压缩包内启动。以下是正常操作步骤，不代表当前声卡受阻项已经通过。
+1. 当前候选入口为 `dist/Anyvoc-0.20.3-Windows/Anyvoc.exe`，页脚应为 0.20.3；候选包已完成最终完整性复验，结果以包外 `dist/Anyvoc-0.20.3-PackageVerification.json` 为准。收到 Windows ZIP 后请完整解压，再运行其中的 `Anyvoc.exe`，不要在压缩包内启动。以下是正常操作步骤，不代表当前声卡受阻项已经通过。
 2. 默认打开 **PLAY**。点 **CHOOSE A SOUND** 或顶部音色名称，搜索 `Northern Lights` 或 `Neon Skyline`，双击结果加载。
 3. 用鼠标按底部钢琴键。独立版的 Options / Audio settings 可选择输出设备，推荐 44.1 或 48 kHz、256 或 512 samples。
 4. 没声音时先检查电脑音量、输出设备、MASTER 和振荡器 LEVEL。PANIC 可以停止卡住的音符和效果尾音。

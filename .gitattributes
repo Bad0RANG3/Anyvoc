@@ -84,3 +84,11 @@ docs/realtime-ci-0.20.2-failed-step.txt -text -whitespace
 
 # Preserve the complete 0.20.3 modulation-cache evidence and source snapshots.
 docs/modulation-cache-0.20.3/** -text -whitespace
+
+# Preserve all six exact-head 0.20.3 CI artifact members byte-for-byte.
+docs/github-ci-0.20.3-CTestCostData.txt -text -whitespace
+docs/github-ci-0.20.3-LastTest.log -text -whitespace
+docs/github-ci-0.20.3-test-results.xml -text -whitespace
+docs/github-ci-0.20.3-analyzer-self-test.json -text -whitespace
+docs/github-ci-0.20.3-comparator-self-test.json -text -whitespace
+docs/github-ci-0.20.3-runner-tests.txt -text -whitespace

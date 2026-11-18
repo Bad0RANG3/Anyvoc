@@ -1,0 +1,251 @@
+{
+  "scope": "Exact cloud head a956c5e3: build, four CTest suites and no-device tooling. Excludes real-device capture, pluginval, native playing, release packages and subsequent changes.",
+  "evidence_consistency_verified": true,
+  "overall_ci_success": true,
+  "recorded_utc": "2026-11-18T11:30:09.184600+00:00",
+  "commit": "a956c5e3fc1dfb52d269650c3e75ff370289af82",
+  "run": {
+    "id": 44292647323,
+    "html_url": "https://github.com/Bad0RANG3/Anyvoc/actions/runs/44292647323",
+    "head_sha": "a956c5e3fc1dfb52d269650c3e75ff370289af82",
+    "event": "push",
+    "head_branch": "main",
+    "run_attempt": 1,
+    "created_at": "2026-11-18T11:13:04Z",
+    "updated_at": "2026-11-18T11:29:36Z",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "job": {
+    "id": 134761494604,
+    "html_url": "https://github.com/Bad0RANG3/Anyvoc/actions/runs/44292647323/job/134761494604",
+    "name": "windows",
+    "labels": [
+      "windows-2022"
+    ],
+    "started_at": "2026-11-18T11:13:07Z",
+    "completed_at": "2026-11-18T11:29:35Z",
+    "status": "completed",
+    "conclusion": "success",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-11-18T11:13:08Z",
+        "completed_at": "2026-11-18T11:13:08Z"
+      },
+      {
+        "name": "Checkout source and pinned JUCE",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-11-18T11:13:08Z",
+        "completed_at": "2026-11-18T11:13:22Z"
+      },
+      {
+        "name": "Verify dependency",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-18T11:13:22Z",
+        "completed_at": "2026-11-18T11:13:23Z"
+      },
+      {
+        "name": "Configure",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-11-18T11:13:23Z",
+        "completed_at": "2026-11-18T11:15:07Z"
+      },
+      {
+        "name": "Build Release",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-11-18T11:15:07Z",
+        "completed_at": "2026-11-18T11:25:35Z"
+      },
+      {
+        "name": "Run all four test suites",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-11-18T11:25:35Z",
+        "completed_at": "2026-11-18T11:29:25Z"
+      },
+      {
+        "name": "Check profiler tooling without opening an audio device",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-11-18T11:29:25Z",
+        "completed_at": "2026-11-18T11:29:31Z"
+      },
+      {
+        "name": "Keep test evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-11-18T11:29:31Z",
+        "completed_at": "2026-11-18T11:29:32Z"
+      },
+      {
+        "name": "Post Checkout source and pinned JUCE",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-11-18T11:29:32Z",
+        "completed_at": "2026-11-18T11:29:34Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-11-18T11:29:34Z",
+        "completed_at": "2026-11-18T11:29:34Z"
+      }
+    ]
+  },
+  "artifact": {
+    "id": 14422967885,
+    "name": "windows-test-evidence",
+    "bytes": 10718,
+    "created_at": "2026-11-18T11:29:32Z",
+    "expired": false,
+    "sha256": "e24ef5dce4c53f072e33ae9b8c27a59edce0550bf52189dfdc45b76881dc0148",
+    "github_api_digest": "sha256:e24ef5dce4c53f072e33ae9b8c27a59edce0550bf52189dfdc45b76881dc0148",
+    "digest_matches": true,
+    "zip_crc_valid": true,
+    "safe_unique_paths": true,
+    "exact_member_set": [
+      "Testing/Temporary/CTestCostData.txt",
+      "Testing/Temporary/LastTest.log",
+      "cache-comparator-self-test.json",
+      "realtime-probe-analyzer-self-test.json",
+      "realtime-runner-tests.txt",
+      "test-results.xml"
+    ]
+  },
+  "junit": {
+    "programs": 4,
+    "failures": 0,
+    "errors": 0,
+    "disabled": 0,
+    "skipped": 0,
+    "reported_root_seconds": 229.0,
+    "case_seconds_total": 229.3675986
+  },
+  "complete_log": {
+    "pass": 220,
+    "fail": 0,
+    "ctest_passed_programs": 4,
+    "count_source": "Untruncated LastTest.log; truncated JUnit output is not used to count internal test groups."
+  },
+  "programs": [
+    {
+      "name": "EngineTests",
+      "complete_log_pass": 75,
+      "complete_log_fail": 0,
+      "junit_seconds": 10.9261,
+      "junit_status": "run",
+      "junit_output_truncated": true,
+      "junit_visible_pass_lines": 22
+    },
+    {
+      "name": "ProcessorTests",
+      "complete_log_pass": 129,
+      "complete_log_fail": 0,
+      "junit_seconds": 217.733,
+      "junit_status": "run",
+      "junit_output_truncated": true,
+      "junit_visible_pass_lines": 18
+    },
+    {
+      "name": "WavetableTests",
+      "complete_log_pass": 10,
+      "complete_log_fail": 0,
+      "junit_seconds": 0.0703826,
+      "junit_status": "run",
+      "junit_output_truncated": false,
+      "junit_visible_pass_lines": 10
+    },
+    {
+      "name": "PresetLibraryTests",
+      "complete_log_pass": 6,
+      "complete_log_fail": 0,
+      "junit_seconds": 0.638116,
+      "junit_status": "run",
+      "junit_output_truncated": false,
+      "junit_visible_pass_lines": 6
+    }
+  ],
+  "tooling": {
+    "analyzer_self_tests": {
+      "pass": 20,
+      "fail": 0,
+      "scope": "Synthetic script validation only; no audio device or production DSP was run"
+    },
+    "comparator_self_tests": {
+      "pass": 12,
+      "fail": 0,
+      "scope": "Synthetic comparator controls only; no DSP render"
+    },
+    "runner_tests": {
+      "pass": 7,
+      "fail": 0,
+      "seconds": 0.175,
+      "scope": "Temporary fake executable and simulated children; no audio device or DSP run."
+    },
+    "counted_with_ctest": false,
+    "device_opened": false
+  },
+  "raw_evidence": [
+    {
+      "repository_path": "docs/github-ci-0.20.3-CTestCostData.txt",
+      "artifact_path": "Testing/Temporary/CTestCostData.txt",
+      "bytes": 113,
+      "sha256": "ff6a4c099db87ecf1056733c779dfeeb98299144cee012b338ed6fe4d1fc5d8f"
+    },
+    {
+      "repository_path": "docs/github-ci-0.20.3-LastTest.log",
+      "artifact_path": "Testing/Temporary/LastTest.log",
+      "bytes": 20054,
+      "sha256": "4314f37a5c1c6f6130fc5669257e5f3cb2e0f994b2bea8cc46388981ae3e86ec"
+    },
+    {
+      "repository_path": "docs/github-ci-0.20.3-test-results.xml",
+      "artifact_path": "test-results.xml",
+      "bytes": 4163,
+      "sha256": "cb972b63c205034426ea52395af4a6c05748010f2b1ec4d596abcc649ac4b20a"
+    },
+    {
+      "repository_path": "docs/github-ci-0.20.3-analyzer-self-test.json",
+      "artifact_path": "realtime-probe-analyzer-self-test.json",
+      "bytes": 4241,
+      "sha256": "3c98a33f26a390428f73ef518087d9020f2f966e848c93f3f2a4863bb28571be"
+    },
+    {
+      "repository_path": "docs/github-ci-0.20.3-comparator-self-test.json",
+      "artifact_path": "cache-comparator-self-test.json",
+      "bytes": 489,
+      "sha256": "e545127e55fd737f0fd90eb5f296e803eb1bb6b04c5ad9de5d10fc1492fbcb8f"
+    },
+    {
+      "repository_path": "docs/github-ci-0.20.3-runner-tests.txt",
+      "artifact_path": "realtime-runner-tests.txt",
+      "bytes": 1180,
+      "sha256": "114f23567b3365fc131d3966558bf7312d930f0a63ffc6e2e4ac1eb0e3ec3a0a"
+    }
+  ],
+  "limitations": [
+    "220 CTest groups, 20 analyzer checks, 12 comparator controls and 7 runner tests are different counting units.",
+    "The workflow does not render the 27 old/new audio comparison or run offline benchmarks; comparator --self-test uses synthetic files.",
+    "No actual audio device, pluginval, native playing, listening, external MIDI, DAW or allocation conclusion.",
+    "The conclusion covers a956c5e3 only, not future candidate packaging or subsequent document/source commits.",
+    "Old failed CI records and frozen local evidence archives are unchanged."
+  ]
+}

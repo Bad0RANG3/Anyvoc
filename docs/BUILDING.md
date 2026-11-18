@@ -2,7 +2,7 @@
 
 适用版本：**Anyvoc 0.20.3 候选版，Windows x64**。本轮以精确缓存减少密集调制曲率重复计算，保留原公式、声音参数与路由语义，见[缓存合同](MODULATION_CACHE.md)。仍为 **1,256 个参数、schema 14、28 个工厂音色**，继承[ARP 多通道合同](ARPEGGIATOR.md)和既有编辑功能。
 
-最终 Release 重建及完整 **220 组（75／129／10／6）通过，218.75 秒**；最终 27 例 raw float32 与真实旧参考逐字节一致。最终 pluginval strictness 5 PASS，seed `0x481d1f1`；最终四演示与冻结 0.20.2 ZIP 全字节一致，宏独立分析 PASS。**声卡无法打开：只确认窗口／版本／PLAY／INIT，未通过原生演奏，也未完成六负载三轮实时复测。** 用户确认同期有其他程序独占声卡，尚待释放后重验；没有据此宣称故障已隔离或恢复。退出后用户设置恢复。首轮候选包校验已通过，文档收口后重打包复验；对应提交 CI 运行中，不能宣称整体通过；最新分项见[0.20.3 验证](VALIDATION-0.20.3.md)。
+最终 Release 重建及完整 **220 组（75／129／10／6）通过，218.75 秒**；最终 27 例 raw float32 与真实旧参考逐字节一致。最终 pluginval strictness 5 PASS，seed `0x481d1f1`；最终四演示与冻结 0.20.2 ZIP 全字节一致，宏独立分析 PASS。**声卡无法打开：只确认窗口／版本／PLAY／INIT，未通过原生演奏，也未完成六负载三轮实时复测。** 用户确认同期有其他程序独占声卡，尚待释放后重验；没有据此宣称故障已隔离或恢复。退出后用户设置恢复。候选包最终复验已通过；[指定 `a956c5e3` 的 CI](GITHUB-CI-0.20.3.md) SUCCESS，220 组及独立工具 20／12／7 项全部通过，不能宣称整体通过；最新分项见[0.20.3 验证](VALIDATION-0.20.3.md)。
 
 已交付 `dist/Anyvoc-0.20.2-Windows/Anyvoc.exe` 及 0.20.2／更早 ZIP 保持冻结。历史构建、ARP 红绿回归、原生演奏与包校验见[0.20.2](VALIDATION-0.20.2.md)、[0.20.1](VALIDATION-0.20.1.md)、[0.20](VALIDATION-0.20.md)；[0.20 真实保存重启](NATIVE_RESTART-0.20.md)只适用当时程序与素材。旧 EXE、WAV 和发行 ZIP 不随 Git 克隆提供。测试标准见 [TESTING.md](TESTING.md)。
 
@@ -28,7 +28,7 @@ if (!(Select-String -LiteralPath CMakeLists.txt -Pattern '^project\(Anyvoc VERSI
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1
 ```
 
-上面从 `main` 获取源码，分支会随提交变化。当前 0.20.3 是候选源码；[Run 44292647323](https://github.com/Bad0RANG3/Anyvoc/actions/runs/44292647323) 对应 `a956c5e3fc1dfb52d269650c3e75ff370289af82`，记录时运行中，结果待核实，不能覆盖后续提交。请使用所需的 0.20.3 提交并保留版本检查；失败时核对实际提交，不要仅修改版本号。用 `git rev-parse HEAD` 记录实际 SHA，验收与打包始终使用同一份源码；历史本地验证不能代替新提交的构建测试。
+上面从 `main` 获取源码，分支会随提交变化。当前 0.20.3 是候选源码；[Run 44292647323 的已核对 SUCCESS 记录](GITHUB-CI-0.20.3.md)仅对应 `a956c5e3fc1dfb52d269650c3e75ff370289af82`，不自动覆盖后续文档或 `feature/arp-midi-storage` 中的新 ARP 工具。请使用所需的 0.20.3 提交并保留版本检查；失败时核对实际提交，不要仅修改版本号。用 `git rev-parse HEAD` 记录实际 SHA，验收与打包始终使用同一份源码；历史本地验证不能代替新提交的构建测试。
 
 如果已经克隆但忘记子模块，运行 `git submodule update --init --recursive`。切换提交后也应重新同步子模块。完整对应源码 ZIP 已包含 JUCE 文件，不需要 Git 元数据；GitHub 自动生成的普通源码 ZIP **不包含子模块内容**，新手优先用上述克隆命令。
 
@@ -186,7 +186,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Release verification failed' }
 
 按顺序等待 Windows 包、源码包、校验各自完成，不能让校验与仍在写 ZIP 的打包并行运行。`package.ps1` 读取 CMake 版本，并要求 EXE／VST3 文件版本一致；0.20.3 必须提供 Motion、Chaos、Macro **三份**完整 20 秒试听。更早示例只在已有时复制，首次克隆不要求找回全部历史 WAV。
 
-首轮 0.20.3 Windows／完整源码候选包已生成，`verify-release.py` 退出 0：CRC、安全唯一路径、精确集合、逐文件内容、版本、三个必需演示及当前文档均通过。候选入口为 `dist/Anyvoc-0.20.3-Windows/Anyvoc.exe`，不代表受阻的原生演奏或实时验收已完成。首轮 ZIP 与报告保留在 `build/validation-cache-optimization/packaging-first/`；本次文档收口后重打包复验，最终结果以包外报告为准。冻结的 0.20.2 及更早包不变：
+0.20.3 Windows／完整源码候选包已完成最终复验，`verify-release.py` 退出 0：CRC、安全唯一路径、精确集合、逐文件内容、版本、三个必需演示及打包时文档均通过；Windows 720 文件，源码 5,118 文件。候选入口为 `dist/Anyvoc-0.20.3-Windows/Anyvoc.exe`，不代表受阻的原生演奏或实时验收已完成。首轮记录保留在 `build/validation-cache-optimization/packaging-first/`；最终 ZIP 哈希与结果以包外报告为准。候选包已冻结，本次后补 CI 文档不在包内快照中；不要为补录证据覆盖它。冻结的 0.20.2 及更早包也不变。下列命令是构建新快照时的复现流程，不要求现在重打冻结包：
 
 - `dist/Anyvoc-0.20.3-Windows/`
 - `dist/Anyvoc-0.20.3-Windows-x64.zip`
@@ -236,7 +236,7 @@ Git 默认忽略 `build/`、`dist/`、`tools/`。分发二进制时应提供对�
 
 [Windows workflow](../.github/workflows/windows.yml) 检出固定 JUCE，构建 Release、四套 CTest 和可选探针，并运行探针 `--help`、分析器自检及无设备运行器测试。失败时仍上传 CTest 完整日志／耗时、JUnit、分析器 JSON 与运行器输出。它不打开真实声卡，不运行 pluginval、原生演奏、DAW 或发布二进制。
 
-[旧 `2acc71db` CI](GITHUB-CI-0.20.2.md)为 220 组通过；[后续 `63a8192` 工具提交](GITHUB-CI-REALTIME-0.20.2.md)整场失败，虽然 220 组 CTest 和 20 项分析器成功，但运行器 6/7。本地 junction 复现后修复了测试路径匹配，不能改写旧结论。**0.20.3 的 [Run 44292647323](https://github.com/Bad0RANG3/Anyvoc/actions/runs/44292647323) 记录时运行中，结果待核实**；它只对应 `a956c5e3fc1dfb52d269650c3e75ff370289af82`，不能代替后续提交的检查。历史证据与冻结包不改写；GitHub 尚未上传 EXE／VST3／WAV／ZIP 或 Release 附件。
+[旧 `2acc71db` CI](GITHUB-CI-0.20.2.md)为 220 组通过；[后续 `63a8192` 工具提交](GITHUB-CI-REALTIME-0.20.2.md)整场失败，虽然 220 组 CTest 和 20 项分析器成功，但运行器 6/7。本地 junction 复现后修复了测试路径匹配，不能改写旧结论。**0.20.3 的 [Run 44292647323](GITHUB-CI-0.20.3.md) 已核对 SUCCESS：220 组及独立工具 20／12／7 项全部通过**；它只对应 `a956c5e3fc1dfb52d269650c3e75ff370289af82`，不能代替后续文档或新 ARP 工具的检查，也不表示后续修复完成。历史证据与冻结包不改写；GitHub 尚未上传 EXE／VST3／WAV／ZIP 或 Release 附件。
 
 ## 7. 报告问题时提供什么
 

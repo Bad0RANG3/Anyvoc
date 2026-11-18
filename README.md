@@ -28,7 +28,7 @@
 3. 按住底部钢琴键，用 **TONE / NOTE SHAPE / SPACE** 调整明暗、起音和空间感。
 4. 点 **SAVE** 保存为 `.anyvoc`，用 **UNDO / REDO** 撤销或恢复修改。
 
-**当前源码为 0.20.3 候选版，真实声卡验收受阻；尚未宣布整版交付。** 首轮 Windows／完整源码候选包已通过完整性校验，本机候选入口：`dist/Anyvoc-0.20.3-Windows/Anyvoc.exe`。文档收口后会重打包复验；旧版包保持冻结。收到 Windows ZIP 后请先完整解压，再运行里面的程序。
+**当前源码为 0.20.3 候选版，真实声卡验收受阻；尚未宣布整版交付。** Windows／完整源码候选包已完成最终完整性复验，本机候选入口：`dist/Anyvoc-0.20.3-Windows/Anyvoc.exe`，权威记录为包外 `dist/Anyvoc-0.20.3-PackageVerification.json`。候选包和旧版包保持冻结；本次后补 CI 文档不改写包内快照。收到 Windows ZIP 后请先完整解压，再运行里面的程序。
 
 > **关于下载**：GitHub 仓库目前提供源码、文档与验证记录，尚未上传可直接运行的 Release 附件。“Download ZIP” 下载的是源码。自行构建见[构建指南](docs/BUILDING.md)。
 
@@ -69,9 +69,11 @@ PLAY 集中常用控制，深入时再进入 **SYNTH / FILTER / MOD / FX**。所
 | 参数与音色兼容 | 保持 **1,256 个宿主参数 · schema 14 · 28 个工厂音色**。 |
 | VST3 与四份固定演示 | 最终 pluginval strictness 5 **PASS**（seed `0x481d1f1`）；四演示最终新渲染与冻结 0.20.2 ZIP 全字节一致，宏独立分析 **PASS**。 |
 | 原生与实际声卡 | 窗口、PLAY、0.20.3 页脚和 INIT 已确认；**输出设备无法打开**，琴键未见电平／EV 活动，演奏及正式 6×3 回调复测受阻。用户确认同期有其他程序独占声卡，待释放后重验。 |
-| 0.20.3 包与 CI | 首轮候选包校验 **PASS**，文档更新后重打包复验；[`a956c5e3` 的 CI](https://github.com/Bad0RANG3/Anyvoc/actions/runs/44292647323)记录时运行中，结果待核实，不声明整体验收通过。 |
+| 0.20.3 包与 CI | 候选包最终复验 **PASS**；[指定 `a956c5e3` 的 CI](docs/GITHUB-CI-0.20.3.md) **SUCCESS**：220 组及独立工具 20／12／7 项全部通过。仅覆盖该 head，不声明整体验收通过。 |
 | 指定历史 CI | [`63a8192` 探针工具提交](docs/GITHUB-CI-REALTIME-0.20.2.md)整体 **失败**：220 组 CTest、20 项分析器通过，runner 6/7；本地路径别名回归已修复，不能改写旧云端结果。 |
 | 旧设备基线 | [0.20.2 的 6 种负载 × 3 轮](docs/REALTIME-0.20.2.md)共 206 个超预算块；不能据新离线数据称其已解决。 |
+
+本次 CI 不自动覆盖后续文档提交或 `feature/arp-midi-storage` 中开发的新 ARP 工具；尚无该后续工作的修复或验收结论。
 
 **还在路上：**更多调制目标、多采样／SFZ、频谱声源、效果总线、Clip、MPE 和其他平台。FL Studio 等 DAW、外接 MIDI、真人听音及实时高负载仍待分别验收。完整缺口和完成条件见[项目现状](docs/STATUS.md)与[路线图](docs/ROADMAP.md)。
 
