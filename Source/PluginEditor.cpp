@@ -5,6 +5,7 @@
 #include "ModulationView.h"
 #include "EnvelopeModel.h"
 #include "LfoModel.h"
+#include "LfoCurveDocument.h"
 #include <cmath>
 #include <limits>
 
@@ -2537,6 +2538,33 @@ private:
     LfoChaosTrace chaosTrace;
 };
 
+struct LfoCurveSnapshot
+{
+    AnyvocAudioProcessor& processor;
+    std::array<juce::RangedAudioParameter*, 46> parameters{};
+    std::array<float, 46> expected{};
+    std::uint64_t revision;
+
+    LfoCurveSnapshot (AnyvocAudioProcessor& p, const juce::String& prefix)
+        : processor (p), revision (p.getHistoryRevision())
+    {
+        for (int i = 0; i < 33; ++i) parameters[(size_t) i] = p.apvts.getParameter (prefix + "Point" + juce::String (i));
+        parameters[33] = p.apvts.getParameter (prefix + "Interpolation");
+        parameters[34] = p.apvts.getParameter (prefix + "Shape");
+        parameters[35] = p.apvts.getParameter (prefix + "Kind");
+        const std::array<const char*, 10> additional { "Rate", "Sync", "Division", "Mode", "Phase", "Direction", "FollowSwing", "AudioRateEnabled", "AudioRateHz", "Chaos" };
+        for (size_t i = 0; i < additional.size(); ++i) parameters[i + 36] = p.apvts.getParameter (prefix + additional[i]);
+        for (size_t i = 0; i < parameters.size(); ++i) expected[i] = parameters[i]->getValue();
+    }
+    bool valid() const
+    {
+        if (processor.getHistoryRevision() != revision) return false;
+        for (size_t i = 0; i < parameters.size(); ++i)
+            if (parameters[i]->getValue() != expected[i]) return false;
+        return true;
+    }
+};
+
 class LfoCurveEditor final : public juce::Component, public juce::SettableTooltipClient
 {
 public:
@@ -2548,6 +2576,7 @@ public:
         setWantsKeyboardFocus (true);
         setTooltip ("Draw across the graph to shape 33 evenly spaced points. Drag between points to paint a continuous stroke. Drawing switches the shape to Custom.");
         setMouseCursor (juce::MouseCursor::CrosshairCursor);
+        updateViewProperties();
     }
     ~LfoCurveEditor() override { lifetime.reset(); endStroke(); }
 
@@ -2557,20 +2586,93 @@ public:
         setMouseCursor (lfoIsChaos (processor.getLfoShape (index)) ? juce::MouseCursor::NormalCursor : juce::MouseCursor::CrosshairCursor);
         setTooltip (lfoIsChaos (processor.getLfoShape (index))
                     ? "Real normalized DSP snapshots: X-Y trajectory and recent X output. Repeated held values are omitted; spacing is not an audio time axis. Choose Custom to draw the saved curve."
-                    : "Draw across the graph to shape 33 evenly spaced points. Drag between points to paint a continuous stroke. Drawing switches the shape to Custom.");
+                    : editMode == 1 ? "Drag a closed range of points to select it. Selection changes only the view; FLIP and APPLY affect this range."
+                    : "Draw across the graph to shape 33 evenly spaced points. Grid snapping is optional. Drawing switches the shape to Custom.");
+        updateViewProperties();
         repaint();
+    }
+
+    bool canEdit() const { return matrixHierarchyVisible (this) && isEnabled() && ! lfoIsChaos (processor.getLfoShape (index)); }
+    void setToolsVisible (bool visible) { toolView = visible; }
+    int firstSelected() const { return selectionFirst; }
+    int lastSelected() const { return selectionLast; }
+    void setViewTools (int modeIn, int gridXIn, int gridYIn, bool snapXIn, bool snapYIn)
+    {
+        if (! canEdit()) return;
+        const auto validGrid = [] (int n) { return n == 1 || n == 2 || n == 4 || n == 8 || n == 16 || n == 32; };
+        if (! validGrid (gridXIn) || ! validGrid (gridYIn)) return;
+        const juce::Component::SafePointer<LfoCurveEditor> safe (this);
+        endStroke();
+        if (safe == nullptr || ! canEdit()) return;
+        editMode = juce::jlimit (0, 1, modeIn); gridX = gridXIn; gridY = gridYIn;
+        snapX = snapXIn; snapY = snapYIn; selecting = false;
+        refresh();
+    }
+    void selectAll()
+    {
+        if (! canEdit()) return;
+        selectionFirst = 0; selectionLast = 32; updateViewProperties(); repaint();
+    }
+    anyvoc::LfoCurveData readCurve() const
+    {
+        anyvoc::LfoCurveData data;
+        const int shape = processor.getLfoShape (index);
+        for (int i = 0; i < 33; ++i)
+        {
+            auto* parameter = processor.apvts.getParameter (prefix + "Point" + juce::String (i));
+            data.points[(size_t) i] = shape == 4 || shape == 5 || lfoIsChaos (shape)
+                ? parameter->convertFrom0to1 (parameter->getValue()) : lfoSample (processor, index, (float) i / 32.0f);
+        }
+        auto* interpolation = processor.apvts.getParameter (prefix + "Interpolation");
+        data.interpolation = (int) interpolation->convertFrom0to1 (interpolation->getValue());
+        return data;
+    }
+    bool dataWouldChange (const anyvoc::LfoCurveData& data, bool replaceAsset = false) const
+    {
+        // Importing an asset explicitly selects Custom, even when its sampled
+        // points happen to equal the currently displayed basic/saved curve.
+        if (replaceAsset && processor.getLfoShape (index) != 5) return true;
+        const auto before = readCurve();
+        if (before.points == data.points && before.interpolation == data.interpolation) return false;
+        bool changed = before.interpolation != data.interpolation;
+        for (int i = 0; i < 33 && ! changed; ++i)
+        {
+            const auto* parameter = processor.apvts.getParameter (prefix + "Point" + juce::String (i));
+            const auto canonical = [parameter] (float n) { return parameter->convertTo0to1 (parameter->convertFrom0to1 (parameter->convertTo0to1 (n))); };
+            changed = canonical (before.points[(size_t) i]) != canonical (data.points[(size_t) i]);
+        }
+        return changed;
+    }
+    bool applyData (const anyvoc::LfoCurveData& data, const juce::String& label, bool replaceAsset = false,
+                    std::function<bool()> isCurrent = {})
+    {
+        if (! canEdit() || ! anyvoc::LfoCurveDocument::valid (data) || (isCurrent && ! isCurrent())) return false;
+        if (! dataWouldChange (data, replaceAsset)) return true;
+        const juce::Component::SafePointer<LfoCurveEditor> safe (this);
+        auto edit = beginStroke (label, std::move (isCurrent));
+        if (edit == nullptr) return false;
+        for (int i = 0; i < 33; ++i) if (! edit->write (i, data.points[(size_t) i])) return false;
+        if (! edit->write (33, (float) data.interpolation) || ! edit->write (35, 2.0f)) return false;
+        edit->finish();
+        if (safe == nullptr) return false;
+        if (stroke == edit) stroke.reset();
+        const auto edited = onEdited;
+        if (edited) edited();
+        if (safe != nullptr) repaint();
+        return safe != nullptr;
     }
 
     void endStroke()
     {
         drawing = false;
+        selecting = false;
         auto edit = std::move (stroke);
         if (edit != nullptr) edit->finish();
     }
 
     void applyCurve (int curve)
     {
-        if (lfoIsChaos (processor.getLfoShape (index))) return;
+        if (! canEdit()) return;
         const juce::Component::SafePointer<LfoCurveEditor> safe (this);
         auto edit = beginStroke ("LFO " + juce::String (index + 1) + " curve preset");
         if (edit == nullptr) return;
@@ -2594,16 +2696,23 @@ public:
 
     void mouseDown (const juce::MouseEvent& event) override
     {
-        if (event.mods.isPopupMenu() || lfoIsChaos (processor.getLfoShape (index))) return;
+        if (event.mods.isPopupMenu() || ! canEdit()) return;
         const juce::Component::SafePointer<LfoCurveEditor> safe (this);
+        if (editMode == 1)
+        {
+            endStroke();
+            if (safe == nullptr || ! canEdit()) return;
+            selectionAnchor = rawPointAt (event.position.x);
+            selectionFirst = selectionLast = selectionAnchor; selecting = true;
+            updateViewProperties(); repaint(); return;
+        }
         auto edit = beginStroke ("Draw LFO " + juce::String (index + 1));
         if (edit == nullptr) return;
         grabKeyboardFocus();
         if (safe == nullptr || ! edit->valid()) { edit->finish(); return; }
         if (processor.getLfoShape (index) != 5)
         {
-            std::array<float, 33> initial{};
-            for (int i = 0; i < 33; ++i) initial[(size_t) i] = lfoSample (processor, index, (float) i / 32.0f);
+            const auto initial = readCurve().points;
             for (int i = 0; i < 33; ++i) if (! edit->write (i, initial[(size_t) i])) return;
             if (! edit->write (35, 2.0f)) return;
         }
@@ -2619,6 +2728,13 @@ public:
 
     void mouseDrag (const juce::MouseEvent& event) override
     {
+        if (selecting)
+        {
+            if (! canEdit()) { selecting = false; return; }
+            const int point = rawPointAt (event.position.x);
+            selectionFirst = juce::jmin (selectionAnchor, point); selectionLast = juce::jmax (selectionAnchor, point);
+            updateViewProperties(); repaint(); return;
+        }
         if (! drawing || stroke == nullptr) return;
         auto edit = stroke;
         if (! edit->valid()) { endStroke(); return; }
@@ -2634,7 +2750,8 @@ public:
             for (int i = low; i <= high; ++i)
             {
                 const float blend = (float) (i - lastPoint) / (float) (nextPoint - lastPoint);
-                if (! edit->write (i, lastValue + (nextValue - lastValue) * blend)) return;
+                const float n = lastValue + (nextValue - lastValue) * blend;
+                if (! edit->write (i, snapY ? anyvoc::LfoCurveDocument::snapValue (n, gridY) : n)) return;
             }
         }
         lastPoint = nextPoint; lastValue = nextValue; hoveredPoint = nextPoint;
@@ -2668,33 +2785,49 @@ public:
         const auto r = plotBounds();
         g.setColour (insetColour); g.fillRoundedRectangle (bounds, 8);
         g.setColour (borderColour); g.drawRoundedRectangle (bounds.reduced (0.5f), 8, 1);
-        for (int i = 0; i <= 32; ++i)
+        for (int i = 0; i <= gridX; ++i)
         {
-            g.setColour (borderColour.withAlpha (i % 4 == 0 ? 0.8f : 0.25f));
-            g.drawVerticalLine (juce::roundToInt (r.getX() + r.getWidth() * (float) i / 32), r.getY(), r.getBottom());
+            g.setColour (borderColour.withAlpha (snapX ? .8f : i % 4 == 0 ? .8f : .25f));
+            g.drawVerticalLine (juce::roundToInt (r.getX() + r.getWidth() * (float) i / (float) gridX), r.getY(), r.getBottom());
         }
-        for (int i = 0; i <= 4; ++i)
+        for (int i = 0; i <= gridY; ++i)
         {
-            g.setColour (borderColour.withAlpha (i == 2 ? 1.0f : 0.6f));
-            g.drawHorizontalLine (juce::roundToInt (r.getY() + r.getHeight() * (float) i / 4), r.getX(), r.getRight());
+            g.setColour (borderColour.withAlpha (i * 2 == gridY ? 1.0f : snapY ? .7f : .4f));
+            g.drawHorizontalLine (juce::roundToInt (r.getY() + r.getHeight() * (float) i / (float) gridY), r.getX(), r.getRight());
+        }
+        if (editMode == 1 || selectionFirst != 0 || selectionLast != 32)
+        {
+            const float left = r.getX() + r.getWidth() * (float) selectionFirst / 32.0f;
+            const float right = r.getX() + r.getWidth() * (float) selectionLast / 32.0f;
+            g.setColour (accent.withAlpha (.1f)); g.fillRect (left, r.getY(), juce::jmax (2.0f, right - left), r.getHeight());
+            g.setColour (accent.withAlpha (.7f)); g.drawVerticalLine (juce::roundToInt (left), r.getY(), r.getBottom());
+            g.drawVerticalLine (juce::roundToInt (right), r.getY(), r.getBottom());
         }
         drawText (g, "+1", { 4, 8, 23, 15 }, 9);
         drawText (g, "0", { 7, getHeight() / 2 - 7, 17, 15 }, 9);
         drawText (g, "-1", { 6, getHeight() - 26, 20, 15 }, 9);
-        const bool random = processor.getLfoShape (index) == 4;
+        const bool random = processor.getLfoShape (index) == 4, savedRandom = random && toolView;
+        const auto data = readCurve();
+        const auto sample = [&] (float phase)
+        {
+            if (! savedRandom) return lfoSample (processor, index, phase);
+            const float point = juce::jlimit (0.0f, 32.0f, phase * 32.0f);
+            const auto left = (size_t) std::floor (point), right = juce::jmin ((size_t) 32, left + 1);
+            return data.interpolation == 1 ? data.points[left] : data.points[left] + (data.points[right] - data.points[left]) * (point - (float) left);
+        };
         juce::Path path;
         for (int i = 0; i <= 384; ++i)
         {
             const float phase = (float) i / 384;
-            const auto point = graphPoint (phase, lfoSample (processor, index, phase));
+            const auto point = graphPoint (phase, sample (phase));
             if (i == 0) path.startNewSubPath (point); else path.lineTo (point);
         }
         g.setColour (accent.withAlpha (0.12f)); g.strokePath (path, juce::PathStrokeType (6));
         g.setColour (accent); g.strokePath (path, juce::PathStrokeType (2));
-        if (! random)
+        if (! random || savedRandom)
             for (int i = 0; i < 33; ++i)
             {
-                const auto point = graphPoint ((float) i / 32, lfoSample (processor, index, (float) i / 32));
+                const auto point = graphPoint ((float) i / 32, sample ((float) i / 32));
                 const float diameter = i == hoveredPoint ? 7.5f : 4.0f;
                 g.setColour (i == hoveredPoint ? primaryText : accent);
                 g.fillEllipse (juce::Rectangle<float> (diameter, diameter).withCentre (point));
@@ -2709,21 +2842,43 @@ public:
             g.setColour (accent.withAlpha (.45f)); g.drawDashedLine ({ startX, r.getY(), startX, r.getBottom() }, dash, 2);
             drawText (g, "START", { juce::jlimit (31, getWidth() - 55, (int) startX - 20), getHeight() - 16, 43, 13 }, 8, accent, false, juce::Justification::centred);
         }
-        g.setColour (primaryText.withAlpha (0.45f));
-        g.drawLine (x, r.getY(), x, r.getBottom(), 1);
-        juce::Path marker; marker.addTriangle (x - 4, r.getY() - 7, x + 4, r.getY() - 7, x, r.getY() - 1);
-        g.fillPath (marker);
-        if (random) drawText (g, "RANDOM HAS NO FIXED CURVE  /  DRAW HERE TO CREATE ONE", getLocalBounds().reduced (30, 16), 11, primaryText, true, juce::Justification::centred);
-        if (hoveredPoint >= 0 && ! random)
-            drawText (g, "POINT " + juce::String (hoveredPoint + 1) + "   " + formatted (lfoSample (processor, index, (float) hoveredPoint / 32), Unit::signedPercent),
+        if (! random)
+        {
+            g.setColour (primaryText.withAlpha (0.45f));
+            g.drawLine (x, r.getY(), x, r.getBottom(), 1);
+            juce::Path marker; marker.addTriangle (x - 4, r.getY() - 7, x + 4, r.getY() - 7, x, r.getY() - 1);
+            g.fillPath (marker);
+        }
+        if (savedRandom) drawText (g, "SAVED CUSTOM CURVE / RANDOM OUTPUT IS NOT SHOWN", { 34, 1, 650, 15 }, 9, accent, true);
+        else if (random) drawText (g, "RANDOM HAS NO FIXED CURVE  /  TOOLS EDIT THE SAVED CUSTOM CURVE", getLocalBounds().reduced (30, 16), 11, primaryText, true, juce::Justification::centred);
+        if (hoveredPoint >= 0 && (! random || savedRandom))
+            drawText (g, "POINT " + juce::String (hoveredPoint + 1) + "   " + formatted (sample ((float) hoveredPoint / 32), Unit::signedPercent),
                       { getWidth() - 180, 1, 162, 15 }, 9, primaryText, false, juce::Justification::centredRight);
     }
     std::function<void()> onEdited;
 
 private:
     juce::Rectangle<float> plotBounds() const { return getLocalBounds().toFloat().withTrimmedLeft (31).withTrimmedRight (15).reduced (0, 18); }
-    int pointAt (float x) const { return juce::jlimit (0, 32, juce::roundToInt ((x - plotBounds().getX()) / plotBounds().getWidth() * 32)); }
-    float valueAt (float y) const { return juce::jlimit (-1.0f, 1.0f, 1.0f - (y - plotBounds().getY()) / plotBounds().getHeight() * 2); }
+    int rawPointAt (float x) const { return juce::jlimit (0, 32, juce::roundToInt ((x - plotBounds().getX()) / plotBounds().getWidth() * 32)); }
+    int pointAt (float x) const
+    {
+        if (! snapX) return rawPointAt (x);
+        const float phase = juce::jlimit (0.0f, 1.0f, (x - plotBounds().getX()) / plotBounds().getWidth());
+        const int gridPoint = (int) std::floor (phase * (float) gridX + .5f);
+        return juce::jlimit (0, 32, gridPoint * (32 / gridX));
+    }
+    float valueAt (float y) const
+    {
+        const float n = juce::jlimit (-1.0f, 1.0f, 1.0f - (y - plotBounds().getY()) / plotBounds().getHeight() * 2);
+        return snapY ? anyvoc::LfoCurveDocument::snapValue (n, gridY) : n;
+    }
+    void updateViewProperties()
+    {
+        auto& props = getProperties();
+        props.set ("curveSelectionFirst", selectionFirst); props.set ("curveSelectionLast", selectionLast);
+        props.set ("curveGridX", gridX); props.set ("curveGridY", gridY);
+        props.set ("curveSnapX", snapX); props.set ("curveSnapY", snapY); props.set ("curveEditMode", editMode);
+    }
     juce::Point<float> graphPoint (float phase, float sample) const
     {
         const auto r = plotBounds();
@@ -2732,45 +2887,32 @@ private:
     // The operation outlives the component if a host callback closes the editor.
     // Mark every gesture closed before notifying the host, then use only this
     // independent state to balance the remaining gestures and sound transaction.
-    struct CurveEdit
+    struct CurveEdit : LfoCurveSnapshot
     {
-        AnyvocAudioProcessor& processor;
         std::weak_ptr<int> lifetime;
-        std::array<juce::RangedAudioParameter*, 46> parameters{};
-        std::array<float, 46> expected{};
         std::array<bool, 46> gesturing{};
-        std::uint64_t revision;
+        std::function<bool()> isCurrent;
         bool active = true;
 
-        CurveEdit (AnyvocAudioProcessor& p, const juce::String& prefixIn, std::weak_ptr<int> alive)
-            : processor (p), lifetime (std::move (alive)), revision (p.getHistoryRevision())
-        {
-            for (int i = 0; i < 33; ++i) parameters[(size_t) i] = p.apvts.getParameter (prefixIn + "Point" + juce::String (i));
-            parameters[33] = p.apvts.getParameter (prefixIn + "Interpolation");
-            parameters[34] = p.apvts.getParameter (prefixIn + "Shape");
-            parameters[35] = p.apvts.getParameter (prefixIn + "Kind");
-            const std::array<const char*, 10> additional { "Rate", "Sync", "Division", "Mode", "Phase", "Direction", "FollowSwing", "AudioRateEnabled", "AudioRateHz", "Chaos" };
-            for (size_t i = 0; i < additional.size(); ++i) parameters[i + 36] = p.apvts.getParameter (prefixIn + additional[i]);
-            for (size_t i = 0; i < parameters.size(); ++i) expected[i] = parameters[i]->getValue();
-        }
+        CurveEdit (AnyvocAudioProcessor& p, const juce::String& prefixIn, std::weak_ptr<int> alive, std::function<bool()> current)
+            : LfoCurveSnapshot (p, prefixIn), lifetime (std::move (alive)), isCurrent (std::move (current)) {}
         bool valid() const
         {
-            if (! active || lifetime.expired() || processor.getHistoryRevision() != revision) return false;
-            for (size_t i = 0; i < parameters.size(); ++i)
-                if (parameters[i]->getValue() != expected[i]) return false;
-            return true;
+            return active && ! lifetime.expired() && (! isCurrent || isCurrent()) && LfoCurveSnapshot::valid();
         }
         bool write (int slot, float plain)
         {
             if (! valid()) { finish(); return false; }
             auto* parameter = parameters[(size_t) slot];
+            const float target = parameter->convertTo0to1 (parameter->convertFrom0to1 (parameter->convertTo0to1 (plain)));
+            if (target == expected[(size_t) slot]) return true;
             if (! gesturing[(size_t) slot])
             {
                 gesturing[(size_t) slot] = true;
                 parameter->beginChangeGesture();
                 if (! valid()) { finish(); return false; }
             }
-            expected[(size_t) slot] = parameter->convertTo0to1 (parameter->convertFrom0to1 (parameter->convertTo0to1 (plain)));
+            expected[(size_t) slot] = target;
             processor.setUserParameter (parameter->paramID, plain);
             if (! valid()) { finish(); return false; }
             return true;
@@ -2785,12 +2927,14 @@ private:
             processor.endUserEdit();
         }
     };
-    std::shared_ptr<CurveEdit> beginStroke (const juce::String& label)
+    std::shared_ptr<CurveEdit> beginStroke (const juce::String& label, std::function<bool()> isCurrent = {})
     {
         const juce::Component::SafePointer<LfoCurveEditor> safe (this);
+        const LfoCurveSnapshot entry (processor, prefix);
         endStroke();
-        if (safe == nullptr || lfoIsChaos (processor.getLfoShape (index))) return {};
-        auto edit = std::make_shared<CurveEdit> (processor, prefix, lifetime);
+        if (safe == nullptr || ! canEdit() || ! entry.valid() || (isCurrent && ! isCurrent())) return {};
+        auto edit = std::make_shared<CurveEdit> (processor, prefix, lifetime,
+            [safe, current = std::move (isCurrent)] { return safe != nullptr && safe->canEdit() && (! current || current()); });
         stroke = edit;
         processor.beginUserEdit (label);
         if (! edit->valid()) { edit->finish(); return {}; }
@@ -2802,18 +2946,255 @@ private:
     juce::Colour accent;
     float lastValue = 0;
     bool drawing = false;
+    int selectionFirst = 0, selectionLast = 32, selectionAnchor = 0, editMode = 0, gridX = 32, gridY = 4;
+    bool selecting = false, snapX = false, snapY = false, toolView = false;
     std::shared_ptr<int> lifetime = std::make_shared<int> (0);
     std::shared_ptr<CurveEdit> stroke;
     LfoChaosTrace chaosTrace;
 
 };
 
+class DefaultLfoCurveServices final : public LfoCurveServices,
+                                      public std::enable_shared_from_this<DefaultLfoCurveServices>
+{
+public:
+    juce::String readClipboard() override { return juce::SystemClipboard::getTextFromClipboard(); }
+    void writeClipboard (const juce::String& text) override { juce::SystemClipboard::copyTextToClipboard (text); }
+    void chooseCurveFile (bool save, std::function<void (juce::File)> completion) override
+    {
+        chooser = std::make_unique<juce::FileChooser> (save ? "Save LFO curve" : "Load LFO curve",
+            juce::File::getSpecialLocation (juce::File::userDocumentsDirectory).getChildFile ("My Curve.anycurve"), "*.anycurve");
+        const int flags = save ? juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles | juce::FileBrowserComponent::warnAboutOverwriting
+                               : juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles;
+        chooser->launchAsync (flags, [weak = weak_from_this(), completion = std::move (completion)] (const juce::FileChooser& selected)
+        {
+            if (auto keepAlive = weak.lock())
+            {
+                const auto file = selected.getResult();
+                completion (file);
+            }
+        });
+    }
+private:
+    std::unique_ptr<juce::FileChooser> chooser;
+};
+
+class LfoDrawingTools final : public juce::Component
+{
+public:
+    LfoDrawingTools (AnyvocAudioProcessor& p, int indexIn, LfoCurveEditor& canvasIn,
+                     juce::Colour colour, std::shared_ptr<LfoCurveServices> servicesIn)
+        : processor (p), index (indexIn), prefix ("lfo" + juce::String (indexIn + 1)),
+          canvas (canvasIn), accent (colour), services (std::move (servicesIn))
+    {
+        setComponentID (prefix + "ToolsPanel");
+        const auto box = [this] (juce::ComboBox& control, const char* suffix, juce::Rectangle<int> bounds, const juce::String& tip)
+        {
+            addAndMakeVisible (control); control.setComponentID (prefix + suffix); control.setTitle (suffix);
+            control.setBounds (bounds); control.setTooltip (tip);
+        };
+        box (editMode, "EditMode", { 0, 18, 104, 26 }, "Draw edits points. Select drags an inclusive range without changing sound.");
+        editMode.addItem ("Draw", 1); editMode.addItem ("Select", 2); editMode.setSelectedId (1, juce::dontSendNotification);
+        box (gridX, "GridX", { 124, 18, 66, 26 }, "Horizontal divisions across the whole cycle. Snap X rounds to the nearest grid point.");
+        box (gridY, "GridY", { 292, 18, 66, 26 }, "Vertical divisions across -1 to +1. Exact half-grid positions round upwards.");
+        for (int division : { 1, 2, 4, 8, 16, 32 })
+        {
+            gridX.addItem (juce::String (division), division); gridY.addItem (juce::String (division), division);
+        }
+        gridX.setSelectedId (32, juce::dontSendNotification); gridY.setSelectedId (4, juce::dontSendNotification);
+        for (auto* control : { &editMode, &gridX, &gridY }) control->onChange = [this] { updateCanvasTools(); };
+        const auto toggle = [this] (juce::ToggleButton& control, const char* suffix, int x, const char* title)
+        {
+            addAndMakeVisible (control); control.setComponentID (prefix + suffix); control.setButtonText (title);
+            control.setBounds (x, 18, 78, 26); control.setTooltip ("Snapping affects new drawing only; existing points are unchanged.");
+            control.onClick = [this] { updateCanvasTools(); };
+        };
+        toggle (snapX, "SnapX", 196, "SNAP X"); toggle (snapY, "SnapY", 364, "SNAP Y");
+        const auto button = [this] (juce::TextButton& control, const char* suffix, const char* title,
+                                    juce::Rectangle<int> bounds, const juce::String& tip)
+        {
+            addAndMakeVisible (control); control.setComponentID (prefix + suffix); control.setButtonText (title);
+            control.setBounds (bounds); control.setTooltip (tip);
+        };
+        button (selectAll, "SelectAll", "SELECT ALL", { 464, 18, 106, 26 }, "Select all 33 points. This does not change sound or undo history.");
+        button (flipX, "FlipX", "FLIP X", { 582, 18, 84, 26 }, "Reverse the selected points horizontally. Points outside the selection stay unchanged.");
+        button (flipY, "FlipY", "FLIP Y", { 678, 18, 84, 26 }, "Invert selected values around zero. One undoable edit.");
+        selectAll.onClick = [this] { if (canOperate()) { canvas.selectAll(); repaint(); } };
+        flipX.onClick = [this] { flip (false); }; flipY.onClick = [this] { flip (true); };
+        const auto slider = [this] (juce::Slider& control, const char* suffix, juce::Rectangle<int> bounds,
+                                    double minimum, double maximum, double initial, const juce::String& tip)
+        {
+            addAndMakeVisible (control); control.setComponentID (prefix + suffix); control.setTitle (suffix);
+            control.setSliderStyle (juce::Slider::LinearHorizontal); control.setTextBoxStyle (juce::Slider::TextBoxRight, false, 62, 24);
+            styleSliderText (control); control.setScrollWheelEnabled (false); control.setBounds (bounds);
+            control.setRange (minimum, maximum, 0); control.setValue (initial, juce::dontSendNotification);
+            control.setDoubleClickReturnValue (true, initial); control.setNumDecimalPlacesToDisplay (3); control.setTooltip (tip);
+        };
+        slider (offsetX, "OffsetX", { 0, 72, 172, 26 }, -32, 32, 0, "Move by point units: 1 point = 1/32 cycle. APPLY commits; values outside the fixed selection hold its endpoint.");
+        slider (offsetY, "OffsetY", { 190, 72, 172, 26 }, -2, 2, 0, "Add this value after vertical scaling, clamped to -1..+1. APPLY commits.");
+        slider (scaleX, "ScaleX", { 380, 72, 172, 26 }, .25, 4, 1, "Scale width around the selection midpoint. 1 is unchanged. APPLY commits.");
+        slider (scaleY, "ScaleY", { 570, 72, 172, 26 }, 0, 4, 1, "Scale height around zero. 0 makes a flat selection. APPLY commits.");
+        button (apply, "ApplyTransform", "APPLY TRANSFORM", { 784, 72, 232, 26 }, "Apply the four staged values to the fixed selection as one undo step. Identity leaves sound and history unchanged.");
+        apply.onClick = [this]
+        {
+            if (! canOperate()) return;
+            const auto before = canvas.readCurve(); anyvoc::LfoCurveData after;
+            if (anyvoc::LfoCurveDocument::transform (before, canvas.firstSelected(), canvas.lastSelected(),
+                    (float) offsetX.getValue(), (float) offsetY.getValue(), (float) scaleX.getValue(), (float) scaleY.getValue(), after))
+                applyCurve (after, "Transform LFO curve");
+        };
+        box (pointIndex, "PointIndex", { 0, 122, 76, 26 }, "Point 1 is the start and point 33 is the end. Selecting a point does not change sound.");
+        for (int i = 1; i <= 33; ++i) pointIndex.addItem (juce::String (i), i);
+        pointIndex.setSelectedId (1, juce::dontSendNotification);
+        slider (pointValue, "PointValue", { 90, 122, 152, 26 }, -1, 1, 0, "Precise point value from -1 to +1. SET commits only this point; grid snapping does not affect numeric entry.");
+        pointIndex.onChange = [this] { if (canOperate()) refreshPoint (true); };
+        button (setPoint, "SetPoint", "SET", { 252, 122, 60, 26 }, "Apply the staged value to this one point as one undo step.");
+        setPoint.onClick = [this]
+        {
+            if (! canOperate()) return;
+            auto data = canvas.readCurve(); data.points[(size_t) juce::jlimit (0, 32, pointIndex.getSelectedId() - 1)] = (float) pointValue.getValue();
+            applyCurve (data, "Set LFO curve point");
+        };
+        button (copy, "CopyCurve", "COPY CURVE", { 336, 122, 132, 26 }, "Copy all 33 points and interpolation as reusable curve XML; selection and timing settings are excluded.");
+        button (paste, "PasteCurve", "PASTE CURVE", { 480, 122, 132, 26 }, "Paste a complete Anyvoc curve, replacing all 33 points and interpolation and selecting Custom. Timing settings are kept.");
+        button (load, "LoadCurve", "LOAD CURVE", { 624, 122, 132, 26 }, "Load a .anycurve asset (up to 16 KiB) and select Custom. It is not a sound preset; timing settings are kept.");
+        button (save, "SaveCurve", "SAVE CURVE", { 768, 122, 132, 26 }, "Save all 33 points and interpolation as a .anycurve asset without changing sound or undo history.");
+        copy.onClick = [this] { copyCurve(); }; paste.onClick = [this] { pasteCurve(); };
+        load.onClick = [this] { chooseFile (false); }; save.onClick = [this] { chooseFile (true); };
+        addAndMakeVisible (status); status.setComponentID (prefix + "ToolsStatus"); status.setBounds (0, 151, 1016, 16);
+        status.setFont (font (9)); status.setColour (juce::Label::textColourId, secondaryText); status.setInterceptsMouseClicks (false, false);
+        message ("Select a range, stage a transform, then APPLY. COPY / SAVE always use the whole curve.");
+    }
+    bool canOperate() const { return matrixHierarchyVisible (this) && isEnabled() && canvas.canEdit(); }
+    void invalidatePending() { ++requestSerial; }
+    void visibilityChanged() override { if (! matrixHierarchyVisible (this)) invalidatePending(); }
+    void refresh()
+    {
+        setEnabled (! lfoIsChaos (processor.getLfoShape (index)));
+        setAlpha (isEnabled() ? 1.0f : .35f);
+        refreshPoint (false); repaint();
+    }
+    void paint (juce::Graphics& g) override
+    {
+        drawText (g, "EDIT MODE", { 0, 0, 104, 16 }, 9);
+        drawText (g, "X GRID", { 124, 0, 66, 16 }, 9); drawText (g, "Y GRID", { 292, 0, 66, 16 }, 9);
+        drawText (g, "SELECTED  " + juce::String (canvas.firstSelected() + 1) + " - " + juce::String (canvas.lastSelected() + 1),
+                  { 784, 18, 232, 26 }, 10, accent, true, juce::Justification::centredRight);
+        const juce::StringArray labels { "X OFFSET / POINTS", "Y OFFSET / VALUE", "WIDTH / MULTIPLIER", "HEIGHT / MULTIPLIER" };
+        for (int i = 0; i < 4; ++i) drawText (g, labels[i], { i * 190, 54, 172, 16 }, 9);
+        drawText (g, "POINT", { 0, 104, 76, 16 }, 9); drawText (g, "VALUE / -1 TO +1", { 90, 104, 222, 16 }, 9);
+        drawText (g, processor.getLfoShape (index) == 4 ? "SAVED CUSTOM CURVE" : "FULL CURVE / POINTS + INTERPOLATION",
+                  { 336, 104, 564, 16 }, 9, accent);
+    }
+private:
+    void updateCanvasTools()
+    {
+        if (! canOperate()) return;
+        const juce::Component::SafePointer<LfoDrawingTools> safe (this);
+        canvas.setViewTools (editMode.getSelectedId() - 1, gridX.getSelectedId(), gridY.getSelectedId(), snapX.getToggleState(), snapY.getToggleState());
+        if (safe != nullptr) repaint();
+    }
+    void refreshPoint (bool force)
+    {
+        const int point = juce::jlimit (0, 32, pointIndex.getSelectedId() - 1);
+        const float n = canvas.readCurve().points[(size_t) point];
+        if (force || lastPointIndex != point || n != lastPointValue)
+        {
+            pointValue.setValue (n, juce::dontSendNotification); lastPointIndex = point; lastPointValue = n;
+        }
+    }
+    void message (const juce::String& text) { status.setText (text, juce::dontSendNotification); status.setTooltip (text); }
+    std::function<bool()> currentGuard()
+    {
+        const juce::Component::SafePointer<LfoDrawingTools> safe (this); const auto serial = requestSerial;
+        return [safe, serial] { return safe != nullptr && safe->requestSerial == serial && safe->canOperate(); };
+    }
+    void applyCurve (const anyvoc::LfoCurveData& data, const juce::String& label, bool replaceAsset = false)
+    {
+        if (! canOperate()) return;
+        const juce::Component::SafePointer<LfoDrawingTools> safe (this);
+        const bool unchanged = ! canvas.dataWouldChange (data, replaceAsset);
+        const bool applied = canvas.applyData (data, label, replaceAsset, currentGuard());
+        if (safe == nullptr) return;
+        message (applied ? unchanged ? "Curve unchanged; no undo step added." : "Curve applied. UNDO restores the previous sound." : "Edit cancelled because the sound or view changed.");
+        refreshPoint (true);
+    }
+    void flip (bool vertical)
+    {
+        if (! canOperate()) return;
+        auto data = canvas.readCurve();
+        const bool valid = vertical ? anyvoc::LfoCurveDocument::flipVertical (data, canvas.firstSelected(), canvas.lastSelected())
+                                    : anyvoc::LfoCurveDocument::flipHorizontal (data, canvas.firstSelected(), canvas.lastSelected());
+        if (valid) applyCurve (data, vertical ? "Flip LFO curve vertically" : "Flip LFO curve horizontally");
+    }
+    void copyCurve()
+    {
+        if (! canOperate()) return;
+        const juce::Component::SafePointer<LfoDrawingTools> safe (this); auto service = services;
+        const auto text = anyvoc::LfoCurveDocument::serialize (canvas.readCurve());
+        if (text.isEmpty()) { message ("Unable to copy this curve."); return; }
+        service->writeClipboard (text);
+        if (safe != nullptr && canOperate()) message ("Copied all 33 points and interpolation. Paste into another LFO or instance.");
+    }
+    void pasteCurve()
+    {
+        if (! canOperate()) return;
+        const juce::Component::SafePointer<LfoDrawingTools> safe (this); auto service = services;
+        const LfoCurveSnapshot snapshot (processor, prefix); const auto current = currentGuard();
+        const auto text = service->readClipboard();
+        if (safe == nullptr || ! current() || ! snapshot.valid()) return;
+        anyvoc::LfoCurveData data; const auto result = anyvoc::LfoCurveDocument::parse (text, data);
+        if (result.failed()) { message ("Cannot paste curve: " + result.getErrorMessage()); return; }
+        if (current() && snapshot.valid()) applyCurve (data, "Paste LFO curve", true);
+    }
+    void chooseFile (bool saving)
+    {
+        if (! canOperate()) return;
+        invalidatePending(); const auto current = currentGuard();
+        const juce::Component::SafePointer<LfoDrawingTools> safe (this); auto service = services;
+        auto snapshot = std::make_shared<LfoCurveSnapshot> (processor, prefix); const auto data = canvas.readCurve();
+        auto replied = std::make_shared<bool> (false);
+        service->chooseCurveFile (saving, [safe, current, snapshot, data, saving, replied] (juce::File file)
+        {
+            if (*replied) return;
+            *replied = true;
+            if (safe == nullptr || ! current() || ! snapshot->valid()) return;
+            if (file == juce::File()) { safe->message ("Curve file selection cancelled."); return; }
+            if (saving)
+            {
+                if (file.getFileExtension().isEmpty()) file = file.withFileExtension ("anycurve");
+                const auto result = anyvoc::LfoCurveDocument::saveFile (file, data);
+                if (safe != nullptr) safe->message (result.wasOk() ? "Curve saved: " + file.getFileName() : "Cannot save curve: " + result.getErrorMessage());
+                return;
+            }
+            anyvoc::LfoCurveData loaded; const auto result = anyvoc::LfoCurveDocument::loadFile (file, loaded);
+            if (safe == nullptr || ! current() || ! snapshot->valid()) return;
+            if (result.failed()) { safe->message ("Cannot load curve: " + result.getErrorMessage()); return; }
+            safe->applyCurve (loaded, "Load LFO curve", true);
+        });
+    }
+    AnyvocAudioProcessor& processor;
+    int index;
+    juce::String prefix;
+    LfoCurveEditor& canvas;
+    juce::Colour accent;
+    std::shared_ptr<LfoCurveServices> services;
+    juce::ComboBox editMode, gridX, gridY, pointIndex;
+    juce::ToggleButton snapX, snapY;
+    juce::Slider offsetX, offsetY, scaleX, scaleY, pointValue;
+    juce::TextButton selectAll, flipX, flipY, apply, setPoint, copy, paste, load, save;
+    juce::Label status;
+    int lastPointIndex = -1;
+    float lastPointValue = 0;
+    std::uint64_t requestSerial = 0;
+};
+
 class LfoDetail final : public juce::Component
 {
 public:
-    LfoDetail (AnyvocAudioProcessor& p, int indexIn, juce::Colour colour)
+    LfoDetail (AnyvocAudioProcessor& p, int indexIn, juce::Colour colour, std::shared_ptr<LfoCurveServices> services)
         : processor (p), index (indexIn), prefix ("lfo" + juce::String (indexIn + 1)), accent (colour),
-          canvas (p, indexIn, colour), rateMode (p, indexIn),
+          canvas (p, indexIn, colour), drawingTools (p, indexIn, canvas, colour, std::move (services)), rateMode (p, indexIn),
           phase (p, prefix + "Phase", "START PHASE", "Reading offset in a repeating LFO cycle. 360 degrees wraps to zero. Phase and its modulation have no effect on Random, Lorenz or Rossler.", Unit::degrees, colour),
           swing (p, "swingAmount", "GLOBAL SWING", "Shared timing feel for all tempo-synchronized LFOs with FOLLOW SWING enabled. 0% is straight 50:50; 100% is 75:25.", Unit::percent, colour),
           division (p, prefix + "Division", "BEAT DIVISION", lfoDivisions, "Rate relative to the current tempo. T is triplet; D is dotted. For chaos, the beat division controls evolution speed, not a repeating cycle.",
@@ -2852,6 +3233,15 @@ public:
             button.onClick = [this, i] { canvas.applyCurve (i); };
             button.setTooltip ("Replace the custom curve with " + names[i].toLowerCase() + ". You can draw over it immediately.");
         }
+        addAndMakeVisible (toolsButton); toolsButton.setButtonText ("TOOLS");
+        toolsButton.setComponentID (prefix + "Tools"); toolsButton.setBounds (962, 361, 106, 26);
+        toolsButton.setTooltip ("Switch the lower panel between playback controls and curve tools. The graph and keyboard remain available.");
+        toolsButton.onClick = [this]
+        {
+            if (! matrixHierarchyVisible (this) || ! finishDrawing() || ! matrixHierarchyVisible (this)) return;
+            toolsOpen = ! toolsOpen; drawingTools.invalidatePending(); refresh();
+        };
+        addChildComponent (drawingTools); drawingTools.setBounds (52, 399, 1016, 167);
         addAndMakeVisible (rateMode); rateMode.setBounds (52, 399, 184, 47);
         const auto setupRate = [this] (SoundSlider& slider, const juce::String& suffix, int requiredMode)
         {
@@ -2896,14 +3286,20 @@ public:
         canvas.endStroke();
         return safe != nullptr;
     }
-    void close() { if (finishDrawing()) setVisible (false); }
+    void close() { if (finishDrawing()) { drawingTools.invalidatePending(); setVisible (false); } }
+    void visibilityChanged() override { if (! matrixHierarchyVisible (this)) drawingTools.invalidatePending(); }
     bool refresh()
     {
         const juce::Component::SafePointer<LfoDetail> safe (this);
         const int speedMode = processor.getLfoRateMode (index);
-        rate.setVisible (speedMode == 0); if (safe == nullptr) return false;
-        audioRate.setVisible (speedMode == 2); if (safe == nullptr) return false;
-        division.setVisible (speedMode == 1); if (safe == nullptr) return false;
+        rate.setVisible (! toolsOpen && speedMode == 0); if (safe == nullptr) return false;
+        audioRate.setVisible (! toolsOpen && speedMode == 2); if (safe == nullptr) return false;
+        division.setVisible (! toolsOpen && speedMode == 1); if (safe == nullptr) return false;
+        const std::array<juce::Component*, 9> playbackControls { &rateMode, &mode, &direction, &shape, &phase, &followSwing, &swing, &swingGrid, &interpolation };
+        for (auto* control : playbackControls) { control->setVisible (! toolsOpen); if (safe == nullptr) return false; }
+        drawingTools.setVisible (toolsOpen); if (safe == nullptr) return false;
+        canvas.setToolsVisible (toolsOpen);
+        toolsButton.setButtonText (toolsOpen ? "CONTROLS" : "TOOLS");
         const int currentShape = processor.getLfoShape (index);
         const bool periodic = lfoHasPhase (currentShape), chaos = lfoIsChaos (currentShape);
         phase.setEnabled (periodic); if (safe == nullptr) return false;
@@ -2924,7 +3320,7 @@ public:
         }
         rate.updateText(); if (safe == nullptr) return false;
         audioRate.updateText(); if (safe == nullptr) return false;
-        rateMode.refresh(); shape.refresh(); canvas.refresh(); repaint();
+        rateMode.refresh(); shape.refresh(); canvas.refresh(); drawingTools.refresh(); repaint();
         selector.setSelectedItemIndex (index, juce::dontSendNotification);
         return true;
     }
@@ -2940,7 +3336,8 @@ public:
         drawText (g, chaos ? "EVOLVING CHAOS / REAL ENGINE TRAJECTORY / SPEED IS NOT A REPEAT FREQUENCY"
                           : "DRAW ACROSS THE GRAPH TO CREATE YOUR OWN MOVEMENT", { 52, 156, 1016, 15 }, 9, secondaryText, true);
         drawText (g, chaos ? "DRAWING OFF  /  SAVED CUSTOM POINTS ARE KEPT"
-                          : "33 POINTS  /  DASHED: START  /  WHITE: LIVE READ POSITION", { 516, 361, 552, 26 }, 9, secondaryText, false, juce::Justification::centredRight);
+                          : "33 POINTS  /  DASHED: START  /  WHITE: LIVE READ", { 516, 361, 432, 26 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
+        if (toolsOpen) return;
         const int speedMode = processor.getLfoRateMode (index);
         if (speedMode != 1) drawText (g, chaos ? "EVOLUTION SPEED" : speedMode == 2 ? "AUDIO RATE / HZ" : "RATE / HZ", { 260, 399, 184, 16 }, 10.5f);
         const bool following = speedMode == 1 && value (processor, prefix + "FollowSwing") > .5f;
@@ -2972,12 +3369,14 @@ private:
     juce::String prefix;
     juce::Colour accent;
     LfoCurveEditor canvas;
+    LfoDrawingTools drawingTools;
     LfoRateModeChoice rateMode;
     Knob phase, swing;
     SoundSlider rate, audioRate;
     Choice division, mode, direction, swingGrid, interpolation;
     LfoShapeChoice shape;
-    juce::TextButton closeButton;
+    juce::TextButton closeButton, toolsButton;
+    bool toolsOpen = false;
     juce::ComboBox selector;
     std::array<juce::TextButton, 5> curveButtons;
     juce::ToggleButton sync, followSwing;
@@ -4508,7 +4907,7 @@ public:
         const juce::StringArray descriptions {
             "Open BROWSE to search factory and user sounds, then choose LOAD SOUND.\nClick the piano keys or send MIDI. INIT gives you a simple sound to build from.",
             "Choose Wavetable, Sample or Granular. Drop in a WAV; EDIT opens source controls.\nWARP reshapes wavetables; FM / PM / AM / RM use another source, even at LEVEL 0.",
-            "SOURCES: 10 LFOs, 4 envelopes, 8 macros. MOD: 32 routes with curve and AUX.\nLFO EDIT: draw a curve or choose Lorenz / Rossler for evolving chaos and a live trajectory.",
+            "SOURCES: 10 LFOs, 4 envelopes, 8 macros. MOD: 32 routes with curve and AUX.\nLFO TOOLS: grid, selection, transforms and .anycurve files. Chaos shows a live trajectory.",
             "Envelope EDIT opens six stages, draggable curves, BPM timing and Legato retrigger.\nTry FX for space, then SAVE your sound as an .anyvoc file."
         };
         for (int i = 0; i < 4; ++i)
@@ -4535,10 +4934,12 @@ class AnyvocAudioProcessorEditor::Interface final : public juce::Component,
                                                   private juce::Timer
 {
 public:
-    explicit Interface (AnyvocAudioProcessor& processorIn, juce::File libraryDirectory, juce::File librarySettings)
+    explicit Interface (AnyvocAudioProcessor& processorIn, juce::File libraryDirectory, juce::File librarySettings,
+                        std::shared_ptr<LfoCurveServices> services)
         : processor (processorIn),
           presetLibrary (processorIn.getPresetNames(), libraryDirectory == juce::File() ? anyvoc::PresetLibrary::defaultPresetDirectory() : libraryDirectory,
                          librarySettings == juce::File() ? anyvoc::PresetLibrary::defaultSettingsFile() : librarySettings),
+          curveServices (services != nullptr ? std::move (services) : std::make_shared<DefaultLfoCurveServices>()),
           keyboard (processor.keyboardState, juce::MidiKeyboardComponent::horizontalKeyboard),
           tooltip (this, 650)
     {
@@ -5225,7 +5626,7 @@ private:
     {
         for (int i = 0; i < 10; ++i)
         {
-            lfoDetails[(size_t) i] = std::make_unique<LfoDetail> (processor, i, i % 2 == 0 ? mint : lilac);
+            lfoDetails[(size_t) i] = std::make_unique<LfoDetail> (processor, i, i % 2 == 0 ? mint : lilac, curveServices);
             addChildComponent (*lfoDetails[(size_t) i]);
             lfoDetails[(size_t) i]->onSelectLfo = [this] (int selected) { openLfoDetail (selected); };
             registerModulationTarget (lfoDetails[(size_t) i]->phaseControl(), anyvoc::lfoPhaseDestinationId (i));
@@ -5261,7 +5662,7 @@ private:
         lfoDetails[(size_t) index]->setVisible (true);
         if (safe == nullptr) return;
         lfoDetails[(size_t) index]->toFront (false);
-        status = "LFO Lab: draw a curve or choose Lorenz / Rossler to see chaos evolve. Periodic shapes also support Phase and Direction.";
+        status = "LFO Lab: TOOLS opens selection, grid, transforms and reusable curve files. Lorenz / Rossler show actual chaos motion.";
     }
 
     bool refreshLfoCards()
@@ -5597,7 +5998,7 @@ private:
         drawText (g, "-60", { 1081, 710, 18, 12 }, 7);
         drawText (g, "0", { 1081, 647, 16, 12 }, 7);
         drawText (g, status, { 26, 744, 930, 13 }, 9, secondaryText);
-        drawText (g, "ANYVOC  /  0.17", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
+        drawText (g, "ANYVOC  /  0.18", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
     }
 
     void showPage (int index)
@@ -5822,6 +6223,7 @@ private:
 
     AnyvocAudioProcessor& processor;
     anyvoc::PresetLibrary presetLibrary;
+    std::shared_ptr<LfoCurveServices> curveServices;
     InstrumentLookAndFeel lookAndFeel;
     juce::Component synthPage, modPage, fxPage, filterPage;
     std::array<juce::TextButton, 4> tabs;
@@ -5889,8 +6291,9 @@ private:
     juce::String status = "Ready. Choose a preset, play a note, and make it yours.";
 };
 
-AnyvocAudioProcessorEditor::AnyvocAudioProcessorEditor (AnyvocAudioProcessor& processor, juce::File libraryDirectory, juce::File librarySettings)
-    : AudioProcessorEditor (&processor), interface (std::make_unique<Interface> (processor, std::move (libraryDirectory), std::move (librarySettings)))
+AnyvocAudioProcessorEditor::AnyvocAudioProcessorEditor (AnyvocAudioProcessor& processor, juce::File libraryDirectory, juce::File librarySettings,
+                                                      std::shared_ptr<LfoCurveServices> curveServices)
+    : AudioProcessorEditor (&processor), interface (std::make_unique<Interface> (processor, std::move (libraryDirectory), std::move (librarySettings), std::move (curveServices)))
 {
     setOpaque (true);
     setWantsKeyboardFocus (true);

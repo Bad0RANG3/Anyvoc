@@ -1,12 +1,14 @@
-# Anyvoc 0.17 使用手册
+# Anyvoc 0.18 使用手册
 
 这是一个原创 Windows 64 位合成器，提供 VST3 插件和可独立运行的程序，优先面向 FL Studio 的调音体验。它不是 Serum 2，不兼容 Serum 的预设文件，也不承诺声音或功能与 Serum 2 一致。
 
-0.17 已完成 Release 构建、四套共 175 组自动测试、pluginval strictness 5、音频数值对比和本机独立版操作检查。具体证据及未测项目见 [VALIDATION.md](VALIDATION.md)，最终发行包以 `dist/Anyvoc-0.17.0-PackageVerification.json` 打包报告为准。0.16 历史记录保留在 [VALIDATION-0.16.md](VALIDATION-0.16.md)。
+本页说明 0.18 的 LFO 绘图工具和既有功能。本轮本地 188 组测试全部通过（引擎 68、处理器 104、波表 10、音色库 6；总计 161.94 秒），pluginval strictness 5 验证成功，音频回归及下述限定范围的独立版原生操作已通过。旧声音与留存 0.17 程序重新渲染的结果逐字节相同，Motion / Chaos 演示重新渲染也与旧文件一致。
+
+0.18 本地 Windows 包与完整源码包已生成并通过校验，分别含 208 和 4,600 个文件，版本和逐文件内容与构建／源码一致；P1B 的当前约定范围已交付。0.18 GitHub CI 尚未执行，不能沿用旧版本的云端结果。具体范围见 [0.18 验证记录](VALIDATION-0.18.md)，当前汇总见 [VALIDATION.md](VALIDATION.md)，发行包以对应版本的打包报告为准。[0.17 历史验收](VALIDATION-0.17.md)及其 CI 记录不替代本轮验证；[0.16 历史记录](VALIDATION-0.16.md)也继续保留。
 
 ## 先听到声音
 
-1. 解压 `Anyvoc-0.17.0-Windows-x64.zip` 后双击 `Anyvoc.exe`，不需要启动 DAW。本地打包输出为 `dist/Anyvoc-0.17.0-Windows/`；请以该版本的打包报告确认产物完整。Chaos 功能需要 0.17，旧版程序中没有。原来的 `dist/Anyvoc-Windows/` 保留 0.2 版，0.3–0.16 版也保留在单独文件夹。
+1. 双击本地包中的 `dist/Anyvoc-0.18.0-Windows/Anyvoc.exe`，不需要启动 DAW。若使用 Windows ZIP，先完整解压再运行其中的 `Anyvoc.exe`。自行构建的入口是 `build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe`。绘图工具需要 0.18；0.17 及更早的历史程序、音频和包继续保留在各自目录。
 2. 点击顶部音色名称打开浏览器，搜索 `Northern Lights` 或 `Neon Skyline`，双击结果加载。
 3. 用鼠标按底部钢琴键。独立版的 Options / Audio settings 可选择输出设备，推荐 44.1 或 48 kHz、256 或 512 samples。
 4. 没声音时先检查电脑音量、输出设备、MASTER 和振荡器 LEVEL。PANIC 可以停止卡住的音符和效果尾音。
@@ -23,7 +25,7 @@
 
 如果当前用户目录没有自动出现在扫描路径中，用 Plugin search paths 左侧的文件夹加号添加该目录，再扫描。这是 [VST3 官方定义的用户目录](https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/Locations%2BFormat/Plugin%2BLocations.html)。
 
-插件向宿主提供的工程状态包含参数、导入/编辑的波表、采样、自绘 LFO、滤波路由、Warp、演奏与相位设置和音色名称。单独保存音色可点插件顶部 SAVE，生成 `.anyvoc` 文件，再用 LOAD 读取。0.17 使用 schema 13，支持读取 0.1–0.16 的音色；旧文件缺少的 Chaos 选项默认为 Off。新参数追加在原有参数后面，原 Shape / Kind 选项及宿主自动化映射保持不变。0.16 及更早版本不能读取新格式，请另存新音色并保留旧文件。状态迁移和保存/恢复已有自动测试；本次原生界面的 SAVE / LOAD 操作，以及 FL Studio 内的工程保存/重开仍待实测。
+插件向宿主提供的工程状态包含参数、导入/编辑的波表、采样、自绘 LFO、滤波路由、Warp、演奏与相位设置和音色名称。单独保存音色可点插件顶部 SAVE，生成 `.anyvoc` 文件，再用 LOAD 读取。0.17 引入的 schema 13 支持读取 0.1–0.16 的音色；旧文件缺少的 Chaos 选项默认为 Off，原 Shape / Kind 选项及宿主自动化映射保留。0.18 继续使用 schema 13 和 1,192 个参数，绘图工具不新增声音参数。0.16 及更早版本不能读取新格式，请另存新音色并保留旧文件。0.18 的自动回归测试已通过，包括状态保存/恢复；本轮还通过原生文件对话框实际保存并载入了独立的 `.anycurve` 曲线。完整 `.anyvoc` 音色的原生保存并重新打开，以及 FL Studio 内的工程保存/重开，本轮均未实测，不能用曲线文件验证代替。
 
 安装步骤参考 [FL Studio 官方手册](https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_externalplugins.htm)。Windows VST3 不能装进 Mac 的 Logic；AU/macOS 和 Pro Tools 的 AAX 尚未提供。其他支持 Windows VST3 的 DAW 需要分别实测。
 
@@ -105,11 +107,53 @@
 
 `Anyvoc-v0.16-Lfo-Motion-Demo.wav` 为 20 秒、每段 4 秒：Swing 0%、Swing 60%、60% 加反向、Phase Lantern 110 Hz、220 Hz。
 
+## 用 TOOLS 编辑和复用 LFO 曲线
+
+0.18 中，打开 **MOD → EDIT LFO**，点击快捷曲线按钮右侧的 **TOOLS**。下半区会换成绘图工具，画布和底部琴键仍可使用；点击同一位置的 **CONTROLS** 返回速度、波形和插值等控制。
+
+- **Draw / Select**：Draw 在画布上绘制；Select 拖出一段闭区间，包含左右两端的点。默认全选，**SELECT ALL** 可重新选中全部 33 点。界面编号 1–33，1 是起点，33 是终点。
+- **X GRID / Y GRID**：分别把一个周期、−1 到 +1 的高度分成 1、2、4、8、16 或 32 格。默认 X 为 32、Y 为 4，**SNAP X / SNAP Y** 均关闭；开启后只吸附新绘制的点，不改动已有点。正好处于半格时取右边或上边的位置。Select 不受吸附开关影响。
+- **FLIP X / FLIP Y**：只作用于选区。X 反转选中点的左右顺序；Y 把正负值互换，以 0 为中心。选区外的点保留。
+- **POINT / VALUE / SET**：选择第几个点，输入 −1 到 +1 的值，再点 SET 提交。选择点或输入暂存值都不会立刻改变声音，数值输入也不受网格吸附影响。
+
+四个变换数值先暂存，点击 **APPLY TRANSFORM** 才一次提交；一次有效操作可用顶部 **UNDO** 撤回：
+
+| 控件 | 作用 |
+| --- | --- |
+| X OFFSET / POINTS | 在选区内左右移动，范围 −32 到 +32 点；1 点等于一个周期的 1/32 |
+| Y OFFSET / VALUE | 在高度缩放后加上此值，范围 −2 到 +2，结果限制在 −1 到 +1 |
+| WIDTH / MULTIPLIER | 围绕选区中点缩放宽度，0.25–4 倍，1 为原宽度 |
+| HEIGHT / MULTIPLIER | 围绕 0 缩放高度，0–4 倍；0 变平，1 为原高度 |
+
+变换保持选区位置固定，不把点移动到选区外；横向取样越过边界时保持选区端点值，不绕回另一端。只有选区内的值发生变化。APPLY 后暂存数值仍保留，再次点击会把同一变换应用到已经改变的曲线上。
+
+**点值精度仍为 0.01。** VALUE 虽然显示三位小数，提交到现有 LFO 点参数时仍按 0.01 的精度存储，绘图、变换、SET、粘贴和文件载入都遵守这个边界。例如 0.125 写入后约为 0.13，0.0625 约为 0.06，因此细网格上的位置写入后可能略有偏移。文件可表达更精细的小数，但载入后的声音采用实际存下来的点值；再次 COPY / SAVE CURVE 导出的是这些实际值。
+
+**COPY CURVE / PASTE CURVE** 可以跨 LFO、跨插件实例复用整条曲线。**SAVE CURVE / LOAD CURVE** 使用独立的 `.anycurve` 文件，最多 16 KiB。两种方式都只包含全部 33 点和 Linear / Step 插值；不包含选区、网格、速度、BPM、播放模式、相位、方向、调制路由或完整音色。SAVE CURVE 不等于顶部保存 `.anyvoc` 音色的 SAVE。无效或过大的曲线会显示错误并保留当前声音。
+
+粘贴和载入是明确的整条资产替换，忽略选区，并切到 **Custom**。即使点值恰好等于当前 Sine 等基础波形的采样点，或等于 Random 保存的旧自绘点，也会选择 Custom，并形成一次可撤销的声音编辑；连续的基础波形不等同于 33 点插值。已经是 Custom 时重复粘贴或载入相同实际数据，不增加撤销记录。与此不同，没有实际变化的 FLIP、SET 或 APPLY 会保留当前波形，也不增加记录。
+
+对基础波形使用工具时，以当前可见波形的 33 个采样点为起点。Random 的工具页显示 **SAVED CUSTOM CURVE**，操作的是此前保存的自绘曲线，图中不是 Random 的实时输出。Lorenz / Rossler 下可打开工具页，但所有曲线工具禁用；返回 CONTROLS 切换波形后才能编辑。以前保存的点和工具设置仍保留。
+
+选区、Draw / Select、网格与吸附、暂存变换值和工具页开关只属于当前编辑器界面；各 LFO 独立保存这些查看状态，它们不写入音色、工程或曲线文件，也不进入声音撤销历史。COPY / SAVE CURVE 本身不改变声音。等待文件选择时若关闭工具页、切换 LFO 或改变相关声音状态，迟到的载入或保存会取消，请回到当前页面重新操作。
+
+试一次组合编辑：
+
+1. 加载 **Motion / Painted Steps**，打开 **MOD → LFO 1 → EDIT LFO → TOOLS**，选择 **Select**。
+2. 在画布上从第 **9** 点拖到第 **25** 点，确认工具栏显示 **SELECTED 9 - 25**。这两端也包含在选区内。
+3. 将 **X OFFSET** 设为 **2**、**Y OFFSET** 设为 **0.1**、**WIDTH** 设为 **1.5**、**HEIGHT** 设为 **0.7**。此时只是在准备操作，声音还没有变化。
+4. 按住底部琴键，再点 **APPLY TRANSFORM** 比较变化；点顶部 **UNDO** 恢复原曲线。选区和四个工具数值仍保留。
+5. 要另存修改后的曲线，先点 **REDO** 恢复编辑，再点 **SAVE CURVE**，使用新文件名如 `Painted Steps Variation.anycurve`。如果在 UNDO 后直接保存，存下的是撤销后的原曲线。
+
+本轮独立版原生验证使用 **Neon Skyline**：通过 SAVE CURVE 的系统文件对话框保存 `Native18-Sine.anycurve`（1,121 字节，独立解析确认 33 点），选择第 9–25 点、FLIP Y 后用一次 UNDO 复原；再通过 LOAD CURVE 载入该文件，回 CONTROLS 确认切到 Custom，按 C4 观察到绿色输出电平，UNDO 返回 Sine。最小窗口下工具与琴键没有裁切；打开 LOAD CURVE 后按 Escape 取消，声音状态保持。84 张预览已生成，新增 4 张工具预览逐张检查无裁切。
+
+本轮没有原生验证系统剪贴板复制粘贴，也未实测完整 `.anyvoc` 音色的原生保存并重新打开、外接 MIDI、真人听音评价或 DAW。自动测试通过可注入的平台服务覆盖复制粘贴和文件返回路径，不等同于这些原生操作均已完成。本地发行包校验已通过；0.18 CI 仍待运行。
+
 ## 用 Chaos LFO 做持续演化的调制
 
 0.17 的 **SHAPE** 菜单共有八项：Sine、Triangle、Saw、Square、Random、Custom、Lorenz、Rossler。后两项是连续混沌运动，没有固定的重复波形；不会把周期曲线或随机跳点当成混沌轨迹。MOD 主卡和 LFO Lab 使用同一个波形选择，十个 LFO 均可独立设置。
 
-本次工厂音色从 24 个增至 26 个，原音色保留。先从这两个新预设开始：
+0.17 将工厂音色从 24 个增至 26 个，0.18 保留这些音色。先从这两个 Chaos 预设开始：
 
 1. 在 **BROWSE** 搜索并加载 **Motion / Butterfly Current**，打开 **MOD → LFO 1 → EDIT LFO**。它使用 Lorenz、速度 1.80、Trigger，将 LFO 1 连到截止频率和 OSC A 波表位置。按住底部琴键，查看轨迹并听声音怎样变化；试着降低或提高 **EVOLUTION SPEED**，再用 **UNDO** 回到原值。
 2. 搜索 **Texture / Spiral Drift**。它使用 Rossler、速度 0.70、Free，调制截止频率与声像。保持发声，打开 LFO 1 的 Lab，对照左右运动和轨迹；切换 Lorenz / Rossler 可比较两种运动，再用 **UNDO** 恢复预设。
@@ -128,9 +172,9 @@ Chaos 下的 **RATE MODE** 仍有 Free Hz、Tempo、Audio Rate 三项。这些�
 
 Chaos 下 **START PHASE、DIRECTION、Custom Curve 插值、画布绘制和五个曲线按钮**不可用；相位拖放也不会新建路由。以前的相位、方向、自绘点和已有相位路由仍保留，但相位路由对 Chaos 不产生作用。选择 **Custom** 可继续编辑已保存的自绘曲线；选择周期波形后可重新使用 Phase / Direction。要让 Chaos 改变声音，使用它作为来源调制 CUTOFF、WAVE 或其他有效目标。
 
-`Anyvoc-v0.17-Chaos-Demo.wav` 是 20 秒对比：前 10 秒 Lorenz，后 10 秒 Rossler，使用相同音符、速度和增益条件。音频已完成独立 PCM 分析，旧声音示例与留存 0.16 程序重新渲染的结果一致；这不等于已完成人耳听音评价。
+`Anyvoc-v0.17-Chaos-Demo.wav` 是 20 秒对比：前 10 秒 Lorenz，后 10 秒 Rossler，使用相同音符、速度和增益条件。0.17 验收时已完成独立 PCM 分析，旧声音示例与留存 0.16 程序重新渲染的结果一致。0.18 本轮又重新渲染 Motion / Chaos 演示，与原文件逐字节一致，并以留存 0.17 程序核对旧声音。上述结果不等于已完成人耳听音评价。
 
-本机独立版已检查两种算法的实际 XYZ 与输出表、波形切换后撤销清空旧轨迹、速度修改与撤销、Free 无按键演化、Envelope 短音后读数保持，以及最小窗口布局。Envelope 整个名义周期的行为由自动测试验证，本次原生检查未单独计时完整周期。详细记录见 [VALIDATION.md](VALIDATION.md)。
+0.17 验收时，本机独立版已检查两种算法的实际 XYZ 与输出表、波形切换后撤销清空旧轨迹、速度修改与撤销、Free 无按键演化、Envelope 短音后读数保持，以及最小窗口布局。Envelope 整个名义周期的行为由当时的自动测试验证，原生检查未单独计时完整周期；这些记录不替代 0.18 本轮验证。历史详情见 [0.17 验证记录](VALIDATION-0.17.md)，本轮范围见 [0.18 验证记录](VALIDATION-0.18.md)。
 
 ## 在矩阵里控制调制
 
@@ -298,6 +342,8 @@ DAW 自动化不进入这个历史。如果自动化已改过某条记录涉及�
 0.16 已有并保留的能力：3 个波表/采样/颗粒振荡器、波形/1023 阶谐波强度与相位编辑、波形或频谱渐变与 32 帧波表管理、每个波表振荡器两层 Warp（6 种经典变形及 FM/PM/AM/RM）、每振荡器 1–7 重 Unison、16 复音与单音/连奏/滑音、波表起始相位与随机范围、Sub/Noise、双滤波器串并联与声源路由（各 3 类、12/24 dB）、四组可图形编辑、延迟/保持/曲率/节拍同步包络、10 个可绘制/节拍同步 LFO（相位、方向、Swing、20–1000 Hz 高速模式）、32 条调制路由、旁通、响应曲线、辅助源与拖放分配、LFO 相位目标、8 个 Macro、4 类效果、琶音器、24 个工厂预设、音色浏览/搜索/分类/收藏、64 步全局撤销/重做、WAV 导入/波表导出、参数自动化、MIDI 弯音（±2 半音）/调制轮/延音踏板、工程状态保存。
 
 0.17 新增：十个 LFO 的 Lorenz / Rossler 模式、真实 Chaos 轨迹显示，以及 Butterfly Current / Spiral Drift 两个工厂音色，总数 26 个。
+
+0.18 新增：LFO 网格吸附、闭区间选取、翻转与变换、单点数值编辑、跨 LFO/实例复制粘贴，以及独立 `.anycurve` 文件。仍为 1,192 个声音参数、schema 13、26 个工厂音色，生产 DSP 保持不变；本轮实现、本地测试、pluginval、音频回归与上述限定原生操作已完成，Windows／完整源码包校验通过，P1B 当前约定范围已交付；0.18 CI 未执行。
 
 尚未实现：多重采样映射、频谱振荡器引擎、MPE、Serum 预设互通、AU/AAX、完整的可访问性/中文界面。波表仍使用固定 2048 点帧长、最多 32 帧，没有公式编辑；频谱编辑只生成波表，不等同于实时频谱重合成振荡器。琶音器跟随 BPM，但不做宿主小节相位锁定。采样/颗粒的高音移调目前采用插值，未做多级抗混叠。高密度颗粒和高复音可能增加 CPU；请保留工程备份。
 

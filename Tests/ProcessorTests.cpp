@@ -3,6 +3,7 @@
 #include "PresetLibrary.h"
 #include "WavetableDocument.h"
 #include "ModulationView.h"
+#include "LfoCurveDocument.h"
 
 #include <algorithm>
 #include <cmath>
@@ -6469,6 +6470,694 @@ void testChaosShapeUiHostCallbacks()
         }
 }
 
+// The platform boundary is simulated; the actual buttons, snapshot guards,
+// codec, file I/O and sound history remain production code. No test reads or
+// overwrites the user's OS clipboard or opens a native chooser.
+struct MemoryLfoCurveServices final : LfoCurveServices
+{
+    juce::String clipboard;
+    int reads = 0, writes = 0;
+    bool replyImmediately = false;
+    juce::File immediateFile;
+    std::function<void()> onRead, onWrite;
+    struct Request { bool saving; std::function<void (juce::File)> completion; };
+    std::vector<Request> requests;
+    juce::String readClipboard() override
+    {
+        ++reads; const auto result = clipboard; const auto callback = onRead;
+        if (callback) callback();
+        return result;
+    }
+    void writeClipboard (const juce::String& text) override
+    {
+        ++writes; clipboard = text; const auto callback = onWrite;
+        if (callback) callback();
+    }
+    void chooseCurveFile (bool saving, std::function<void (juce::File)> completion) override
+    {
+        requests.push_back ({ saving, std::move (completion) });
+        if (replyImmediately) reply (requests.size() - 1, immediateFile);
+    }
+    void reply (size_t index, const juce::File& file)
+    {
+        require (index < requests.size() && static_cast<bool> (requests[index].completion), "Curve chooser reply had no live request");
+        auto completion = std::move (requests[index].completion); completion (file);
+    }
+};
+
+std::vector<juce::String> curveParameterIds (int lfo)
+{
+    const auto prefix = "lfo" + juce::String (lfo + 1);
+    std::vector<juce::String> result;
+    for (int point = 0; point < 33; ++point) result.push_back (prefix + "Point" + juce::String (point));
+    for (const auto* suffix : { "Interpolation", "Shape", "Kind", "Rate", "Sync", "Division", "Mode", "Phase",
+                               "Direction", "FollowSwing", "AudioRateEnabled", "AudioRateHz", "Chaos" })
+        result.push_back (prefix + suffix);
+    require (result.size() == 46, "Curve snapshot contract no longer contains 46 parameters");
+    return result;
+}
+
+std::unique_ptr<AnyvocAudioProcessorEditor> createCurveToolsEditor (AnyvocAudioProcessor& processor,
+    PresetTestDirectory& files, const std::shared_ptr<MemoryLfoCurveServices>& services, int lfo = 0)
+{
+    auto editor = std::make_unique<AnyvocAudioProcessorEditor> (processor,
+        files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml"), services);
+    editor->setVisible (true); editor->setSize (1008, 684); openLfoMotionLab (*editor, lfo);
+    clickMatrixControl (*editor, "lfo" + juce::String (lfo + 1) + "Tools");
+    return editor;
+}
+
+template <typename T>
+T& curveTool (juce::Component& editor, int lfo, const char* suffix)
+{
+    const auto id = "lfo" + juce::String (lfo + 1) + suffix;
+    auto* control = findComponent<T> (editor, id);
+    require (modulationControlVisible (control), "Curve control unavailable: " + id.toStdString());
+    return *control;
+}
+
+void setCurveToolSlider (juce::Component& editor, int lfo, const char* suffix, double value)
+    { curveTool<juce::Slider> (editor, lfo, suffix).setValue (value, juce::sendNotificationSync); }
+
+void setCurveToolToggle (juce::Component& editor, int lfo, const char* suffix, bool value)
+{
+    auto& control = curveTool<juce::Button> (editor, lfo, suffix);
+    control.setToggleState (value, juce::dontSendNotification);
+    require (static_cast<bool> (control.onClick), "Curve toggle lacked its real click handler"); control.onClick();
+}
+
+juce::Point<float> curveCanvasPosition (juce::Component& canvas, float point, float value)
+{
+    // The documented graph inset is 31px left / 15px right / 18px top/bottom.
+    // Events are in this component's design coordinates, even at minimum size.
+    return { 31.0f + (canvas.getWidth() - 46.0f) * point / 32.0f,
+             18.0f + (canvas.getHeight() - 36.0f) * (1.0f - value) * .5f };
+}
+
+void selectCurveRange (juce::Component& editor, int lfo, int first, int last)
+{
+    curveTool<juce::ComboBox> (editor, lfo, "EditMode").setSelectedId (2, juce::sendNotificationSync);
+    auto& canvas = curveTool<juce::Component> (editor, lfo, "Curve");
+    const auto start = curveCanvasPosition (canvas, (float) first, 0), end = curveCanvasPosition (canvas, (float) last, 0);
+    canvas.mouseDown (modulationMouseEvent (canvas, start, start));
+    canvas.mouseDrag (modulationMouseEvent (canvas, end, start)); canvas.mouseUp (modulationMouseEvent (canvas, end, start));
+    require ((int) canvas.getProperties()["curveSelectionFirst"] == std::min (first, last)
+                 && (int) canvas.getProperties()["curveSelectionLast"] == std::max (first, last),
+             "Select gesture did not retain its closed point interval");
+}
+
+void installCurveToolsFixture (AnyvocAudioProcessor& processor, int lfo)
+{
+    processor.setLfoShape (lfo, 5);
+    const auto prefix = "lfo" + juce::String (lfo + 1);
+    for (int point = 0; point < 33; ++point)
+        setParameter (processor, (prefix + "Point" + juce::String (point)).toRawUTF8(), (point - 16) * .05f);
+    setParameter (processor, (prefix + "Interpolation").toRawUTF8(), 0);
+    setParameter (processor, (prefix + "Phase").toRawUTF8(), .25f);
+    clearMatrixHistory (processor);
+}
+
+float canonicalCurveParameter (AnyvocAudioProcessor& processor, const juce::String& id, float plain)
+{
+    auto* parameter = processor.apvts.getParameter (id);
+    require (parameter != nullptr, "Curve expected-value parameter was missing");
+    return parameter->convertTo0to1 (parameter->convertFrom0to1 (parameter->convertTo0to1 (plain)));
+}
+
+void expectCurveOnly (AnyvocAudioProcessor& processor, const std::vector<float>& before, int lfo,
+                      const std::array<float, 33>& points, int interpolation, const std::string& context)
+{
+    const auto prefix = "lfo" + juce::String (lfo + 1);
+    auto expected = before;
+    for (int point = 0; point < 33; ++point)
+    {
+        auto* parameter = processor.apvts.getParameter (prefix + "Point" + juce::String (point));
+        const auto slot = (size_t) parameter->getParameterIndex();
+        if (points[(size_t) point] != parameter->convertFrom0to1 (before[slot]))
+            expected[slot] = canonicalCurveParameter (processor, parameter->getParameterID(), points[(size_t) point]);
+    }
+    for (const auto& pair : { std::pair<const char*, float> { "Kind", 2 }, { "Interpolation", (float) interpolation } })
+    {
+        auto* parameter = processor.apvts.getParameter (prefix + pair.first);
+        expected[(size_t) parameter->getParameterIndex()] = canonicalCurveParameter (processor, parameter->getParameterID(), pair.second);
+    }
+    const auto actual = parameters (processor);
+    for (size_t index = 0; index < actual.size(); ++index)
+        if (actual[index] != expected[index])
+        {
+            const auto* parameter = dynamic_cast<juce::RangedAudioParameter*> (processor.getParameters()[(int) index]);
+            require (false, context + " exact mismatch " + parameter->getParameterID().toStdString()
+                     + " actual=" + juce::String (actual[index], 10).toStdString() + " expected=" + juce::String (expected[index], 10).toStdString());
+        }
+}
+
+std::array<float, 33> curvePoints (AnyvocAudioProcessor& processor, int lfo)
+{
+    std::array<float, 33> result {};
+    for (int point = 0; point < 33; ++point)
+        result[(size_t) point] = plainParameter (processor, ("lfo" + juce::String (lfo + 1) + "Point" + juce::String (point)).toRawUTF8());
+    return result;
+}
+
+juce::String independentCurveXml (float value = .6f, int interpolation = 1)
+{
+    juce::String text = "<ANYVOC_LFO_CURVE schema='1' interpolation='" + juce::String (interpolation) + "'>";
+    for (int point = 0; point < 33; ++point) text += "<POINT value='" + juce::String (value, 8) + "'/>";
+    return text + "</ANYVOC_LFO_CURVE>";
+}
+
+void expectOneCurveUndo (AnyvocAudioProcessor& processor, const std::vector<float>& before, const std::string& context)
+{
+    const auto after = parameters (processor);
+    require (after != before && processor.canUndo() && ! processor.isUserEditActive(), context + " did not commit one sound edit");
+    expectHistoryResult (processor.undoUserEdit(), ("Undo " + context).c_str());
+    require (parameters (processor) == before && ! processor.canUndo() && processor.canRedo(), context + " undo was incomplete or required extra steps");
+    expectHistoryResult (processor.redoUserEdit(), ("Redo " + context).c_str());
+    require (parameters (processor) == after && processor.canUndo() && ! processor.canRedo(), context + " redo did not restore exact normalized values");
+}
+
+void testCurveToolsViewStateAndTenLfoIsolation()
+{
+    PresetTestDirectory files; AnyvocAudioProcessor processor;
+    for (int lfo = 0; lfo < 10; ++lfo) installCurveToolsFixture (processor, lfo);
+    auto services = std::make_shared<MemoryLfoCurveServices>();
+    auto editor = createCurveToolsEditor (processor, files, services);
+    const auto before = parameters (processor); const auto state = save (processor);
+    int previous = 0;
+    for (int lfo = 0; lfo < 10; ++lfo)
+    {
+        if (lfo != 0)
+        {
+            findComponent<juce::ComboBox> (*editor, "LFOLabSelector" + juce::String (previous + 1))->setSelectedItemIndex (lfo, juce::sendNotificationSync);
+            dispatchEditorActions(); clickMatrixControl (*editor, "lfo" + juce::String (lfo + 1) + "Tools");
+        }
+        previous = lfo;
+        auto& canvas = curveTool<juce::Component> (*editor, lfo, "Curve");
+        require ((int) canvas.getProperties()["curveGridX"] == 32 && (int) canvas.getProperties()["curveGridY"] == 4
+                     && !(bool) canvas.getProperties()["curveSnapX"] && !(bool) canvas.getProperties()["curveSnapY"]
+                     && (int) canvas.getProperties()["curveEditMode"] == 0,
+                 "Another LFO leaked its drawing-tool view settings");
+        curveTool<juce::ComboBox> (*editor, lfo, "GridX").setSelectedId (lfo % 2 == 0 ? 8 : 16, juce::sendNotificationSync);
+        curveTool<juce::ComboBox> (*editor, lfo, "GridY").setSelectedId (2, juce::sendNotificationSync);
+        setCurveToolToggle (*editor, lfo, "SnapX", true); setCurveToolToggle (*editor, lfo, "SnapY", true);
+        selectCurveRange (*editor, lfo, lfo, 32 - lfo);
+        if (lfo == 0)
+        {
+            clickMatrixControl (*editor, "lfo1Tools"); clickMatrixControl (*editor, "lfo1Tools");
+            require ((int) canvas.getProperties()["curveGridX"] == 8 && (bool) canvas.getProperties()["curveSnapX"],
+                     "Closing and reopening tools discarded their view settings");
+        }
+        setCurveToolSlider (*editor, lfo, "OffsetX", 2); setCurveToolSlider (*editor, lfo, "OffsetY", .25);
+        setCurveToolSlider (*editor, lfo, "ScaleX", 2); setCurveToolSlider (*editor, lfo, "ScaleY", .5);
+        curveTool<juce::ComboBox> (*editor, lfo, "PointIndex").setSelectedId (lfo + 2, juce::sendNotificationSync);
+        setCurveToolSlider (*editor, lfo, "PointValue", -.37);
+        clickMatrixControl (*editor, "lfo" + juce::String (lfo + 1) + "CopyCurve");
+        require (services->writes == lfo + 1 && services->clipboard.contains ("ANYVOC_LFO_CURVE"), "Copy did not use the supplied clipboard service");
+        clickMatrixControl (*editor, "lfo" + juce::String (lfo + 1) + "SaveCurve");
+        const auto request = services->requests.size() - 1;
+        require (services->requests[request].saving, "SAVE opened a load request"); services->reply (request, {});
+        require (parameters (processor) == before && save (processor) == state && ! processor.canUndo() && ! processor.canRedo(),
+                 "Tool navigation, selection, staging, copy or cancelled save changed the sound");
+    }
+    for (int lfo = 0; lfo < 10; ++lfo)
+    {
+        findComponent<juce::ComboBox> (*editor, "LFOLabSelector" + juce::String (previous + 1))->setSelectedItemIndex (lfo, juce::sendNotificationSync);
+        dispatchEditorActions(); previous = lfo;
+        auto& canvas = curveTool<juce::Component> (*editor, lfo, "Curve");
+        require ((int) canvas.getProperties()["curveSelectionFirst"] == lfo && (int) canvas.getProperties()["curveSelectionLast"] == 32 - lfo
+                     && (int) canvas.getProperties()["curveGridX"] == (lfo % 2 == 0 ? 8 : 16), "LFO view state was not independently remembered");
+        const auto editBefore = parameters (processor); auto expected = curvePoints (processor, lfo);
+        setCurveToolSlider (*editor, lfo, "PointValue", -.37); expected[(size_t) lfo + 1] = -.37f;
+        clickMatrixControl (*editor, "lfo" + juce::String (lfo + 1) + "SetPoint");
+        expectCurveOnly (processor, editBefore, lfo, expected, 0, "LFO " + std::to_string (lfo + 1) + " numeric edit");
+        expectOneCurveUndo (processor, editBefore, "independent numeric point");
+        clearMatrixHistory (processor);
+    }
+}
+
+void testCurveToolsDrawSnapping()
+{
+    PresetTestDirectory files; AnyvocAudioProcessor processor;
+    installCurveToolsFixture (processor, 0);
+    for (int point = 0; point < 33; ++point) setParameter (processor, ("lfo1Point" + juce::String (point)).toRawUTF8(), 0);
+    clearMatrixHistory (processor); const auto clean = save (processor);
+    auto services = std::make_shared<MemoryLfoCurveServices>(); auto editor = createCurveToolsEditor (processor, files, services);
+    auto& canvas = curveTool<juce::Component> (*editor, 0, "Curve");
+    for (int variant = 0; variant < 8; ++variant)
+    {
+        processor.setStateInformation (clean.getData(), (int) clean.getSize());
+        curveTool<juce::ComboBox> (*editor, 0, "GridX").setSelectedId (4, juce::sendNotificationSync);
+        curveTool<juce::ComboBox> (*editor, 0, "GridY").setSelectedId (variant == 3 ? 1 : variant == 6 ? 16 : variant == 7 ? 32 : 4, juce::sendNotificationSync);
+        setCurveToolToggle (*editor, 0, "SnapX", variant != 0);
+        setCurveToolToggle (*editor, 0, "SnapY", variant != 0);
+        const auto before = parameters (processor); std::array<float, 33> expected {};
+        const auto start = curveCanvasPosition (canvas, variant == 2 ? 4.0f : variant == 5 ? 3.6f : 5.3f,
+                                                variant == 3 ? 0.0f : variant == 6 ? .125f : variant == 7 ? .0625f : .26f);
+        canvas.mouseDown (modulationMouseEvent (canvas, start, start));
+        auto end = start;
+        if (variant == 4)
+        {
+            end = curveCanvasPosition (canvas, 21.0f, -.76f);
+            canvas.mouseDrag (modulationMouseEvent (canvas, end, start));
+            // X: 5 -> 8, 21 -> 24. Endpoint values .5 and -1; interpolated
+            // points snap to .5 increments, half-grid ties toward +1.
+            const std::array<float, 17> hand { .5f,.5f,.5f,0,0,0,0,0,0,-.5f,-.5f,-.5f,-.5f,-.5f,-1,-1,-1 };
+            std::copy (hand.begin(), hand.end(), expected.begin() + 8);
+        }
+        // The grid may be finer than the unchanged host parameter's .01 step:
+        // Y16's .125 becomes .13; Y32's .0625 becomes .06 in the actual sound.
+        else expected[(size_t) (variant == 0 ? 5 : variant == 5 ? 0 : 8)]
+            = variant == 0 ? .26f : variant == 3 ? 1.0f : variant == 6 ? .13f : variant == 7 ? .06f : .5f;
+        canvas.mouseUp (modulationMouseEvent (canvas, end, start));
+        expectCurveOnly (processor, before, 0, expected, 0, "drawing variant " + std::to_string (variant));
+        expectOneCurveUndo (processor, before, "snapped or legacy stroke");
+    }
+    installCurveToolsFixture (processor, 0); processor.setLfoShape (0, 4); clearMatrixHistory (processor);
+    setCurveToolToggle (*editor, 0, "SnapX", false); setCurveToolToggle (*editor, 0, "SnapY", false);
+    const auto randomBefore = parameters (processor); auto randomExpected = curvePoints (processor, 0); randomExpected[5] = -.37f;
+    const auto randomPoint = curveCanvasPosition (canvas, 5, -.37f);
+    canvas.mouseDown (modulationMouseEvent (canvas, randomPoint, randomPoint)); canvas.mouseUp (modulationMouseEvent (canvas, randomPoint, randomPoint));
+    expectCurveOnly (processor, randomBefore, 0, randomExpected, 0, "Random edits its saved Custom curve");
+    expectOneCurveUndo (processor, randomBefore, "drawing over the saved Random curve");
+    // Switching to Chaos or hiding the Lab during a real stroke cancels all
+    // subsequent drag events, including direct late deliveries to the canvas.
+    for (int interrupt = 0; interrupt < 3; ++interrupt)
+    {
+        processor.setStateInformation (clean.getData(), (int) clean.getSize()); openLfoMotionLab (*editor, 0);
+        const auto start = curveCanvasPosition (canvas, 0, .7f), end = curveCanvasPosition (canvas, 32, -.7f);
+        canvas.mouseDown (modulationMouseEvent (canvas, start, start));
+        if (interrupt == 0) setParameter (processor, "lfo1Chaos", 1);
+        else if (interrupt == 1) clickMatrixControl (*editor, "LfoDetailClose1");
+        else
+        {
+            findComponent<juce::ComboBox> (*editor, "LFOLabSelector1")->setSelectedItemIndex (9, juce::sendNotificationSync);
+            dispatchEditorActions();
+        }
+        const auto afterInterrupt = parameters (processor);
+        canvas.mouseDrag (modulationMouseEvent (canvas, end, start)); canvas.mouseUp (modulationMouseEvent (canvas, end, start));
+        require (parameters (processor) == afterInterrupt && ! processor.isUserEditActive(), "Late canvas input changed a hidden, different or chaotic LFO");
+    }
+}
+
+void testCurveToolsSelectedTransformsAndAudio()
+{
+    PresetTestDirectory files; AnyvocAudioProcessor processor;
+    installCurveToolsFixture (processor, 9);
+    for (int point = 8; point <= 16; ++point) setParameter (processor, ("lfo10Point" + juce::String (point)).toRawUTF8(), (point - 12) * .2f);
+    clearMatrixHistory (processor); const auto clean = save (processor);
+    auto services = std::make_shared<MemoryLfoCurveServices>(); auto editor = createCurveToolsEditor (processor, files, services, 9);
+    selectCurveRange (*editor, 9, 16, 8);
+    const std::array<std::array<float, 9>, 6> hand {{
+        {{ -.1f,.5f,.9f,-.4f,.2f,.7f,.1f,-.3f,-.8f }},
+        {{ .8f,.3f,-.1f,-.7f,-.2f,.4f,-.9f,-.5f,.1f }},
+        {{ -.8f,-.8f,-.8f,-.6f,-.4f,-.2f,0,.2f,.4f }},
+        {{ -.4f,-.3f,-.2f,-.1f,0,.1f,.2f,.3f,.4f }},
+        {{ .25f,.25f,.25f,.25f,.25f,.25f,.25f,.25f,.25f }},
+        {{ -.4f,-.4f,-.2f,-.2f,0,0,.2f,.2f,.4f }}
+    }};
+    for (int operation = 0; operation < 6; ++operation)
+    {
+        processor.setStateInformation (clean.getData(), (int) clean.getSize());
+        if (operation < 2)
+        {
+            // Asymmetric data distinguishes a horizontal reversal from a
+            // vertical inversion, catching swapped button callbacks too.
+            const std::array<float, 9> asymmetric { -.8f,-.3f,.1f,.7f,.2f,-.4f,.9f,.5f,-.1f };
+            for (int point = 8; point <= 16; ++point)
+                setParameter (processor, ("lfo10Point" + juce::String (point)).toRawUTF8(), asymmetric[(size_t) point - 8]);
+        }
+        if (operation == 5) setParameter (processor, "lfo10Interpolation", 1);
+        clearMatrixHistory (processor);
+        const auto before = parameters (processor); auto expected = curvePoints (processor, 9);
+        std::copy (hand[(size_t) operation].begin(), hand[(size_t) operation].end(), expected.begin() + 8);
+        setCurveToolSlider (*editor, 9, "OffsetX", operation == 2 ? 2 : 0);
+        setCurveToolSlider (*editor, 9, "OffsetY", operation == 4 ? .25 : 0);
+        setCurveToolSlider (*editor, 9, "ScaleX", operation == 3 || operation == 5 ? 2 : 1);
+        setCurveToolSlider (*editor, 9, "ScaleY", operation == 4 ? 0 : 1);
+        require (parameters (processor) == before && ! processor.canUndo(), "Staging a transform changed the sound");
+        clickMatrixControl (*editor, "lfo10" + juce::String (operation == 0 ? "FlipX" : operation == 1 ? "FlipY" : "ApplyTransform"));
+        expectCurveOnly (processor, before, 9, expected, operation == 5 ? 1 : 0, "selected transform " + std::to_string (operation));
+        for (int point = 0; point < 33; ++point) if (point < 8 || point > 16)
+        {
+            auto* parameter = processor.apvts.getParameter ("lfo10Point" + juce::String (point));
+            require (parameter->getValue() == before[(size_t) parameter->getParameterIndex()], "A transform changed a point outside its selected interval");
+        }
+        expectOneCurveUndo (processor, before, "selected transform");
+    }
+    processor.setStateInformation (clean.getData(), (int) clean.getSize());
+    setCurveToolSlider (*editor, 9, "OffsetX", 0); setCurveToolSlider (*editor, 9, "OffsetY", 0);
+    setCurveToolSlider (*editor, 9, "ScaleX", 1); setCurveToolSlider (*editor, 9, "ScaleY", 1);
+    const auto identity = save (processor); clickMatrixControl (*editor, "lfo10ApplyTransform");
+    require (save (processor) == identity && ! processor.canUndo(), "Identity transform created a sound or history change");
+    // The UI result must actually reach audio, with an independent parameter
+    // reference and a nontrivial difference from the unchanged curve.
+    AnyvocAudioProcessor actual, reference, baseline;
+    for (auto* p : { &actual, &reference, &baseline }) { prepareLfoMotionAudio (*p, 9); installCurveToolsFixture (*p, 9); }
+    auto audioEditor = createCurveToolsEditor (actual, files, services, 9);
+    clickMatrixControl (*audioEditor, "lfo10FlipY");
+    for (int point = 0; point < 33; ++point)
+        setParameter (reference, ("lfo10Point" + juce::String (point)).toRawUTF8(), -(point - 16) * .05f);
+    for (auto* p : { &actual, &reference, &baseline }) p->prepareToPlay (48000, 512);
+    const std::vector<Event> note { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } };
+    const auto edited = render (actual, 24000, note), direct = render (reference, 24000, note), original = render (baseline, 24000, note);
+    require (crossAudioDifference (edited, direct) == 0 && crossAudioDifference (edited, original) > .001,
+             "Curve tool audio did not match the independent inverted curve or remained unchanged");
+}
+
+void testCurveToolsClipboardTransactions()
+{
+    PresetTestDirectory files; AnyvocAudioProcessor processor;
+    installCurveToolsFixture (processor, 0); installCurveToolsFixture (processor, 9);
+    setParameter (processor, "lfo1Interpolation", 1); clearMatrixHistory (processor);
+    auto services = std::make_shared<MemoryLfoCurveServices>(); auto editor = createCurveToolsEditor (processor, files, services);
+    selectCurveRange (*editor, 0, 8, 16);
+    const auto beforeCopy = save (processor); clickMatrixControl (*editor, "lfo1CopyCurve");
+    anyvoc::LfoCurveData copied;
+    require (anyvoc::LfoCurveDocument::parse (services->clipboard, copied).wasOk() && copied.points == curvePoints (processor, 0)
+                 && copied.interpolation == 1 && save (processor) == beforeCopy && ! processor.canUndo(),
+             "COPY omitted unselected points, interpolation, or changed history");
+    findComponent<juce::ComboBox> (*editor, "LFOLabSelector1")->setSelectedItemIndex (9, juce::sendNotificationSync);
+    dispatchEditorActions(); clickMatrixControl (*editor, "lfo10Tools");
+    const auto beforePaste = parameters (processor); clickMatrixControl (*editor, "lfo10PasteCurve");
+    expectCurveOnly (processor, beforePaste, 9, copied.points, 1, "cross-LFO paste");
+    expectOneCurveUndo (processor, beforePaste, "complete curve paste"); clearMatrixHistory (processor);
+    const auto noOp = save (processor); clickMatrixControl (*editor, "lfo10PasteCurve");
+    require (save (processor) == noOp && ! processor.canUndo(), "Pasting the same curve created a spurious edit");
+    const auto valid = independentCurveXml();
+    const auto replaceFirst = [&valid] (const juce::String& needle, const juce::String& replacement)
+    {
+        const int position = valid.indexOf (needle);
+        require (position >= 0, "Malformed-curve fixture could not find its target field");
+        return valid.replaceSection (position, needle.length(), replacement);
+    };
+    const std::vector<juce::String> invalid {
+        {}, "not a curve", valid.replace ("schema='1'", "schema='2'"), replaceFirst ("value='", "value='nan"),
+        replaceFirst ("<POINT", "<UNKNOWN"), valid + "trailing",
+        "<!DOCTYPE ANYVOC_LFO_CURVE>" + valid, replaceFirst ("schema='1'", "schema='1' unknown='1'"),
+        valid + juce::String::repeatedString (" ", 16385)
+    };
+    for (size_t index = 0; index < invalid.size(); ++index)
+    {
+        services->clipboard = invalid[index]; const auto before = save (processor);
+        clickMatrixControl (*editor, "lfo10PasteCurve");
+        require (save (processor) == before && ! processor.canUndo() && ! processor.isUserEditActive(), "Invalid clipboard curve changed sound, case " + std::to_string (index));
+        require (curveTool<juce::Label> (*editor, 9, "ToolsStatus").getText().contains ("Cannot paste curve"), "Invalid clipboard input had no actionable error");
+    }
+    // A synchronous platform callback may reenter the host before returning
+    // text. An exact related parameter change must invalidate that older read.
+    services->clipboard = valid;
+    services->onRead = [&] { setParameter (processor, "lfo10Point32", -.99f); };
+    const auto unchanged = curvePoints (processor, 9);
+    clickMatrixControl (*editor, "lfo10PasteCurve");
+    auto expected = unchanged; expected[32] = plainParameter (processor, "lfo10Point32");
+    require (curvePoints (processor, 9) == expected && ! processor.canUndo(), "Reentrant clipboard read applied stale data");
+    services->onRead = {};
+    // Basic shapes copy what is visibly drawn, not the inactive saved points.
+    // An identity operation leaves the Basic selector and history alone.
+    processor.setLfoShape (9, 2); clearMatrixHistory (processor);
+    const auto basicState = save (processor); clickMatrixControl (*editor, "lfo10CopyCurve");
+    anyvoc::LfoCurveData visible;
+    require (anyvoc::LfoCurveDocument::parse (services->clipboard, visible).wasOk(), "Basic shape COPY did not produce a valid asset");
+    for (int point = 0; point < 33; ++point)
+        require (visible.points[(size_t) point] == (float) point / 16.0f - 1.0f, "Basic COPY used inactive Custom points instead of the visible saw");
+    clickMatrixControl (*editor, "lfo10ApplyTransform");
+    require (save (processor) == basicState && ! processor.canUndo(), "An identity transform converted a Basic shape to Custom");
+    processor.setLfoShape (9, 4); clearMatrixHistory (processor); clickMatrixControl (*editor, "lfo10CopyCurve");
+    require (anyvoc::LfoCurveDocument::parse (services->clipboard, visible).wasOk() && visible.points == curvePoints (processor, 9),
+             "Random COPY did not preserve the inactive saved Custom curve");
+    // PASTE is an explicit asset replacement. Matching the currently visible
+    // Basic samples or the saved Random points still means selecting Custom.
+    for (const int shape : { 0, 4 })
+    {
+        installCurveToolsFixture (processor, 9); processor.setLfoShape (9, shape); clearMatrixHistory (processor);
+        const auto hidden = curvePoints (processor, 9); const auto beforeAsset = parameters (processor);
+        clickMatrixControl (*editor, "lfo10CopyCurve"); anyvoc::LfoCurveData asset;
+        require (anyvoc::LfoCurveDocument::parse (services->clipboard, asset).wasOk(), "Same-shape clipboard asset was invalid");
+        require (shape == 4 ? asset.points == hidden : asset.points != hidden, "Same-shape clipboard fixture did not distinguish saved and visible data");
+        require (parameters (processor) == beforeAsset && ! processor.canUndo(), "Preparing a clipboard asset altered its source sound");
+        clickMatrixControl (*editor, "lfo10PasteCurve");
+        expectCurveOnly (processor, beforeAsset, 9, asset.points, asset.interpolation, "explicit matching Basic/Random paste");
+        require (processor.getLfoShape (9) == 5, "Pasting a matching asset failed to select Custom");
+        expectOneCurveUndo (processor, beforeAsset, "matching Basic/Random asset paste");
+        expectHistoryResult (processor.undoUserEdit(), "Restore original Basic/Random shape after paste");
+        require (processor.getLfoShape (9) == shape && curvePoints (processor, 9) == hidden && parameters (processor) == beforeAsset,
+                 "Paste undo failed to restore original mode and all hidden Custom points");
+    }
+    // Direct late deliveries must be denied before the UI timer can disable
+    // the controls, and again while the tools panel is hidden.
+    for (int inactive = 0; inactive < 3; ++inactive)
+    {
+        processor.setLfoShape (9, 5); openLfoMotionLab (*editor, 9);
+        if (! modulationControlVisible (findComponent<juce::Component> (*editor, "lfo10ToolsPanel"))) clickMatrixControl (*editor, "lfo10Tools");
+        std::vector<std::function<void()>> lateClicks;
+        for (const auto* suffix : { "SelectAll", "FlipX", "FlipY", "ApplyTransform", "SetPoint", "CopyCurve", "PasteCurve", "LoadCurve", "SaveCurve" })
+            lateClicks.push_back (curveTool<juce::Button> (*editor, 9, suffix).onClick);
+        if (inactive < 2) setParameter (processor, "lfo10Chaos", (float) inactive + 1);
+        else clickMatrixControl (*editor, "lfo10Tools");
+        clearMatrixHistory (processor); const auto before = parameters (processor);
+        const auto reads = services->reads, writes = services->writes; const auto requests = services->requests.size();
+        for (const auto& callback : lateClicks) callback();
+        require (parameters (processor) == before && ! processor.canUndo() && ! processor.isUserEditActive()
+                     && services->reads == reads && services->writes == writes && services->requests.size() == requests,
+                 "Late Chaos or hidden tool commands reached sound or platform services");
+    }
+    editor.reset();
+    for (int interrupt = 0; interrupt < 3; ++interrupt)
+    {
+        installCurveToolsFixture (processor, 9); services = std::make_shared<MemoryLfoCurveServices>();
+        services->clipboard = valid; editor = createCurveToolsEditor (processor, files, services, 9);
+        const auto replacement = save (processor); std::vector<float> readCallbackSnapshot;
+        services->onRead = [&]
+        {
+            if (interrupt == 0) processor.setStateInformation (replacement.getData(), (int) replacement.getSize());
+            else if (interrupt == 1) clickMatrixControl (*editor, "LfoDetailClose10");
+            else editor.reset();
+            readCallbackSnapshot = parameters (processor);
+        };
+        clickMatrixControl (*editor, "lfo10PasteCurve");
+        require (! readCallbackSnapshot.empty() && parameters (processor) == readCallbackSnapshot && ! processor.canUndo() && ! processor.isUserEditActive(),
+                 "Reentrant clipboard provider crossed project, view or editor lifetime");
+        editor.reset();
+    }
+    installCurveToolsFixture (processor, 9); services = std::make_shared<MemoryLfoCurveServices>();
+    editor = createCurveToolsEditor (processor, files, services, 9);
+    const auto copyLifetime = parameters (processor); services->onWrite = [&] { editor.reset(); };
+    clickMatrixControl (*editor, "lfo10CopyCurve");
+    require (editor == nullptr && services->writes == 1 && parameters (processor) == copyLifetime && ! processor.canUndo(),
+             "Clipboard write callback did not safely tolerate editor destruction");
+}
+
+void testCurveToolsHostCallbackBoundaries()
+{
+    PresetTestDirectory files;
+    const std::array<const char*, 6> actions { "FlipX", "FlipY", "ApplyTransform", "SetPoint", "PasteCurve", "LoadCurve" };
+    const auto sourceFile = files.directory.getChildFile ("Incoming.anycurve");
+    require (sourceFile.replaceWithText (independentCurveXml()), "Could not prepare an independent incoming curve file");
+    for (const auto* action : actions) for (int boundary = 0; boundary < 3; ++boundary) for (int interrupt = 0; interrupt < 5; ++interrupt)
+    {
+        AnyvocAudioProcessor processor; installCurveToolsFixture (processor, 9);
+        auto services = std::make_shared<MemoryLfoCurveServices>(); services->clipboard = independentCurveXml();
+        auto editor = createCurveToolsEditor (processor, files, services, 9);
+        setCurveToolSlider (*editor, 9, "OffsetY", .2); setCurveToolSlider (*editor, 9, "PointValue", .6);
+        const auto replacement = save (processor); std::vector<float> expected;
+        std::vector<std::unique_ptr<ModulationGestureProbe>> probes;
+        for (const auto& id : curveParameterIds (9)) probes.push_back (std::make_unique<ModulationGestureProbe> (*processor.apvts.getParameter (id)));
+        const auto callback = [&]
+        {
+            if (interrupt == 0) processor.setStateInformation (replacement.getData(), (int) replacement.getSize());
+            else if (interrupt == 1)
+            {
+                auto* phase = processor.apvts.getParameter ("lfo10Phase"); const float old = phase->getValue();
+                phase->setValueNotifyingHost (std::nextafter (old, 1.0f));
+                require (phase->getValue() != old, "One-ULP curve boundary fixture was swallowed by parameter storage");
+            }
+            else if (interrupt == 2) setParameter (processor, "lfo10Chaos", 1);
+            else if (interrupt == 3) clickMatrixControl (*editor, "LfoDetailClose10");
+            else editor.reset();
+            expected = parameters (processor);
+        };
+        if (boundary == 0) probes[0]->onStart = callback;
+        else if (boundary == 1) probes[0]->onValue = callback;
+        else probes[0]->onEnd = callback;
+        clickMatrixControl (*editor, "lfo10" + juce::String (action));
+        if (juce::String (action) == "LoadCurve") services->reply (0, sourceFile);
+        const auto context = std::string (action) + " boundary=" + std::to_string (boundary) + " interrupt=" + std::to_string (interrupt);
+        require (! expected.empty(), "Curve tool did not reach the requested host callback: " + context);
+        require (parameters (processor) == expected && ! processor.isUserEditActive(), "Curve tool wrote beyond the host/lifetime boundary: " + context);
+        for (const auto& probe : probes) require (probe->starts == probe->ends, "Unbalanced curve tool gesture: " + context);
+        if (interrupt == 0) require (! processor.canUndo() && ! processor.canRedo(), "Curve tool kept history after project restore: " + context);
+    }
+    // All 46 related values participate, including inactive controls. The old
+    // point/choice parameters quantize, so those cases use their next legal
+    // value; only continuous parameters are asserted to retain a one-ULP edit.
+    AnyvocAudioProcessor processor; installCurveToolsFixture (processor, 9);
+    const auto initial = save (processor); auto services = std::make_shared<MemoryLfoCurveServices>();
+    auto editor = createCurveToolsEditor (processor, files, services, 9);
+    for (const auto& id : curveParameterIds (9)) for (int boundary = 0; boundary < 2; ++boundary)
+    {
+        processor.setStateInformation (initial.getData(), (int) initial.getSize());
+        openLfoMotionLab (*editor, 9);
+        auto* changed = processor.apvts.getParameter (id); std::vector<float> expected;
+        ModulationGestureProbe probe (*processor.apvts.getParameter ("lfo10Point0"));
+        const auto callback = [&]
+        {
+            const float old = changed->getValue();
+            if (changed->getNormalisableRange().interval == 0 && dynamic_cast<juce::AudioParameterFloat*> (changed) != nullptr)
+            {
+                changed->setValueNotifyingHost (std::nextafter (old, old < .5f ? 1.0f : 0.0f));
+                if (changed->getValue() == old) // nonlinear round trips can consume one normalized ULP
+                    changed->setValueNotifyingHost (changed->convertTo0to1 (changed->convertFrom0to1 (old) + .013f));
+            }
+            else changed->setValueNotifyingHost (old < .5f ? .9f : .1f);
+            require (changed->getValue() != old, "Related parameter fixture did not actually change " + id.toStdString());
+            expected = parameters (processor);
+        };
+        if (boundary == 0) probe.onStart = callback; else probe.onValue = callback;
+        clickMatrixControl (*editor, "lfo10FlipY");
+        require (! expected.empty() && parameters (processor) == expected && probe.starts == probe.ends && ! processor.isUserEditActive(),
+                 "Curve guard omitted related field " + id.toStdString() + " boundary=" + std::to_string (boundary));
+    }
+    for (const auto* action : { "FlipX", "ApplyTransform", "PasteCurve" }) for (const bool restoring : { false, true })
+    {
+        processor.setStateInformation (initial.getData(), (int) initial.getSize()); openLfoMotionLab (*editor, 9);
+        services->clipboard = independentCurveXml(); setCurveToolSlider (*editor, 9, "OffsetY", .2);
+        std::vector<std::unique_ptr<ModulationGestureProbe>> probes;
+        for (const auto& id : curveParameterIds (9)) probes.push_back (std::make_unique<ModulationGestureProbe> (*processor.apvts.getParameter (id)));
+        std::vector<float> expected;
+        auto& canvas = curveTool<juce::Component> (*editor, 9, "Curve");
+        const auto start = curveCanvasPosition (canvas, 5, .7f);
+        canvas.mouseDown (modulationMouseEvent (canvas, start, start));
+        require (processor.isUserEditActive() && probes[5]->starts == 1, "Old-stroke boundary fixture never opened its gesture");
+        probes[5]->onEnd = [&]
+        {
+            if (restoring) processor.setStateInformation (initial.getData(), (int) initial.getSize());
+            else setParameter (processor, "lfo10Point32", -.93f);
+            expected = parameters (processor);
+        };
+        clickMatrixControl (*editor, "lfo10" + juce::String (action));
+        require (! expected.empty() && parameters (processor) == expected && ! processor.isUserEditActive(),
+                 "Starting a tool after drawing overwrote the old stroke's host end callback: " + std::string (action));
+        for (const auto& probe : probes) require (probe->starts == probe->ends, "Old-stroke transition retained a parameter gesture");
+        if (restoring) require (! processor.canUndo() && ! processor.canRedo(), "Old-stroke transition retained obsolete project history");
+    }
+}
+
+void testCurveToolsAsyncFileTransactions()
+{
+    PresetTestDirectory files; AnyvocAudioProcessor processor; installCurveToolsFixture (processor, 9);
+    auto services = std::make_shared<MemoryLfoCurveServices>(); auto editor = createCurveToolsEditor (processor, files, services, 9);
+    const auto validFile = files.directory.getChildFile ("Incoming.anycurve");
+    require (validFile.replaceWithText (independentCurveXml()), "Could not write asset fixture");
+    const auto beforeSave = save (processor); const auto target = files.directory.getChildFile ("Saved");
+    clickMatrixControl (*editor, "lfo10SaveCurve"); services->reply (0, target);
+    anyvoc::LfoCurveData saved;
+    require (anyvoc::LfoCurveDocument::loadFile (target.withFileExtension ("anycurve"), saved).wasOk()
+                 && saved.points == curvePoints (processor, 9) && saved.interpolation == 0
+                 && save (processor) == beforeSave && ! processor.canUndo(), "Saving a real .anycurve asset failed or altered sound/history");
+    const auto beforeLoad = parameters (processor); clickMatrixControl (*editor, "lfo10LoadCurve"); services->reply (1, validFile);
+    std::array<float, 33> flat; flat.fill (.6f); expectCurveOnly (processor, beforeLoad, 9, flat, 1, "file curve load");
+    expectOneCurveUndo (processor, beforeLoad, "file load");
+    clearMatrixHistory (processor);
+    const auto alternate = files.directory.getChildFile ("Alternate.anycurve");
+    require (alternate.replaceWithText (independentCurveXml (-.6f)), "Could not create alternate curve asset");
+    // A chooser completion is single-use, even when its first load is a no-op
+    // and the original parameter snapshot therefore remains valid.
+    clickMatrixControl (*editor, "lfo10LoadCurve"); auto duplicateLoad = services->requests.back().completion;
+    const auto repeated = parameters (processor); services->reply (services->requests.size() - 1, validFile); duplicateLoad (alternate);
+    require (parameters (processor) == repeated && ! processor.canUndo(), "A repeated chooser callback applied a second curve");
+    clickMatrixControl (*editor, "lfo10SaveCurve"); auto duplicateSave = services->requests.back().completion;
+    services->reply (services->requests.size() - 1, files.directory.getChildFile ("Once.anycurve"));
+    const auto twice = files.directory.getChildFile ("Twice.anycurve"); duplicateSave (twice);
+    require (! twice.exists() && parameters (processor) == repeated, "A repeated save callback wrote another file");
+    // Services are allowed to complete synchronously, too.
+    services->replyImmediately = true; services->immediateFile = alternate;
+    const auto synchronousBefore = parameters (processor); clickMatrixControl (*editor, "lfo10LoadCurve");
+    std::array<float, 33> negativeFlat; negativeFlat.fill (-.6f);
+    expectCurveOnly (processor, synchronousBefore, 9, negativeFlat, 1, "synchronous chooser load");
+    expectOneCurveUndo (processor, synchronousBefore, "synchronous chooser load");
+    services->replyImmediately = false;
+    for (const int shape : { 0, 4 })
+    {
+        installCurveToolsFixture (processor, 9); processor.setLfoShape (9, shape); clearMatrixHistory (processor);
+        const auto hidden = curvePoints (processor, 9); const auto beforeAsset = parameters (processor);
+        const auto assetFile = files.directory.getChildFile ("MatchingShape" + juce::String (shape) + ".anycurve");
+        clickMatrixControl (*editor, "lfo10SaveCurve"); services->reply (services->requests.size() - 1, assetFile);
+        anyvoc::LfoCurveData asset;
+        require (anyvoc::LfoCurveDocument::loadFile (assetFile, asset).wasOk()
+                     && (shape == 4 ? asset.points == hidden : asset.points != hidden)
+                     && parameters (processor) == beforeAsset && ! processor.canUndo(), "Saving the matching shape asset changed its source or used the wrong points");
+        clickMatrixControl (*editor, "lfo10LoadCurve"); services->reply (services->requests.size() - 1, assetFile);
+        expectCurveOnly (processor, beforeAsset, 9, asset.points, asset.interpolation, "explicit matching Basic/Random load");
+        require (processor.getLfoShape (9) == 5, "Loading a matching asset failed to select Custom");
+        expectOneCurveUndo (processor, beforeAsset, "matching Basic/Random asset load");
+        expectHistoryResult (processor.undoUserEdit(), "Restore original Basic/Random shape after load");
+        require (processor.getLfoShape (9) == shape && curvePoints (processor, 9) == hidden && parameters (processor) == beforeAsset,
+                 "Load undo failed to restore original mode and all hidden Custom points");
+    }
+    // The XML codec preserves float data; applying it to the legacy .01 host
+    // parameters intentionally quantizes. Subsequent exports describe what is
+    // actually stored, not the higher precision incoming asset.
+    installCurveToolsFixture (processor, 9);
+    juce::String preciseXml = "<ANYVOC_LFO_CURVE schema='1' interpolation='0'>";
+    const std::array<const char*, 4> incoming { "0.12345678", "-0.456789", "0.0625", "0.125" };
+    const std::array<float, 4> quantized { .12f, -.46f, .06f, .13f };
+    std::array<float, 33> expectedQuantized {};
+    for (int point = 0; point < 33; ++point)
+    {
+        preciseXml += "<POINT value='" + juce::String (incoming[(size_t) point % 4]) + "'/>";
+        expectedQuantized[(size_t) point] = quantized[(size_t) point % 4];
+    }
+    preciseXml += "</ANYVOC_LFO_CURVE>";
+    const auto preciseFile = files.directory.getChildFile ("Precise.anycurve");
+    require (preciseFile.replaceWithText (preciseXml), "Could not prepare the precision boundary asset");
+    const auto precisionBefore = parameters (processor);
+    clickMatrixControl (*editor, "lfo10LoadCurve"); services->reply (services->requests.size() - 1, preciseFile);
+    expectCurveOnly (processor, precisionBefore, 9, expectedQuantized, 0, "legacy .01 precision after asset load");
+    const auto actualStored = curvePoints (processor, 9); clickMatrixControl (*editor, "lfo10CopyCurve");
+    anyvoc::LfoCurveData exported;
+    require (anyvoc::LfoCurveDocument::parse (services->clipboard, exported).wasOk() && exported.points == actualStored,
+             "COPY exported incoming float precision instead of the actual stored curve");
+    const auto quantizedFile = files.directory.getChildFile ("Quantized.anycurve");
+    const auto beforeExport = parameters (processor); const int undoCount = processor.getUndoCount();
+    clickMatrixControl (*editor, "lfo10SaveCurve"); services->reply (services->requests.size() - 1, quantizedFile);
+    require (anyvoc::LfoCurveDocument::loadFile (quantizedFile, exported).wasOk() && exported.points == actualStored
+                 && parameters (processor) == beforeExport && processor.getUndoCount() == undoCount,
+             "SAVE did not preserve the actual quantized values and sound history");
+    for (int kind = 0; kind < 3; ++kind)
+    {
+        clearMatrixHistory (processor); const auto before = save (processor);
+        const auto bad = files.directory.getChildFile ("Bad" + juce::String (kind) + ".anycurve");
+        if (kind != 0) require (bad.replaceWithText (kind == 1 ? "<ANYVOC_LFO_CURVE/>" : juce::String::repeatedString (" ", 16385)), "Could not write malformed asset fixture");
+        clickMatrixControl (*editor, "lfo10LoadCurve"); services->reply (services->requests.size() - 1, bad);
+        require (save (processor) == before && ! processor.canUndo() && curveTool<juce::Label> (*editor, 9, "ToolsStatus").getText().contains ("Cannot load curve"),
+                 "Missing, malformed or oversized asset did not fail atomically");
+    }
+    editor.reset();
+    for (const bool saving : { false, true }) for (int interrupt = 0; interrupt < 8; ++interrupt)
+    {
+        installCurveToolsFixture (processor, 9); services = std::make_shared<MemoryLfoCurveServices>();
+        editor = createCurveToolsEditor (processor, files, services, 9); const auto replacement = save (processor);
+        clickMatrixControl (*editor, saving ? "lfo10SaveCurve" : "lfo10LoadCurve");
+        if (interrupt == 0) processor.setStateInformation (replacement.getData(), (int) replacement.getSize());
+        else if (interrupt == 1) setParameter (processor, "lfo10Point32", -.93f);
+        else if (interrupt == 2) setParameter (processor, "lfo10Chaos", 2);
+        else if (interrupt == 3) clickMatrixControl (*editor, "lfo10Tools");
+        else if (interrupt == 4) clickMatrixControl (*editor, "LfoDetailClose10");
+        else if (interrupt == 5)
+        {
+            findComponent<juce::ComboBox> (*editor, "LFOLabSelector10")->setSelectedItemIndex (0, juce::sendNotificationSync); dispatchEditorActions();
+        }
+        else if (interrupt == 6) editor.reset();
+        else clickMatrixControl (*editor, saving ? "lfo10SaveCurve" : "lfo10LoadCurve"); // superseding chooser
+        const auto interrupted = parameters (processor);
+        const auto outgoing = files.directory.getChildFile ("Stale" + juce::String (interrupt) + ".anycurve");
+        services->reply (0, saving ? outgoing : validFile);
+        require (parameters (processor) == interrupted && ! processor.isUserEditActive() && ! outgoing.exists(),
+                 "A stale asynchronous curve request wrote sound or disk: save=" + std::to_string (saving) + " interrupt=" + std::to_string (interrupt));
+        editor.reset();
+    }
+}
+
 void createPreviews (const juce::File& directory)
 {
     require (directory.createDirectory().wasOk(), "Could not create preview output directory");
@@ -6751,6 +7440,20 @@ void createPreviews (const juce::File& directory)
     openProgram (25); openLfoMotionLab (*editor, 0); processor.prepareToPlay (48000, 512);
     evolveChaosPreview (64, true); capture ("LFO-Chaos-Rossler.png");
     editor->setSize (1008, 684); capture ("LFO-Chaos-Rossler-small.png");
+
+    openProgram (12); openLfoMotionLab (*editor, 0); clickMatrixControl (*editor, "lfo1Tools");
+    capture ("LFO-Curve-Tools.png");
+    editor->setSize (1008, 684); capture ("LFO-Curve-Tools-small.png");
+    editor->setSize (1120, 760);
+    curveTool<juce::ComboBox> (*editor, 0, "GridX").setSelectedId (8, juce::sendNotificationSync);
+    curveTool<juce::ComboBox> (*editor, 0, "GridY").setSelectedId (8, juce::sendNotificationSync);
+    setCurveToolToggle (*editor, 0, "SnapX", true); setCurveToolToggle (*editor, 0, "SnapY", true);
+    selectCurveRange (*editor, 0, 8, 24);
+    setCurveToolSlider (*editor, 0, "OffsetX", 2); setCurveToolSlider (*editor, 0, "OffsetY", .1);
+    setCurveToolSlider (*editor, 0, "ScaleX", 1.5); setCurveToolSlider (*editor, 0, "ScaleY", .7);
+    clickMatrixControl (*editor, "lfo1ApplyTransform");
+    capture ("LFO-Curve-Selection.png");
+    editor->setSize (1008, 684); capture ("LFO-Curve-Selection-small.png");
 }
 
 void createPresetDemo (const juce::File& file)
@@ -7310,6 +8013,12 @@ int main (int argc, char* argv[])
         { "Chaos rate and swing bindings work while phase routing and remembered legacy controls stay isolated", testChaosRateBindingsAndInactivePhase },
         { "All Chaos Labs gate inactive edits and display only actual evolving or held DSP trajectories", testChaosEditorGatingAndRealTrajectory },
         { "Chaos unified shape UI survives host changes, project restore, destruction and hidden pages", testChaosShapeUiHostCallbacks },
+        { "Curve tools keep ten independent view states and numeric edits preserve other LFOs", testCurveToolsViewStateAndTenLfoIsolation },
+        { "Curve drawing preserves legacy input, snaps both axes and cancels late hidden or Chaos strokes", testCurveToolsDrawSnapping },
+        { "Selected curve transforms and numeric history match independent values and actual audio", testCurveToolsSelectedTransformsAndAudio },
+        { "Curve clipboard buttons transfer complete curves and reject invalid or stale reads atomically", testCurveToolsClipboardTransactions },
+        { "Curve tools preserve exact host callback boundaries and all 46 related parameter guards", testCurveToolsHostCallbackBoundaries },
+        { "Curve asset buttons use real files while deferred chooser replies respect sound and view lifetime", testCurveToolsAsyncFileTransactions },
         { "Unified warp editor modes, sources and host automation", testUnifiedWarpEditorControls },
         { "Host BPM, PPQ and manual tempo fallback", testProcessorHostAndManualTempo },
         { "Invalid sample imports and embedded sample rollback", testSampleImportRejection },

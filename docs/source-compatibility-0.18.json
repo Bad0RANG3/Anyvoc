@@ -1,0 +1,42 @@
+{
+  "baseline_commit": "f20c1aab4155d80486f5dd12b20fd0da0d6efcf3",
+  "version": "0.18.0",
+  "files": [
+    {
+      "path": "Source/PluginProcessor.cpp",
+      "lf_normalized_sha256": "166e32d2ae6eea0ee9b64c799bf7048a19166440fd416b9ca0a855e4d72e622a",
+      "unchanged": true
+    },
+    {
+      "path": "Source/PluginProcessor.h",
+      "lf_normalized_sha256": "7a63265126bb2a8786169bc2e182d7547e5efc4198f701223769bbf3b954d6ca",
+      "unchanged": true
+    },
+    {
+      "path": "Source/SynthEngine.cpp",
+      "lf_normalized_sha256": "3aa52ae0a6d61c4f6fa5ec0f7d15766526015051736070c9f577ec133d9d90b8",
+      "unchanged": true
+    },
+    {
+      "path": "Source/SynthEngine.h",
+      "lf_normalized_sha256": "b183f65898b0085cfadb5a84f3ac0dac91fdfef86a2e0740d8a5ff60f851d040",
+      "unchanged": true
+    },
+    {
+      "path": "Source/LfoModel.h",
+      "lf_normalized_sha256": "78c28454083260eea5c313b64c81aec11c82080e556acf0e20701976cd5bd71e",
+      "unchanged": true
+    },
+    {
+      "path": "Source/ChaosLfoModel.h",
+      "lf_normalized_sha256": "ab86808e750242675560b63fbb3f2582e09da531f8cbd0713937aa7e3aaed760",
+      "unchanged": true
+    },
+    {
+      "path": "Source/EnvelopeModel.h",
+      "lf_normalized_sha256": "bfd2fbff74879847f8d7bbc4428456b1b4d2b33b8d4d05e8069d9b08c139ef5f",
+      "unchanged": true
+    }
+  ],
+  "status": "PASS"
+}

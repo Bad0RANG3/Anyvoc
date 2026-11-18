@@ -1,6 +1,7 @@
 """Independently decode completed release WAVs; no plugin code or audio is changed.
 
-Run only after the v0.17 Chaos and legacy demo renderers have completed.
+Run only after the Chaos and legacy demo renderers have completed.
+Historical defaults target v0.17; pass --version and explicit paths for later releases.
 The JSON report measures decoded PCM, not subjective sound quality or the
 pre-encoding floating-point buffers (integer PCM cannot contain NaN/Inf).
 """
@@ -11,6 +12,7 @@ import hashlib
 import itertools
 import json
 import math
+import re
 from pathlib import Path
 import wave
 
@@ -88,6 +90,8 @@ def decode(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--version", default="0.17.0",
+                        help="Release version recorded in the report (default: historical 0.17.0)")
     parser.add_argument("--demo", type=Path, default=ROOT / "dist/Anyvoc-v0.17-Chaos-Demo.wav")
     parser.add_argument("--legacy-before", type=Path,
                         default=ROOT / "build/validation-baseline/Anyvoc-v0.16-before-v0.17.wav")
@@ -95,6 +99,8 @@ def main():
                         default=ROOT / "build/validation-baseline/Anyvoc-v0.17-legacy-demo.wav")
     parser.add_argument("--output", type=Path, default=ROOT / "docs/audio-analysis-0.17.json")
     args = parser.parse_args()
+    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", args.version):
+        parser.error("--version must have three numeric components, e.g. 0.18.0")
     for path in (args.demo, args.legacy_before, args.legacy_after):
         if not path.is_file():
             raise RuntimeError(f"Completed input WAV is missing: {path}")
@@ -125,7 +131,7 @@ def main():
     overall = metrics(data)
     failures = []
     if not identical or before_sha != after_sha:
-        failures.append("Legacy WAV bytes / SHA-256 changed from v0.16")
+        failures.append("Legacy WAV bytes / SHA-256 changed from the supplied baseline")
     if overall["decoded_nonfinite_samples"] != 0:
         failures.append("Non-finite decoded samples")
     if overall["full_scale_or_clipped_samples"] != 0:
@@ -137,7 +143,7 @@ def main():
         if comparison["controlled_comparison"] and comparison["decoded_samples_identical"]:
             failures.append(f"Controlled comparison {comparison['first_segment']}/{comparison['second_segment']} is identical")
     report = {
-        "version": "0.17.0",
+        "version": args.version,
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "status": "PASS" if not failures else "FAIL",
         "failures": failures,

@@ -1,0 +1,121 @@
+{
+  "version": "0.18.0",
+  "generated_utc": "2026-11-18T07:11:41.186188+00:00",
+  "status": "PASS",
+  "failures": [],
+  "scope": "Independent standard-library WAV decode and file comparison; no synthesizer helpers used",
+  "limitations": [
+    "Integer PCM cannot contain NaN/Inf. This does not independently inspect pre-encoding float buffers.",
+    "No full-scale sample means no observed PCM clipping; it does not certify absence of upstream limiting.",
+    "Waveform differences are numerical measurements, not a subjective listening evaluation."
+  ],
+  "demo": {
+    "path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.18-Chaos-Demo.wav",
+    "file_bytes": 5760104,
+    "sha256": "4885d2a3de312d88bc890840560eff45139b5c4d43de694c9d9fdeb232d18488",
+    "encoding": "signed little-endian integer PCM",
+    "bits_per_sample": 24,
+    "sample_rate_hz": 48000,
+    "channel_count": 2,
+    "frames": 960000,
+    "duration_seconds": 20.0,
+    "render_notes": "Fixed render gain; each 10-second section has 20 ms fade-in and 100 ms fade-out",
+    "overall": {
+      "rms": 0.018976286021944233,
+      "rms_dbfs": -34.43577564640101,
+      "peak": 0.04617452621459961,
+      "peak_dbfs": -26.711951041063845,
+      "decoded_nonfinite_samples": 0,
+      "full_scale_or_clipped_samples": 0,
+      "channels": [
+        {
+          "channel": "left",
+          "rms": 0.018976286021944233,
+          "peak": 0.04617452621459961,
+          "dc_mean": 1.4982867985963822e-06
+        },
+        {
+          "channel": "right",
+          "rms": 0.018976286021944233,
+          "peak": 0.04617452621459961,
+          "dc_mean": 1.4982867985963822e-06
+        }
+      ]
+    },
+    "segments": [
+      {
+        "index": 0,
+        "start_seconds": 0,
+        "end_seconds": 10,
+        "label": "Lorenz: C4, nominal speed 2, Trigger",
+        "rms": 0.0193380235204201,
+        "rms_dbfs": -34.27175831761416,
+        "peak": 0.04609715938568115,
+        "peak_dbfs": -26.726516720464613,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.0193380235204201,
+            "peak": 0.04609715938568115,
+            "dc_mean": 7.117422918478648e-07
+          },
+          {
+            "channel": "right",
+            "rms": 0.0193380235204201,
+            "peak": 0.04609715938568115,
+            "dc_mean": 7.117422918478648e-07
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "start_seconds": 10,
+        "end_seconds": 20,
+        "label": "Rossler: C4, nominal speed 2, Trigger",
+        "rms": 0.018607517531818996,
+        "rms_dbfs": -34.606231262958644,
+        "peak": 0.04617452621459961,
+        "peak_dbfs": -26.711951041063845,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.018607517531818996,
+            "peak": 0.04617452621459961,
+            "dc_mean": 2.2848313053448996e-06
+          },
+          {
+            "channel": "right",
+            "rms": 0.018607517531818996,
+            "peak": 0.04617452621459961,
+            "dc_mean": 2.2848313053448996e-06
+          }
+        ]
+      }
+    ],
+    "segment_comparisons": [
+      {
+        "first_segment": 0,
+        "second_segment": 1,
+        "controlled_comparison": "Lorenz versus Rossler, same voice, MIDI, speed and gain",
+        "waveform_difference_rms": 0.016332578483823867,
+        "waveform_difference_peak": 0.0823754072189331,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -0.3344729453444914
+      }
+    ]
+  },
+  "legacy_regression": {
+    "before_path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.17-before-v0.18.wav",
+    "after_path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.18-legacy-demo.wav",
+    "before_sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+    "after_sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+    "before_bytes": 4320104,
+    "after_bytes": 4320104,
+    "sha256_identical": true,
+    "byte_identical": true
+  }
+}

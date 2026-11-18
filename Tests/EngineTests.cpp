@@ -1,12 +1,14 @@
 #include "SynthEngine.h"
 #include "ModulationView.h"
 #include "ChaosLfoModel.h"
+#include "LfoCurveDocument.h"
 
 #include <algorithm>
 #include <atomic>
 #include <cmath>
 #include <chrono>
 #include <complex>
+#include <cstring>
 #include <functional>
 #include <iostream>
 #include <iomanip>
@@ -26,6 +28,329 @@ void require (bool condition, const std::string& message)
 {
     if (! condition)
         throw std::runtime_error (message);
+}
+
+bool sameCurveBits (const anyvoc::LfoCurveData& a, const anyvoc::LfoCurveData& b)
+{
+    return a.interpolation == b.interpolation
+        && std::memcmp (a.points.data(), b.points.data(), sizeof (a.points)) == 0;
+}
+
+anyvoc::LfoCurveData curveLandmarks()
+{
+    anyvoc::LfoCurveData result;
+    for (size_t i = 0; i < result.points.size(); ++i) result.points[i] = static_cast<float> (i) / 32.0f - 0.5f;
+    result.points[0] = -0.0f;
+    const std::array<float, 5> middle { -0.75f, 0.5f, -0.25f, 1.0f, -1.0f };
+    std::copy (middle.begin(), middle.end(), result.points.begin() + 12);
+    return result;
+}
+
+void requireCurveSelection (const anyvoc::LfoCurveData& original, const anyvoc::LfoCurveData& edited,
+                            const std::array<float, 5>& expected, const std::string& label)
+{
+    require (original.interpolation == edited.interpolation, label + " changed interpolation");
+    for (int i = 0; i < 33; ++i)
+        if (i >= 12 && i <= 16)
+            require (edited.points[static_cast<size_t> (i)] == expected[static_cast<size_t> (i - 12)],
+                     label + " wrong landmark at " + std::to_string (i));
+        else
+            require (std::memcmp (&original.points[static_cast<size_t> (i)], &edited.points[static_cast<size_t> (i)], sizeof (float)) == 0,
+                     label + " changed an unselected point");
+}
+
+void testCurveGridSnapping()
+{
+    using D = anyvoc::LfoCurveDocument;
+    // Independent nearest-neighbour search; equal distances replace the
+    // preceding candidate, so ties choose the larger coordinate on both axes.
+    for (int divisions : { 1, 2, 4, 8, 16, 32 })
+    {
+        for (int point = 0; point <= 32; ++point)
+        {
+            int expected = 0, bestDistance = 100;
+            for (int grid = 0; grid <= divisions; ++grid)
+            {
+                const int candidate = grid * 32 / divisions;
+                if (std::abs (point - candidate) <= bestDistance)
+                { expected = candidate; bestDistance = std::abs (point - candidate); }
+            }
+            require (D::snapPoint (point, divisions) == expected, "X snapping did not choose nearest grid/tie");
+        }
+        for (int n = -64; n <= 64; ++n)
+        {
+            const float value = n / 64.0f;
+            float expected = -1.0f, bestDistance = 3.0f;
+            for (int grid = 0; grid <= divisions; ++grid)
+            {
+                const float candidate = -1.0f + 2.0f * grid / divisions;
+                if (std::abs (value - candidate) <= bestDistance)
+                { expected = candidate; bestDistance = std::abs (value - candidate); }
+            }
+            require (D::snapValue (value, divisions) == expected, "Y snapping did not choose nearest grid/tie");
+        }
+    }
+    require (D::snapValue (-.25f, 4) == 0.0f && D::snapValue (.25f, 4) == .5f
+             && D::snapValue (0.0f, 1) == 1.0f, "Negative/positive half-grid contract drifted");
+    for (int divisions : { -2, 0, 3, 5, 64 })
+        require (D::snapPoint (7, divisions) == 7 && D::snapValue (-.23f, divisions) == -.23f,
+                 "Invalid grid silently changed a point");
+    require (D::snapPoint (-1, 8) == -1 && D::snapPoint (33, 8) == 33
+             && D::snapValue (1.1f, 8) == 1.1f && D::snapValue (-1.1f, 8) == -1.1f
+             && std::isnan (D::snapValue (std::numeric_limits<float>::quiet_NaN(), 8)),
+             "Invalid snap coordinates were silently sanitized");
+}
+
+void testCurveSelectionFlips()
+{
+    using D = anyvoc::LfoCurveDocument;
+    auto original = curveLandmarks(); original.interpolation = 1;
+    auto changed = original;
+    require (D::flipHorizontal (changed, 12, 16), "Selected horizontal flip rejected");
+    requireCurveSelection (original, changed, { -1, 1, -.25f, .5f, -.75f }, "Horizontal flip");
+    require (D::flipHorizontal (changed, 12, 16) && sameCurveBits (changed, original), "Double horizontal flip was not bit-exact");
+    require (D::flipVertical (changed, 12, 16), "Selected vertical flip rejected");
+    requireCurveSelection (original, changed, { .75f, -.5f, .25f, -1, 1 }, "Vertical flip");
+    require (D::flipVertical (changed, 12, 16) && sameCurveBits (changed, original), "Double vertical flip was not bit-exact");
+    require (D::flipHorizontal (changed, 0, 0) && sameCurveBits (changed, original), "Single-point horizontal flip changed data");
+    require (D::flipHorizontal (changed) && changed.points[0] == original.points[32]
+             && std::signbit (changed.points[32]), "Whole-curve flip wrapped or lost independent endpoints");
+    require (D::flipHorizontal (changed) && sameCurveBits (changed, original), "Whole-curve flip did not restore endpoint bits");
+    require (D::flipVertical (changed, 0, 0) && ! std::signbit (changed.points[0]), "Single-point vertical flip failed");
+    for (const auto selection : { std::pair<int, int> { -1, 2 }, { 3, 2 }, { 0, 33 }, { 33, 33 } })
+    {
+        const auto before = changed;
+        require (! D::flipHorizontal (changed, selection.first, selection.second)
+                 && ! D::flipVertical (changed, selection.first, selection.second)
+                 && sameCurveBits (changed, before), "Invalid flip modified data");
+    }
+}
+
+void testCurveTransformLandmarks()
+{
+    using D = anyvoc::LfoCurveDocument;
+    const auto source = curveLandmarks();
+    anyvoc::LfoCurveData output;
+    require (D::transform (source, 12, 16, 1, 0, 1, 1, output), "Curve move rejected");
+    requireCurveSelection (source, output, { -.75f, -.75f, .5f, -.25f, 1 }, "Move right/hold left");
+    require (D::transform (source, 12, 16, -1, 0, 1, 1, output), "Curve move left rejected");
+    requireCurveSelection (source, output, { .5f, -.25f, 1, -1, -1 }, "Move left/hold right");
+    require (D::transform (source, 12, 16, .5f, 0, 1, 1, output), "Fractional move rejected");
+    requireCurveSelection (source, output, { -.75f, -.125f, .125f, .375f, 0 }, "Fractional move");
+    require (D::transform (source, 12, 16, 0, 0, 2, 1, output), "Curve width rejected");
+    requireCurveSelection (source, output, { .5f, .125f, -.25f, .375f, 1 }, "Centre-based linear width");
+    auto stepped = source; stepped.interpolation = 1;
+    require (D::transform (stepped, 12, 16, 0, 0, 2, 1, output), "Stepped width rejected");
+    requireCurveSelection (stepped, output, { .5f, .5f, -.25f, -.25f, 1 }, "Centre-based stepped width");
+    require (D::transform (source, 12, 16, 0, 0, .25f, 1, output), "Minimum width rejected");
+    requireCurveSelection (source, output, { -.75f, -.75f, -.25f, -1, -1 }, "Narrow width endpoint hold");
+    require (D::transform (source, 12, 16, 0, .25f, 1, 2, output), "Height/offset rejected");
+    requireCurveSelection (source, output, { -1, 1, -.25f, 1, -1 }, "Zero-pivot height, then offset, then clamp");
+    require (D::transform (source, 12, 16, 0, -.5f, 4, 0, output), "Zero height rejected");
+    requireCurveSelection (source, output, { -.5f, -.5f, -.5f, -.5f, -.5f }, "Zero-height level");
+    for (const float offset : { -32.0f, 32.0f })
+    {
+        require (D::transform (source, 12, 16, offset, 0, 1, 1, output), "Boundary offset rejected");
+        const float expected = offset < 0 ? -1.0f : -.75f;
+        requireCurveSelection (source, output, { expected, expected, expected, expected, expected }, "Full offset boundary hold");
+    }
+    for (const float width : { .25f, 4.0f })
+        require (D::transform (source, 14, 14, 32, .5f, width, 2, output) && output.points[14] == 0,
+                 "Single-point width/move altered the source lookup");
+    auto aliased = source;
+    require (D::transform (aliased, 12, 16, .5f, 0, 1, 1, aliased), "Aliased transform rejected");
+    requireCurveSelection (source, aliased, { -.75f, -.125f, .125f, .375f, 0 }, "Aliased transform");
+}
+
+void testCurveInvalidAndIdentity()
+{
+    using D = anyvoc::LfoCurveDocument;
+    auto source = curveLandmarks();
+    source.points[1] = std::numeric_limits<float>::denorm_min();
+    source.points[2] = -std::numeric_limits<float>::min();
+    for (int interpolation : { 0, 1 })
+    {
+        source.interpolation = interpolation;
+        for (const auto selection : { std::pair<int, int> { 0, 32 }, { 12, 16 }, { 0, 0 } })
+        {
+            anyvoc::LfoCurveData result;
+            require (D::transform (source, selection.first, selection.second, 0, 0, 1, 1, result)
+                     && sameCurveBits (source, result), "Identity transform lost float bits or interpolation");
+        }
+    }
+    const auto sentinel = curveLandmarks();
+    auto output = sentinel;
+    const auto reject = [&] (const anyvoc::LfoCurveData& data, int first, int last, float x, float y, float w, float h)
+    {
+        require (! D::transform (data, first, last, x, y, w, h, output) && sameCurveBits (sentinel, output),
+                 "Invalid transform changed its output");
+    };
+    for (const auto selection : { std::pair<int, int> { -1, 3 }, { 3, 2 }, { 0, 33 } })
+        reject (source, selection.first, selection.second, 0, 0, 1, 1);
+    for (int field = 0; field < 4; ++field)
+        for (float invalid : { std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::infinity(),
+                               -std::numeric_limits<float>::infinity(), -100.0f, 100.0f })
+        {
+            std::array<float, 4> controls { 0, 0, 1, 1 }; controls[static_cast<size_t> (field)] = invalid;
+            reject (source, 0, 32, controls[0], controls[1], controls[2], controls[3]);
+        }
+    reject (source, 0, 32, 32.01f, 0, 1, 1); reject (source, 0, 32, 0, -2.01f, 1, 1);
+    reject (source, 0, 32, 0, 0, .249f, 1); reject (source, 0, 32, 0, 0, 4.001f, 1);
+    reject (source, 0, 32, 0, 0, 1, -.001f); reject (source, 0, 32, 0, 0, 1, 4.001f);
+    for (const float invalid : { -1.01f, 1.01f, std::numeric_limits<float>::quiet_NaN(), std::numeric_limits<float>::infinity() })
+    {
+        auto bad = source; bad.points[32] = invalid; const auto before = bad;
+        require (! D::valid (bad) && D::serialize (bad).isEmpty(), "Invalid curve point accepted");
+        require (! D::flipHorizontal (bad, 12, 16) && ! D::flipVertical (bad, 12, 16)
+                 && sameCurveBits (bad, before), "Invalid outside-selection point allowed partial flip");
+        reject (bad, 12, 16, 0, 0, 1, 1);
+    }
+    for (const int invalid : { -1, 2, 99 })
+    {
+        auto bad = source; bad.interpolation = invalid;
+        require (! D::valid (bad) && D::serialize (bad).isEmpty(), "Invalid interpolation accepted");
+        reject (bad, 0, 32, 0, 0, 1, 1);
+    }
+}
+
+juce::String independentCurveXml (const juce::String& number = "0", int count = 33)
+{
+    juce::String result = "<ANYVOC_LFO_CURVE schema=\"1\" interpolation=\"0\">\n";
+    for (int i = 0; i < count; ++i) result += "<POINT value=\"" + number + "\"/>\n";
+    return result + "</ANYVOC_LFO_CURVE>";
+}
+
+void testCurveCodecRoundTrip()
+{
+    using D = anyvoc::LfoCurveDocument;
+    uint32_t random = 0x74acf0bdu;
+    for (int pass = 0; pass < 128; ++pass)
+    {
+        anyvoc::LfoCurveData data; data.interpolation = pass % 2;
+        for (auto& value : data.points)
+        {
+            do
+            {
+                random ^= random << 13; random ^= random >> 17; random ^= random << 5;
+                std::memcpy (&value, &random, sizeof (value));
+            }
+            while (! std::isfinite (value) || std::abs (value) > 1);
+        }
+        data.points[0] = -0.0f; data.points[1] = std::numeric_limits<float>::denorm_min();
+        data.points[2] = -std::numeric_limits<float>::min(); data.points[31] = -1; data.points[32] = 1;
+        const auto text = D::serialize (data);
+        require (text.isNotEmpty() && text.getNumBytesAsUTF8() <= D::maximumFileBytes, "Writer produced empty/oversize curve");
+        anyvoc::LfoCurveData roundTrip;
+        require (D::parse (text, roundTrip).wasOk() && sameCurveBits (data, roundTrip), "Curve float-bit/interpolation round trip failed");
+        // An independent XML implementation verifies the emitted tree/counts.
+        const auto xml = juce::XmlDocument::parse (text);
+        require (xml != nullptr && xml->hasTagName ("ANYVOC_LFO_CURVE") && xml->getNumAttributes() == 2
+                 && xml->getStringAttribute ("schema") == "1" && xml->getIntAttribute ("interpolation") == data.interpolation
+                 && xml->getNumChildElements() == 33, "Writer output has the wrong independent XML structure");
+        for (int i = 0; i < 33; ++i)
+        {
+            const auto* child = xml->getChildElement (i);
+            require (child->hasTagName ("POINT") && child->getNumAttributes() == 1 && child->getNumChildElements() == 0
+                     && static_cast<float> (child->getDoubleAttribute ("value")) == data.points[static_cast<size_t> (i)],
+                     "Writer point failed independent XML numeric read");
+        }
+    }
+    juce::String reordered = " \r\n<ANYVOC_LFO_CURVE interpolation = '1'\t schema='1'>\n";
+    const std::array<const char*, 6> numbers { "-.5", "+0.25", "1e-1", "0.", "-1", "1" };
+    const std::array<float, 6> values { -.5f, .25f, .1f, 0, -1, 1 };
+    for (int i = 0; i < 33; ++i) reordered += "<POINT value='" + juce::String (numbers[static_cast<size_t> (i % 6)]) + "'> \t</POINT>\r\n";
+    reordered += "</ANYVOC_LFO_CURVE> \n";
+    anyvoc::LfoCurveData parsed;
+    require (D::parse (reordered, parsed).wasOk() && parsed.interpolation == 1, "Documented XML syntax variants rejected");
+    for (size_t i = 0; i < parsed.points.size(); ++i)
+        require (parsed.points[i] == values[i % values.size()], "Strict decimal grammar numeric value incorrect");
+    const auto base = independentCurveXml();
+    const auto exactLimit = base + juce::String::repeatedString (" ", D::maximumFileBytes - static_cast<int> (base.getNumBytesAsUTF8()));
+    require (D::parse (exactLimit, parsed).wasOk(), "Exact 16 KiB curve was rejected");
+}
+
+void testCurveCodecRejections()
+{
+    using D = anyvoc::LfoCurveDocument;
+    const auto sentinel = curveLandmarks();
+    const auto reject = [&] (const juce::String& text)
+    {
+        auto output = sentinel;
+        require (D::parse (text, output).failed() && sameCurveBits (output, sentinel), "Bad curve XML accepted or changed output");
+    };
+    const auto base = independentCurveXml();
+    for (const juce::String number : { "NaN", "Inf", "-Infinity", "1.001", "-1.001", "1e999", "1e-999", "0x1p-1",
+                                      "1,0", "1suffix", "", " ", " 0", "0 ", "+", ".", "1e", "1e+", "1/2", "&#48;", "&x;" })
+        reject (independentCurveXml (number));
+    for (const auto& text : std::vector<juce::String> {
+            {}, independentCurveXml ("0", 32), independentCurveXml ("0", 34),
+            base.replace ("schema=\"1\"", "schema=\"2\""), base.replace ("schema=\"1\"", "schema=\"1.0\""),
+            base.replace ("schema=\"1\"", "schema=\"1\" schema=\"1\""), base.replace ("schema=\"1\"", "unknown=\"1\""),
+            base.replace ("interpolation=\"0\"", "interpolation=\"2\""), base.replace ("interpolation=\"0\"", "interpolation=\"00\""),
+            base.replace ("interpolation=\"0\"", "interpolation=\"-0\""), base.replace ("interpolation=\"0\"", ""),
+            base.replace ("ANYVOC_LFO_CURVE", "SERUM_LFO_CURVE"), base.replace ("POINT", "point"),
+            base.replace ("value=\"0\"", "value=\"0\" value=\"0\""), base.replace ("value=\"0\"", "value=\"0\" extra=\"0\""),
+            base.replace ("value=\"0\"", "other=\"0\""), base.replace ("<POINT", "text<POINT"),
+            base.replace ("<POINT value=\"0\"/>", "<POINT value=\"0\"><X/></POINT>"),
+            base + "trailing", base + base, "<!--comment-->" + base, "<?other mode='x'?>" + base,
+            "<!DOCTYPE ANYVOC_LFO_CURVE SYSTEM 'file:///not-opened'>" + base,
+            "<!DOCTYPE ANYVOC_LFO_CURVE [<!ENTITY x '0'>]>" + base,
+            "<?xml version=\"1.1\" encoding=\"UTF-8\"?>" + base,
+            " \n<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + base,
+            juce::String::charToString (0xfeff) + base, base + juce::String::charToString (0x4e00),
+            base + juce::String::repeatedString (" ", D::maximumFileBytes + 1 - static_cast<int> (base.getNumBytesAsUTF8())) })
+        reject (text);
+}
+
+void testCurveFileTransactions()
+{
+    using D = anyvoc::LfoCurveDocument;
+    juce::TemporaryFile sandbox (".anycurve-tests");
+    const auto root = sandbox.getFile();
+    require (root.createDirectory().wasOk(), "Could not create isolated curve-file sandbox");
+    const auto file = root.getChildFile ("Curve.anycurve");
+    const auto original = curveLandmarks();
+    require (D::saveFile (file, original).wasOk(), "Initial curve save failed");
+    anyvoc::LfoCurveData loaded;
+    require (D::loadFile (file, loaded).wasOk() && sameCurveBits (loaded, original), "Saved curve was not loaded exactly");
+    auto changed = original; changed.interpolation = 1; changed.points[2] = -.875f;
+    require (D::saveFile (file, changed).wasOk() && D::loadFile (file, loaded).wasOk()
+             && sameCurveBits (changed, loaded), "Replacing an existing curve failed");
+    const auto bytes = file.loadFileAsString();
+    auto invalid = changed; invalid.points[7] = std::numeric_limits<float>::infinity();
+    require (D::saveFile (file, invalid).failed() && file.loadFileAsString() == bytes, "Invalid save changed existing file");
+    require (D::saveFile (root, changed).failed() && file.loadFileAsString() == bytes, "Save over a directory changed contents");
+    require (D::saveFile (file.getChildFile ("CannotBeChild.anycurve"), changed).failed(), "Non-directory parent save succeeded");
+    const auto missingParent = root.getChildFile ("Absent/Curve.anycurve");
+    require (D::saveFile (missingParent, changed).failed() && ! missingParent.getParentDirectory().exists(),
+             "Save silently created a missing parent directory");
+   #if JUCE_WINDOWS
+    {
+        // JUCE's Windows output stream denies delete sharing: this exercises
+        // actual replacement failure after the sibling temp has been written.
+        juce::FileOutputStream locked (file);
+        require (locked.openedOk(), "Could not lock existing curve file");
+        require (D::saveFile (file, original).failed() && file.loadFileAsString() == bytes,
+                 "Failed replacement damaged the existing curve");
+    }
+   #endif
+    require (root.findChildFiles (juce::File::findFiles, false).size() == 1, "Curve save leaked a temporary file");
+    const auto sentinel = original;
+    const auto rejectFile = [&] (const juce::File& bad)
+    {
+        auto output = sentinel;
+        require (D::loadFile (bad, output).failed() && sameCurveBits (output, sentinel), "Bad file changed curve data");
+    };
+    rejectFile (root); rejectFile (root.getChildFile ("Missing.anycurve"));
+    const auto bad = root.getChildFile ("Bad.anycurve");
+    require (bad.replaceWithText (independentCurveXml ("0", 32)), "Could not write malformed fixture"); rejectFile (bad);
+    require (bad.replaceWithText (juce::String::repeatedString (" ", D::maximumFileBytes + 1)), "Could not write oversized fixture"); rejectFile (bad);
+    std::string binary = independentCurveXml().toStdString(); binary.insert (binary.size() / 2, 1, '\0');
+    require (bad.replaceWithData (binary.data(), binary.size()), "Could not write embedded-NUL fixture"); rejectFile (bad);
+    binary[binary.size() / 2] = static_cast<char> (0xff);
+    require (bad.replaceWithData (binary.data(), binary.size()), "Could not write invalid-UTF8 fixture"); rejectFile (bad);
+    require (bad.replaceWithText ({}), "Could not write empty fixture"); rejectFile (bad);
+    require (file.loadFileAsString() == bytes, "Rejected file operations damaged the valid asset");
 }
 
 struct Stats
@@ -3852,6 +4177,13 @@ int main (int argc, char* argv[])
         , { "Chaos unused identity, block partition, reset and inactive phase controls", testChaosIdentityPartitionAndReset }
         , { "Chaos coherent concurrent XYZ telemetry", testChaosCoherentTelemetry }
         , { "Unused expanded source identity and invalid controls", testExpandedSourceIsolationAndInvalids }
+        , { "Curve grid nearest coordinates and positive/negative half-grid ties", testCurveGridSnapping }
+        , { "Curve selected flips, independent endpoints and exact untouched points", testCurveSelectionFlips }
+        , { "Curve move/scale independent landmarks, interpolation and boundary hold", testCurveTransformLandmarks }
+        , { "Curve identity bits, aliasing and transactional invalid-input rejection", testCurveInvalidAndIdentity }
+        , { "Curve XML independent structure, float-bit round trips and exact size limit", testCurveCodecRoundTrip }
+        , { "Curve strict XML grammar, numeric bounds and atomic parse rejection", testCurveCodecRejections }
+        , { "Curve file round trips, bounded reads and failed-save preservation", testCurveFileTransactions }
     };
     int failures = 0;
     for (const auto& test : tests)

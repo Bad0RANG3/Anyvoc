@@ -1,16 +1,52 @@
 # Anyvoc 测试与验收指南
 
-本指南针对 **0.17.0 / Windows x64 / VST3 与独立版**，说明怎样复现验证、怎样判定结果，以及怎样留下可追溯记录。最终冻结代码的完整自动测试、pluginval、音频分析及发布包校验已通过，原生鼠标操作已完成下文列出的限定检查。0.16 的历史证据保留在本文及 [0.16 验证记录](VALIDATION-0.16.md)；操作说明见 [用户指南](USER_GUIDE.md)，开发环境、子模块与仓库构建方式见 [构建指南](BUILDING.md)。
+本指南针对 **0.18.0 / Windows x64 / VST3 与独立版**，说明怎样复现验证、怎样判定结果，以及怎样留下可追溯记录。当前首次完整四套自动测试、pluginval、独立音频分析及发布包校验已通过，预览及原生交互完成下述限定检查；0.18 云端 CI 未运行。历史结果保留在本文、[0.17 验证记录](VALIDATION-0.17.md)及 [0.16 验证记录](VALIDATION-0.16.md)，不自动适用于其他版本。操作说明见 [用户指南](USER_GUIDE.md)，构建方式见 [构建指南](BUILDING.md)。
 
 “测试通过”只适用于记录中的版本、硬件、设置和步骤。自动化测试、pluginval、界面截图、真人听音、DAW 工程重开是不同层面的证据，不能互相替代，也不能证明与 Serum 2 声音等价。
 
 ## 1. 当前证据与结果
 
-### 0.17：最终自动复测与发布包校验通过
+### 0.18：自动测试、插件、音频与包校验通过，原生完成限定检查
 
 | 检查 | 当前状态 | 可核查证据 / 待完成范围 |
 |---|---|---|
-| Release 构建 | 修复后增量构建完成 | 当前构建已完成下列 CTest 与 VST3 检查，包内二进制版本与哈希均匹配构建产物 |
+| Release 构建 | 已完成 | 本轮构建产物完成下列完整 CTest；发布前仍须核对最终二进制与源码 |
+| EngineTests | **68 组通过，4.55 秒** | [首次完整 CTest](ctest-0.18-initial.txt)、[测试明细](test-details-0.18-initial.txt)；新增七组离线曲线数学及严格文件测试 |
+| ProcessorTests | **104 组通过，156.67 秒** | 同一运行；新增六组真实曲线控件、历史、参数隔离、回调与资产 IO 测试 |
+| WavetableTests / PresetLibraryTests | **10 / 6 组通过，0.08 / 0.63 秒** | 同一完整运行 |
+| 自动测试合计 | **188 组全部通过：68 + 104 + 10 + 6** | 四套零失败，总耗时 **161.94 秒** |
+| 参数、状态与预设 | 本轮不新增定义 | 保持 1192 参数、schema 13、26 个工厂预设；旧点值步长 0.01，详见第 7 节 |
+| 最终模块 pluginval | **strictness 5：SUCCESS** | [本轮完整日志](pluginval-0.18.txt)，seed `0x4fc4b12`；0.17 的日志未用于替代 |
+| 新渲染音频与旧声音对照 | **独立分析 PASS** | [音频报告](audio-analysis-0.18.json)：本轮 Chaos 为 20 秒/48 kHz/24-bit/双声道；真正留存 0.17 EXE 与 0.18 新渲染的 legacy 逐字节及 SHA-256 一致 |
+| 预览 | 84 张已生成，新工具四张逐张检查无裁切 | Curve Tools / Curve Selection，正常与最小尺寸；不把静态图当原生交互证明 |
+| 原生交互 | 完成下列限定操作 | 真实 SAVE/LOAD 对话框、选区 Flip/Undo、Custom 切换、取消和最小窗口；不包含 OS 剪贴板或真人听音 |
+| 发布包 | **独立校验通过** | Windows **208** 文件、完整源码 **4600** 文件；CRC、安全唯一路径、精确集合、逐文件匹配、0.18.0 版本及构建二进制一致性全部通过；外置报告 `dist/Anyvoc-0.18.0-PackageVerification.json` |
+| 0.18 云端 CI | 未运行 | 本机四套通过不替代当前提交的 Actions 结果 |
+| 其他人工与宿主范围 | 未测 / 未完成全面验收 | OS 剪贴板、真人听音、外部 MIDI、整音色原生保存重开、DAW 未测；最坏实时性能仍无完整验收 |
+
+本轮七组模型测试使用独立数值例子覆盖半格吸附、选区反转、移动缩放、Linear/Step、端点保持、身份精确、非法输入原子拒绝、float 位级往返、严格 XML 与真实文件失败保护。六组 Processor 测试操作真实可见控件并检查实际参数变化、全部参数隔离、一个动作一次 Undo、声音参考和 46 个相关参数的回调边界；Flip X/Y 使用非对称输入，避免两种操作偶然得到相同结果。
+
+平台测试只替换 OS 剪贴板和文件选择器的服务边界，仍执行生产按钮、快照守护、正常宿主手势、声音历史、严格 codec 和真实临时目录 IO。覆盖同步/异步/重复回复、隐藏/换页/状态替换/销毁后的迟到回复；**它不打开原生对话框、不操作用户系统剪贴板，不能替代原生交互验收**。上述是已通过自动测试的范围，保留首次日志。
+
+独立音频报告中的两份 legacy SHA-256 均为 `3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920`，文件逐字节相同。当前 Chaos WAV 的 SHA-256 为 `4885d2a3de312d88bc890840560eff45139b5c4d43de694c9d9fdeb232d18488`，没有 PCM 满幅样本；这是数值分析，不是主观听音结果。
+
+本轮原生操作从 Neon Skyline 打开 LFO Lab→TOOLS，实际完成：
+
+- 用真实 SAVE 对话框保存 Sine 曲线，文件含 33 点、1,121 字节。
+- Select 9–25 后 Flip Y，并用一次 Undo 恢复。
+- 用真实 LOAD 对话框载入曲线，形状切为 Custom；点击 C4 观察到绿色输出电平，再 Undo 回 Sine。电平可见不等于已经听音。
+- 在最小窗口检查工具与琴键完整；另开 LOAD 后用 Escape 取消，声音状态未改。
+- 关闭测试实例并恢复原设置，恢复后 SHA-256 为 `5000F1074D6B885621AFABB357A32E2BA2050F8661AD38C3FB92BC520674AB7E`。
+
+这份原生记录不覆盖系统剪贴板、真人听音、外部 MIDI、整音色的原生保存/重开和 DAW。完整步骤与证据见 [版本验证记录](VALIDATION.md)；0.18 云端 CI 结果待实际执行后补入。
+
+### 0.17 历史：最终自动复测与发布包校验通过
+
+以下结果只描述当时的 0.17 产物；完整历史见 [VALIDATION-0.17.md](VALIDATION-0.17.md)。
+
+| 检查 | 0.17 历史状态 | 可核查证据 / 范围 |
+|---|---|---|
+| Release 构建 | 修复后增量构建完成 | 当时构建完成下列 CTest 与 VST3 检查，包内二进制版本与哈希均匹配构建产物 |
 | EngineTests | **61 组通过** | 4.53 秒；[最终完整 CTest](ctest-0.17.txt)、[最终测试明细](test-details-0.17.txt) |
 | ProcessorTests | **98 组通过** | 同一最终完整运行，129.80 秒；首轮 2 项失败及修复过程保留在下文 |
 | WavetableTests / PresetLibraryTests | **10 / 6 组通过** | 同一最终完整运行，分别 0.06 / 0.63 秒 |
@@ -20,7 +56,7 @@
 | Chaos 音频与旧演示 | **最终 CLI 渲染与独立分析 PASS** | [音频分析](audio-analysis-0.17.json)：20 秒、48 kHz、24-bit、双声道；旧演示逐字节及 SHA-256 一致，本次快照修复未改变演示哈希 |
 | VST3 规范检查 | **pluginval strictness 5：SUCCESS** | [最终插件日志](pluginval-0.17.txt)，版本 0.17.0，随机种子 `0x5f5ab2b` |
 | 原生界面 | 已完成限定范围的鼠标操作复核 | 算法、真实 XYZ、Undo 清图、禁用 Phase、速度撤销、模式与最小尺寸；具体边界见下文 |
-| 发布包 | **独立校验通过** | Windows 190 文件、源码 4580 文件；CRC、安全唯一路径、精确集合、逐字节和当前文档匹配；四个 PE FileVersion 均为 0.17.0，包内二进制 SHA-256 与构建产物一致 |
+| 发布包 | **独立校验通过** | Windows 190 文件、源码 4580 文件；CRC、安全唯一路径、精确集合、逐字节和当时文档匹配；四个 PE FileVersion 均为 0.17.0，包内二进制 SHA-256 与构建产物一致 |
 | Chaos 离线基准 | 已测量；不代表实时验收通过 | [基准原始记录](benchmark-chaos-0.17.txt)；复现方式与局限见第 7 节 |
 | DAW / 真人听音 / 最坏实时性能 | 未完成全面验收 | 逐项执行本文用例，保留未测状态 |
 
@@ -45,7 +81,7 @@
 
 ### 0.16 历史记录
 
-下面的通过结果仅适用于当时的 0.16 产物，不自动适用于当前 0.17 版本。
+下面的通过结果仅适用于当时的 0.16 产物，不自动适用于当前 0.18 版本。
 
 | 检查 | 0.16 结果 | 可核查证据 / 范围 |
 |---|---|---|
@@ -99,7 +135,7 @@ Copy-Item -LiteralPath build/Testing/Temporary/LastTest.log -Destination (Join-P
 if ($testExit -ne 0) { throw 'CTest failed; retain the failed log before retrying' }
 ```
 
-**通过标准：**构建退出码 0；CTest 四个目标全部通过；0.17 的 61 / 98 / 10 / 6 组分别汇总零失败，共 175 组。测试组数只能在有评审的测试变更后增加或调整，不能通过删掉失败项保持“绿色”。保留警告，区别既有警告与新增警告。排查单套失败可运行 `ctest --test-dir build -C Release -R '^ProcessorTests$' --output-on-failure`，但需注明“定向复测”，不覆盖初始失败日志。
+**通过标准：**构建退出码 0；CTest 四个目标全部通过；0.18 的 68 / 104 / 10 / 6 组分别汇总零失败，共 188 组。测试组数只能在有评审的测试变更后增加或调整，不能通过删掉失败项保持“绿色”。保留警告，区别既有警告与新增警告。排查单套失败可运行 `ctest --test-dir build -C Release -R '^ProcessorTests$' --output-on-failure`，但需注明“定向复测”，不覆盖初始失败日志。
 
 ## 3. 可重现预览与 WAV 演示
 
@@ -131,24 +167,29 @@ if ($LASTEXITCODE -ne 0) { throw 'Legacy render failed' }
 | `--lfo-motion-demo` | 20 秒 | 0–4 秒直拍、4–8 秒 Swing 60%、8–12 秒 Swing + Reverse；12–16 秒 110 Hz、16–20 秒 220 Hz |
 | `--chaos-demo` | 20 秒 | 0–10 秒 Lorenz、10–20 秒 Rossler；相同 C4、力度、Trigger、名义速度 2、声音与固定增益，仅更换算法 |
 
-**预览通过标准：**0.17 应生成 80 张 PNG，保留原 74 张并新增 `LFO-Chaos-Lorenz.png`、`LFO-Chaos-Rossler.png`、`LFO-Chaos-Evolved.png` 及各自 `-small` 版本。六张 Chaos 图先运行真实音频再采集引擎快照；Evolved 是 Lorenz 继续演化后的帧。正常 1120×760 与最小 1008×684 窗口无裁切、重叠、缺失控件；XYZ、轨迹、算法标签、禁用状态和显示值一致。也保留 LFO-Swing、LFO-Motion、LFO-Audio、LFO-Phase-Routing 的旧检查。截图只验证静态显示，拖动、焦点和 MIDI 要继续做真实窗口检查。
+**预览通过标准：**0.18 应生成 84 张 PNG，在原 80 张基础上新增 `LFO-Curve-Tools.png`、`LFO-Curve-Selection.png` 及各自 `-small` 版本。检查正常 1120×760 与最小 1008×684 的绘图、选区、工具、状态提示和底部琴键无裁切/重叠，数值可读。旧 Lorenz / Rossler / Evolved 六张图仍从实际音频快照采集；XYZ、轨迹、算法标签和禁用状态一致。保留 Swing、Motion、Audio、Phase Routing 的旧检查。截图只验证静态显示，拖动、焦点、原生对话框和 MIDI 继续做真实窗口检查。
+
+Motion / Chaos 的发行文件继续沿用 `Anyvoc-v0.16-Lfo-Motion-Demo.wav`、`Anyvoc-v0.17-Chaos-Demo.wav` 旧名称，但本轮必须由 **0.18 测试程序重新渲染**。上面的独立 `$runDir` 保存本轮结果，不能写进历史发行目录或覆盖旧报告。0.18 没有新声音算法或专用曲线 demo 命令，工具的实际声音接线另由集成测试和下文人工用例验证。
 
 **音频通过标准：**命令退出 0，长度/声道/采样率/位深符合约定，无意外静音或满幅削波；在相同固定增益下比较各段。Chaos 与 LFO motion 两个必需演示均为 960,000 帧、48 kHz、24-bit、双声道。Chaos 各 10 秒段有 20 ms 淡入、100 ms 淡出，第 9 秒松键；“速度 2”描述演化速度，不承诺每半秒重复一次轨迹。渲染测试负责检查编码前浮点 NaN/Inf；整数 PCM 分析无法替代这项检查。听音记录写明设备、音量和听到的差异，不把 RMS 差异直接写成“音质更好”。
 
 旧行为要求逐字节一致时，用留存的上一版**测试二进制**和候选版分别执行 `--demo`，比较 `Get-FileHash -Algorithm SHA256` 结果；不拿陈旧的 WAV 充当刚生成的基线。若声音变化是明确修复，记录差异原因与受影响预设，不能盲目更新基线消除失败。
 
-仓库中的 [独立 Chaos 音频分析脚本](../scripts/analyze-chaos-demo.py) 接受显式输入路径。先将已验证的 0.16 测试程序留存在下面的路径，或修改 `$baselineProcessorTests` 指向自己的留存程序，并记录其提交和哈希；此二进制不是源码仓库的组成部分。缺少它时旧音频回归记“未测”，不能复制候选 WAV 当作旧基线。
+仓库中的 [独立 Chaos 音频分析脚本](../scripts/analyze-chaos-demo.py) 接受显式输入路径。先将已验证的 **0.17** 测试程序留存在下面的路径，或修改 `$baselineProcessorTests` 指向自己的留存程序，并记录其提交和哈希；此二进制不是源码仓库的组成部分。缺少它时旧音频回归记“未测”，不能复制候选 WAV 当作旧基线。脚本保留 `--version` 缺省值 `0.17.0` 和 0.17 历史路径；本轮必须显式传入 `--version 0.18.0` 及四个路径参数，避免版本误标、误用旧输入或覆盖旧报告。
 
 ```powershell
-$baselineProcessorTests = Join-Path $repoRoot 'build/validation-baseline/AnyvocProcessorTests-v0.16.exe'
-if (!(Test-Path -LiteralPath $baselineProcessorTests)) { throw 'Supply the verified 0.16 test executable first' }
-& $baselineProcessorTests --demo (Join-Path $runDir 'Legacy-0.16.wav')
+$baselineProcessorTests = Join-Path $repoRoot 'build/validation-baseline/AnyvocProcessorTests-v0.17.exe'
+if (!(Test-Path -LiteralPath $baselineProcessorTests)) { throw 'Supply the verified 0.17 test executable first' }
+Get-FileHash -LiteralPath $baselineProcessorTests -Algorithm SHA256 |
+    Format-List | Out-File -Encoding utf8 (Join-Path $runDir 'legacy-renderer-sha256.txt')
+& $baselineProcessorTests --demo (Join-Path $runDir 'Legacy-0.17.wav')
 if ($LASTEXITCODE -ne 0) { throw 'Baseline render failed' }
 python scripts/analyze-chaos-demo.py `
+    --version 0.18.0 `
     --demo (Join-Path $runDir 'Chaos.wav') `
-    --legacy-before (Join-Path $runDir 'Legacy-0.16.wav') `
+    --legacy-before (Join-Path $runDir 'Legacy-0.17.wav') `
     --legacy-after (Join-Path $runDir 'Legacy.wav') `
-    --output (Join-Path $runDir 'audio-analysis-0.17.json')
+    --output (Join-Path $runDir 'audio-analysis-0.18.json')
 if ($LASTEXITCODE -ne 0) { throw 'Independent audio analysis failed' }
 ```
 
@@ -196,6 +237,25 @@ Get-Content -LiteralPath (Join-Path $validationDir 'pluginval-stderr.txt')
 
 已知历史记录涉及原生 Ctrl 键递送以及间歇性的琶音器延音 RMS 问题；0.16 没有宣称专门修复。验收遇到类似问题应保留复现步骤，不以“以前出现过”忽略。人工检查结束后恢复原设置；如果做了字节备份，核对恢复后的哈希。
 
+### 0.18 曲线工具专项人工用例
+
+以下是完整操作标准，当前只有第 1 节明确列出的有限范围已有本轮原生记录，不能仅凭自动测试将整行勾选为通过。先备份用户设置，在测试实例打开 LFO Lab→TOOLS，至少检查 LFO1 与 LFO10；使用独立临时 `.anycurve` / `.anyvoc` 文件。固定 33 点、选区与文件的完整定义见 [LFO_CURVE_TOOLS.md](LFO_CURVE_TOOLS.md)。
+
+| ID | 操作 | 预期 / 失败判定 |
+|---|---|---|
+| T01 查看与独立状态 | 两个 LFO 分别改 Draw/Select、X/Y 网格、Snap 和选区；切换后再返回；暂存位移/缩放但不按 APPLY | 不改变声音参数或新增 Undo；每条 LFO 的视图设置互不串改。视图设置不属于音色存档，关闭编辑器后不保证保留 |
+| T02 网格绘制 | 分别开关 X/Y 吸附，覆盖 1/2/4/8/16/32；在半格和半格两侧落笔，连续拖一笔，Undo/Redo | 各轴独立；半格取较大坐标。X 从连续鼠标位置选最近格，grid4 的点坐标 3.6→0、4→8；完整一笔一次 Undo，隐藏/切页后迟到拖动不继续写 |
+| T03 点值精度 | Y16 取目标 0.125、Y32 取 0.0625；另用 SET 输入 0.12345678 | 原有声音参数步长为 **0.01**，分别实际约为 0.13、0.06、0.12；网格或精确输入不绕过宿主量化。SET 不受网格吸附影响，修改单点一次 Undo |
+| T04 选区与反转 | 对非对称曲线选择 9–17 号点，分别 Flip X / Flip Y 后 Undo；再 All | 闭区间包含两端；X 反转顺序、Y 反号，不能用对称直线代替区分用例；Custom 选区外点完全不变，单次 Flip 一次 Undo |
+| T05 位移与缩放 | 在 Linear/Step 中分别对选区设置 X 位移、宽度、Y 位移、高度，再 APPLY；含单点选区和越界读位 | X 单位为一个真实点，范围 −32…32；宽度 0.25…4、高度 0…4、Y −2…2。固定选区掩码，超出源范围保持端点、值限于 ±1，无循环回绕；每次 APPLY 一次 Undo |
+| T06 身份与形状 | Basic Sine 先做身份 APPLY，再 Copy→Paste；Random 保存的曲线也做 Copy→Paste；已经 Custom 再重复同资产 | 身份 Flip/SET/APPLY 不改变点或插值时不改形状、不新增历史。Paste/Load 是明确资产替换，Basic/Random 即使 33 点相同也切 Custom，Undo 恢复原形状和隐藏点。已 Custom 且量化后同值不增加 Undo |
+| T07 系统剪贴板 | 用真实 Copy/Paste 跨 LFO、跨实例；暂存并恢复原剪贴板内容；粘贴坏 XML | 转移完整 33 点与插值，不受当前选区限制，不转移速度/路由/其他 LFO；Copy 不改声音。无效内容有错误提示、声音和历史不变。平台模拟测试不能代替此项 |
+| T08 原生曲线文件 | 用原生 SAVE/LOAD 保存到新 `.anycurve`，再加载；另试取消、损坏/超限文件和明确不可写的测试目标；导入任意 float 后重新导出 | 保存不改声音，加载整条曲线选 Custom；重新导出实际已量化的点值。文件最多 16 KiB，失败不部分写入、不损坏旧文件；取消无声音改动。只使用测试文件，不覆盖唯一原件 |
+| T09 迟到回复与禁用 | 打开 LOAD 后改变音色/相关参数、切 LFO、隐藏 TOOLS 或关闭编辑器，再返回选择结果；切 Chaos 尝试操作 | 旧请求不覆盖新状态或访问已销毁界面。Chaos 禁止绘图、点编辑、替换；切回 Custom 保留点值。原生窗口模态阻止的路径记不适用，自动回调测试覆盖情况另记 |
+| T10 声音、存档与布局 | 将自绘 LFO 路由到 Cutoff/Pan，执行一笔+选区变换+Undo/Redo；保存 `.anyvoc`，重开加载；默认/最小窗口检查 TOOLS | 参数与可听变化对应，音色保存恢复点、插值、形状和路由；工具设置不要求恢复。图、选区、全部按钮、错误提示及琴键可用；电平或截图不代替真人听音 |
+
+手动步骤中若平台输入、对话框或剪贴板无法实际完成，记录“未测”及原因，不把可控测试服务的成功换算成原生通过。记录实际读回的点值；不要因 0.125→0.13 等已约定的宿主量化而悄然扩展参数范围或更新旧 schema。
+
 ### Chaos 专项人工用例
 
 从 INIT 或指定工厂预设开始，记录 LFO 序号、算法、播放模式与速度。至少覆盖 LFO1 和 LFO10；自动测试负责全部十条源路径，但不能替代真实窗口的操作记录。
@@ -231,7 +291,7 @@ Get-Content -LiteralPath (Join-Path $validationDir 'pluginval-stderr.txt')
 | D01 扫描 | 清楚记录安装路径、扫描结果、插件标识/版本 | 被识别为立体声乐器；无黑名单、超时或扫描崩溃 |
 | D02 发声 | 新工程插入实例；钢琴卷帘写音符与和弦，播放/停止 | 能听到且有输出；无卡音，编辑器可反复开关 |
 | D03 节拍 | Tempo 模式下改 BPM，暂停/启动/循环/跳转播放头 | Follow Swing 和 LFO 模式符合约定；Free 同步位置与 Trigger/Envelope 的逐音触发区别可确认；无异常重触发 |
-| D04 自动化 | 录制/绘制 Cutoff、Macro、Phase、Rate Mode 与新增 `lfoNChaos` 参数自动化；隐藏/显示 UI | 曲线控制声音，显示跟随；Chaos 开关不改变旧 Shape/Kind 的宿主映射；宿主写入不会被过时 UI 操作覆盖 |
+| D04 自动化 | 录制/绘制 Cutoff、Macro、Phase、Rate Mode、`lfoNChaos` 与现有 LFO Point 参数自动化；曲线编辑时触发宿主写入，隐藏/显示 UI | 曲线控制声音，显示跟随；0.18 无新增参数，原映射保持；宿主写入不会被过时绘图、工具操作或文件回复覆盖 |
 | D05 工程状态 | 使用导入素材、Custom LFO、包络和路由；保存工程，完全关闭宿主，重新打开 | 音色名称、参数、嵌入素材、自动化及声音恢复；原素材路径失效后仍可恢复已嵌入内容 |
 | D06 多实例 | 至少两个不同音色，复制实例，独立修改/Undo | 实例不串音色或历史；一个实例关闭不影响另一个 |
 | D07 渲染 | 同一 MIDI 工程实时与离线导出，记录尾音、随机参数设置和增益 | 无静音/漏音/截断异常；关闭随机性并设置确定触发时再做严格波形比较，有随机性不强求逐字节相同 |
@@ -246,7 +306,7 @@ Get-Content -LiteralPath (Join-Path $validationDir 'pluginval-stderr.txt')
 
 建议预热后每项持续演奏至少 60 秒、重复三次，报告平均值、峰值、掉音/underrun 次数和测量工具。宿主 DSP 百分比与任务管理器 CPU 百分比要分开记录。音频回调时间若有测量，报告最坏块；块期限为 `缓冲样本数 / 采样率`，例如 48 kHz、256 样本约 5.33 ms。平均离线渲染时间不能证明所有音频块都按时完成。
 
-Chaos 的可复现离线基准入口如下。它不属于 61 组 EngineTests，退出 0 只说明基准完成且测试音频未意外静音，没有内置“实时性能通过”阈值。
+Chaos 的可复现离线基准入口如下。它不属于当前 68 组 EngineTests，退出 0 只说明基准完成且测试音频未意外静音，没有内置“实时性能通过”阈值。[0.17 基准记录](benchmark-chaos-0.17.txt)仅对应当时产物，不能作为本轮新测量。
 
 ```powershell
 $engineTests = Join-Path $repoRoot 'build/AnyvocEngineTests_artefacts/Release/AnyvocEngineTests.exe'
@@ -265,9 +325,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Chaos benchmark failed to complete' }
 |---|---|---|
 | 版本一致 | 源码提交、构建日志、两个二进制 FileVersion 与 SHA-256 | 版本不符、混用旧模块、未构建的功能混入文档 |
 | 回归 | 四套测试零失败、失败后的修复与复测记录 | 未解释失败、删除断言、无依据放宽容差 |
-| 参数兼容 | 0.17 共 1192 参数；完整保留 0.16 的 1182 参数前缀；尾部依序追加 `lfo1Chaos`…`lfo10Chaos`，各选项 Off/Lorenz/Rossler、默认 Off、VersionHint13 | 重排/重用旧 ID、改动旧 Shape/Kind 选项或归一化含义、无迁移修改默认 |
-| 状态兼容 | schema13；schema1–12 迁移时新增 Chaos 默认为 Off；DAW和`.anyvoc`往返；schema13 缺失/重复/非有限参数及未来 schema 原子拒绝 | 损坏状态部分覆盖当前声音、旧音色或内嵌素材丢失；旧状态继承加载前残留的 Chaos |
-| 工厂与默认声音 | 26 个工厂预设发声；旧 24 个序号/内容保持，末尾追加 Butterfly Current / Spiral Drift；旧 `--demo` 与 0.16 新鲜基线逐字节一致 | 静音/无效新源、重排旧预设、无说明地更新旧音频基线 |
+| 参数兼容 | 0.18 完整保留 0.17 的 **1192** 参数，ID/顺序/范围/选项/默认值/版本提示不变；33 点仍为 **0.01** 步长，无新增自动化参数 | 以工具精度为由改宿主范围、重排/重用 ID 或改变旧映射 |
+| 状态兼容 | 沿用 schema13；保留 schema1–12 迁移及未来/损坏状态原子拒绝；`.anyvoc`/工程恢复点、插值和形状；视图工具设置不写音色 | 损坏状态部分覆盖声音、旧内嵌素材丢失，或把 `.anycurve` 混同完整音色 |
+| 工厂与默认声音 | 保留全部 26 个工厂预设及序号；旧 `--demo` 与真正留存 **0.17 EXE 新渲染**的基线逐字节一致 | 静音、重排旧预设、用候选 WAV 假作旧基线或无说明更新基线 |
+| 曲线工具与资产 | 七组独立模型测试、六组真实控件集成测试；原生专项结果另记；Custom 替换语义、量化、一次 Undo、严格 ≤16 KiB XML 和失败保护 | 身份操作意外改声音、导入未选 Custom、迟到写入、未选点/其他 LFO 被改、解析失败部分覆盖、只用平台模拟宣称原生通过 |
 | 新版扩展 | 新参数只能追加；新 schema 明确旧版本缺省值及未来版本拒绝规则 | 用加 choice 项目的方式悄然改变旧宿主自动化映射；未经实现/测试即改 schema |
 | 模块规范 | 最终模块 pluginval strictness5 SUCCESS | 只检验较早二进制，或日志空白/失败/超时 |
 | 音频/UI | 演示检查、最小尺寸、真实独立版操作；DAW范围另记 | 用截图替代交互，用电平替代听音，用 pluginval 替代 DAW |
@@ -276,10 +337,11 @@ if ($LASTEXITCODE -ne 0) { throw 'Chaos benchmark failed to complete' }
 构建、演示和文档冻结后才打包：
 
 ```powershell
-& $processorTests --lfo-motion-demo (Join-Path $repoRoot 'dist/Anyvoc-v0.16-Lfo-Motion-Demo.wav')
-if ($LASTEXITCODE -ne 0) { throw 'Required motion demo render failed' }
-& $processorTests --chaos-demo (Join-Path $repoRoot 'dist/Anyvoc-v0.17-Chaos-Demo.wav')
-if ($LASTEXITCODE -ne 0) { throw 'Required Chaos demo render failed' }
+# 使用第 3 节已经渲染并审核的本轮文件；这里只更新 dist 根级暂存名。
+New-Item -ItemType Directory -Force -Path (Join-Path $repoRoot 'dist') | Out-Null
+Copy-Item -LiteralPath (Join-Path $runDir 'Legacy.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-Demo.wav') -Force
+Copy-Item -LiteralPath (Join-Path $runDir 'Lfo-Motion.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-v0.16-Lfo-Motion-Demo.wav') -Force
+Copy-Item -LiteralPath (Join-Path $runDir 'Chaos.wav') -Destination (Join-Path $repoRoot 'dist/Anyvoc-v0.17-Chaos-Demo.wav') -Force
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1
 if ($LASTEXITCODE -ne 0) { throw 'Windows packaging failed' }
 python ./scripts/package-source.py
@@ -288,11 +350,11 @@ python ./scripts/verify-release.py
 if ($LASTEXITCODE -ne 0) { throw 'Release package verification failed' }
 ```
 
-Windows 打包脚本会检查二进制版本。0.17 必需两个演示：`Anyvoc-v0.16-Lfo-Motion-Demo.wav` 与 `Anyvoc-v0.17-Chaos-Demo.wav`；其他历史演示只在已有时收录。上述重新渲染的最终文件也应完成音频检查，不能用空文件满足存在性要求。同版本打包会覆盖 ZIP 并更新输出目录，正式发布前先归档旧包，避免残留文件混入。
+Windows 打包脚本会检查二进制版本。0.18 仍必需两个演示：`Anyvoc-v0.16-Lfo-Motion-Demo.wav` 与 `Anyvoc-v0.17-Chaos-Demo.wav`；旧名字仅是打包约定，本次内容来自当前 0.18 程序重新渲染。其他历史演示只在已有时收录。先完成音频检查，不能用空文件满足存在性要求。同版本打包会覆盖 ZIP 并更新输出目录，重新打包前归档此前的 0.18 产物、避免残留文件混入；**0.17 及更早版本的发行目录、ZIP 和历史报告不覆盖**。
 
-[发布包校验脚本](../scripts/verify-release.py) 从 CMake 读取版本，核对两个 ZIP 的 CRC、Windows 安全且唯一的路径、精确文件集合与每个文件的原始字节；同时核对解压目录、两个产物与构建目录的四个 FileVersion、二进制哈希及两个必需演示的完整 20 秒/48 kHz/24-bit/双声道 PCM。源码包必须包含 `.gitattributes`、`.gitmodules`、`.github/`、Chaos 模型及固定 JUCE 源码/许可。脚本不替代 CTest、pluginval、听音或性能测试；未知将来版本不会自动获得某个新功能已验收的结论。
+[发布包校验脚本](../scripts/verify-release.py) 从 CMake 读取版本，核对两个 ZIP 的 CRC、Windows 安全且唯一的路径、精确文件集合与每个文件的原始字节；同时核对解压目录、两个产物与构建目录的四个 FileVersion、二进制哈希及两个必需演示的完整 20 秒/48 kHz/24-bit/双声道 PCM。源码包必须包含 `.gitattributes`、`.gitmodules`、`.github/`、Chaos 模型、`LfoCurveDocument.h/.cpp` 及固定 JUCE 源码/许可。脚本不替代 CTest、pluginval、听音或性能测试；未知将来版本不会自动获得某个新功能已验收的结论。
 
-**包校验通过标准：**脚本退出 0，并在包外生成 `dist/Anyvoc-0.17.0-PackageVerification.json`，其中 CRC、安全唯一路径、精确集合、逐文件匹配全部通过，版本一致，两个必需 demo 均有格式及哈希记录。报告不放入 ZIP，避免包含自身哈希。可单独运行 `python scripts/verify-release.py --self-test-paths` 检查路径规范逻辑；这不是发布包验收。分析与校验工具现已随源码提供，不再要求使用临时 `build/validation-baseline` 下的旧脚本。
+**包校验通过标准：**脚本退出 0，并在包外生成 `dist/Anyvoc-0.18.0-PackageVerification.json`，其中 CRC、安全唯一路径、精确集合、逐文件匹配全部通过，版本一致，两个必需 demo 均有格式及哈希记录。本轮已达到这些标准；文档或其他输入改变后仍须重新打包、重新校验，大小与哈希以最终外置报告为准。报告不放入 ZIP，避免包含自身哈希。可单独运行 `python scripts/verify-release.py --self-test-paths` 检查路径规范逻辑；这不是发布包验收。分析与校验工具现已随源码提供，不再要求使用临时 `build/validation-baseline` 下的旧脚本。
 
 文档修改后重新打包会改变 ZIP 哈希；重新核对对应文件及包报告。若没有改变声音/生产代码，不需要为了文档重跑所有 DSP，但不得继续引用旧包哈希作为新包的校验值。
 

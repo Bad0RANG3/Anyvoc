@@ -1,19 +1,68 @@
-﻿Anyvoc 0.17 独立版 · 三步开始
+﻿Anyvoc 0.18 独立版 · 三步开始
 
-0.17已完成构建、175组自动测试、pluginval和本机独立版操作检查。
-本地打包输出为 dist/Anyvoc-0.17.0-Windows/；完整性以同版本 PackageVerification.json 报告为准。
-下述Chaos功能需要0.17；旧版程序不包含。详细验证记录见 VALIDATION.md。
+本说明加入0.18的TOOLS绘图工具。本轮本地188组测试全部通过（68/104/10/6），共161.94秒；
+pluginval strictness 5验证成功，音频回归和下述限定原生操作已通过。
+旧声音与留存0.17程序重渲染逐字节相同，Motion/Chaos演示重渲染也与旧文件一致。
+仍为1192个参数、schema 13、26个工厂音色，生产DSP不变。
+本地包已可用：dist/Anyvoc-0.18.0-Windows/Anyvoc.exe。使用Windows ZIP时先完整解压再运行。
+Windows包208个文件、完整源码包4600个文件，版本与逐文件内容校验通过；P1B当前约定范围已交付。
+0.18 GitHub CI尚未执行，不能沿用旧版本的云端结果；具体文件以本次打包报告为准。
+自行构建的入口为 build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe。
+0.17及更早包继续保留；旧程序中没有0.18工具，旧验收和CI不替代本轮验证。
+详细结果见 VALIDATION-0.18.md 和 VALIDATION.md。
 
 1. 双击 Anyvoc.exe。
 2. 点顶部音色名称打开浏览器，搜索 Copper Bell（采样钟声）或 Northern Lights（铺底音色），双击结果加载。
 3. 用鼠标按住底部钢琴白键。松开后声音会逐渐结束。
 
-试新的 Chaos LFO：
+试新的 LFO 绘图工具（0.18）：
+  加载 Motion / Painted Steps → MOD → LFO 1 的 EDIT LFO → TOOLS。
+  TOOLS替换下半区控制，画布和琴键仍可用；CONTROLS返回速度、波形和插值控制。
+  Draw在画布绘制；Select拖出包含两端点的选区。默认全选；SELECT ALL重选33点。
+  X GRID / Y GRID独立设置1/2/4/8/16/32格，默认32/4；SNAP X/Y默认关闭。
+  开启吸附只影响新绘图，不改变旧点；半格位置取右边/上边。Select不受吸附影响。
+  FLIP X反转选区左右顺序；FLIP Y以0为中心反转正负。选区外保留。
+
+  组合示例：选Select，从第9点拖到第25点，确认SELECTED 9 - 25。
+  设置X OFFSET=2、Y OFFSET=0.1、WIDTH=1.5、HEIGHT=0.7，再点APPLY TRANSFORM。
+  X按点位移，1点=1/32周期；WIDTH围绕选区中点，HEIGHT围绕0。
+  Y在高度缩放后相加，结果限制在-1到+1；越过选区边界时保持端点，不绕回。
+  一次APPLY是一次有效声音编辑；暂存的四个数值仍保留，再点会继续变换。
+  用琴键比较，再点顶部UNDO撤回；选区和工具数值不随声音撤销。
+  要另存修改后的曲线，先REDO，再SAVE CURVE为 Painted Steps Variation.anycurve。
+  若UNDO后直接保存，保存的就是撤销后的原曲线。
+
+  POINT选第1–33点，VALUE输入-1到+1，点SET才提交单点；网格不影响数值输入。
+  实际点值仍按0.01精度保存：0.125约为0.13，0.0625约为0.06。
+  即使显示三位小数，绘图、变换、粘贴、载入也遵守该精度；细网格可能略有偏移。
+  COPY CURVE / PASTE CURVE跨LFO或实例复制整条曲线；忽略当前选区。
+  LOAD CURVE / SAVE CURVE使用最多16KiB的独立.anycurve文件。
+  曲线文件和剪贴板只带33点及Linear/Step插值，不带速度、相位、路由或完整音色。
+  高精度文件写入声音时会量化；再次COPY/SAVE导出实际存值。坏文件会报错并保留声音。
+  Paste/Load明确替换整条资产并选Custom；Basic/Random即使点相同，也有一次可撤销编辑。
+  已Custom时重复相同数据无新撤销；无变化的FLIP/SET/APPLY也不改变波形或撤销历史。
+  基础波形从可见的33点采样编辑；Random工具页编辑SAVED CUSTOM CURVE，不是实时随机输出。
+  Lorenz/Rossler可打开TOOLS，但所有曲线工具禁用；回CONTROLS切换波形后再编辑。
+  选区、网格、吸附、工具模式和暂存数值只属于当前界面，各LFO独立，不写入音色或曲线文件。
+  这些查看操作及COPY/SAVE CURVE都不改变声音。顶部SAVE才是完整.anyvoc音色保存。
+  选文件期间关闭工具页、切换LFO或改变相关声音状态，会取消迟到的载入/保存。
+
+本轮实际验证范围：
+  在Neon Skyline中通过系统SAVE CURVE对话框保存Native18-Sine.anycurve，
+  文件1121字节，独立解析确认33点；Select第9–25点、FLIP Y后一次UNDO复原。
+  通过原生LOAD CURVE载入该文件，CONTROLS确认Custom；按C4观察绿色输出电平，UNDO回Sine。
+  最小窗口工具和琴键无裁切；LOAD CURVE后按Escape取消，声音状态保持。
+  共生成84张预览，新增4张工具预览逐张检查无裁切。
+  本轮没有实测系统剪贴板、完整.anyvoc音色的原生保存并重新打开、外接MIDI、真人听音或DAW。
+  自动测试的复制粘贴/文件回调使用可注入的平台服务，不代表系统剪贴板已实测。
+  .anycurve曲线文件的真实保存载入，不能代替完整音色或DAW工程的保存重开验证。
+
+试 Chaos LFO（0.17已有）：
   BROWSE 搜索 Motion / Butterfly Current，双击加载 → MOD → LFO 1 的 EDIT LFO。
   按住琴键：Lorenz 让截止频率和 OSC A 的波表位置持续变化。
   EVOLUTION SPEED 默认1.80；调慢或调快，比较运动，再用 UNDO 恢复。
   再试 Texture / Spiral Drift：Rossler、速度0.70、Free，让截止与声像演化。
-  本次新增这两个音色，共26个工厂音色；原24个仍保留。
+  0.17新增这两个音色，共26个工厂音色；0.18仍保留全部26个。
   SHAPE 共8项：Sine、Triangle、Saw、Square、Random、Custom、Lorenz、Rossler。
   Lorenz / Rossler 的数值是演化速度，不表示“每秒重复几次”。
   RATE MODE 仍可选 Free Hz / Tempo / Audio Rate；Tempo 和 FOLLOW SWING 改变演化速度。
@@ -29,9 +78,10 @@
   选 Custom 可继续编辑旧曲线，选周期波形后可重新使用相位与方向。
   SAVE 保存声音设置，不保存实时轨迹；0.17新文件需要0.17或更新版本，请另存并保留旧文件。
   Anyvoc-v0.17-Chaos-Demo.wav 是20秒对比：前10秒Lorenz，后10秒Rossler。
-  本机已检查两算法实际读数与输出表、速度修改与撤销、Free无按键演化和Envelope短音后保持。
-  原生检查未单独计时Envelope完整名义周期；该行为由自动测试验证。
-  PCM分析与旧声音对比已完成；尚未完成人耳听音评价、本次原生SAVE/LOAD和DAW实测。
+  0.17验收时已检查两算法实际读数与输出表、速度修改与撤销、Free无按键演化和Envelope短音后保持。
+  当时原生检查未单独计时Envelope完整名义周期；该行为由当时的自动测试验证。
+  以上为0.17历史原生检查，不替代0.18本轮验证；本轮Motion/Chaos重渲染与旧文件逐字节相同。
+  本轮.anycurve原生保存载入已测；完整.anyvoc音色原生保存重开、真人听音和DAW仍未测。
 
 试新的 LFO 运动控制：
   加载 Motion / Swing Carousel → MOD → EDIT LFO。
