@@ -1,0 +1,139 @@
+Start testing: Nov 18 04:16 中国标准时间
+----------------------------------------------------------
+1/4 Testing: EngineTests
+1/4 Test: EngineTests
+Command: "D:/Anyvoc/build/AnyvocEngineTests_artefacts/Release/AnyvocEngineTests.exe"
+Directory: D:/Anyvoc/build
+"EngineTests" start time: Nov 18 04:16 中国标准时间
+Output:
+----------------------------------------------------------
+PASS MIDI note lifecycle and event timing
+PASS Sample rates and variable block lengths
+PASS Sustain pedal
+PASS A4 tuning and pitch wheel
+PASS Reset, effect tails and MIDI panic
+PASS Stereo unison
+PASS WAV wavetable import and musical pitch
+PASS Sample playback pitch and source sample rates
+PASS Sample one-shot, loop, stereo and note release
+PASS Sample start position and reverse playback
+PASS Granular scan position and note release
+PASS Sample/granular bounded polyphony stress
+PASS Drawable LFO point values reach the audio route
+PASS Drawable LFO linear and stepped interpolation
+PASS Per-note LFO trigger and one-shot endpoint
+PASS Host LFO tempo, triplets, seeks and block partition
+PASS Dual-filter spectral response, slopes and serial routing
+PASS Independent source buses, bypass and parallel balance
+PASS Filter key tracking and additional modulation targets
+PASS Rapid dual-filter automation and reset
+PASS Warp preview landmarks, identities and slot order
+PASS Warp identity and unaffected sample/granular playback
+PASS All six oscillator warp modulation destinations
+PASS Warp block partition, automation sanitization and reset
+Warp zero-crossing: correction=0.000728754, max jump=1.05761e-05, settled residual=0
+PASS Warp DC rejection and continuous harmonic-level transitions
+Delay reference: rate=44100, maximum error=9.31956e-09, worst sample=34774
+Delay reference: rate=48000, maximum error=9.08024e-09, worst sample=82549
+Delay reference: rate=96000, maximum error=8.83901e-09, worst sample=70773
+PASS Fractional delay reference and circular read boundaries
+Engine validation: 26 cases, 0 failure(s)
+<end of output>
+Test time =   1.06 sec
+----------------------------------------------------------
+Test Passed.
+"EngineTests" end time: Nov 18 04:16 中国标准时间
+"EngineTests" time elapsed: 00:00:01
+----------------------------------------------------------
+
+2/4 Testing: ProcessorTests
+2/4 Test: ProcessorTests
+Command: "D:/Anyvoc/build/AnyvocProcessorTests_artefacts/Release/AnyvocProcessorTests.exe"
+Directory: D:/Anyvoc/build
+"ProcessorTests" start time: Nov 18 04:16 中国标准时间
+Output:
+----------------------------------------------------------
+PASS DAW state roundtrip
+PASS Preset file identity, rename and self-contained DAW restore
+PASS Legacy preset identity and malformed metadata rollback
+PASS Failed preset save/load preserves sound, identity and existing files
+PASS Browser selection/favourites preserve audio and explicit actions load
+PASS Deterministic factory presets and defaults
+PASS First host MIDI after preset and project restore
+PASS Self-contained wavetable state and preset files
+PASS Edited wavetable amplitude, state and floating-point export
+PASS Invalid wavetable edits and atomic rollback
+PASS Legacy wavetable normalization across state versions
+PASS Open wavetable editor protects newer DAW state
+PASS Embedded stereo sample state and preset files
+PASS Version 1 migration and required parameter validation
+PASS Drawable LFO points and selection state roundtrip
+PASS Version 2 migration and legacy shape automation
+PASS Dual-filter state, preset defaults and host audio automation
+PASS Version 4 migration and legacy destination automation
+PASS Extended filter modulation assignment and bank persistence
+PASS Dual-warp state, preset defaults and waveform preview
+PASS Version 5 migration and legacy destination choice counts
+PASS Warp modulation assignment, persistence and audible routing
+PASS Host BPM, PPQ and manual tempo fallback
+PASS Invalid sample imports and embedded sample rollback
+PASS Modulation assignment deduplication and capacity
+PASS Malformed state rejection with atomic rollback
+PASS Arpeggiator notes, release and sustain
+PASS Arp block partition invariance and cross-channel panic
+PASS Random and boundary parameter rendering
+Processor validation: 29 cases, 0 failure(s)
+<end of output>
+Test time =   1.85 sec
+----------------------------------------------------------
+Test Passed.
+"ProcessorTests" end time: Nov 18 04:16 中国标准时间
+"ProcessorTests" time elapsed: 00:00:01
+----------------------------------------------------------
+
+3/4 Testing: WavetableTests
+3/4 Test: WavetableTests
+Command: "D:/Anyvoc/build/AnyvocWavetableTests_artefacts/Release/AnyvocWavetableTests.exe"
+Directory: D:/Anyvoc/build
+"WavetableTests" start time: Nov 18 04:16 中国标准时间
+Output:
+----------------------------------------------------------
+PASS Canonical cycle conversion and invalid import rollback
+PASS Drawing, grouped gestures and redo invalidation
+PASS Harmonic amplitude, phase and independent partials
+PASS Frame duplicate/delete boundaries and endpoint morphing
+PASS Waveform generation and offline processing
+PASS Bounded undo history and document replacement
+Wavetable validation: 6 cases, 0 failure(s)
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"WavetableTests" end time: Nov 18 04:16 中国标准时间
+"WavetableTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/4 Testing: PresetLibraryTests
+4/4 Test: PresetLibraryTests
+Command: "D:/Anyvoc/build/AnyvocPresetLibraryTests_artefacts/Release/AnyvocPresetLibraryTests.exe"
+Directory: D:/Anyvoc/build
+"PresetLibraryTests" start time: Nov 18 04:16 中国标准时间
+Output:
+----------------------------------------------------------
+PASS Recursive index, immediate factory sounds and stable IDs
+PASS Combined search, filters, favourites and deterministic sorting
+PASS Missing directories, unparsed files and coalesced refresh
+PASS Favourite persistence and cross-instance merge
+PASS Favourite write/read failure preserves memory and disk
+INFO Symbolic-link creation unavailable; depth boundary was still verified
+PASS Bounded recursion and external symbolic-link isolation
+Preset library validation: 6 cases, 0 failure(s)
+<end of output>
+Test time =   0.63 sec
+----------------------------------------------------------
+Test Passed.
+"PresetLibraryTests" end time: Nov 18 04:16 中国标准时间
+"PresetLibraryTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 18 04:16 中国标准时间

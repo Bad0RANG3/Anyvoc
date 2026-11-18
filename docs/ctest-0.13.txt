@@ -1,0 +1,13 @@
+Test project D:/Anyvoc/build
+    Start 1: EngineTests
+1/4 Test #1: EngineTests ......................   Passed    2.50 sec
+    Start 2: ProcessorTests
+2/4 Test #2: ProcessorTests ...................   Passed   17.88 sec
+    Start 3: WavetableTests
+3/4 Test #3: WavetableTests ...................   Passed    0.06 sec
+    Start 4: PresetLibraryTests
+4/4 Test #4: PresetLibraryTests ...............   Passed    0.62 sec
+
+100% tests passed out of 4
+
+Total Test time (real) =  21.07 sec

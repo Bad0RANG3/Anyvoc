@@ -1,0 +1,280 @@
+{
+  "version": "0.15.0",
+  "generated_utc": "2026-11-18T04:13:42.307311+00:00",
+  "status": "PASS",
+  "failures": [],
+  "scope": "Independent standard-library WAV decode and file comparison; no synthesizer helpers used",
+  "limitations": [
+    "Integer PCM cannot contain NaN/Inf. This does not independently inspect pre-encoding float buffers.",
+    "No full-scale sample means no observed PCM clipping; it does not certify absence of upstream limiting.",
+    "Waveform differences are numerical measurements, not a subjective listening evaluation."
+  ],
+  "demo": {
+    "path": "D:\\Anyvoc\\dist\\Anyvoc-v0.15-Envelopes-Demo.wav",
+    "file_bytes": 5760104,
+    "sha256": "b0cddb1fd9dfeceac0f4c2494f5509de7b904f9fd142e8dea8fd7443605558dc",
+    "encoding": "signed little-endian integer PCM",
+    "bits_per_sample": 24,
+    "sample_rate_hz": 48000,
+    "channel_count": 2,
+    "frames": 960000,
+    "duration_seconds": 20.0,
+    "render_notes": "Fixed render gain; each 4-second section has 20 ms fade-in and 100 ms fade-out",
+    "overall": {
+      "rms": 0.024328925641845217,
+      "rms_dbfs": -32.277541379230115,
+      "peak": 0.1610034704208374,
+      "peak_dbfs": -15.863295253477812,
+      "decoded_nonfinite_samples": 0,
+      "full_scale_or_clipped_samples": 0,
+      "channels": [
+        {
+          "channel": "left",
+          "rms": 0.023833319601840767,
+          "peak": 0.1610034704208374,
+          "dc_mean": 1.69233538210392e-05
+        },
+        {
+          "channel": "right",
+          "rms": 0.02481463524876762,
+          "peak": 0.15469694137573242,
+          "dc_mean": 1.4801709726452827e-05
+        }
+      ]
+    },
+    "segments": [
+      {
+        "index": 0,
+        "start_seconds": 0,
+        "end_seconds": 4,
+        "label": "Clockwork Bloom: linear curves, 100 BPM",
+        "rms": 0.028271744690441854,
+        "rms_dbfs": -30.972947794800078,
+        "peak": 0.15941476821899414,
+        "peak_dbfs": -15.94942895880796,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.0276712463566557,
+            "peak": 0.15941476821899414,
+            "dc_mean": 1.9102982555826504e-05
+          },
+          {
+            "channel": "right",
+            "rms": 0.02885975087820966,
+            "peak": 0.13409268856048584,
+            "dc_mean": 1.4703391740719478e-05
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "start_seconds": 4,
+        "end_seconds": 8,
+        "label": "Clockwork Bloom: preset curves, 100 BPM",
+        "rms": 0.031037045239490548,
+        "rms_dbfs": -30.162392615071703,
+        "peak": 0.1610034704208374,
+        "peak_dbfs": -15.863295253477812,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.03033572360020372,
+            "peak": 0.1610034704208374,
+            "dc_mean": 3.85903250426054e-05
+          },
+          {
+            "channel": "right",
+            "rms": 0.03172286601252177,
+            "peak": 0.15469694137573242,
+            "dc_mean": 3.269666122893492e-05
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "start_seconds": 8,
+        "end_seconds": 12,
+        "label": "Clockwork Bloom: preset curves, 150 BPM",
+        "rms": 0.025117364047569868,
+        "rms_dbfs": -32.00051879524345,
+        "peak": 0.15040910243988037,
+        "peak_dbfs": -16.454517607362042,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.02453162865676632,
+            "peak": 0.15040910243988037,
+            "dc_mean": 2.7669535328944526e-05
+          },
+          {
+            "channel": "right",
+            "rms": 0.025689747932644887,
+            "peak": 0.1320798397064209,
+            "dc_mean": 2.8623320162296296e-05
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "start_seconds": 12,
+        "end_seconds": 16,
+        "label": "Second Breath: per-envelope legato retrigger disabled",
+        "rms": 0.01790254328675752,
+        "rms_dbfs": -34.94170535029684,
+        "peak": 0.06332147121429443,
+        "peak_dbfs": -23.96898006544596,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.01766784619195694,
+            "peak": 0.06332147121429443,
+            "dc_mean": 1.809516300757726e-07
+          },
+          {
+            "channel": "right",
+            "rms": 0.01813420313126017,
+            "peak": 0.0606917142868042,
+            "dc_mean": 1.4450525244077048e-07
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "start_seconds": 16,
+        "end_seconds": 20,
+        "label": "Second Breath: per-envelope legato retrigger enabled",
+        "rms": 0.015668770103619372,
+        "rms_dbfs": -36.09930182962503,
+        "peak": 0.06651747226715088,
+        "peak_dbfs": -23.541285255582608,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.015499290994191377,
+            "peak": 0.06332147121429443,
+            "dc_mean": -9.270254522562027e-07
+          },
+          {
+            "channel": "right",
+            "rms": 0.01583643557741232,
+            "peak": 0.06651747226715088,
+            "dc_mean": -2.1593297521273295e-06
+          }
+        ]
+      }
+    ],
+    "segment_comparisons": [
+      {
+        "first_segment": 0,
+        "second_segment": 1,
+        "controlled_comparison": "Linear versus preset curves, same MIDI and tempo",
+        "waveform_difference_rms": 0.008259880563710045,
+        "waveform_difference_peak": 0.08848035335540771,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": 0.8105551797283765
+      },
+      {
+        "first_segment": 0,
+        "second_segment": 2,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.02340186563081809,
+        "waveform_difference_peak": 0.17925548553466797,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -1.027571000443372
+      },
+      {
+        "first_segment": 0,
+        "second_segment": 3,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.03364040804622968,
+        "waveform_difference_peak": 0.1526869535446167,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -3.968757555496767
+      },
+      {
+        "first_segment": 0,
+        "second_segment": 4,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.032224209901554515,
+        "waveform_difference_peak": 0.154030442237854,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -5.12635403482495
+      },
+      {
+        "first_segment": 1,
+        "second_segment": 2,
+        "controlled_comparison": "100 versus 150 BPM, same MIDI and preset curves",
+        "waveform_difference_rms": 0.02661048356856474,
+        "waveform_difference_peak": 0.1737273931503296,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -1.8381261801717477
+      },
+      {
+        "first_segment": 1,
+        "second_segment": 3,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.03618977103242688,
+        "waveform_difference_peak": 0.17201709747314453,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -4.779312735225143
+      },
+      {
+        "first_segment": 1,
+        "second_segment": 4,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.03480832040434622,
+        "waveform_difference_peak": 0.17201709747314453,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -5.936909214553325
+      },
+      {
+        "first_segment": 2,
+        "second_segment": 3,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.031198417213259007,
+        "waveform_difference_peak": 0.15239572525024414,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -2.941186555053396
+      },
+      {
+        "first_segment": 2,
+        "second_segment": 4,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.029882554643194923,
+        "waveform_difference_peak": 0.15164268016815186,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -4.098783034381578
+      },
+      {
+        "first_segment": 3,
+        "second_segment": 4,
+        "controlled_comparison": "Per-envelope legato retrigger disabled versus enabled, same MIDI",
+        "waveform_difference_rms": 0.013683922333234073,
+        "waveform_difference_peak": 0.07099545001983643,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -1.1575964793281828
+      }
+    ]
+  },
+  "legacy_regression": {
+    "before_path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.14-before-v0.15.wav",
+    "after_path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.15-legacy-demo.wav",
+    "before_sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+    "after_sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+    "before_bytes": 4320104,
+    "after_bytes": 4320104,
+    "sha256_identical": true,
+    "byte_identical": true
+  }
+}

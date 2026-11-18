@@ -1,0 +1,59 @@
+Start testing: Nov 18 03:15 中国标准时间
+----------------------------------------------------------
+1/2 Testing: EngineTests
+1/2 Test: EngineTests
+Command: "D:/Anyvoc/build/AnyvocEngineTests_artefacts/Release/AnyvocEngineTests.exe"
+Directory: D:/Anyvoc/build
+"EngineTests" start time: Nov 18 03:15 中国标准时间
+Output:
+----------------------------------------------------------
+PASS MIDI note lifecycle and event timing
+PASS Sample rates and variable block lengths
+PASS Sustain pedal
+PASS A4 tuning and pitch wheel
+PASS Reset, effect tails and MIDI panic
+PASS Stereo unison
+PASS WAV wavetable import and musical pitch
+PASS Sample playback pitch and source sample rates
+PASS Sample one-shot, loop, stereo and note release
+PASS Sample start position and reverse playback
+PASS Granular scan position and note release
+PASS Sample/granular bounded polyphony stress
+Engine validation: 12 cases, 0 failure(s)
+<end of output>
+Test time =   0.34 sec
+----------------------------------------------------------
+Test Passed.
+"EngineTests" end time: Nov 18 03:15 中国标准时间
+"EngineTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/2 Testing: ProcessorTests
+2/2 Test: ProcessorTests
+Command: "D:/Anyvoc/build/AnyvocProcessorTests_artefacts/Release/AnyvocProcessorTests.exe"
+Directory: D:/Anyvoc/build
+"ProcessorTests" start time: Nov 18 03:15 中国标准时间
+Output:
+----------------------------------------------------------
+PASS DAW state roundtrip
+PASS Deterministic factory presets and defaults
+PASS First host MIDI after preset and project restore
+PASS Self-contained wavetable state and preset files
+PASS Embedded stereo sample state and preset files
+PASS Version 1 migration and required parameter validation
+PASS Invalid sample imports and embedded sample rollback
+PASS Modulation assignment deduplication and capacity
+PASS Malformed state rejection with atomic rollback
+PASS Arpeggiator notes, release and sustain
+PASS Arp block partition invariance and cross-channel panic
+PASS Random and boundary parameter rendering
+Processor validation: 12 cases, 0 failure(s)
+<end of output>
+Test time =   0.39 sec
+----------------------------------------------------------
+Test Passed.
+"ProcessorTests" end time: Nov 18 03:15 中国标准时间
+"ProcessorTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 18 03:15 中国标准时间

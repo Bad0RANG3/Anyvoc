@@ -1,0 +1,280 @@
+{
+  "version": "0.16.0",
+  "generated_utc": "2026-11-18T04:42:30.003376+00:00",
+  "status": "PASS",
+  "failures": [],
+  "scope": "Independent standard-library WAV decode and file comparison; no synthesizer helpers used",
+  "limitations": [
+    "Integer PCM cannot contain NaN/Inf. This does not independently inspect pre-encoding float buffers.",
+    "No full-scale sample means no observed PCM clipping; it does not certify absence of upstream limiting.",
+    "Waveform differences are numerical measurements, not a subjective listening evaluation."
+  ],
+  "demo": {
+    "path": "D:\\Anyvoc\\dist\\Anyvoc-v0.16-Lfo-Motion-Demo.wav",
+    "file_bytes": 5760104,
+    "sha256": "29a826a0882498a1935b90c00232e4db76ab11d77dc04b7c4aa3caae9aa3d7b6",
+    "encoding": "signed little-endian integer PCM",
+    "bits_per_sample": 24,
+    "sample_rate_hz": 48000,
+    "channel_count": 2,
+    "frames": 960000,
+    "duration_seconds": 20.0,
+    "render_notes": "Fixed render gain; each 4-second section has 20 ms fade-in and 100 ms fade-out",
+    "overall": {
+      "rms": 0.022782152487715847,
+      "rms_dbfs": -32.84810491209644,
+      "peak": 0.15553081035614014,
+      "peak_dbfs": -16.163671304161863,
+      "decoded_nonfinite_samples": 0,
+      "full_scale_or_clipped_samples": 0,
+      "channels": [
+        {
+          "channel": "left",
+          "rms": 0.022931136017848568,
+          "peak": 0.1289522647857666,
+          "dc_mean": 3.856449822584788e-06
+        },
+        {
+          "channel": "right",
+          "rms": 0.022632188247670673,
+          "peak": 0.15553081035614014,
+          "dc_mean": 5.065341790517171e-06
+        }
+      ]
+    },
+    "segments": [
+      {
+        "index": 0,
+        "start_seconds": 0,
+        "end_seconds": 4,
+        "label": "Swing Carousel: swing 0%, 120 BPM, Ping Pong",
+        "rms": 0.026799256168910855,
+        "rms_dbfs": -31.437545198693297,
+        "peak": 0.14715099334716797,
+        "peak_dbfs": -16.64473603673252,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.027171500229754012,
+            "peak": 0.11951255798339844,
+            "dc_mean": 7.185572137435277e-06
+          },
+          {
+            "channel": "right",
+            "rms": 0.026421768254193186,
+            "peak": 0.14715099334716797,
+            "dc_mean": 8.447383840878804e-06
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "start_seconds": 4,
+        "end_seconds": 8,
+        "label": "Swing Carousel: swing 60%, 120 BPM, Ping Pong",
+        "rms": 0.02767865363267353,
+        "rms_dbfs": -31.157100780058112,
+        "peak": 0.15553081035614014,
+        "peak_dbfs": -16.163671304161863,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.027380197909697052,
+            "peak": 0.1289522647857666,
+            "dc_mean": 6.06333464384079e-06
+          },
+          {
+            "channel": "right",
+            "rms": 0.027973925292329716,
+            "peak": 0.15553081035614014,
+            "dc_mean": 8.214103678862253e-06
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "start_seconds": 8,
+        "end_seconds": 12,
+        "label": "Swing Carousel: swing 60%, 120 BPM, Reverse",
+        "rms": 0.026863851824421792,
+        "rms_dbfs": -31.41663433360046,
+        "peak": 0.14906442165374756,
+        "peak_dbfs": -16.53252001132474,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.02711301139968264,
+            "peak": 0.1185605525970459,
+            "dc_mean": 6.139970074097316e-06
+          },
+          {
+            "channel": "right",
+            "rms": 0.026612359582150157,
+            "peak": 0.14906442165374756,
+            "dc_mean": 8.771991978089014e-06
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "start_seconds": 12,
+        "end_seconds": 16,
+        "label": "Phase Lantern: audio rate 110 Hz",
+        "rms": 0.013949302028108745,
+        "rms_dbfs": -37.108950446982455,
+        "peak": 0.03909587860107422,
+        "peak_dbfs": -28.157380450625638,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.014249771141117891,
+            "peak": 0.03909587860107422,
+            "dc_mean": -1.2279612322648367e-07
+          },
+          {
+            "channel": "right",
+            "rms": 0.013642216702888179,
+            "peak": 0.03883159160614014,
+            "dc_mean": -1.2274707357088724e-07
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "start_seconds": 16,
+        "end_seconds": 20,
+        "label": "Phase Lantern: audio rate 220 Hz",
+        "rms": 0.013949007126938437,
+        "rms_dbfs": -37.109134076678814,
+        "peak": 0.03912842273712158,
+        "peak_dbfs": -28.150153162288206,
+        "decoded_nonfinite_samples": 0,
+        "full_scale_or_clipped_samples": 0,
+        "channels": [
+          {
+            "channel": "left",
+            "rms": 0.014249490106740701,
+            "peak": 0.03912842273712158,
+            "dc_mean": 1.6168380777041118e-08
+          },
+          {
+            "channel": "right",
+            "rms": 0.013641907174316112,
+            "peak": 0.0389176607131958,
+            "dc_mean": 1.597652832667033e-08
+          }
+        ]
+      }
+    ],
+    "segment_comparisons": [
+      {
+        "first_segment": 0,
+        "second_segment": 1,
+        "controlled_comparison": "Swing 0% versus 60%, same MIDI, tempo and direction",
+        "waveform_difference_rms": 0.00995818530418958,
+        "waveform_difference_peak": 0.10324430465698242,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": 0.28044441863518954
+      },
+      {
+        "first_segment": 0,
+        "second_segment": 2,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.015601951220920897,
+        "waveform_difference_peak": 0.1451328992843628,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": 0.020910865092839383
+      },
+      {
+        "first_segment": 0,
+        "second_segment": 3,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.029497293368200873,
+        "waveform_difference_peak": 0.13408935070037842,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -5.671405248289155
+      },
+      {
+        "first_segment": 0,
+        "second_segment": 4,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.02949395686551401,
+        "waveform_difference_peak": 0.13483071327209473,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -5.671588877985512
+      },
+      {
+        "first_segment": 1,
+        "second_segment": 2,
+        "controlled_comparison": "Ping Pong versus Reverse, same MIDI, tempo and swing",
+        "waveform_difference_rms": 0.01628755096467266,
+        "waveform_difference_peak": 0.16057002544403076,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -0.25953355354235086
+      },
+      {
+        "first_segment": 1,
+        "second_segment": 3,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.030160139655534154,
+        "waveform_difference_peak": 0.13965904712677002,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -5.9518496669243435
+      },
+      {
+        "first_segment": 1,
+        "second_segment": 4,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.030156268628372153,
+        "waveform_difference_peak": 0.13903772830963135,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -5.9520332966207015
+      },
+      {
+        "first_segment": 2,
+        "second_segment": 3,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.029545210657665803,
+        "waveform_difference_peak": 0.13381385803222656,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -5.6923161133819935
+      },
+      {
+        "first_segment": 2,
+        "second_segment": 4,
+        "controlled_comparison": null,
+        "waveform_difference_rms": 0.02954367460924945,
+        "waveform_difference_peak": 0.13378095626831055,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -5.692499743078352
+      },
+      {
+        "first_segment": 3,
+        "second_segment": 4,
+        "controlled_comparison": "Audio rate 110 versus 220 Hz, same MIDI",
+        "waveform_difference_rms": 0.0004935190168245925,
+        "waveform_difference_peak": 0.003018617630004883,
+        "decoded_samples_identical": false,
+        "rms_level_delta_db": -0.00018362969635853728
+      }
+    ]
+  },
+  "legacy_regression": {
+    "before_path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.15-before-v0.16.wav",
+    "after_path": "D:\\Anyvoc\\build\\validation-baseline\\Anyvoc-v0.16-legacy-demo.wav",
+    "before_sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+    "after_sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+    "before_bytes": 4320104,
+    "after_bytes": 4320104,
+    "sha256_identical": true,
+    "byte_identical": true
+  }
+}

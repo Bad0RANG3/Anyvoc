@@ -1,0 +1,116 @@
+Start testing: Nov 18 12:41 中国标准时间
+----------------------------------------------------------
+2/4 Testing: ProcessorTests
+2/4 Test: ProcessorTests
+Command: "D:/Anyvoc/build/AnyvocProcessorTests_artefacts/Release/AnyvocProcessorTests.exe"
+Directory: D:/Anyvoc/build
+"ProcessorTests" start time: Nov 18 12:41 中国标准时间
+Output:
+----------------------------------------------------------
+PASS DAW state roundtrip
+PASS Preset file identity, rename and self-contained DAW restore
+PASS Legacy preset identity and malformed metadata rollback
+PASS Failed preset save/load preserves sound, identity and existing files
+PASS Browser selection/favourites preserve audio and explicit actions load
+PASS Deterministic factory presets and defaults
+PASS First host MIDI after preset and project restore
+PASS Self-contained wavetable state and preset files
+PASS Edited wavetable amplitude, state and floating-point export
+PASS Invalid wavetable edits and atomic rollback
+PASS Legacy wavetable normalization across state versions
+PASS Open wavetable editor protects newer DAW state
+PASS Embedded stereo sample state and preset files
+PASS Version 1 migration and required parameter validation
+PASS Drawable LFO points and selection state roundtrip
+PASS Version 2 migration and legacy shape automation
+PASS Dual-filter state, preset defaults and host audio automation
+PASS Version 4 migration and legacy destination automation
+PASS Extended filter modulation assignment and bank persistence
+PASS Dual-warp state, preset defaults and waveform preview
+PASS Version 5 migration and legacy destination choice counts
+PASS Warp modulation assignment, persistence and audible routing
+PASS Voicing state, appended host parameters and preset defaults
+PASS Version 6 voicing migration and required schema 7 controls
+PASS Voicing host parameters reach note priority and glide audio
+PASS Voicing editor attachment, phase units and mode availability
+PASS Sound history drag grouping, no-ops and redo branching
+PASS Sound history compound LFO strokes and modulation routes
+PASS Sound history host isolation, conflicts and project boundaries
+PASS Sound history reentrant host callbacks and restore boundaries
+PASS Sound history excludes partially published worker-thread projects
+PASS Sound history retains assets and presets after source deletion
+PASS Sound history Save As identity and bounded retained memory
+PASS Sound history preserves active wavetable, sample and granular audio
+PASS Sound history GUI provenance, gestures, shortcuts and editor teardown
+PASS Sound history invalidates stale wavetable Lab snapshots
+PASS Harmonic phase assets survive projects, files and history
+PASS Spectral editor page navigation, phase strokes and history
+PASS Waveform and spectral morph UI publish one complete sound edit
+PASS Nominal modulation ranges follow source polarity and cutoff octaves
+PASS Modulation source selection is silent and ring edits group history
+PASS Modulation rings stop across synchronous host project replacement
+PASS Modulation rings protect automation and close cancelled gestures
+PASS Cross-modulation state, presets and appended parameter compatibility
+PASS Schema 1-7 cross-mode migration and schema 8 atomic rejection
+PASS Unified warp mode history and reentrant project boundaries
+PASS Cross-modulation host parameters reach muted-source carrier audio
+PASS Advanced matrix appends 360 controls after the complete legacy host prefix
+PASS Schema 1-11 matrix migration and complete schema 12 preset validation
+PASS Thirty-two matrix rows preserve bypassed routes and reset reused slots
+PASS Complete matrix payloads move and clear as single undoable edits
+PASS Matrix compound helpers stop at host restore and automation boundaries
+PASS Last-row polarity, curves, auxiliary control and bypass reach real audio
+PASS All matrix pages and detail controls reflect host changes and undo
+PASS Matrix handles and rings preserve host changes across cancelled gestures
+PASS Matrix UI choices, bypass and sliders survive host callbacks and editor destruction
+PASS Expanded sources append 396 controls without changing the complete v0.13 prefix
+INFO Canonical Init default: id=env3Attack actual=0.130425363779 default=0.130425348878 canonical=0.130425363779 raw=0.010000003502
+INFO Canonical Init default: id=env3Decay actual=0.330175727606 default=0.330175757408 canonical=0.330175727606 raw=0.199999943376
+INFO Canonical Init default: id=env4Attack actual=0.130425363779 default=0.130425348878 canonical=0.130425363779 raw=0.010000003502
+INFO Canonical Init default: id=env4Decay actual=0.330175727606 default=0.330175757408 canonical=0.330175727606 raw=0.199999943376
+PASS Expanded source state roundtrips, schema 9 migration and current-schema atomic validation
+PASS Every source bank preserves legacy choices, compound history and effective assignment
+PASS Paired source/LFO selectors preserve synchronous host edits and project replacements
+PASS All fifteen new primary and auxiliary sources match independent legacy audio references
+PASS All twenty-four factory programs sound and new presets use expanded sources
+INFO Navigation fixture after ordinary restore: undo=0, redo=0, active=0, canUndo=0, canRedo=0, bytesEqual=0; parameter lfo1Rate expected=1.000000238418579 actual=1.000000357627869 live=1.000000238419 normalizedDelta=-0.000000029802; parameter lfo2Rate expected=2.000000476837158 actual=2.000000715255737 live=2.000000715256 normalizedDelta=0.000000029802
+PASS Ten LFOs, four envelopes, eight macros and source palette are editable at minimum size
+PASS Composite matrix source controls survive host callbacks and editor destruction
+PASS LFO 10 drawing and curve presets preserve host state and survive editor destruction
+PASS LFO 10 composite shape UI survives host callbacks and editor destruction
+PASS Actual LFO 10 knob drops and duplicate re-enable survive host callbacks and editor teardown
+PASS Advanced envelopes append 48 controls after the complete v0.14 host prefix
+PASS Advanced envelope schema 12 roundtrips, schema 10 migration and atomic validation
+PASS Delay, hold and three curves reach all four independent envelope source outputs
+PASS Four envelopes synchronize all timed stages to manual/host BPM with invalid-clock fallback
+PASS Each envelope independently retriggers only its routed legato sound
+PASS Envelope Lab navigation, stage/curve gestures and musical divisions preserve independent history
+PASS Envelope graph gestures stop across host restore, related automation and editor teardown
+PASS Envelope curve, division and flag controls survive host callbacks and editor teardown
+PASS LFO motion appends 116 host parameters after the unchanged v0.15 prefix
+PASS LFO motion schema 12 roundtrips, schema 11 migration and strict atomic validation
+PASS LFO rate modes and all phase destinations preserve complete history and remembered selectors
+PASS LFO rate and phase destination helpers stop at host and lifetime boundaries
+PASS All ten LFO motion controls reach audio and preserve legacy/tempo rate precedence
+PASS All ten LFO phase destinations match an independent steady phase offset
+PASS LFO motion Lab controls and phase matrix targets work at minimum size
+PASS LFO motion controls and composite rate/destination selectors survive host callbacks
+PASS Real LFO phase drops and duplicate re-enable survive host callbacks and editor teardown
+PASS Unified warp editor modes, sources and host automation
+PASS Host BPM, PPQ and manual tempo fallback
+PASS Invalid sample imports and embedded sample rollback
+PASS Modulation assignment deduplication and capacity
+PASS Malformed state rejection with atomic rollback
+PASS Arpeggiator notes, release and sustain
+PASS Arp block partition invariance and cross-channel panic
+PASS Random and boundary parameter rendering
+Processor validation: 92 cases, 0 failure(s)
+<end of output>
+Test time = 108.01 sec
+----------------------------------------------------------
+Test Passed.
+"ProcessorTests" end time: Nov 18 12:43 中国标准时间
+"ProcessorTests" time elapsed: 00:01:48
+----------------------------------------------------------
+
+End testing: Nov 18 12:43 中国标准时间

@@ -1,0 +1,62 @@
+Test project D:/Anyvoc/build
+    Start 1: EngineTests
+1/4 Test #1: EngineTests ......................   Passed    1.51 sec
+    Start 2: ProcessorTests
+2/4 Test #2: ProcessorTests ...................***Failed    2.78 sec
+PASS DAW state roundtrip
+PASS Preset file identity, rename and self-contained DAW restore
+PASS Legacy preset identity and malformed metadata rollback
+PASS Failed preset save/load preserves sound, identity and existing files
+PASS Browser selection/favourites preserve audio and explicit actions load
+PASS Deterministic factory presets and defaults
+PASS First host MIDI after preset and project restore
+PASS Self-contained wavetable state and preset files
+PASS Edited wavetable amplitude, state and floating-point export
+PASS Invalid wavetable edits and atomic rollback
+PASS Legacy wavetable normalization across state versions
+PASS Open wavetable editor protects newer DAW state
+PASS Embedded stereo sample state and preset files
+PASS Version 1 migration and required parameter validation
+PASS Drawable LFO points and selection state roundtrip
+PASS Version 2 migration and legacy shape automation
+PASS Dual-filter state, preset defaults and host audio automation
+PASS Version 4 migration and legacy destination automation
+PASS Extended filter modulation assignment and bank persistence
+PASS Dual-warp state, preset defaults and waveform preview
+PASS Version 5 migration and legacy destination choice counts
+PASS Warp modulation assignment, persistence and audible routing
+PASS Voicing state, appended host parameters and preset defaults
+PASS Version 6 voicing migration and required schema 7 controls
+PASS Voicing host parameters reach note priority and glide audio
+PASS Voicing editor attachment, phase units and mode availability
+PASS Sound history drag grouping, no-ops and redo branching
+PASS Sound history compound LFO strokes and modulation routes
+FAIL Sound history host isolation, conflicts and project boundaries: External project restore retained pending edits or history from the previous sound
+FAIL Sound history reentrant host callbacks and restore boundaries: Finishing an interrupted user write corrupted the newly restored project
+FAIL Sound history excludes partially published worker-thread projects: Completion retained mixed-state history or an unbalanced pre-restore physical scope
+PASS Sound history retains assets and presets after source deletion
+PASS Sound history Save As identity and bounded retained memory
+PASS Sound history preserves active wavetable, sample and granular audio
+FAIL Sound history GUI provenance, gestures and editor teardown: History header did not reflect a completed edit
+PASS Sound history invalidates stale wavetable Lab snapshots
+PASS Host BPM, PPQ and manual tempo fallback
+PASS Invalid sample imports and embedded sample rollback
+PASS Modulation assignment deduplication and capacity
+PASS Malformed state rejection with atomic rollback
+PASS Arpeggiator notes, release and sustain
+PASS Arp block partition invariance and cross-channel panic
+PASS Random and boundary parameter rendering
+Processor validation: 43 cases, 4 failure(s)
+
+    Start 3: WavetableTests
+3/4 Test #3: WavetableTests ...................   Passed    0.06 sec
+    Start 4: PresetLibraryTests
+4/4 Test #4: PresetLibraryTests ...............   Passed    0.63 sec
+
+75% tests passed, 1 tests failed out of 4
+
+Total Test time (real) =   4.99 sec
+
+The following tests FAILED:
+	  2 - ProcessorTests (Failed)
+Errors while running CTest

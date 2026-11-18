@@ -1,0 +1,12 @@
+/build/
+/dist/
+/tools/
+/third_party/*
+!/third_party/JUCE/
+.vs/
+*.user
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example

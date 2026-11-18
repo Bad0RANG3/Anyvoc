@@ -1,0 +1,56 @@
+Test project D:/Anyvoc/build
+    Start 1: EngineTests
+1/4 Test #1: EngineTests ......................***Failed    1.33 sec
+PASS MIDI note lifecycle and event timing
+PASS Sample rates and variable block lengths
+PASS Sustain pedal
+PASS A4 tuning and pitch wheel
+PASS Reset, effect tails and MIDI panic
+PASS Stereo unison
+PASS WAV wavetable import and musical pitch
+PASS Sample playback pitch and source sample rates
+PASS Sample one-shot, loop, stereo and note release
+PASS Sample start position and reverse playback
+PASS Granular scan position and note release
+PASS Sample/granular bounded polyphony stress
+PASS Drawable LFO point values reach the audio route
+PASS Drawable LFO linear and stepped interpolation
+PASS Per-note LFO trigger and one-shot endpoint
+PASS Host LFO tempo, triplets, seeks and block partition
+PASS Dual-filter spectral response, slopes and serial routing
+PASS Independent source buses, bypass and parallel balance
+PASS Filter key tracking and additional modulation targets
+PASS Rapid dual-filter automation and reset
+PASS Warp preview landmarks, identities and slot order
+PASS Warp identity and unaffected sample/granular playback
+PASS All six oscillator warp modulation destinations
+PASS Warp block partition, automation sanitization and reset
+Warp zero-crossing: correction=0.000728754, max jump=1.05761e-05, settled residual=0
+PASS Warp DC rejection and continuous harmonic-level transitions
+Delay reference: rate=44100, maximum error=9.31956e-09, worst sample=34774
+Delay reference: rate=48000, maximum error=9.08024e-09, worst sample=82549
+Delay reference: rate=96000, maximum error=8.83901e-09, worst sample=70773
+PASS Fractional delay reference and circular read boundaries
+PASS Mono note priority, repeated counts and channel controllers
+PASS Mono retrigger and Legato envelope/LFO continuity
+PASS Glide pitch, duration, interruptions and separated notes
+FAIL Oscillator phase landmarks, random bounds and unison: Oscillator initial phase did not shift the actual sine by its requested fraction of a cycle; oscillator=0, requested=0.500000, measured=0.480920, zero=0.009164
+PASS Sample/granular Mono restart and Legato continuation
+PASS Poly glide isolation and unchanged sample/granular phase behavior
+PASS Voicing sanitization, live mode changes and reset
+Engine validation: 33 cases, 1 failure(s)
+
+    Start 2: ProcessorTests
+2/4 Test #2: ProcessorTests ...................   Passed    2.15 sec
+    Start 3: WavetableTests
+3/4 Test #3: WavetableTests ...................   Passed    0.04 sec
+    Start 4: PresetLibraryTests
+4/4 Test #4: PresetLibraryTests ...............   Passed    0.63 sec
+
+75% tests passed, 1 tests failed out of 4
+
+Total Test time (real) =   4.16 sec
+
+The following tests FAILED:
+	  1 - EngineTests (Failed)
+Errors while running CTest

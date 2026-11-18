@@ -1,0 +1,22 @@
+Anyvoc 0.13 matrix demo: decoded PCM analysis
+File: D:\Anyvoc\dist\Anyvoc-v0.13-Matrix-Demo.wav
+SHA-256: 1d06332b55b6ed1d6a71b4eed620c06fa4848a89438c296a4ecd4305c506d476
+Container/encoding: WAV, signed 24-bit integer PCM, little endian
+Sample rate: 48000 Hz; channels: 2; frames: 720000; duration: 15.000 s
+File bytes: 4320104
+Overall peak: 0.055302262 (-25.145 dBFS)
+Overall RMS, both channels: 0.024207037 (-32.321 dBFS)
+Full-scale/clipped decoded samples: 0
+Left: peak 0.055302262, RMS 0.024207037, DC mean 0.000001629866
+Right: peak 0.055302262, RMS 0.024207037, DC mean 0.000001629866
+Left-right: bit-identical=True; difference peak=0.000000000; difference RMS=0.000000000
+
+Three-second segments (fixed render gain; the first/last 20/50 ms have fades):
+ 0- 3 s: AUX Macro 1 = 0%, source curve = 0%; RMS 0.025106818 (-32.004 dBFS); peak 0.044952273
+ 3- 6 s: AUX Macro 1 = 25%, source curve = 0%; RMS 0.025005025 (-32.039 dBFS); peak 0.047941685
+ 6- 9 s: AUX Macro 1 = 50%, source curve = 0%; RMS 0.024575327 (-32.190 dBFS); peak 0.049812198
+ 9-12 s: AUX Macro 1 = 100%, source curve = 0%; RMS 0.022545417 (-32.939 dBFS); peak 0.055302262
+12-15 s: AUX Macro 1 = 100%, source curve = +50%; RMS 0.023707745 (-32.502 dBFS); peak 0.055285692
+
+This is an offline PCM measurement, not a subjective listening evaluation.
+The stereo container uses a deterministic single unison voice without stereo effects; equal channels are expected.

@@ -1,0 +1,27 @@
+Anyvoc 0.14 expanded sources demo: decoded PCM analysis
+File: D:\Anyvoc\dist\Anyvoc-v0.14-Sources-Demo.wav
+SHA-256: 5c0cd505f91d3db7bfd64c1c392ceaa50bcae861d533774151588529b1a944aa
+Container/encoding: WAV, signed 24-bit integer PCM, little endian
+Sample rate: 48000 Hz; channels: 2; frames: 768000; duration: 16.000 s
+File bytes: 4608104
+Overall peak: 0.140376925 (-17.054 dBFS)
+Overall RMS, both channels: 0.022953856 (-32.783 dBFS)
+Full-scale/clipped decoded samples: 0
+Left: peak 0.133489966, RMS 0.020388906, DC mean 0.000005430116
+Right: peak 0.140376925, RMS 0.025259683, DC mean -0.000005439685
+Left-right: bit-identical=False; difference peak=0.122055411; difference RMS=0.019192140
+
+Four-second segments (fixed render gain; the first/last 20/100 ms have fades):
+ 0- 4 s: Prism Weave, Macro 5 = 0%; RMS 0.022704851 (-32.878 dBFS); peak 0.131583810; L/R RMS 0.020281271/0.024893585
+ 4- 8 s: Prism Weave, Macro 5 = 100%; RMS 0.022310272 (-33.030 dBFS); peak 0.133489966; L/R RMS 0.020048119/0.024363279
+ 8-12 s: Four Horizons, Macro 8 = 0%; RMS 0.023623445 (-32.533 dBFS); peak 0.120550275; L/R RMS 0.023042985/0.024189981
+12-16 s: Four Horizons, Macro 8 = 100%; RMS 0.023155830 (-32.707 dBFS); peak 0.140376925; L/R RMS 0.017849194/0.027455258
+
+Legacy demo regression:
+Before: D:\Anyvoc\build\validation-baseline\Anyvoc-v0.13-before-v0.14.wav
+After: D:\Anyvoc\build\validation-baseline\Anyvoc-v0.14-final.wav
+Before SHA-256: 3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920
+After SHA-256: 3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920
+Byte-identical: True; bytes: 4320104/4320104
+
+This is an offline PCM measurement, not a subjective listening evaluation.
