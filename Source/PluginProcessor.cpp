@@ -8,7 +8,7 @@
 
 namespace {
 struct Preset { const char* name; std::initializer_list<std::pair<const char*,float>> values; };
-const std::array<Preset,24> presets {{
+const std::array<Preset,26> presets {{
     {"Init / Pure Canvas", {}},
     {"Keys / Glass Garden", {{"osc1Position",.08f},{"osc2Level",.24f},{"osc2Position",.24f},{"osc2Semi",12},{"ampAttack",.003f},{"ampDecay",1.2f},{"ampSustain",.12f},{"ampRelease",1.1f},{"cutoff",7500},{"filterEnv",.25f},{"reverbMix",.25f},{"delayMix",.14f}}},
     {"Pad / Northern Lights", {{"osc1Position",.62f},{"osc1Unison",5},{"osc1Detune",17},{"osc2Level",.38f},{"osc2Position",.38f},{"osc2Semi",12},{"osc2Unison",3},{"ampAttack",1.6f},{"ampDecay",1.9f},{"ampSustain",.7f},{"ampRelease",2.8f},{"cutoff",2400},{"filterEnv",.2f},{"chorusMix",.35f},{"reverbMix",.4f},{"reverbSize",.8f},{"mod1Source",1},{"mod1Dest",2},{"mod1Amount",.2f},{"lfo1Rate",.13f}}},
@@ -33,6 +33,8 @@ const std::array<Preset,24> presets {{
     ,{"Lead / Second Breath", {{"voiceMode",2},{"glideTime",.08f},{"osc1Position",.64f},{"osc1Unison",3},{"osc1Detune",7},{"osc2Position",.15f},{"osc2Level",.16f},{"osc2Semi",12},{"subLevel",.1f},{"cutoff",700},{"resonance",.3f},{"filterEnv",.6f},{"ampAttack",.005f},{"ampSustain",.8f},{"ampRelease",.25f},{"envAttack",.008f},{"envHold",.04f},{"envDecay",.45f},{"envSustain",.05f},{"envRelease",.2f},{"envAttackCurve",-.4f},{"envDecayCurve",-.25f},{"envRetriggerLegato",1},{"env3Attack",.015f},{"env3Decay",.3f},{"env3Sustain",0},{"env3Release",.15f},{"env3RetriggerLegato",1},{"env3DecayCurve",.3f},{"mod1SourceExtra",10},{"mod1Dest",2},{"mod1Amount",.18f},{"delayMix",.12f},{"delayTime",.375f},{"reverbMix",.08f}}}
     ,{"Motion / Swing Carousel", {{"osc1Position",.6f},{"osc1Unison",3},{"osc1Detune",9},{"osc2Level",.18f},{"osc2Position",.25f},{"osc2Semi",7},{"subLevel",.1f},{"cutoff",1200},{"resonance",.28f},{"ampAttack",.012f},{"ampSustain",.8f},{"ampRelease",.35f},{"lfo1Sync",1},{"lfo1Division",3},{"lfo1Kind",2},{"lfo1Mode",1},{"lfo1FollowSwing",1},{"lfo1Direction",2},{"lfo1Phase",.125f},{"swingAmount",.6f},{"swingDivision",0},{"mod1Source",1},{"mod1Dest",1},{"mod1Amount",.48f},{"mod2Source",1},{"mod2Dest",7},{"mod2Amount",.35f},{"delayMix",.08f},{"reverbMix",.12f}}}
     ,{"Keys / Phase Lantern", {{"osc1Position",.15f},{"osc1Level",.5f},{"osc1RandomUnison",0},{"subLevel",0},{"cutoff",9000},{"ampAttack",.004f},{"ampDecay",1.2f},{"ampSustain",.3f},{"ampRelease",.6f},{"lfo1AudioRateEnabled",1},{"lfo1AudioRateHz",110},{"lfo1Mode",1},{"lfo2Rate",.6f},{"lfo2Mode",1},{"lfo2Phase",.25f},{"lfo2Direction",1},{"mod1Source",1},{"mod1Dest",5},{"mod1Amount",.018f},{"mod2Source",2},{"mod2LfoPhaseEnabled",1},{"mod2LfoPhaseTarget",0},{"mod2Amount",.22f},{"reverbMix",.12f}}}
+    ,{"Motion / Butterfly Current", {{"osc1Position",.62f},{"osc1Unison",3},{"osc1Detune",9},{"osc2Position",.2f},{"osc2Level",.16f},{"osc2Semi",7},{"subLevel",.12f},{"cutoff",1600},{"resonance",.22f},{"ampAttack",.04f},{"ampSustain",.8f},{"ampRelease",.8f},{"lfo1Chaos",1},{"lfo1Rate",1.8f},{"lfo1Mode",1},{"mod1Source",1},{"mod1Dest",1},{"mod1Amount",.52f},{"mod2Source",1},{"mod2Dest",2},{"mod2Amount",.3f},{"delayMix",.12f},{"reverbMix",.2f}}}
+    ,{"Texture / Spiral Drift", {{"osc1Position",.37f},{"osc1Unison",3},{"osc1Detune",12},{"osc2Position",.15f},{"osc2Level",.25f},{"osc2Semi",12},{"noiseLevel",.01f},{"subLevel",.08f},{"cutoff",2200},{"resonance",.18f},{"ampAttack",.6f},{"ampSustain",.8f},{"ampRelease",1.4f},{"lfo1Chaos",2},{"lfo1Rate",.7f},{"lfo1Mode",0},{"mod1Source",1},{"mod1Dest",1},{"mod1Amount",.4f},{"mod2Source",1},{"mod2Dest",7},{"mod2Amount",.6f},{"chorusMix",.18f},{"reverbMix",.3f}}}
 }};
 float v(std::atomic<float>* p) { return p->load(std::memory_order_relaxed); }
 constexpr int maxStateBytes=40*1024*1024;
@@ -149,6 +151,13 @@ bool isLfoMotionParameter(const juce::String& id)
     for(int n=1;n<=static_cast<int>(anyvoc::modulationRouteCount);++n)
         for(const auto* suffix:{"LfoPhaseEnabled","LfoPhaseTarget"})
             if(id=="mod"+juce::String(n)+suffix)return true;
+    return false;
+}
+
+bool isChaosLfoParameter(const juce::String& id)
+{
+    for(int n=1;n<=static_cast<int>(anyvoc::lfoCount);++n)
+        if(id=="lfo"+juce::String(n)+"Chaos")return true;
     return false;
 }
 
@@ -786,6 +795,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout AnyvocAudioProcessor::makePa
         layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID{id+"LfoPhaseEnabled",12},name+"LFO Phase Destination",false));
         layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID{id+"LfoPhaseTarget",12},name+"LFO Phase Target",phaseTargets,0));
     }
+    // A separate selector preserves the complete 0.16 host parameter prefix,
+    // including the normalised meaning of the original Shape and Kind choices.
+    for(int n=1;n<=static_cast<int>(anyvoc::lfoCount);++n)
+        layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID{"lfo"+juce::String(n)+"Chaos",13},
+            "LFO "+juce::String(n)+" Chaos",juce::StringArray{"Off","Lorenz","Rossler"},0));
     return layout;
 }
 
@@ -822,6 +836,7 @@ AnyvocAudioProcessor::AnyvocAudioProcessor()
         lfoRates[n]=p(id+"Rate");lfoShapes[n]=p(id+"Shape");
         lfoPhaseOffset[n]=p(id+"Phase");lfoDirection[n]=p(id+"Direction");lfoFollowSwing[n]=p(id+"FollowSwing");
         lfoAudioRateEnabled[n]=p(id+"AudioRateEnabled");lfoAudioRateHz[n]=p(id+"AudioRateHz");
+        lfoChaos[n]=p(id+"Chaos");
         lfoSync[n]=p(id+"Sync");lfoDivision[n]=p(id+"Division");lfoMode[n]=p(id+"Mode");lfoInterpolation[n]=p(id+"Interpolation");lfoKind[n]=p(id+"Kind");
         for(int point=0;point<=32;++point)lfoPoints[n][static_cast<size_t>(point)]=p(id+"Point"+juce::String(point));
     }
@@ -1045,7 +1060,7 @@ void AnyvocAudioProcessor::applyProgram(int index,bool userEdit)
 juce::ValueTree AnyvocAudioProcessor::createState() const
 {
     auto state=const_cast<juce::AudioProcessorValueTreeState&>(apvts).copyState();
-    state.setProperty("schemaVersion",12,nullptr);state.setProperty("program",currentProgram.load(),nullptr);
+    state.setProperty("schemaVersion",13,nullptr);state.setProperty("program",currentProgram.load(),nullptr);
     const auto identity = std::atomic_load (&presetIdentity);
     const auto name = identity ? identity->name : juce::String (presets[static_cast<size_t> (juce::jlimit (0, static_cast<int> (presets.size()) - 1, currentProgram.load()))].name);
     state.setProperty ("presetName", name, nullptr);
@@ -1065,7 +1080,7 @@ bool AnyvocAudioProcessor::restoreState(const juce::ValueTree& incoming,bool use
     if(recordUserEdit && history->isPublishing())return false;
     const auto initialGeneration=history->generation();
     const int version=static_cast<int>(incoming.getProperty("schemaVersion",0));
-    if(!incoming.hasType("ANYVOC") || version<1 || version>12)return false;
+    if(!incoming.hasType("ANYVOC") || version<1 || version>13)return false;
     const int incomingProgram = juce::jlimit (0, getNumPrograms() - 1, static_cast<int> (incoming.getProperty ("program", 0)));
     const bool hasName = incoming.hasProperty ("presetName"), hasId = incoming.hasProperty ("presetId");
     if (hasName != hasId) return false;
@@ -1128,7 +1143,7 @@ bool AnyvocAudioProcessor::restoreState(const juce::ValueTree& incoming,bool use
     }
     for(auto* base:getParameters())if(auto* param=dynamic_cast<juce::RangedAudioParameter*>(base)){
         if(seenParameters.contains(param->paramID))continue;
-        if(!((version==1 && isSampleParameter(param->paramID)) || (version<3 && isLfoParameter(param->paramID)) || (version<5 && isDualFilterParameter(param->paramID)) || (version<6 && isWarpParameter(param->paramID)) || (version<7 && isVoicingParameter(param->paramID)) || (version<8 && isCrossModulationParameter(param->paramID)) || (version<9 && isAdvancedModulationParameter(param->paramID)) || (version<10 && isExpandedSourceParameter(param->paramID)) || (version<11 && isExtendedEnvelopeParameter(param->paramID)) || (version<12 && isLfoMotionParameter(param->paramID))))return false;
+        if(!((version==1 && isSampleParameter(param->paramID)) || (version<3 && isLfoParameter(param->paramID)) || (version<5 && isDualFilterParameter(param->paramID)) || (version<6 && isWarpParameter(param->paramID)) || (version<7 && isVoicingParameter(param->paramID)) || (version<8 && isCrossModulationParameter(param->paramID)) || (version<9 && isAdvancedModulationParameter(param->paramID)) || (version<10 && isExpandedSourceParameter(param->paramID)) || (version<11 && isExtendedEnvelopeParameter(param->paramID)) || (version<12 && isLfoMotionParameter(param->paramID)) || (version<13 && isChaosLfoParameter(param->paramID))))return false;
         cleaned.getChildWithProperty("id",param->paramID).setProperty("value",param->convertFrom0to1(param->getDefaultValue()),nullptr);
     }
     if(recordUserEdit && (history->isPublishing() || history->generation()!=initialGeneration))return false;
@@ -1352,20 +1367,34 @@ juce::String AnyvocAudioProcessor::getSampleName(int oscillator) const
     return "Drop a WAV sample";
 }
 float AnyvocAudioProcessor::getSamplePreview(int oscillator,float position) const {return engine.getSamplePreview(oscillator,position);}
+std::array<float,3> AnyvocAudioProcessor::getLfoChaosPoint(int index, int expectedShape, int expectedMode) const noexcept
+{
+    if(index<0 || index>=static_cast<int>(lfoRates.size()))return {};
+    // The UI can observe a host edit before the next audio block applies it.
+    // Do not label a snapshot from the preceding algorithm or mode as current.
+    // A caller displaying captured labels must filter against those same labels.
+    // Reading APVTS again here could otherwise admit a newer, differently tagged point.
+    const int shape = expectedShape < 0 ? getLfoShape(index) : expectedShape;
+    const int mode = expectedMode < 0 ? static_cast<int>(v(lfoMode[static_cast<size_t>(index)])) : expectedMode;
+    return engine.getLfoChaosPoint(index, shape, mode);
+}
 int AnyvocAudioProcessor::getLfoShape(int index) const
 {
     if(index<0 || index>=static_cast<int>(lfoRates.size()))return 0;
     const auto n=static_cast<size_t>(index);const int kind=static_cast<int>(v(lfoKind[n]));
+    const int chaos=static_cast<int>(v(lfoChaos[n]));
+    if(chaos>0)return chaos+5;
     return kind==0?static_cast<int>(v(lfoShapes[n])):kind+3;
 }
 void AnyvocAudioProcessor::setLfoShape(int index,int shape,const std::function<bool()>& isCurrent)
 {
-    if(index<0 || index>=static_cast<int>(lfoRates.size()) || shape<0 || shape>5)return;
+    if(index<0 || index>=static_cast<int>(lfoRates.size()) || shape<0 || shape>7)return;
     const auto id="lfo"+juce::String(index+1);
-    auto* basic=apvts.getParameter(id+"Shape");auto* kind=apvts.getParameter(id+"Kind");
+    auto* basic=apvts.getParameter(id+"Shape");auto* kind=apvts.getParameter(id+"Kind");auto* chaos=apvts.getParameter(id+"Chaos");
     applyModulationEdits("Change LFO shape",{
         {basic,shape<4?basic->convertTo0to1(static_cast<float>(shape)):basic->getValue()},
-        {kind,kind->convertTo0to1(static_cast<float>(shape<4?0:shape-3))}
+        {kind,shape<6?kind->convertTo0to1(static_cast<float>(shape<4?0:shape-3)):kind->getValue()},
+        {chaos,chaos->convertTo0to1(static_cast<float>(shape>=6?shape-5:0))}
     },isCurrent);
 }
 int AnyvocAudioProcessor::getLfoRateMode(int index) const

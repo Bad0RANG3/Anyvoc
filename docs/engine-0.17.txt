@@ -1,0 +1,70 @@
+PASS MIDI note lifecycle and event timing
+PASS Sample rates and variable block lengths
+PASS Sustain pedal
+PASS A4 tuning and pitch wheel
+PASS Reset, effect tails and MIDI panic
+PASS Stereo unison
+PASS WAV wavetable import and musical pitch
+PASS Sample playback pitch and source sample rates
+PASS Sample one-shot, loop, stereo and note release
+PASS Sample start position and reverse playback
+PASS Granular scan position and note release
+PASS Sample/granular bounded polyphony stress
+PASS Drawable LFO point values reach the audio route
+PASS Drawable LFO linear and stepped interpolation
+PASS Per-note LFO trigger and one-shot endpoint
+PASS Host LFO tempo, triplets, seeks and block partition
+PASS Dual-filter spectral response, slopes and serial routing
+PASS Independent source buses, bypass and parallel balance
+PASS Filter key tracking and additional modulation targets
+PASS Rapid dual-filter automation and reset
+PASS Warp preview landmarks, identities and slot order
+PASS Warp identity and unaffected sample/granular playback
+PASS All six oscillator warp modulation destinations
+PASS Warp block partition, automation sanitization and reset
+Warp zero-crossing: correction=0.000728754, max jump=1.05761e-05, settled residual=0
+PASS Warp DC rejection and continuous harmonic-level transitions
+Delay reference: rate=44100, maximum error=9.31956e-09, worst sample=34774
+Delay reference: rate=48000, maximum error=9.08024e-09, worst sample=82549
+Delay reference: rate=96000, maximum error=8.83901e-09, worst sample=70773
+PASS Fractional delay reference and circular read boundaries
+PASS Mono note priority, repeated counts and channel controllers
+PASS Mono retrigger and Legato envelope/LFO continuity
+PASS Glide pitch, duration, interruptions and separated notes
+PASS Oscillator phase landmarks, random bounds and unison
+PASS Sample/granular Mono restart and Legato continuation
+PASS Poly glide isolation and unchanged sample/granular phase behavior
+PASS Voicing sanitization, live mode changes and reset
+Cross mixed zero: slot=0, mode=3, rms=1.59652e-18, peak=7.38873e-18
+Cross mixed zero: slot=0, mode=4, rms=0, peak=0
+Cross mixed zero: slot=1, mode=3, rms=7.97408e-19, peak=3.69042e-18
+Cross mixed zero: slot=1, mode=4, rms=0, peak=0
+PASS Cross FM signed-frequency and PM/AM/RM mathematical landmarks
+PASS Cross pre-pan source taps, muted sources and unison averaging
+PASS Cross zero-depth/RNG identity and WT-only target modes
+PASS Cross cycles, block partition, topology automation and reset
+PASS Advanced matrix source curves, polarity and nominal ranges
+PASS Advanced matrix products and all 32 audible slots
+PASS Advanced matrix bypass, off, zero, legacy identity and invalid controls
+PASS Advanced matrix block partition, amount smoothing and reset
+PASS All 25 source mappings and new primary/auxiliary audio
+PASS LFO10 transport, custom/trigger/one-shot and independent random sequences
+PASS Amp/Env3/Env4 release, sustain, mono modes and voice stealing
+PASS DAHDSR shared model, independent audio landmarks and Instant stages
+PASS DAHDSR live tempo, durations, curves and legacy transitions
+PASS DAHDSR per-envelope Legato retrigger and stage release lifecycle
+PASS DAHDSR legacy identity, block partition and invalid controls
+PASS LFO phase/direction independent audio and one-shot endpoints
+PASS LFO swing grid, transport seeks, live edits and block partition
+PASS All phase destinations, unit-delay feedback and voice isolation
+PASS Audio-rate primary/auxiliary/phase chains and pitch/pan/filter oracles
+PASS Advanced LFO legacy identity, random isolation, reset and invalid controls
+PASS Chaos independent ODE, RK4 grid and Hermite off-grid reference
+PASS Chaos long-run bounds, nonperiodic evolution and sample-rate invariance
+PASS Chaos trigger, stealing, one-shot clipping and Legato lifecycle
+PASS Chaos free transport/swing continuity and live mode/algorithm changes
+PASS Chaos audio-rate primary/auxiliary and delayed phase-chain oracles
+PASS Chaos unused identity, block partition, reset and inactive phase controls
+PASS Chaos coherent concurrent XYZ telemetry
+PASS Unused expanded source identity and invalid controls
+Engine validation: 61 cases, 0 failure(s)

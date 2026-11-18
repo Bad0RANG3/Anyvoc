@@ -740,13 +740,17 @@ public:
     }
     bool isInterestedInDragSource (const SourceDetails& details) override
     {
-        return modulationDestination > 0 && details.description.toString().startsWith ("anyvoc.mod:");
+        return isEnabled() && modulationDestination > 0
+            && (! slider.userEditAllowed || slider.userEditAllowed())
+            && details.description.toString().startsWith ("anyvoc.mod:");
     }
-    void itemDragEnter (const SourceDetails&) override { dragHovered = true; repaint(); }
+    void itemDragEnter (const SourceDetails& details) override { dragHovered = isInterestedInDragSource (details); repaint(); }
     void itemDragExit (const SourceDetails&) override { dragHovered = false; repaint(); }
     void itemDropped (const SourceDetails& details) override
     {
         dragHovered = false;
+        // A host can change the LFO type after drag enter, before this callback.
+        if (! isInterestedInDragSource (details)) { repaint(); return; }
         const int source = details.description.toString().fromFirstOccurrenceOf (":", false, false).getIntValue();
         const int destination = modulationDestination;
         const auto dropped = onModulationDrop;
@@ -903,7 +907,7 @@ public:
         addAndMakeVisible (box); box.addItemList (modulationDestinationNames, 1);
         box.setTitle ("Modulation " + juce::String (route + 1) + " destination");
         box.setComponentID ("mod" + juce::String (route + 1) + "Destination" + suffix);
-        box.setTooltip ("Choose what this source moves. LFO Phase shifts the curve's reading position; it has no effect on Random. Warp targets require an active warp mode.");
+        box.setTooltip ("Choose what this source moves. LFO Phase shifts the curve's reading position; it has no effect on Random, Lorenz or Rossler. Warp targets require an active warp mode.");
         box.onChange = [this]
         {
             const auto selected = box.getSelectedItemIndex();
@@ -2225,6 +2229,9 @@ void setValueWithGesture (AnyvocAudioProcessor& processor, const juce::String& i
     }
 }
 
+bool lfoHasPhase (int shape) { return shape >= 0 && (shape < 4 || shape == 5); }
+bool lfoIsChaos (int shape) { return shape == 6 || shape == 7; }
+
 float lfoSample (AnyvocAudioProcessor& processor, int index, float phase)
 {
     const auto prefix = "lfo" + juce::String (index + 1);
@@ -2233,7 +2240,7 @@ float lfoSample (AnyvocAudioProcessor& processor, int index, float phase)
     if (shape == 1) return 1.0f - 4.0f * std::abs (phase - 0.5f);
     if (shape == 2) return 2.0f * phase - 1.0f;
     if (shape == 3) return phase < 0.5f ? 1.0f : -1.0f;
-    if (shape == 4) return 0.0f; // Random has no repeatable curve; it is labelled explicitly.
+    if (shape == 4 || lfoIsChaos (shape)) return 0.0f; // Non-periodic sources have no drawable cycle.
     const float position = juce::jlimit (0.0f, 1.0f, phase) * 32.0f;
     const int first = juce::jmin (31, (int) position);
     const auto a = value (processor, prefix + "Point" + juce::String (first));
@@ -2248,28 +2255,46 @@ public:
     LfoShapeChoice (AnyvocAudioProcessor& p, int indexIn) : processor (p), index (indexIn)
     {
         addAndMakeVisible (box);
-        box.addItemList ({ "Sine", "Triangle", "Saw", "Square", "Random", "Custom" }, 1);
+        box.addItemList ({ "Sine", "Triangle", "Saw", "Square", "Random", "Custom", "Lorenz", "Rossler" }, 1);
         box.setTitle ("LFO " + juce::String (index + 1) + " shape");
         box.setComponentID ("lfo" + juce::String (index + 1) + "ShapeChoice");
-        box.setTooltip ("Choose a basic shape, changing random values, or your own drawn curve. EDIT opens the large drawing canvas.");
+        box.setTooltip ("Choose a repeating shape, Random, Custom, or evolving Lorenz / Rossler chaos. EDIT shows a drawing canvas or the real chaos trajectory. Existing custom points are kept when changing shape.");
         box.onChange = [this]
         {
+            if (! matrixHierarchyVisible (this)) return;
             const auto selected = box.getSelectedItemIndex();
             if (selected < 0) return;
             const juce::Component::SafePointer<LfoShapeChoice> safe (this);
             const int lfoIndex = index;
-            processor.setLfoShape (lfoIndex, selected, [safe, lfoIndex] { return safe != nullptr && safe->index == lfoIndex; });
+            processor.setLfoShape (lfoIndex, selected, [safe, lfoIndex]
+            {
+                return safe != nullptr && safe->index == lfoIndex && matrixHierarchyVisible (safe.getComponent());
+            });
             if (safe != nullptr) refresh();
         };
+        const auto prefix = "lfo" + juce::String (index + 1);
+        const std::array<const char*, 3> suffixes { "Shape", "Kind", "Chaos" };
+        const juce::Component::SafePointer<LfoShapeChoice> safe (this);
+        for (size_t i = 0; i < suffixes.size(); ++i) parameters[i] = processor.apvts.getParameter (prefix + suffixes[i]);
+        for (size_t i = 0; i < parameters.size(); ++i)
+            attachments[i] = std::make_unique<juce::ParameterAttachment> (*parameters[i], [safe] (float) { if (safe != nullptr) safe->refresh(); });
         refresh();
     }
-    void refresh() { box.setSelectedItemIndex (processor.getLfoShape (index), juce::dontSendNotification); }
+    void refresh()
+    {
+        // Parameter listeners may run before APVTS updates its raw-value cache.
+        const auto read = [this] (size_t slot) { return juce::roundToInt (parameters[slot]->convertFrom0to1 (parameters[slot]->getValue())); };
+        const int chaos = juce::jlimit (0, 2, read (2)), kind = juce::jlimit (0, 2, read (1));
+        box.setSelectedItemIndex (chaos != 0 ? chaos + 5 : kind != 0 ? kind + 3 : juce::jlimit (0, 3, read (0)), juce::dontSendNotification);
+    }
     void paint (juce::Graphics& g) override { drawText (g, "SHAPE", { 0, 0, getWidth(), 16 }, 10.5f); }
     void resized() override { box.setBounds (0, 19, getWidth(), getHeight() - 19); }
 private:
     AnyvocAudioProcessor& processor;
     int index;
     juce::ComboBox box;
+    std::array<juce::RangedAudioParameter*, 3> parameters{};
+    std::array<std::unique_ptr<juce::ParameterAttachment>, 3> attachments;
 };
 
 class LfoRateModeChoice final : public juce::Component
@@ -2280,7 +2305,7 @@ public:
         const auto prefix = "lfo" + juce::String (index + 1);
         addAndMakeVisible (box); box.addItemList ({ "Free Hz", "Tempo", "Audio Rate" }, 1);
         box.setComponentID (prefix + "RateMode"); box.setTitle ("LFO rate mode");
-        box.setTooltip ("Free Hz keeps the original slow rate. Tempo uses a beat division. Audio Rate uses its separate 20-1000 Hz speed; it can add audible texture when routed to a sound parameter.");
+        box.setTooltip ("Free Hz keeps the original slow rate. Tempo uses a beat division. Audio Rate uses its separate 20-1000 speed. For chaos these scale evolution, not a repeating frequency.");
         box.onChange = [this]
         {
             if (! matrixHierarchyVisible (this)) return;
@@ -2350,6 +2375,124 @@ private:
     std::unique_ptr<SoundSliderAttachment> attachment;
 };
 
+// A bounded history of actual DSP snapshots, sampled by the existing UI timer.
+// No oscillator, integration, phase cursor or invented continuation runs here.
+class LfoChaosTrace
+{
+public:
+    void refresh (AnyvocAudioProcessor& processor, int index, juce::Component& component)
+    {
+        const int currentShape = processor.getLfoShape (index);
+        const int currentMode = juce::jlimit (0, 2, (int) value (processor, "lfo" + juce::String (index + 1) + "Mode"));
+        const auto currentRevision = processor.getHistoryRevision();
+        if (shape != currentShape || mode != currentMode || revision != currentRevision)
+        {
+            count = 0; next = 0; total = 0;
+            shape = currentShape; mode = currentMode; revision = currentRevision;
+        }
+        if (lfoIsChaos (shape))
+        {
+            auto point = processor.getLfoChaosPoint (index, currentShape, currentMode);
+            if (point == std::array<float, 3>{})
+            {
+                // API sentinel: reset or no matching shape/mode has been read.
+                // Break the trail instead of drawing a fake origin or joining epochs.
+                count = 0; next = 0; total = 0;
+            }
+            else if (std::all_of (point.begin(), point.end(), [] (float n) { return std::isfinite (n); }))
+            {
+                for (auto& n : point) n = juce::jlimit (-1.0f, 1.0f, n);
+                // A held one-shot or idle engine must not acquire fake motion.
+                if (count == 0 || point != at (count - 1))
+                {
+                    points[next] = point; next = (next + 1) % points.size();
+                    count = juce::jmin (count + 1, points.size()); ++total;
+                }
+            }
+        }
+        const auto latest = count == 0 ? std::array<float, 3>{} : at (count - 1);
+        // Read-only display state also makes real telemetry observable to UI tests.
+        auto& properties = component.getProperties();
+        properties.set ("chaosTraceSamples", (int) count);
+        properties.set ("chaosTraceTotalSamples", (juce::int64) total);
+        properties.set ("chaosTraceShape", shape);
+        properties.set ("chaosTraceMode", mode);
+        properties.set ("chaosTraceX", latest[0]); properties.set ("chaosTraceY", latest[1]); properties.set ("chaosTraceZ", latest[2]);
+    }
+
+    void paint (juce::Graphics& g, juce::Rectangle<int> bounds, juce::Colour accent, int currentShape, int currentMode, bool compact) const
+    {
+        const auto r = bounds.toFloat();
+        g.setColour (insetColour); g.fillRoundedRectangle (r, compact ? 5.0f : 8.0f);
+        g.setColour (borderColour); g.drawRoundedRectangle (r.reduced (.5f), compact ? 5.0f : 8.0f, 1);
+        const auto name = currentShape == 6 ? juce::String ("LORENZ") : juce::String ("ROSSLER");
+        const bool available = currentShape == shape && currentMode == mode && count != 0;
+        const auto latest = available ? at (count - 1) : std::array<float, 3>{};
+        const float size = juce::jmax (1.0f, r.getHeight() - (compact ? 12.0f : 44.0f));
+        const float divider = compact ? 66.0f : 260.0f;
+        const auto xy = juce::Rectangle<float> (size, size).withCentre ({ compact ? 29.0f : divider * .5f, r.getCentreY() });
+        const auto history = juce::Rectangle<float> (divider + 16, compact ? 23.0f : 27.0f,
+                                                    r.getWidth() - divider - 32, r.getHeight() - (compact ? 32.0f : 54.0f));
+        g.setColour (borderColour.withAlpha (.65f));
+        g.drawRect (xy, .7f);
+        g.drawHorizontalLine ((int) xy.getCentreY(), xy.getX(), xy.getRight());
+        g.drawVerticalLine ((int) xy.getCentreX(), xy.getY(), xy.getBottom());
+        g.drawHorizontalLine ((int) history.getCentreY(), history.getX(), history.getRight());
+        if (! compact)
+        {
+            g.drawHorizontalLine ((int) history.getY(), history.getX(), history.getRight());
+            g.drawHorizontalLine ((int) history.getBottom(), history.getX(), history.getRight());
+            g.drawVerticalLine ((int) divider, 12, r.getBottom() - 12);
+        }
+        const auto xyPoint = [&xy] (const std::array<float, 3>& point)
+        {
+            return juce::Point<float> (xy.getCentreX() + point[0] * xy.getWidth() * .46f,
+                                       xy.getCentreY() - point[1] * xy.getHeight() * .46f);
+        };
+        if (available)
+        {
+            for (size_t i = 1; i < count; ++i)
+            {
+                const auto opacity = .12f + .78f * (float) i / (float) juce::jmax ((size_t) 1, count - 1);
+                g.setColour (accent.withAlpha (opacity));
+                g.drawLine ({ xyPoint (at (i - 1)), xyPoint (at (i)) }, compact ? 1.1f : 1.5f);
+            }
+            const auto head = xyPoint (latest);
+            g.setColour (accent.withAlpha (.2f)); g.fillEllipse (juce::Rectangle<float> (10, 10).withCentre (head));
+            g.setColour (primaryText); g.fillEllipse (juce::Rectangle<float> (4, 4).withCentre (head));
+            juce::Path output;
+            for (size_t i = 0; i < count; ++i)
+            {
+                const float x = history.getRight() - (float) (count - 1 - i) / (float) (points.size() - 1) * history.getWidth();
+                const float y = history.getCentreY() - at (i)[0] * history.getHeight() * .46f;
+                if (i == 0) output.startNewSubPath (x, y); else output.lineTo (x, y);
+            }
+            g.setColour (accent); g.strokePath (output, juce::PathStrokeType (compact ? 1.3f : 1.8f));
+            g.setColour (primaryText);
+            g.fillEllipse (juce::Rectangle<float> (4, 4).withCentre ({ history.getRight(), history.getCentreY() - latest[0] * history.getHeight() * .46f }));
+        }
+        if (compact)
+            drawText (g, name + " / LIVE X-Y + X OUTPUT", { (int) divider + 16, 3, bounds.getWidth() - (int) divider - 24, 16 }, 8, accent, true);
+        else
+        {
+            drawText (g, name + " / X-Y TRAJECTORY", { 14, 3, 232, 17 }, 9, accent, true);
+            drawText (g, "X OUTPUT / RECENT SNAPSHOTS", { 278, 3, bounds.getWidth() - 294, 17 }, 9, accent, true);
+            drawText (g, "REAL ENGINE STATE", { 14, bounds.getHeight() - 20, 232, 16 }, 8, secondaryText, false, juce::Justification::centred);
+            drawText (g, "X  " + juce::String (latest[0], 3) + "     Y  " + juce::String (latest[1], 3) + "     Z  " + juce::String (latest[2], 3),
+                      { 278, bounds.getHeight() - 20, bounds.getWidth() - 294, 16 }, 9, primaryText);
+            if (! available || count < 2)
+                drawText (g, "PLAY A NOTE TO BUILD THE TRAIL", history.toNearestInt(), 10, secondaryText, false, juce::Justification::centred);
+        }
+    }
+
+private:
+    const std::array<float, 3>& at (size_t i) const { return points[(next + points.size() - count + i) % points.size()]; }
+    std::array<std::array<float, 3>, 256> points{};
+    size_t count = 0, next = 0;
+    std::uint64_t total = 0, revision = 0;
+    int shape = -1, mode = -1;
+};
+
 class LfoDisplay final : public juce::Component, public juce::SettableTooltipClient
 {
 public:
@@ -2357,13 +2500,19 @@ public:
         : processor (p), index (indexIn - 1), accent (colour)
     {
         setMouseCursor (juce::MouseCursor::PointingHandCursor);
-        setTooltip ("Click to open the large LFO editor. Draw a curve, synchronize it to tempo, or restart it from each note.");
+        setTooltip ("Click to open the LFO Lab. Draw a curve or view a real Lorenz / Rossler trajectory; synchronize movement to tempo or restart it from each note.");
     }
+    void refresh() { chaosTrace.refresh (processor, index, *this); repaint(); }
     void mouseUp (const juce::MouseEvent& event) override { if (! event.mouseWasDraggedSinceMouseDown() && onOpen) onOpen(); }
     void paint (juce::Graphics& g) override
     {
         const auto r = getLocalBounds().toFloat().reduced (2);
         const auto shape = processor.getLfoShape (index);
+        if (lfoIsChaos (shape))
+        {
+            const int mode = juce::jlimit (0, 2, (int) value (processor, "lfo" + juce::String (index + 1) + "Mode"));
+            chaosTrace.paint (g, getLocalBounds(), accent, shape, mode, true); return;
+        }
         g.setColour (insetColour); g.fillRoundedRectangle (r, 5);
         g.setColour (borderColour); g.drawHorizontalLine ((int) r.getCentreY(), r.getX(), r.getRight());
         juce::Path path;
@@ -2385,6 +2534,7 @@ private:
     AnyvocAudioProcessor& processor;
     int index;
     juce::Colour accent;
+    LfoChaosTrace chaosTrace;
 };
 
 class LfoCurveEditor final : public juce::Component, public juce::SettableTooltipClient
@@ -2401,6 +2551,16 @@ public:
     }
     ~LfoCurveEditor() override { lifetime.reset(); endStroke(); }
 
+    void refresh()
+    {
+        chaosTrace.refresh (processor, index, *this);
+        setMouseCursor (lfoIsChaos (processor.getLfoShape (index)) ? juce::MouseCursor::NormalCursor : juce::MouseCursor::CrosshairCursor);
+        setTooltip (lfoIsChaos (processor.getLfoShape (index))
+                    ? "Real normalized DSP snapshots: X-Y trajectory and recent X output. Repeated held values are omitted; spacing is not an audio time axis. Choose Custom to draw the saved curve."
+                    : "Draw across the graph to shape 33 evenly spaced points. Drag between points to paint a continuous stroke. Drawing switches the shape to Custom.");
+        repaint();
+    }
+
     void endStroke()
     {
         drawing = false;
@@ -2410,6 +2570,7 @@ public:
 
     void applyCurve (int curve)
     {
+        if (lfoIsChaos (processor.getLfoShape (index))) return;
         const juce::Component::SafePointer<LfoCurveEditor> safe (this);
         auto edit = beginStroke ("LFO " + juce::String (index + 1) + " curve preset");
         if (edit == nullptr) return;
@@ -2433,7 +2594,7 @@ public:
 
     void mouseDown (const juce::MouseEvent& event) override
     {
-        if (event.mods.isPopupMenu()) return;
+        if (event.mods.isPopupMenu() || lfoIsChaos (processor.getLfoShape (index))) return;
         const juce::Component::SafePointer<LfoCurveEditor> safe (this);
         auto edit = beginStroke ("Draw LFO " + juce::String (index + 1));
         if (edit == nullptr) return;
@@ -2489,6 +2650,7 @@ public:
     }
     void mouseMove (const juce::MouseEvent& event) override
     {
+        if (lfoIsChaos (processor.getLfoShape (index))) return;
         const int point = pointAt (event.position.x);
         if (point != hoveredPoint) { hoveredPoint = point; repaint(); }
     }
@@ -2496,6 +2658,12 @@ public:
 
     void paint (juce::Graphics& g) override
     {
+        const auto shape = processor.getLfoShape (index);
+        if (lfoIsChaos (shape))
+        {
+            const int mode = juce::jlimit (0, 2, (int) value (processor, prefix + "Mode"));
+            chaosTrace.paint (g, getLocalBounds(), accent, shape, mode, false); return;
+        }
         const auto bounds = getLocalBounds().toFloat();
         const auto r = plotBounds();
         g.setColour (insetColour); g.fillRoundedRectangle (bounds, 8);
@@ -2568,9 +2736,9 @@ private:
     {
         AnyvocAudioProcessor& processor;
         std::weak_ptr<int> lifetime;
-        std::array<juce::RangedAudioParameter*, 45> parameters{};
-        std::array<float, 45> expected{};
-        std::array<bool, 45> gesturing{};
+        std::array<juce::RangedAudioParameter*, 46> parameters{};
+        std::array<float, 46> expected{};
+        std::array<bool, 46> gesturing{};
         std::uint64_t revision;
         bool active = true;
 
@@ -2581,7 +2749,7 @@ private:
             parameters[33] = p.apvts.getParameter (prefixIn + "Interpolation");
             parameters[34] = p.apvts.getParameter (prefixIn + "Shape");
             parameters[35] = p.apvts.getParameter (prefixIn + "Kind");
-            const std::array<const char*, 9> additional { "Rate", "Sync", "Division", "Mode", "Phase", "Direction", "FollowSwing", "AudioRateEnabled", "AudioRateHz" };
+            const std::array<const char*, 10> additional { "Rate", "Sync", "Division", "Mode", "Phase", "Direction", "FollowSwing", "AudioRateEnabled", "AudioRateHz", "Chaos" };
             for (size_t i = 0; i < additional.size(); ++i) parameters[i + 36] = p.apvts.getParameter (prefixIn + additional[i]);
             for (size_t i = 0; i < parameters.size(); ++i) expected[i] = parameters[i]->getValue();
         }
@@ -2621,7 +2789,7 @@ private:
     {
         const juce::Component::SafePointer<LfoCurveEditor> safe (this);
         endStroke();
-        if (safe == nullptr) return {};
+        if (safe == nullptr || lfoIsChaos (processor.getLfoShape (index))) return {};
         auto edit = std::make_shared<CurveEdit> (processor, prefix, lifetime);
         stroke = edit;
         processor.beginUserEdit (label);
@@ -2636,6 +2804,7 @@ private:
     bool drawing = false;
     std::shared_ptr<int> lifetime = std::make_shared<int> (0);
     std::shared_ptr<CurveEdit> stroke;
+    LfoChaosTrace chaosTrace;
 
 };
 
@@ -2645,13 +2814,13 @@ public:
     LfoDetail (AnyvocAudioProcessor& p, int indexIn, juce::Colour colour)
         : processor (p), index (indexIn), prefix ("lfo" + juce::String (indexIn + 1)), accent (colour),
           canvas (p, indexIn, colour), rateMode (p, indexIn),
-          phase (p, prefix + "Phase", "START PHASE", "Reading offset in the LFO cycle. 360 degrees wraps to zero. Phase and its modulation have no effect on Random.", Unit::degrees, colour),
+          phase (p, prefix + "Phase", "START PHASE", "Reading offset in a repeating LFO cycle. 360 degrees wraps to zero. Phase and its modulation have no effect on Random, Lorenz or Rossler.", Unit::degrees, colour),
           swing (p, "swingAmount", "GLOBAL SWING", "Shared timing feel for all tempo-synchronized LFOs with FOLLOW SWING enabled. 0% is straight 50:50; 100% is 75:25.", Unit::percent, colour),
-          division (p, prefix + "Division", "BEAT DIVISION", lfoDivisions, "Rate relative to the current tempo. T is triplet; D is dotted.",
+          division (p, prefix + "Division", "BEAT DIVISION", lfoDivisions, "Rate relative to the current tempo. T is triplet; D is dotted. For chaos, the beat division controls evolution speed, not a repeating cycle.",
                     [&p, indexIn] { return p.getLfoRateMode (indexIn) == 1; }),
-          mode (p, prefix + "Mode", "PLAY MODE", { "Free", "Trigger", "Envelope" }, "Free runs continuously. Trigger restarts from a note. Envelope plays once from a note."),
-          direction (p, prefix + "Direction", "DIRECTION", { "Forward", "Reverse", "Ping Pong" }, "Read the curve forward, backward, or out and back in one cycle. Random has no repeating shape, so direction does not apply.",
-                     [&p, indexIn] { return p.getLfoShape (indexIn) != 4; }),
+          mode (p, prefix + "Mode", "PLAY MODE", { "Free", "Trigger", "Envelope" }, "Free runs continuously. Trigger restarts from a note. Envelope plays once; chaos evolves for one nominal rate period, then holds its final state."),
+          direction (p, prefix + "Direction", "DIRECTION", { "Forward", "Reverse", "Ping Pong" }, "Read the curve forward, backward, or out and back in one cycle. Random, Lorenz and Rossler have no repeating shape, so direction does not apply.",
+                     [&p, indexIn] { return lfoHasPhase (p.getLfoShape (indexIn)); }),
           swingGrid (p, "swingDivision", "SWING GRID", { "1/8", "1/16" }, "The shared swing grid for all LFOs that follow swing."),
           interpolation (p, prefix + "Interpolation", "CUSTOM CURVE", { "Linear", "Step" }, "Linear joins drawn points with ramps. Step holds each point until the next one.",
                          [&p, indexIn] { return p.getLfoShape (indexIn) == 5; }),
@@ -2690,10 +2859,13 @@ public:
             slider.setTextBoxStyle (juce::Slider::TextBoxRight, false, 76, 26);
             styleSliderText (slider); slider.setScrollWheelEnabled (false); slider.setBounds (260, 418, 184, 28);
             slider.setTitle (requiredMode == 2 ? "LFO audio rate" : "LFO free rate");
-            slider.setTooltip (requiredMode == 2 ? "Independent speed from 20 to 1000 Hz. Saved separately from the original slow rate."
-                                               : "The original slow LFO rate in Hz. Tempo and Audio Rate keep this value for later.");
+            slider.setTooltip (requiredMode == 2 ? "Independent speed from 20 to 1000. Periodic shapes use Hz; chaos uses this to scale evolution speed, not cycles. Saved separately from the slow rate."
+                                               : "The original slow LFO rate. Periodic shapes use Hz; chaos uses evolution speed, not cycles. Tempo and Audio Rate keep this value for later.");
             auto attachment = std::make_unique<SoundSliderAttachment> (processor, prefix + suffix, slider);
-            slider.textFromValueFunction = [] (double n) { return formatted (n, Unit::hertz); };
+            slider.textFromValueFunction = [owner = &processor, lfo = index] (double n)
+            {
+                return lfoIsChaos (owner->getLfoShape (lfo)) ? juce::String (n, n < 10.0 ? 2 : 1) : formatted (n, Unit::hertz);
+            };
             slider.valueFromTextFunction = [] (const juce::String& text) { return text.getDoubleValue() * (text.containsIgnoreCase ("k") ? 1000 : 1); };
             slider.userEditAllowed = [owner = &processor, lfo = index, requiredMode] { return owner->getLfoRateMode (lfo) == requiredMode; };
             slider.updateText(); return attachment;
@@ -2708,7 +2880,7 @@ public:
         addAndMakeVisible (direction); direction.setBounds (676, 399, 184, 47);
         addAndMakeVisible (shape); shape.setBounds (884, 399, 184, 47);
         addAndMakeVisible (phase); phase.setBounds (80, 458, 128, 84);
-        phase.slider.userEditAllowed = [owner = &processor, lfo = index] { return owner->getLfoShape (lfo) != 4; };
+        phase.slider.userEditAllowed = [owner = &processor, lfo = index] { return lfoHasPhase (owner->getLfoShape (lfo)); };
         addAndMakeVisible (followSwing); followSwing.setButtonText ("FOLLOW SWING"); followSwing.setBounds (260, 482, 184, 27);
         followSwing.setTooltip ("Follow the shared swing amount and grid while RATE MODE is Tempo. The saved setting is kept in the other rate modes.");
         followSwingAttachment = std::make_unique<SoundButtonAttachment> (processor, prefix + "FollowSwing", followSwing,
@@ -2732,7 +2904,8 @@ public:
         rate.setVisible (speedMode == 0); if (safe == nullptr) return false;
         audioRate.setVisible (speedMode == 2); if (safe == nullptr) return false;
         division.setVisible (speedMode == 1); if (safe == nullptr) return false;
-        const bool periodic = processor.getLfoShape (index) != 4;
+        const int currentShape = processor.getLfoShape (index);
+        const bool periodic = lfoHasPhase (currentShape), chaos = lfoIsChaos (currentShape);
         phase.setEnabled (periodic); if (safe == nullptr) return false;
         phase.setAlpha (periodic ? 1.0f : .32f);
         direction.setEnabled (periodic); if (safe == nullptr) return false;
@@ -2742,7 +2915,16 @@ public:
         const bool custom = processor.getLfoShape (index) == 5;
         interpolation.setEnabled (custom); if (safe == nullptr) return false;
         interpolation.setAlpha (custom ? 1.0f : .32f);
-        rateMode.refresh(); shape.refresh(); canvas.repaint(); repaint();
+        canvas.setEnabled (! chaos); if (safe == nullptr) return false;
+        if (chaos) { canvas.endStroke(); if (safe == nullptr) return false; }
+        for (auto& button : curveButtons)
+        {
+            button.setEnabled (! chaos); if (safe == nullptr) return false;
+            button.setAlpha (chaos ? .32f : 1.0f);
+        }
+        rate.updateText(); if (safe == nullptr) return false;
+        audioRate.updateText(); if (safe == nullptr) return false;
+        rateMode.refresh(); shape.refresh(); canvas.refresh(); repaint();
         selector.setSelectedItemIndex (index, juce::dontSendNotification);
         return true;
     }
@@ -2753,17 +2935,24 @@ public:
         drawCard (g, { 24, 117, 1076, 461 }, "LFO LAB", "", accent);
         drawText (g, (processor.isTempoFromHost() ? "HOST  " : "LOCAL  ") + juce::String (processor.getTempo(), 1) + " BPM",
                   { 788, 132, 174, 23 }, 10, accent, true, juce::Justification::centredRight);
-        drawText (g, "DRAW ACROSS THE GRAPH TO CREATE YOUR OWN MOVEMENT", { 52, 156, 1016, 15 }, 9, secondaryText, true);
-        drawText (g, "33 POINTS  /  DASHED: START  /  WHITE: LIVE READ POSITION", { 516, 361, 552, 26 }, 9, secondaryText, false, juce::Justification::centredRight);
+        const auto currentShape = processor.getLfoShape (index);
+        const bool chaos = lfoIsChaos (currentShape);
+        drawText (g, chaos ? "EVOLVING CHAOS / REAL ENGINE TRAJECTORY / SPEED IS NOT A REPEAT FREQUENCY"
+                          : "DRAW ACROSS THE GRAPH TO CREATE YOUR OWN MOVEMENT", { 52, 156, 1016, 15 }, 9, secondaryText, true);
+        drawText (g, chaos ? "DRAWING OFF  /  SAVED CUSTOM POINTS ARE KEPT"
+                          : "33 POINTS  /  DASHED: START  /  WHITE: LIVE READ POSITION", { 516, 361, 552, 26 }, 9, secondaryText, false, juce::Justification::centredRight);
         const int speedMode = processor.getLfoRateMode (index);
-        if (speedMode != 1) drawText (g, speedMode == 2 ? "AUDIO RATE / HZ" : "RATE / HZ", { 260, 399, 184, 16 }, 10.5f);
+        if (speedMode != 1) drawText (g, chaos ? "EVOLUTION SPEED" : speedMode == 2 ? "AUDIO RATE / HZ" : "RATE / HZ", { 260, 399, 184, 16 }, 10.5f);
         const bool following = speedMode == 1 && value (processor, prefix + "FollowSwing") > .5f;
         drawText (g, following ? "SHARED TIMING ACTIVE" : speedMode == 1 ? "STRAIGHT TIMING" : "TEMPO MODE ONLY",
                   { 260, 516, 184, 15 }, 8, following ? accent : secondaryText);
         const float swingPercent = value (processor, "swingAmount") * 25.0f;
         drawText (g, juce::String (50.0f + swingPercent, 1) + " : " + juce::String (50.0f - swingPercent, 1),
                   { 676, 519, 184, 15 }, 9, accent, false, juce::Justification::centred);
-        if (processor.getLfoShape (index) == 4)
+        if (chaos)
+            drawText (g, "PHASE / DIRECTION: N/A. Trigger resets chaos; Envelope evolves for one nominal period, then holds.",
+                      { 52, 544, 1016, 22 }, 10, primaryText);
+        else if (currentShape == 4)
             drawText (g, "PHASE / DIRECTION: N/A FOR RANDOM", { 52, 544, 1016, 22 }, 10, primaryText);
         else
         {
@@ -4319,7 +4508,7 @@ public:
         const juce::StringArray descriptions {
             "Open BROWSE to search factory and user sounds, then choose LOAD SOUND.\nClick the piano keys or send MIDI. INIT gives you a simple sound to build from.",
             "Choose Wavetable, Sample or Granular. Drop in a WAV; EDIT opens source controls.\nWARP reshapes wavetables; FM / PM / AM / RM use another source, even at LEVEL 0.",
-            "SOURCES: 10 LFOs, 4 envelopes, 8 macros. MOD: 32 routes with curve and AUX.\nLFO EDIT adds Phase, Direction, Swing and Audio Rate. Drag sources onto START PHASE.",
+            "SOURCES: 10 LFOs, 4 envelopes, 8 macros. MOD: 32 routes with curve and AUX.\nLFO EDIT: draw a curve or choose Lorenz / Rossler for evolving chaos and a live trajectory.",
             "Envelope EDIT opens six stages, draggable curves, BPM timing and Legato retrigger.\nTry FX for space, then SAVE your sound as an .anyvoc file."
         };
         for (int i = 0; i < 4; ++i)
@@ -4714,15 +4903,21 @@ private:
             modPage.addAndMakeVisible (*lfos[(size_t) i]);
             lfos[(size_t) i]->onOpen = [this, i] { openLfoDetail (i); };
             button (modPage, lfoEditButtons[(size_t) i], "EDIT LFO " + juce::String (i + 1), {},
-                    [this, i] { openLfoDetail (i); }, "Draw a custom curve and edit tempo synchronization, trigger mode and interpolation.");
+                    [this, i] { openLfoDetail (i); }, "Draw a custom curve or view real chaos motion. Edit speed, tempo synchronization and trigger mode.");
             lfoEditButtons[(size_t) i].setComponentID ("lfo" + juce::String (i + 1) + "Edit");
             const auto prefix = "lfo" + juce::String (i + 1);
-            lfoRateKnobs[(size_t) i] = &knob (modPage, prefix + "Rate", "RATE", "Speed of this repeating modulation shape, in cycles per second.", Unit::hertz, {}, accent);
+            lfoRateKnobs[(size_t) i] = &knob (modPage, prefix + "Rate", "RATE", "Periodic shapes use cycles per second. Lorenz and Rossler use this as evolution speed, not a repeating frequency.", Unit::hertz, {}, accent);
             lfoRateKnobs[(size_t) i]->slider.userEditAllowed = [owner = &processor, i] { return owner->getLfoRateMode (i) == 0; };
-            lfoAudioRateKnobs[(size_t) i] = &knob (modPage, prefix + "AudioRateHz", "AUDIO HZ", "Independent 20-1000 Hz modulation speed. Open EDIT to change the rate mode.", Unit::hertz, {}, accent);
+            lfoAudioRateKnobs[(size_t) i] = &knob (modPage, prefix + "AudioRateHz", "AUDIO HZ", "Independent 20-1000 modulation speed. Periodic shapes use Hz; chaos uses evolution speed. Open EDIT to change the rate mode.", Unit::hertz, {}, accent);
             lfoAudioRateKnobs[(size_t) i]->slider.userEditAllowed = [owner = &processor, i] { return owner->getLfoRateMode (i) == 2; };
+            const auto speedText = [owner = &processor, i] (double n)
+            {
+                return lfoIsChaos (owner->getLfoShape (i)) ? juce::String (n, n < 10.0 ? 2 : 1) : formatted (n, Unit::hertz);
+            };
+            lfoRateKnobs[(size_t) i]->slider.textFromValueFunction = speedText;
+            lfoAudioRateKnobs[(size_t) i]->slider.textFromValueFunction = speedText;
             lfoDivisionChoices[(size_t) i] = &choice (modPage, prefix + "Division", "RATE", lfoDivisions,
-                                                     "LFO rate synchronized to the host or local tempo. T is triplet; D is dotted.", {},
+                                                     "LFO speed synchronized to the host or local tempo. Chaos evolves with the tempo but does not repeat. T is triplet; D is dotted.", {},
                                                      [owner = &processor, i] { return owner->getLfoRateMode (i) == 1; });
             modPage.addAndMakeVisible (lfoSyncButtons[(size_t) i]);
             lfoSyncButtons[(size_t) i].setButtonText ("SYNC");
@@ -5066,7 +5261,7 @@ private:
         lfoDetails[(size_t) index]->setVisible (true);
         if (safe == nullptr) return;
         lfoDetails[(size_t) index]->toFront (false);
-        status = "LFO Lab: draw a curve, choose its speed and direction, or drag any source onto START PHASE. SOURCES keeps this Lab ready for a drop.";
+        status = "LFO Lab: draw a curve or choose Lorenz / Rossler to see chaos evolve. Periodic shapes also support Phase and Direction.";
     }
 
     bool refreshLfoCards()
@@ -5101,6 +5296,12 @@ private:
             lfoSyncButtons[(size_t) i].setBounds (x + 124, 217, 95, 24);
             lfoShapeChoices[(size_t) i]->setBounds (x + 124, 243, 199, 47);
             lfoShapeChoices[(size_t) i]->refresh();
+            const bool chaos = lfoIsChaos (processor.getLfoShape (i));
+            lfoRateKnobs[(size_t) i]->setCaption (chaos ? "SPEED" : "RATE");
+            lfoAudioRateKnobs[(size_t) i]->setCaption (chaos ? "FAST SPEED" : "AUDIO HZ");
+            lfoRateKnobs[(size_t) i]->slider.updateText(); if (safe == nullptr) return false;
+            lfoAudioRateKnobs[(size_t) i]->slider.updateText(); if (safe == nullptr) return false;
+            lfos[(size_t) i]->refresh();
         }
         for (int slot = 0; slot < 2; ++slot) lfoCardSelectors[(size_t) slot].setSelectedItemIndex (selectedLfos[(size_t) slot], juce::dontSendNotification);
         return true;
@@ -5118,7 +5319,7 @@ private:
                 if (safe == nullptr || target == nullptr) return false;
                 const int lfo = anyvoc::lfoIndexForPhaseDestination (dest);
                 return lfo < 0 || (matrixHierarchyVisible (target.getComponent()) && target->isEnabled()
-                                   && safe->processor.getLfoShape (lfo) != 4);
+                                   && lfoHasPhase (safe->processor.getLfoShape (lfo)));
             });
             if (safe == nullptr) return;
             if (assigned)
@@ -5298,7 +5499,7 @@ private:
         if (! warpOpen && ! lfoOpen && currentPage != 3) showPage (0);
         if (safe == nullptr) return;
         for (auto* target : modulationTargets) target->setTargetHighlighted (true);
-        status = lfoOpen ? "Drop onto START PHASE to move this LFO's reading position. Phase has no effect while its shape is Random."
+        status = lfoOpen ? "Drop onto START PHASE to move a periodic LFO's reading position. Random, Lorenz and Rossler have no phase target."
                  : warpOpen ? "Drop onto WARP 1 or WARP 2 AMOUNT, or WAVE. Choose a warp mode to hear its modulation; right-click to edit routes."
                  : currentPage == 3 ? "Drop onto a highlighted filter CUTOFF, RESONANCE or PARALLEL MIX knob. Right-click it to edit routes."
                                   : "Drop onto a highlighted WAVE / START / CENTRE or filter knob. FILTER opens more targets; right-click a knob to edit routes.";
@@ -5396,7 +5597,7 @@ private:
         drawText (g, "-60", { 1081, 710, 18, 12 }, 7);
         drawText (g, "0", { 1081, 647, 16, 12 }, 7);
         drawText (g, status, { 26, 744, 930, 13 }, 9, secondaryText);
-        drawText (g, "ANYVOC  /  0.16", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
+        drawText (g, "ANYVOC  /  0.17", { 955, 744, 144, 13 }, 8.5f, secondaryText, false, juce::Justification::centredRight);
     }
 
     void showPage (int index)

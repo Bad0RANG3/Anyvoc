@@ -78,6 +78,7 @@ public:
     void setModulationSource(int route, int source, bool auxiliary = false,
                              const std::function<bool()>& isCurrent = {});
     float getLfoPhase(int index) const { return engine.getLfoPhase(index); }
+    std::array<float,3> getLfoChaosPoint(int index, int expectedShape = -1, int expectedMode = -1) const noexcept;
     int getLfoShape(int index) const;
     void setLfoShape(int index, int shape, const std::function<bool()>& isCurrent = {});
     int getLfoRateMode(int index) const;
@@ -130,6 +131,7 @@ private:
     std::array<std::atomic<float>*,anyvoc::lfoCount> lfoRates,lfoShapes;
     std::array<std::atomic<float>*,anyvoc::lfoCount> lfoSync,lfoDivision,lfoMode,lfoInterpolation,lfoKind;
     std::array<std::atomic<float>*,anyvoc::lfoCount> lfoPhaseOffset,lfoDirection,lfoFollowSwing,lfoAudioRateEnabled,lfoAudioRateHz;
+    std::array<std::atomic<float>*,anyvoc::lfoCount> lfoChaos;
     std::array<std::array<std::atomic<float>*,33>,anyvoc::lfoCount> lfoPoints;
     std::atomic<float> *tempo,*swingAmount,*swingDivision;
     std::array<std::atomic<float>*,anyvoc::macroCount> macroParams;

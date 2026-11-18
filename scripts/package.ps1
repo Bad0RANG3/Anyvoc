@@ -51,6 +51,9 @@ if (Test-Path -LiteralPath (Join-Path $projectRoot 'dist/Anyvoc-v0.15-Envelopes-
 $motionDemo = Join-Path $projectRoot 'dist/Anyvoc-v0.16-Lfo-Motion-Demo.wav'
 if (!(Test-Path -LiteralPath $motionDemo)) { throw 'Render the LFO motion demo before packaging.' }
 Copy-Item -LiteralPath $motionDemo -Destination $destination -Force
+$chaosDemo = Join-Path $projectRoot 'dist/Anyvoc-v0.17-Chaos-Demo.wav'
+if (!(Test-Path -LiteralPath $chaosDemo)) { throw 'Render the Chaos demo before packaging.' }
+Copy-Item -LiteralPath $chaosDemo -Destination $destination -Force
 New-Item -ItemType Directory -Force -Path (Join-Path $destination 'Licenses') | Out-Null
 Copy-Item -LiteralPath (Join-Path $projectRoot 'third_party/JUCE/LICENSE.md') -Destination (Join-Path $destination 'Licenses/JUCE-LICENSE.md') -Force
 Copy-Item -LiteralPath (Join-Path $projectRoot 'third_party/JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK/LICENSE.txt') -Destination (Join-Path $destination 'Licenses/VST3-LICENSE.txt') -Force

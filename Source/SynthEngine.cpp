@@ -1,4 +1,5 @@
 #include "SynthEngine.h"
+#include "ChaosLfoModel.h"
 #include <algorithm>
 #include <atomic>
 #include <cmath>
@@ -676,6 +677,8 @@ struct Voice
     std::array<float, lfoCount> lfoPhaseMod {}, lfoReadPosition {};
     std::array<uint32_t, lfoCount> lfoCycle {};
     std::array<float, lfoCount> lfoRandom {};
+    std::array<ChaosLfoState, lfoCount> chaosLfos;
+    std::array<std::array<float, 3>, lfoCount> lfoChaosReadPoint {};
     std::array<int, lfoCount> lfoMode { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
     Envelope amp, filter;
     std::array<Envelope, 2> extraEnvelopes;
@@ -761,7 +764,7 @@ SynthSettings sanitise (SynthSettings s)
     {
         s.lfoRate[static_cast<size_t> (i)] = finiteClamp (s.lfoRate[static_cast<size_t> (i)], 0.01f, 40.0f, 1.0f);
         const auto index = static_cast<size_t> (i);
-        s.lfoShape[index] = juce::jlimit (0, 5, s.lfoShape[index]);
+        s.lfoShape[index] = juce::jlimit (0, 7, s.lfoShape[index]);
         s.lfoDivision[index] = juce::jlimit (0, 11, s.lfoDivision[index]);
         s.lfoMode[index] = juce::jlimit (0, 2, s.lfoMode[index]);
         s.lfoInterpolation[index] = juce::jlimit (0, 1, s.lfoInterpolation[index]);
@@ -831,12 +834,15 @@ public:
         lfoPhase.fill (0.0f);
         sampleLfoPhase.fill (0.0);
         lastLfoReadPosition.fill (0.0f);
+        lastLfoChaosPoint.fill ({});
         renderPpq = 0.0;
         lfoCycle.fill (0);
         for (size_t i = 0; i < lfoCount; ++i)
         {
             heldRandom[i] = lfoRandomValue (0, lfoRandomSeeds[i]);
             publishedLfoPhase[i].store (0.0f, std::memory_order_relaxed);
+            chaosLfos[i].reset (target.lfoShape[i], static_cast<int> (i));
+            publishedLfoChaos[i].publish ({}, target.lfoShape[i], target.lfoMode[i]);
         }
         smooth = target;
         snapFilterTopology();
@@ -1228,7 +1234,8 @@ public:
         {
             const auto index = modulationRoutes[r].index;
             const int destination = lfoIndexForPhaseDestination (target.routes[index].destination);
-            if (destination >= 0 && hasAmount (index) && target.lfoShape[static_cast<size_t> (destination)] != 4)
+            if (destination >= 0 && hasAmount (index) && target.lfoShape[static_cast<size_t> (destination)] != 4
+                && ! isChaosLfoShape (target.lfoShape[static_cast<size_t> (destination)]))
                 phaseModulatedLfos[static_cast<size_t> (destination)] = true;
         }
         // Phase feedback can generate audio bandwidth even from a slow clock.
@@ -1243,6 +1250,7 @@ public:
                 const auto& route = target.routes[index];
                 const int destination = lfoIndexForPhaseDestination (route.destination);
                 if (destination >= 0 && hasAmount (index) && target.lfoShape[static_cast<size_t> (destination)] != 4
+                    && ! isChaosLfoShape (target.lfoShape[static_cast<size_t> (destination)])
                     && (fastSource (route.source) || fastSource (route.auxSource)))
                     fast[static_cast<size_t> (destination)] = true;
             }
@@ -1318,7 +1326,7 @@ public:
 
     double readLfoPhase (size_t i, double clock, float modulation = 0.0f) const
     {
-        if (target.lfoShape[i] == 4 || (target.lfoPhaseOffset[i] == 0.0f
+        if (target.lfoShape[i] == 4 || isChaosLfoShape (target.lfoShape[i]) || (target.lfoPhaseOffset[i] == 0.0f
             && modulation == 0.0f && target.lfoDirection[i] == 0)) return clock;
         return lfoReadPhase (clock, static_cast<double> (target.lfoPhaseOffset[i]) + modulation, target.lfoDirection[i]);
     }
@@ -1350,7 +1358,7 @@ public:
         if (! transportPlaying || ! transportHasPpq) return;
         for (size_t i = 0; i < lfoCount; ++i)
         {
-            if (! target.lfoSync[i] || target.lfoMode[i] != 0) continue;
+            if (! target.lfoSync[i] || target.lfoMode[i] != 0 || isChaosLfoShape (target.lfoShape[i])) continue;
             const double ppq = target.lfoFollowSwing[i] && target.swingAmount != 0.0f
                 ? lfoSwingPpq (transportPpq, target.swingAmount, target.swingDivision) : transportPpq;
             const double cycles = ppq / lfoBeats[static_cast<size_t> (target.lfoDivision[i])];
@@ -1389,6 +1397,20 @@ public:
         {
             sampleLfoPhase[i] = lfoPhase[i];
             sampleLfoIncrement[i] = lfoIncrement (i);
+            if (isChaosLfoShape (target.lfoShape[i]))
+            {
+                lastLfoReadPosition[i] = 0.0f; // A chaotic path has no curve position.
+                if (target.lfoMode[i] == 0)
+                {
+                    lastLfoChaosPoint[i] = chaosLfos[i].point();
+                    values[i] = lastLfoChaosPoint[i][0];
+                    chaosLfos[i].advance (sampleLfoIncrement[i]);
+                }
+                // Retain the underlying legacy clock; no chaos integration for
+                // this unused shared state in per-voice modes.
+                advanceLfo (lfoPhase[i], lfoCycle[i], heldRandom[i], sampleLfoIncrement[i], false, lfoRandomSeeds[i]);
+                continue;
+            }
             const double read = readLfoPhase (i, lfoPhase[i]);
             lastLfoReadPosition[i] = static_cast<float> (read);
             values[i] = evaluateLfo (i, read, heldRandom[i]);
@@ -1410,6 +1432,28 @@ public:
                 voice.lfoCycle[i] = 0;
                 voice.lfoRandom[i] = lfoRandomValue (0, seed);
                 voice.lfoPhaseMod[i] = 0.0f;
+                if (isChaosLfoShape (target.lfoShape[i]))
+                    voice.chaosLfos[i].reset (target.lfoShape[i], static_cast<int> (i));
+            }
+            if (isChaosLfoShape (target.lfoShape[i]))
+            {
+                voice.lfoReadPosition[i] = 0.0f;
+                if (target.lfoMode[i] == 0)
+                    voice.lfoChaosReadPoint[i] = lastLfoChaosPoint[i];
+                else
+                {
+                    auto& chaos = voice.chaosLfos[i];
+                    if (chaos.getShape() != target.lfoShape[i]) chaos.reset (target.lfoShape[i], static_cast<int> (i));
+                    voice.lfoChaosReadPoint[i] = chaos.point();
+                    values[i] = voice.lfoChaosReadPoint[i][0];
+                    chaos.advance (sampleLfoIncrement[i], target.lfoMode[i] == 2);
+                    // The remembered periodic/random mode continues behind
+                    // Chaos, so returning to it preserves its trigger clock,
+                    // random sequence and one-shot endpoint.
+                    advanceLfo (voice.lfoPhase[i], voice.lfoCycle[i], voice.lfoRandom[i], sampleLfoIncrement[i],
+                                target.lfoMode[i] == 2, seed);
+                }
+                continue;
             }
             if (target.lfoMode[i] == 0)
             {
@@ -1439,6 +1483,14 @@ public:
             if (voice.active && (latest == nullptr || voice.age > latest->age)) latest = &voice;
         for (size_t i = 0; i < lfoCount; ++i)
         {
+            if (isChaosLfoShape (target.lfoShape[i]))
+            {
+                if (target.lfoMode[i] == 0)
+                    publishedLfoChaos[i].publish (lastLfoChaosPoint[i], target.lfoShape[i], target.lfoMode[i]);
+                else if (latest != nullptr)
+                    publishedLfoChaos[i].publish (latest->lfoChaosReadPoint[i], target.lfoShape[i], target.lfoMode[i]);
+            }
+            else publishedLfoChaos[i].publish ({}, target.lfoShape[i], target.lfoMode[i]);
             // A disabled phase route still has one pending sample. Its actual
             // read position must remain visible even after the graph is clear.
             if (target.lfoMode[i] > 0 || phaseModulatedLfos[i]
@@ -1862,7 +1914,7 @@ public:
             // All sources above read the preceding sample's phase offsets.
             // Publish this sample's sums only after the entire matrix has run.
             for (size_t i = 0; i < lfoCount; ++i)
-                v.lfoPhaseMod[i] = target.lfoShape[i] == 4 ? 0.0f : mod[18 + i];
+                v.lfoPhaseMod[i] = target.lfoShape[i] == 4 || isChaosLfoShape (target.lfoShape[i]) ? 0.0f : mod[18 + i];
             for (size_t o = 0; o < 3; ++o)
             {
                 const auto& state = v.sampleOsc[o];
@@ -2112,6 +2164,41 @@ public:
     std::array<uint32_t, lfoCount> lfoCycle {};
     std::array<float, lfoCount> heldRandom {};
     std::array<std::atomic<float>, lfoCount> publishedLfoPhase {};
+    std::array<ChaosLfoState, lfoCount> chaosLfos;
+    std::array<std::array<float, 3>, lfoCount> lastLfoChaosPoint {};
+    struct PublishedChaosPoint
+    {
+        // All accesses are sequentially consistent, so equal even generations
+        // bracket exactly one complete point in the global atomic order.
+        // Only the UI reader retries; the audio writer has fixed bounded work.
+        std::atomic<uint32_t> generation { 0 };
+        std::array<std::atomic<float>, 3> coordinates {};
+        std::atomic<int> shape { 0 }, mode { 0 };
+        PublishedChaosPoint() noexcept
+        { for (auto& coordinate : coordinates) coordinate.store (0.0f, std::memory_order_relaxed); }
+        void publish (const std::array<float, 3>& point, int effectiveShape, int playMode) noexcept
+        {
+            generation.fetch_add (1);
+            for (size_t axis = 0; axis < 3; ++axis) coordinates[axis].store (point[axis]);
+            shape.store (effectiveShape);
+            mode.store (playMode);
+            generation.fetch_add (1);
+        }
+        std::array<float, 3> read (int expectedShape, int expectedMode) const noexcept
+        {
+            for (;;)
+            {
+                const auto before = generation.load();
+                if ((before & 1u) != 0) continue;
+                const std::array<float, 3> point { coordinates[0].load(), coordinates[1].load(), coordinates[2].load() };
+                const int actualShape = shape.load(), actualMode = mode.load();
+                if (generation.load() == before)
+                    return (expectedShape >= 0 && expectedShape != actualShape)
+                        || (expectedMode >= 0 && expectedMode != actualMode) ? std::array<float, 3> {} : point;
+            }
+        }
+    };
+    std::array<PublishedChaosPoint, lfoCount> publishedLfoChaos;
     double transportBpm = 120.0, transportPpq = 0.0;
     double renderPpq = 0.0; // Fractional beat avoids loss of tiny sample deltas at huge PPQ.
     bool transportPlaying = false, transportHasPpq = false;
@@ -2141,7 +2228,23 @@ void SynthEngine::reset() { impl->reset(); }
 void SynthEngine::setSettings (const SynthSettings& settings)
 {
     const int previousVoiceMode = impl->target.voiceMode;
+    const auto previousShapes = impl->target.lfoShape, previousModes = impl->target.lfoMode;
     impl->target = sanitise (settings);
+    for (size_t i = 0; i < lfoCount; ++i)
+        if ((previousShapes[i] != impl->target.lfoShape[i] || previousModes[i] != impl->target.lfoMode[i])
+            && (isChaosLfoShape (previousShapes[i]) || isChaosLfoShape (impl->target.lfoShape[i])))
+        {
+            impl->chaosLfos[i].reset (impl->target.lfoShape[i], static_cast<int> (i));
+            // No actual read exists in this new algorithm/mode epoch yet.
+            // In particular, an idle Trigger must not publish the old model.
+            impl->lastLfoChaosPoint[i] = {};
+            impl->publishedLfoChaos[i].publish ({}, impl->target.lfoShape[i], impl->target.lfoMode[i]);
+            for (auto& voice : impl->voices)
+            {
+                voice.chaosLfos[i].reset (impl->target.lfoShape[i], static_cast<int> (i));
+                voice.lfoChaosReadPoint[i] = {};
+            }
+        }
     impl->prepareModulationRoutes();
     if (previousVoiceMode != impl->target.voiceMode) impl->changeVoiceMode();
     if (impl->firstSettingsAfterPrepare)
@@ -2169,6 +2272,12 @@ float SynthEngine::getLfoPhase (int zeroBased) const
 {
     if (zeroBased < 0 || zeroBased >= static_cast<int> (lfoCount)) return 0.0f;
     return impl->publishedLfoPhase[static_cast<size_t> (zeroBased)].load (std::memory_order_relaxed);
+}
+
+std::array<float, 3> SynthEngine::getLfoChaosPoint (int zeroBased, int expectedShape, int expectedMode) const noexcept
+{
+    if (zeroBased < 0 || zeroBased >= static_cast<int> (lfoCount)) return {};
+    return impl->publishedLfoChaos[static_cast<size_t> (zeroBased)].read (expectedShape, expectedMode);
 }
 
 void SynthEngine::render (juce::AudioBuffer<float>& output, juce::MidiBuffer& midi)

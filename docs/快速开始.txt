@@ -1,8 +1,37 @@
-Anyvoc 0.16 独立版 · 三步开始
+﻿Anyvoc 0.17 独立版 · 三步开始
+
+0.17已完成构建、175组自动测试、pluginval和本机独立版操作检查。
+本地打包输出为 dist/Anyvoc-0.17.0-Windows/；完整性以同版本 PackageVerification.json 报告为准。
+下述Chaos功能需要0.17；旧版程序不包含。详细验证记录见 VALIDATION.md。
 
 1. 双击 Anyvoc.exe。
 2. 点顶部音色名称打开浏览器，搜索 Copper Bell（采样钟声）或 Northern Lights（铺底音色），双击结果加载。
 3. 用鼠标按住底部钢琴白键。松开后声音会逐渐结束。
+
+试新的 Chaos LFO：
+  BROWSE 搜索 Motion / Butterfly Current，双击加载 → MOD → LFO 1 的 EDIT LFO。
+  按住琴键：Lorenz 让截止频率和 OSC A 的波表位置持续变化。
+  EVOLUTION SPEED 默认1.80；调慢或调快，比较运动，再用 UNDO 恢复。
+  再试 Texture / Spiral Drift：Rossler、速度0.70、Free，让截止与声像演化。
+  本次新增这两个音色，共26个工厂音色；原24个仍保留。
+  SHAPE 共8项：Sine、Triangle、Saw、Square、Random、Custom、Lorenz、Rossler。
+  Lorenz / Rossler 的数值是演化速度，不表示“每秒重复几次”。
+  RATE MODE 仍可选 Free Hz / Tempo / Audio Rate；Tempo 和 FOLLOW SWING 改变演化速度。
+  Free 持续运行；Trigger 在声部真正重新起音时重开，遵循 Mono / Legato 规则。
+  Envelope 按 Rate / Beat 运行一个名义周期后保持，轨迹不必回到起点。
+  图左是实际引擎的 X-Y 轨迹，右是近期 X 输出，下方是归一化 XYZ 读数。
+  Free 显示共享状态；Trigger / Envelope 显示最近活动声部，没有活动声部时保留读数。
+  只记录界面刷新取得的真实快照，连续重复值会省略；横向间距不是均匀音频时间。
+  图形不会自行推进声音；切算法、播放模式或恢复音色时清空历史，再积累匹配的新轨迹。
+  尚无匹配读数时的全零XYZ不画成样点，不会连入旧轨迹；其他静止非零点仍显示。
+  Chaos 下 PHASE、DIRECTION、插值、画布绘制和5个曲线按钮不可用。
+  原相位、方向、曲线点及路由仍保存；相位路由在 Chaos 下不生效，也不能向 PHASE 拖放。
+  选 Custom 可继续编辑旧曲线，选周期波形后可重新使用相位与方向。
+  SAVE 保存声音设置，不保存实时轨迹；0.17新文件需要0.17或更新版本，请另存并保留旧文件。
+  Anyvoc-v0.17-Chaos-Demo.wav 是20秒对比：前10秒Lorenz，后10秒Rossler。
+  本机已检查两算法实际读数与输出表、速度修改与撤销、Free无按键演化和Envelope短音后保持。
+  原生检查未单独计时Envelope完整名义周期；该行为由自动测试验证。
+  PCM分析与旧声音对比已完成；尚未完成人耳听音评价、本次原生SAVE/LOAD和DAW实测。
 
 试新的 LFO 运动控制：
   加载 Motion / Swing Carousel → MOD → EDIT LFO。
@@ -11,10 +40,10 @@ Anyvoc 0.16 独立版 · 三步开始
   FOLLOW SWING 只在 Tempo 模式生效，下方全局 Swing 供所有 LFO 共用。
   再试 Keys / Phase Lantern，Audio Rate 在110和220 Hz之间比较。
   将来源拖到 PHASE 旋钮可以调制 LFO 相位，矩阵中也能选择该目标。
-  Random 不使用相位和方向，显示 N/A；切回其他波形后恢复原设置。
+  Random、Lorenz、Rossler 不使用相位和方向，显示 N/A；切回周期波形后恢复原设置。
   Anyvoc-v0.16-Lfo-Motion-Demo.wav 是20秒试听，每4秒一段：
   Swing关 → Swing60% → 加反向 → 高速110Hz → 高速220Hz。
-  0.16 能读取旧音色；新保存文件需要0.16或更新版本，请保留旧文件。
+  历史0.16版能读取更早音色；0.17继续读取0.16及更早音色，旧音色默认不开启Chaos。
 
 试包络编辑器：
   加载 Motion / Clockwork Bloom → SYNTH → AMP ENVELOPE 的 EDIT。

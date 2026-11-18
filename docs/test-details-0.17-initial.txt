@@ -1,0 +1,256 @@
+Start testing: Nov 18 14:03 中国标准时间
+----------------------------------------------------------
+1/4 Testing: EngineTests
+1/4 Test: EngineTests
+Command: "D:/Anyvoc/build/AnyvocEngineTests_artefacts/Release/AnyvocEngineTests.exe"
+Directory: D:/Anyvoc/build
+"EngineTests" start time: Nov 18 14:03 中国标准时间
+Output:
+----------------------------------------------------------
+PASS MIDI note lifecycle and event timing
+PASS Sample rates and variable block lengths
+PASS Sustain pedal
+PASS A4 tuning and pitch wheel
+PASS Reset, effect tails and MIDI panic
+PASS Stereo unison
+PASS WAV wavetable import and musical pitch
+PASS Sample playback pitch and source sample rates
+PASS Sample one-shot, loop, stereo and note release
+PASS Sample start position and reverse playback
+PASS Granular scan position and note release
+PASS Sample/granular bounded polyphony stress
+PASS Drawable LFO point values reach the audio route
+PASS Drawable LFO linear and stepped interpolation
+PASS Per-note LFO trigger and one-shot endpoint
+PASS Host LFO tempo, triplets, seeks and block partition
+PASS Dual-filter spectral response, slopes and serial routing
+PASS Independent source buses, bypass and parallel balance
+PASS Filter key tracking and additional modulation targets
+PASS Rapid dual-filter automation and reset
+PASS Warp preview landmarks, identities and slot order
+PASS Warp identity and unaffected sample/granular playback
+PASS All six oscillator warp modulation destinations
+PASS Warp block partition, automation sanitization and reset
+Warp zero-crossing: correction=0.000728754, max jump=1.05761e-05, settled residual=0
+PASS Warp DC rejection and continuous harmonic-level transitions
+Delay reference: rate=44100, maximum error=9.31956e-09, worst sample=34774
+Delay reference: rate=48000, maximum error=9.08024e-09, worst sample=82549
+Delay reference: rate=96000, maximum error=8.83901e-09, worst sample=70773
+PASS Fractional delay reference and circular read boundaries
+PASS Mono note priority, repeated counts and channel controllers
+PASS Mono retrigger and Legato envelope/LFO continuity
+PASS Glide pitch, duration, interruptions and separated notes
+PASS Oscillator phase landmarks, random bounds and unison
+PASS Sample/granular Mono restart and Legato continuation
+PASS Poly glide isolation and unchanged sample/granular phase behavior
+PASS Voicing sanitization, live mode changes and reset
+Cross mixed zero: slot=0, mode=3, rms=1.59652e-18, peak=7.38873e-18
+Cross mixed zero: slot=0, mode=4, rms=0, peak=0
+Cross mixed zero: slot=1, mode=3, rms=7.97408e-19, peak=3.69042e-18
+Cross mixed zero: slot=1, mode=4, rms=0, peak=0
+PASS Cross FM signed-frequency and PM/AM/RM mathematical landmarks
+PASS Cross pre-pan source taps, muted sources and unison averaging
+PASS Cross zero-depth/RNG identity and WT-only target modes
+PASS Cross cycles, block partition, topology automation and reset
+PASS Advanced matrix source curves, polarity and nominal ranges
+PASS Advanced matrix products and all 32 audible slots
+PASS Advanced matrix bypass, off, zero, legacy identity and invalid controls
+PASS Advanced matrix block partition, amount smoothing and reset
+PASS All 25 source mappings and new primary/auxiliary audio
+PASS LFO10 transport, custom/trigger/one-shot and independent random sequences
+PASS Amp/Env3/Env4 release, sustain, mono modes and voice stealing
+PASS DAHDSR shared model, independent audio landmarks and Instant stages
+PASS DAHDSR live tempo, durations, curves and legacy transitions
+PASS DAHDSR per-envelope Legato retrigger and stage release lifecycle
+PASS DAHDSR legacy identity, block partition and invalid controls
+PASS LFO phase/direction independent audio and one-shot endpoints
+PASS LFO swing grid, transport seeks, live edits and block partition
+PASS All phase destinations, unit-delay feedback and voice isolation
+PASS Audio-rate primary/auxiliary/phase chains and pitch/pan/filter oracles
+PASS Advanced LFO legacy identity, random isolation, reset and invalid controls
+PASS Chaos independent ODE, RK4 grid and Hermite off-grid reference
+PASS Chaos long-run bounds, nonperiodic evolution and sample-rate invariance
+PASS Chaos trigger, stealing, one-shot clipping and Legato lifecycle
+PASS Chaos free transport/swing continuity and live mode/algorithm changes
+PASS Chaos audio-rate primary/auxiliary and delayed phase-chain oracles
+FAIL Chaos unused identity, block partition, reset and inactive phase controls: Reset retained Chaos integration state
+PASS Chaos coherent concurrent XYZ telemetry
+PASS Unused expanded source identity and invalid controls
+Engine validation: 61 cases, 1 failure(s)
+<end of output>
+Test time =   4.53 sec
+----------------------------------------------------------
+Test Failed.
+"EngineTests" end time: Nov 18 14:03 中国标准时间
+"EngineTests" time elapsed: 00:00:04
+----------------------------------------------------------
+
+2/4 Testing: ProcessorTests
+2/4 Test: ProcessorTests
+Command: "D:/Anyvoc/build/AnyvocProcessorTests_artefacts/Release/AnyvocProcessorTests.exe"
+Directory: D:/Anyvoc/build
+"ProcessorTests" start time: Nov 18 14:03 中国标准时间
+Output:
+----------------------------------------------------------
+PASS DAW state roundtrip
+PASS Preset file identity, rename and self-contained DAW restore
+PASS Legacy preset identity and malformed metadata rollback
+PASS Failed preset save/load preserves sound, identity and existing files
+PASS Browser selection/favourites preserve audio and explicit actions load
+PASS Deterministic factory presets and defaults
+PASS First host MIDI after preset and project restore
+PASS Self-contained wavetable state and preset files
+PASS Edited wavetable amplitude, state and floating-point export
+PASS Invalid wavetable edits and atomic rollback
+PASS Legacy wavetable normalization across state versions
+PASS Open wavetable editor protects newer DAW state
+PASS Embedded stereo sample state and preset files
+PASS Version 1 migration and required parameter validation
+PASS Drawable LFO points and selection state roundtrip
+PASS Version 2 migration and legacy shape automation
+PASS Dual-filter state, preset defaults and host audio automation
+PASS Version 4 migration and legacy destination automation
+PASS Extended filter modulation assignment and bank persistence
+PASS Dual-warp state, preset defaults and waveform preview
+PASS Version 5 migration and legacy destination choice counts
+PASS Warp modulation assignment, persistence and audible routing
+PASS Voicing state, appended host parameters and preset defaults
+PASS Version 6 voicing migration and required schema 7 controls
+PASS Voicing host parameters reach note priority and glide audio
+PASS Voicing editor attachment, phase units and mode availability
+PASS Sound history drag grouping, no-ops and redo branching
+PASS Sound history compound LFO strokes and modulation routes
+PASS Sound history host isolation, conflicts and project boundaries
+PASS Sound history reentrant host callbacks and restore boundaries
+PASS Sound history excludes partially published worker-thread projects
+PASS Sound history retains assets and presets after source deletion
+PASS Sound history Save As identity and bounded retained memory
+PASS Sound history preserves active wavetable, sample and granular audio
+PASS Sound history GUI provenance, gestures, shortcuts and editor teardown
+PASS Sound history invalidates stale wavetable Lab snapshots
+PASS Harmonic phase assets survive projects, files and history
+PASS Spectral editor page navigation, phase strokes and history
+PASS Waveform and spectral morph UI publish one complete sound edit
+PASS Nominal modulation ranges follow source polarity and cutoff octaves
+PASS Modulation source selection is silent and ring edits group history
+PASS Modulation rings stop across synchronous host project replacement
+PASS Modulation rings protect automation and close cancelled gestures
+PASS Cross-modulation state, presets and appended parameter compatibility
+PASS Schema 1-7 cross-mode migration and schema 8 atomic rejection
+PASS Unified warp mode history and reentrant project boundaries
+PASS Cross-modulation host parameters reach muted-source carrier audio
+PASS Advanced matrix appends 360 controls after the complete legacy host prefix
+PASS Schema 1-12 matrix migration and complete schema 13 preset validation
+PASS Thirty-two matrix rows preserve bypassed routes and reset reused slots
+PASS Complete matrix payloads move and clear as single undoable edits
+PASS Matrix compound helpers stop at host restore and automation boundaries
+PASS Last-row polarity, curves, auxiliary control and bypass reach real audio
+PASS All matrix pages and detail controls reflect host changes and undo
+PASS Matrix handles and rings preserve host changes across cancelled gestures
+PASS Matrix UI choices, bypass and sliders survive host callbacks and editor destruction
+PASS Expanded sources append 396 controls without changing the complete v0.13 prefix
+INFO Canonical Init default: id=env3Attack actual=0.130425363779 default=0.130425348878 canonical=0.130425363779 raw=0.010000003502
+INFO Canonical Init default: id=env3Decay actual=0.330175727606 default=0.330175757408 canonical=0.330175727606 raw=0.199999943376
+INFO Canonical Init default: id=env4Attack actual=0.130425363779 default=0.130425348878 canonical=0.130425363779 raw=0.010000003502
+INFO Canonical Init default: id=env4Decay actual=0.330175727606 default=0.330175757408 canonical=0.330175727606 raw=0.199999943376
+PASS Expanded source state roundtrips, schema 9 migration and current-schema atomic validation
+PASS Every source bank preserves legacy choices, compound history and effective assignment
+PASS Paired source/LFO selectors preserve synchronous host edits and project replacements
+PASS All fifteen new primary and auxiliary sources match independent legacy audio references
+PASS All twenty-six factory programs sound and new presets use expanded sources
+INFO Navigation fixture after ordinary restore: undo=0, redo=0, active=0, canUndo=0, canRedo=0, bytesEqual=0; parameter lfo1Rate expected=1.000000238418579 actual=1.000000357627869 live=1.000000238419 normalizedDelta=-0.000000029802; parameter lfo2Rate expected=2.000000476837158 actual=2.000000715255737 live=2.000000715256 normalizedDelta=0.000000029802
+PASS Ten LFOs, four envelopes, eight macros and source palette are editable at minimum size
+PASS Composite matrix source controls survive host callbacks and editor destruction
+PASS LFO 10 drawing and curve presets preserve host state and survive editor destruction
+PASS LFO 10 composite shape UI survives host callbacks and editor destruction
+PASS Actual LFO 10 knob drops and duplicate re-enable survive host callbacks and editor teardown
+PASS Advanced envelopes append 48 controls after the complete v0.14 host prefix
+PASS Advanced envelope schema 13 roundtrips, schema 10 migration and atomic validation
+PASS Delay, hold and three curves reach all four independent envelope source outputs
+PASS Four envelopes synchronize all timed stages to manual/host BPM with invalid-clock fallback
+PASS Each envelope independently retriggers only its routed legato sound
+PASS Envelope Lab navigation, stage/curve gestures and musical divisions preserve independent history
+PASS Envelope graph gestures stop across host restore, related automation and editor teardown
+PASS Envelope curve, division and flag controls survive host callbacks and editor teardown
+PASS LFO motion appends 116 host parameters after the unchanged v0.15 prefix
+PASS LFO motion schema 13 roundtrips, schema 11 migration and strict atomic validation
+PASS LFO rate modes and all phase destinations preserve complete history and remembered selectors
+PASS LFO rate and phase destination helpers stop at host and lifetime boundaries
+PASS All ten LFO motion controls reach audio and preserve legacy/tempo rate precedence
+PASS All ten LFO phase destinations match an independent steady phase offset
+PASS LFO motion Lab controls and phase matrix targets work at minimum size
+PASS LFO motion controls and composite rate/destination selectors survive host callbacks
+PASS Real LFO phase drops and duplicate re-enable survive host callbacks and editor teardown
+PASS Chaos appends ten parameters, preserves legacy mappings and validates schema 13 atomically
+PASS All Chaos shape selectors preserve compound history and synchronous host boundaries
+FAIL All twenty Chaos source paths reach evolving audio, reproduce reset and preserve block partition: Preparing the processor did not reproduce the same Chaos trajectory: LFO 1 shape=6
+PASS Chaos rate and swing bindings work while phase routing and remembered legacy controls stay isolated
+FAIL All Chaos Labs gate inactive edits and display only actual evolving or held DSP trajectories: Chaos Phase accepted a modulation drag
+PASS Chaos unified shape UI survives host changes, project restore, destruction and hidden pages
+PASS Unified warp editor modes, sources and host automation
+PASS Host BPM, PPQ and manual tempo fallback
+PASS Invalid sample imports and embedded sample rollback
+PASS Modulation assignment deduplication and capacity
+PASS Malformed state rejection with atomic rollback
+PASS Arpeggiator notes, release and sustain
+PASS Arp block partition invariance and cross-channel panic
+PASS Random and boundary parameter rendering
+Processor validation: 98 cases, 2 failure(s)
+<end of output>
+Test time = 119.48 sec
+----------------------------------------------------------
+Test Failed.
+"ProcessorTests" end time: Nov 18 14:05 中国标准时间
+"ProcessorTests" time elapsed: 00:01:59
+----------------------------------------------------------
+
+3/4 Testing: WavetableTests
+3/4 Test: WavetableTests
+Command: "D:/Anyvoc/build/AnyvocWavetableTests_artefacts/Release/AnyvocWavetableTests.exe"
+Directory: D:/Anyvoc/build
+"WavetableTests" start time: Nov 18 14:05 中国标准时间
+Output:
+----------------------------------------------------------
+PASS Canonical cycle conversion and invalid import rollback
+PASS Drawing, grouped gestures and redo invalidation
+PASS Harmonic amplitude, phase and independent partials
+PASS Frame duplicate/delete boundaries and endpoint morphing
+PASS Waveform generation and offline processing
+PASS Bounded undo history and document replacement
+PASS Full-spectrum amplitude/phase batches and untouched-bin preservation
+PASS Spectral batch validation, no-ops, bounded peaks and grouped history
+PASS Silent phase policy and large signed phase wrapping
+PASS Spectral shortest-arc morph and unchanged legacy waveform path
+Wavetable validation: 10 cases, 0 failure(s)
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"WavetableTests" end time: Nov 18 14:05 中国标准时间
+"WavetableTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/4 Testing: PresetLibraryTests
+4/4 Test: PresetLibraryTests
+Command: "D:/Anyvoc/build/AnyvocPresetLibraryTests_artefacts/Release/AnyvocPresetLibraryTests.exe"
+Directory: D:/Anyvoc/build
+"PresetLibraryTests" start time: Nov 18 14:05 中国标准时间
+Output:
+----------------------------------------------------------
+PASS Recursive index, immediate factory sounds and stable IDs
+PASS Combined search, filters, favourites and deterministic sorting
+PASS Missing directories, unparsed files and coalesced refresh
+PASS Favourite persistence and cross-instance merge
+PASS Favourite write/read failure preserves memory and disk
+INFO Symbolic-link creation unavailable; depth boundary was still verified
+PASS Bounded recursion and external symbolic-link isolation
+Preset library validation: 6 cases, 0 failure(s)
+<end of output>
+Test time =   0.63 sec
+----------------------------------------------------------
+Test Passed.
+"PresetLibraryTests" end time: Nov 18 14:05 中国标准时间
+"PresetLibraryTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 18 14:05 中国标准时间

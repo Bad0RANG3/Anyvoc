@@ -1,7 +1,9 @@
 #include "SynthEngine.h"
 #include "ModulationView.h"
+#include "ChaosLfoModel.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <chrono>
 #include <complex>
@@ -11,6 +13,7 @@
 #include <limits>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace
@@ -2233,6 +2236,409 @@ void testLfoAdvancedIdentityPartitionAndLifecycle()
     require (audioDifference (audio (invalid), audio (valid)) == 0, "Advanced LFO rate/phase limits were not clamped");
 }
 
+using ChaosPoint = std::array<double, 3>;
+
+// Independent, fine-grid reference: no production derivative, integration,
+// interpolation, initialization or normalization helper is called here.
+ChaosPoint referenceChaosDerivative (int shape, const ChaosPoint& p)
+{
+    if (shape == 6) return { 10 * p[1] - 10 * p[0], 28 * p[0] - p[0] * p[2] - p[1],
+                             p[0] * p[1] - 8 * p[2] / 3 };
+    return { -p[1] - p[2], p[0] + p[1] / 5, 1.0 / 5 + p[0] * p[2] - 5.7 * p[2] };
+}
+
+void referenceChaosAdvance (ChaosPoint& p, int shape, double duration)
+{
+    constexpr int subdivisions = 32;
+    const double h = duration / subdivisions;
+    const auto shifted = [] (const ChaosPoint& start, const ChaosPoint& d, double amount)
+    { return ChaosPoint { start[0] + amount * d[0], start[1] + amount * d[1], start[2] + amount * d[2] }; };
+    for (int n = 0; n < subdivisions; ++n)
+    {
+        const auto a = referenceChaosDerivative (shape, p);
+        const auto b = referenceChaosDerivative (shape, shifted (p, a, h / 2));
+        const auto c = referenceChaosDerivative (shape, shifted (p, b, h / 2));
+        const auto d = referenceChaosDerivative (shape, shifted (p, c, h));
+        for (size_t axis = 0; axis < 3; ++axis)
+            p[axis] += h * (a[axis] / 6 + b[axis] / 3 + c[axis] / 3 + d[axis] / 6);
+    }
+}
+
+std::array<float, 3> referenceChaosNormalized (ChaosPoint p, int shape)
+{
+    const double xy = shape == 6 ? 10 : 6, z = shape == 6 ? 25 : 10;
+    p[2] -= z;
+    return { static_cast<float> (p[0] / (xy + std::abs (p[0]))),
+             static_cast<float> (p[1] / (xy + std::abs (p[1]))),
+             static_cast<float> (p[2] / (z + std::abs (p[2]))) };
+}
+
+double chaosPointDifference (const std::array<float, 3>& a, const std::array<float, 3>& b)
+{
+    double difference = 0;
+    for (size_t axis = 0; axis < 3; ++axis) difference = std::max (difference, std::abs (static_cast<double> (a[axis]) - b[axis]));
+    return difference;
+}
+
+void testChaosNumericalReference()
+{
+    for (int shape : { 6, 7 })
+        for (int index = 0; index < 10; ++index)
+        {
+            anyvoc::ChaosLfoState model;
+            model.reset (shape, index);
+            ChaosPoint reference { 1 + .01 * index, shape == 6 ? 1.0 : 0.0, shape == 6 ? 1.0 : 0.0 };
+            require (model.rawPoint() == reference, "Chaos initial state depends on something other than LFO index");
+            require (model.point() == referenceChaosNormalized (reference, shape), "Chaos XYZ softsign normalization differs");
+            if (index != 0 && index != 9) continue;
+            // Eight readings per numerical step exercise Hermite interpolation,
+            // not only matching RK4 endpoints. Fine reference dt is 1/32768 of
+            // a nominal cycle, versus production 1/128.
+            for (int n = 0; n <= 1024; ++n)
+            {
+                const auto point = model.rawPoint();
+                for (size_t axis = 0; axis < 3; ++axis)
+                    require (std::abs (point[axis] - reference[axis]) < (shape == 6 ? 4.0e-4 : 2.0e-6),
+                             "Fixed-grid Chaos/Hermite differs from high-resolution independent ODE");
+                model.advance (1.0 / 1024);
+                referenceChaosAdvance (reference, shape, (shape == 6 ? 1.0 : 6.0) / 1024);
+            }
+            require (model.getRecoveryCount() == 0, "Chaos normal initial trajectory activated recovery");
+        }
+}
+
+void testChaosLongRunAndSampleRates()
+{
+    for (int shape : { 6, 7 })
+    {
+        for (int index = 0; index < 10; ++index)
+        {
+            anyvoc::ChaosLfoState model;
+            model.reset (shape, index);
+            std::array<float, 65> previous {};
+            double difference1 = 0, difference64 = 0;
+            for (int cycle = 0; cycle < 2000; ++cycle)
+            {
+                model.advance (1);
+                const auto p = model.point();
+                for (float value : p) require (std::isfinite (value) && std::abs (value) < 1, "Chaos escaped normalized bounds");
+                for (double value : model.rawPoint()) require (std::isfinite (value) && std::abs (value) < 100, "Chaos escaped its physical attractor");
+                if (cycle >= 65)
+                {
+                    difference1 += std::abs (p[0] - previous[static_cast<size_t> ((cycle - 1) % 65)]);
+                    difference64 += std::abs (p[0] - previous[static_cast<size_t> ((cycle - 64) % 65)]);
+                }
+                previous[static_cast<size_t> (cycle % 65)] = p[0];
+            }
+            require (model.getRecoveryCount() == 0, "Normal 2000-cycle Chaos run used its safety reset");
+            require (difference1 > 20 && difference64 > 20, "Chaos froze or repeated a short nominal-cycle table");
+        }
+        std::array<float, 3> reference {};
+        for (int rate : { 8000, 22050, 44100, 48000, 96000, 192000 })
+        {
+            anyvoc::ChaosLfoState model;
+            model.reset (shape, 9);
+            // Two seconds gives identical physical instants at every rate,
+            // and 997 Hz crosses multiple integration steps per audio sample.
+            for (int n = 0; n < rate * 2; ++n) model.advance (997.0 / rate);
+            if (rate == 8000) reference = model.point();
+            else require (chaosPointDifference (model.point(), reference) < 2.0e-6, "Chaos trajectory depends on audio sample rate");
+            require (model.getRecoveryCount() == 0, "Audio-rate Chaos used safety recovery");
+            const auto before = model.point();
+            model.advance (-1); model.advance (std::numeric_limits<double>::quiet_NaN());
+            model.advance (std::numeric_limits<double>::infinity());
+            require (before == model.point(), "Invalid Chaos delta altered the trajectory");
+        }
+    }
+    anyvoc::ChaosLfoState dormant;
+    dormant.reset (0, 9); dormant.advance (100);
+    require (dormant.point() == std::array<float, 3> {}, "Off Chaos model is not dormant");
+}
+
+void testChaosTriggerOneShotAndLegato()
+{
+    const std::vector<Event> note { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } };
+    for (int shape : { 6, 7 })
+    {
+        auto settings = cleanSettings(); settings.amp.release = 2;
+        settings.lfoShape.fill (shape); settings.lfoMode.fill (1); settings.lfoRate.fill (16);
+        SynthEngine engine;
+        engine.setSettings (settings); engine.prepare (4096, 256);
+        render (engine, 1, 1, note);
+        for (int index = 0; index < 10; ++index)
+        {
+            const ChaosPoint initial { 1 + .01 * index, shape == 6 ? 1.0 : 0.0, shape == 6 ? 1.0 : 0.0 };
+            require (engine.getLfoChaosPoint (index) == referenceChaosNormalized (initial, shape), "New voice Chaos initial XYZ differs");
+        }
+        render (engine, 333, 127);
+        const auto evolved = engine.getLfoChaosPoint (9);
+        // Fill/steal all voices: each newest voice must start from the same
+        // LFO-specific initial point, irrespective of age or stolen state.
+        for (int voice = 0; voice < 18; ++voice)
+        {
+            render (engine, 1, 1, { { 0, juce::MidiMessage::noteOn (1, 40 + voice, .7f) } });
+            const ChaosPoint initial { 1.09, shape == 6 ? 1.0 : 0.0, shape == 6 ? 1.0 : 0.0 };
+            require (engine.getLfoChaosPoint (9) == referenceChaosNormalized (initial, shape), "Voice steal/retrigger retained an old Chaos trajectory");
+        }
+        require (evolved != engine.getLfoChaosPoint (9), "Trigger Chaos did not evolve");
+        settings.lfoMode.fill (2); settings.lfoAudioRateEnabled.fill (true); settings.lfoAudioRateHz.fill (1000);
+        engine.setSettings (settings); engine.reset();
+        render (engine, 6, 6, note); // Period is 4.096 samples: clip final delta.
+        anyvoc::ChaosLfoState endpoint; endpoint.reset (shape, 9); endpoint.advance (1, true);
+        require (engine.getLfoChaosPoint (9) == endpoint.point(), "One-shot Chaos overshot its nominal-cycle endpoint");
+        render (engine, 1000, 127);
+        require (engine.getLfoChaosPoint (9) == endpoint.point(), "One-shot Chaos continued after completion");
+        settings.lfoMode.fill (1); settings.lfoAudioRateEnabled.fill (false); settings.voiceMode = 2;
+        engine.setSettings (settings); engine.reset();
+        SynthEngine continuous; continuous.setSettings (settings); continuous.prepare (4096, 256);
+        render (engine, 512, 127, { { 0, juce::MidiMessage::noteOn (1, 60, .8f) },
+            { 83, juce::MidiMessage::noteOn (1, 64, .7f) }, { 170, juce::MidiMessage::noteOff (1, 64) },
+            { 230, juce::MidiMessage::controllerEvent (1, 64, 127) }, { 260, juce::MidiMessage::noteOff (1, 60) } });
+        render (continuous, 512, 127, note);
+        require (engine.getLfoChaosPoint (9) == continuous.getLfoChaosPoint (9), "Legato overlap/fallback/sustain retriggered Chaos");
+        render (engine, 31, 31, { { 0, juce::MidiMessage::controllerEvent (1, 64, 0) } });
+        render (continuous, 31, 31);
+        require (engine.getLfoChaosPoint (9) == continuous.getLfoChaosPoint (9), "Pedal release restarted Chaos while voice released");
+        settings.voiceMode = 1; engine.setSettings (settings);
+        render (engine, 333, 127, note);
+        render (engine, 1, 1, { { 0, juce::MidiMessage::noteOn (1, 64, .7f) } });
+        anyvoc::ChaosLfoState initial; initial.reset (shape, 9);
+        require (engine.getLfoChaosPoint (9) == initial.point(), "Mono retrigger failed to restart Chaos");
+    }
+}
+
+void testChaosTransportAndLiveModes()
+{
+    for (int shape : { 6, 7 })
+    {
+        auto settings = cleanSettings(); settings.lfoShape[9] = shape; settings.lfoSync[9] = true;
+        settings.lfoFollowSwing[9] = true; settings.swingAmount = 1; settings.swingDivision = 1;
+        settings.lfoDivision[9] = 6; // Quarter-beat duration; shared sixteenth swing.
+        SynthEngine engine; engine.setSettings (settings); engine.prepare (4096, 256);
+        anyvoc::ChaosLfoState reference; reference.reset (shape, 9);
+        for (int n = 0; n < 1024; ++n)
+        {
+            // A transport seek changes the speed's grid location, never the ODE
+            // initial state. Both positive and negative PPQ are intentional.
+            const double ppq = (n < 300 ? .125 : n < 700 ? -25.3 : 167.25) + n / 4096.0 * 2;
+            engine.setTransport (120, ppq, true, true);
+            render (engine, 1, 1);
+            require (chaosPointDifference (engine.getLfoChaosPoint (9), reference.point()) < 2e-6,
+                     "Free Chaos aligned/reset to PPQ instead of continuously integrating swing speed");
+            const double delta = (independentSwing (ppq + 2.0 / 4096, 1) - independentSwing (ppq, 1)) / .25;
+            reference.advance (delta);
+        }
+        const auto next = reference.point();
+        settings.lfoPhaseOffset[9] = .63f; settings.lfoDirection[9] = 2;
+        settings.lfoInterpolation[9] = 1; settings.lfoPoints[9].fill (-1);
+        settings.lfoAudioRateEnabled[9] = true; settings.lfoAudioRateHz[9] = 997;
+        engine.setSettings (settings); render (engine, 1, 1);
+        require (chaosPointDifference (engine.getLfoChaosPoint (9), next) < 2e-6,
+                 "Inactive phase/drawing/audio settings reset synced Chaos");
+        // Mode and algorithm edits reset immediately at the next actual read,
+        // even if a note was already sounding. Off then on also starts fresh.
+        settings.lfoMode[9] = 1; engine.setSettings (settings);
+        render (engine, 1, 1, { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } });
+        reference.reset (shape, 9);
+        require (engine.getLfoChaosPoint (9) == reference.point(), "Changing Chaos play mode failed to reset");
+        render (engine, 100, 127);
+        settings.lfoShape[9] = shape == 6 ? 7 : 6; engine.setSettings (settings);
+        render (engine, 1, 1); reference.reset (settings.lfoShape[9], 9);
+        require (engine.getLfoChaosPoint (9) == reference.point(), "Changing Chaos algorithm retained previous model state");
+        settings.lfoShape[9] = 5; engine.setSettings (settings); render (engine, 100, 127);
+        require (engine.getLfoChaosPoint (9) == std::array<float, 3> {}, "Chaos Off retained a visible trajectory");
+        settings.lfoShape[9] = shape; engine.setSettings (settings); render (engine, 1, 1); reference.reset (shape, 9);
+        require (engine.getLfoChaosPoint (9) == reference.point(), "Re-enabled Chaos resumed stale model state");
+        settings.amp.release = .002f; engine.setSettings (settings);
+        render (engine, 128, 32, { { 0, juce::MidiMessage::noteOff (1, 60) } });
+        const auto oldPoint = engine.getLfoChaosPoint (9);
+        require (oldPoint != std::array<float, 3> {}, "Idle telemetry fixture never read a Chaos point");
+        settings.lfoShape[9] = shape == 6 ? 7 : 6; engine.setSettings (settings);
+        require (engine.getLfoChaosPoint (9) == std::array<float, 3> {}, "Idle algorithm edit left previous Chaos point published");
+        render (engine, 1024, 127);
+        require (engine.getLfoChaosPoint (9) == std::array<float, 3> {}, "Idle Trigger fabricated a read in the new Chaos epoch");
+        settings.lfoMode[9] = 2; engine.setSettings (settings); render (engine, 1024, 127);
+        require (engine.getLfoChaosPoint (9) == std::array<float, 3> {}, "Idle mode edit restored old trajectory telemetry");
+    }
+    // Switching to Chaos does not stop the remembered base shape's clock.
+    // Compare against uninterrupted base-shape engines after an active note
+    // crosses several nominal cycles, including the one-shot endpoint.
+    for (int shape : { 2, 4, 5 })
+        for (int mode : { 0, 1, 2 })
+            for (int chaosShape : { 6, 7 })
+            {
+                auto settings = cleanSettings(); settings.filterEnabled = false;
+                settings.lfoShape[0] = shape; settings.lfoMode[0] = mode; settings.lfoRate[0] = 40;
+                settings.routes[0] = { 1, 6, .4f };
+                for (size_t p = 0; p < 33; ++p) settings.lfoPoints[0][p] = -.8f + .05f * static_cast<float> (p);
+                SynthEngine switched, reference;
+                switched.setSettings (settings); reference.setSettings (settings);
+                switched.prepare (4096, 256); reference.prepare (4096, 256);
+                const std::vector<Event> note { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } };
+                render (switched, 37, 37, note); render (reference, 37, 37, note);
+                auto chaos = settings; chaos.lfoShape[0] = chaosShape; switched.setSettings (chaos);
+                render (switched, 333, 127); render (reference, 333, 127);
+                switched.setSettings (settings);
+                const auto a = render (switched, 1024, 127), b = render (reference, 1024, 127);
+                require (audioDifference (a, b) == 0 && switched.getLfoPhase (0) == reference.getLfoPhase (0),
+                         "Chaos froze the remembered periodic/random voice clock or one-shot endpoint");
+            }
+}
+
+void testChaosAudioRateOracles()
+{
+    const std::vector<Event> note { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } };
+    for (int shape : { 6, 7 })
+        for (bool auxiliary : { false, true })
+        {
+            LfoAudioProbe probe;
+            probe.settings.lfoShape[9] = shape; probe.settings.lfoMode[9] = 1;
+            probe.settings.lfoAudioRateEnabled[9] = true; probe.settings.lfoAudioRateHz[9] = 997;
+            probe.settings.routes[0] = { 17, 7, .5f };
+            if (auxiliary)
+            {
+                probe.settings.macros[0] = 1;
+                probe.settings.routes[0].source = 6; probe.settings.routes[0].auxSource = 17;
+            }
+            probe.prepare(); probe.read (1024, note);
+            anyvoc::ChaosLfoState model; model.reset (shape, 9);
+            for (int n = 0; n < 1024; ++n)
+            {
+                if (n >= 64) require (std::abs (probe.pan (n) - model.point()[0]) < 2e-5,
+                                     "Chaos primary/auxiliary audio-rate pan did not update per sample");
+                model.advance (997.0 / probe.sampleRate);
+            }
+            LfoAudioProbe chain;
+            chain.settings.lfoShape[9] = shape; chain.settings.lfoMode[0] = chain.settings.lfoMode[9] = 1;
+            chain.settings.lfoRate[0] = 3;
+            chain.settings.lfoAudioRateEnabled[9] = true; chain.settings.lfoAudioRateHz[9] = 997;
+            chain.settings.macros[0] = 1;
+            chain.settings.routes[0] = { auxiliary ? 6 : 17, 18, .15f };
+            if (auxiliary) chain.settings.routes[0].auxSource = 17;
+            chain.settings.routes[1] = { 1, 7, .5f };
+            chain.prepare(); chain.read (1024, note); model.reset (shape, 9);
+            float previous = 0;
+            for (int n = 0; n < 1024; ++n)
+            {
+                const double clock = std::fmod (n * 3.0 / chain.sampleRate, 1.0);
+                const float phase = static_cast<float> (independentLfoRead (clock, previous, 0));
+                const float expected = std::sin (static_cast<float> (2 * pi) * phase);
+                if (n >= 64) require (std::abs (chain.pan (n) - expected) < 3e-5,
+                                     "Chaos phase dependency failed to propagate audio-rate quality");
+                previous = model.point()[0] * .15f;
+                model.advance (997.0 / chain.sampleRate);
+            }
+        }
+}
+
+void testChaosIdentityPartitionAndReset()
+{
+    auto settings = cleanSettings(); settings.filterEnabled = false; settings.noise = .13f;
+    settings.osc[0].unison = 3; settings.routes[0] = { 1, 6, .2f }; settings.lfoShape[0] = 4;
+    const std::vector<Event> notes { { 0, juce::MidiMessage::noteOn (1, 60, .7f) },
+        { 301, juce::MidiMessage::noteOn (1, 64, .8f) }, { 1701, juce::MidiMessage::noteOff (1, 60) } };
+    const auto audio = [&] (SynthSettings s, int block)
+    { SynthEngine engine; engine.setSettings (s); engine.prepare (48000, 512); return render (engine, 8192, block, notes); };
+    auto unused = settings;
+    for (size_t i = 1; i < 10; ++i)
+    { unused.lfoShape[i] = i % 2 == 0 ? 6 : 7; unused.lfoMode[i] = static_cast<int> (i % 3); unused.lfoAudioRateEnabled[i] = true; unused.lfoAudioRateHz[i] = 997; }
+    require (audioDifference (audio (settings, 127), audio (unused, 127)) == 0,
+             "Unused Chaos changed legacy noise, random LFO, oscillator RNG or audio");
+    settings.lfoShape[0] = 6; settings.lfoShape[9] = 7; settings.lfoMode[0] = settings.lfoMode[9] = 1;
+    settings.lfoAudioRateEnabled[0] = settings.lfoAudioRateEnabled[9] = true;
+    settings.lfoAudioRateHz[0] = 997; settings.lfoAudioRateHz[9] = 823;
+    settings.routes[1] = { 17, 7, .3f }; settings.routes[0].auxSource = 17;
+    require (audioDifference (audio (settings, 1), audio (settings, 257)) == 0, "Chaos audio depends on block partition");
+    auto ignored = settings; ignored.lfoPhaseOffset.fill (.77f); ignored.lfoDirection.fill (2);
+    ignored.routes[30] = { 2, 18, .9f }; ignored.routes[31] = { 1, 27, -.8f };
+    require (audioDifference (audio (settings, 127), audio (ignored, 127)) == 0, "Chaos phase/direction/phase target altered audio or update cadence");
+    SynthEngine reset, fresh; reset.setSettings (settings); fresh.setSettings (settings);
+    reset.prepare (48000, 512); fresh.prepare (48000, 512);
+    render (reset, 8192, 127, notes);
+    // Match effects' initialization before comparing the synthesis reset.
+    // JUCE Chorus starts at mix .5 and ramps to our dry setting over 50 ms;
+    // Reverb's default gains also ramp on first render. A used/reset engine
+    // has already settled those targets, unlike a never-rendered instance.
+    render (fresh, 4096, 127); reset.reset(); fresh.reset();
+    require (reset.getLfoChaosPoint (0) == std::array<float, 3> {} && reset.getLfoChaosPoint (9) == std::array<float, 3> {},
+             "Reset retained a published Chaos point");
+    require (audioDifference (render (reset, 8192, 127, notes), render (fresh, 8192, 257, notes)) == 0,
+             "Reset retained Chaos integration state");
+    require (reset.getLfoChaosPoint (0) == fresh.getLfoChaosPoint (0)
+             && reset.getLfoChaosPoint (9) == fresh.getLfoChaosPoint (9), "Reset Chaos XYZ differs from an identically initialized engine");
+    render (reset, 1, 1, { { 0, juce::MidiMessage::controllerEvent (1, 120, 0) } });
+    require (inspect (render (reset, 512, 127)).peak == 0, "Chaos retained audio after All Sound Off");
+    require (reset.getLfoChaosPoint (-1) == std::array<float, 3> {} && reset.getLfoChaosPoint (10) == std::array<float, 3> {},
+             "Invalid Chaos telemetry index was not safe");
+}
+
+void testChaosCoherentTelemetry()
+{
+    // The APVTS/UI can change before setSettings/render reaches its next audio
+    // block. Expected metadata must reject the previous algorithm/mode's point
+    // during that gap; the unfiltered API remains backwards compatible.
+    {
+        auto settings = cleanSettings(); settings.lfoShape[0] = 6;
+        settings.lfoRate[0] = 16;
+        SynthEngine engine; engine.setSettings (settings); engine.prepare (4096, 128);
+        render (engine, 97, 32);
+        const auto lorenz = engine.getLfoChaosPoint (0);
+        const std::array<float, 3> empty {};
+        require (lorenz != empty && engine.getLfoChaosPoint (0, 6, 0) == lorenz
+                 && engine.getLfoChaosPoint (0, -1, 0) == lorenz && engine.getLfoChaosPoint (0, 6) == lorenz,
+                 "Chaos matching metadata or wildcard lost a valid point");
+        require (engine.getLfoChaosPoint (0, 7, 0) == empty && engine.getLfoChaosPoint (0, 6, 1) == empty
+                 && engine.getLfoChaosPoint (0) == lorenz,
+                 "UI selection before the audio update accepted stale Chaos shape/mode metadata");
+        settings.lfoShape[0] = 7; engine.setSettings (settings);
+        require (engine.getLfoChaosPoint (0, 7, 0) == empty, "New Chaos metadata published a point before any read");
+        render (engine, 1, 1);
+        const auto rossler = referenceChaosNormalized ({ 1, 0, 0 }, 7);
+        require (engine.getLfoChaosPoint (0, 7, 0) == rossler && engine.getLfoChaosPoint (0, 6, 0) == empty,
+                 "New audio block did not publish matching Chaos shape metadata");
+        require (engine.getLfoChaosPoint (0, 7, 1) == empty && engine.getLfoChaosPoint (0) == rossler,
+                 "UI play-mode change accepted the preceding mode's point");
+        settings.lfoMode[0] = 1; engine.setSettings (settings);
+        render (engine, 1, 1, { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } });
+        require (engine.getLfoChaosPoint (0, 7, 1) == rossler && engine.getLfoChaosPoint (0, 7, 0) == empty,
+                 "New voice point and its play-mode metadata were inconsistent");
+        // Undo can expose the old UI choice before the audio block applies it.
+        require (engine.getLfoChaosPoint (0, 6, 1) == empty, "Undo accepted the old Rossler point as Lorenz");
+        settings.lfoShape[0] = 6; engine.setSettings (settings); render (engine, 1, 1);
+        require (engine.getLfoChaosPoint (0, 6, 1) == referenceChaosNormalized ({ 1, 1, 1 }, 6)
+                 && engine.getLfoChaosPoint (0, 7, 1) == empty, "Undo's audio update did not replace the metadata epoch");
+        engine.reset();
+        require (engine.getLfoChaosPoint (0, 6, 1) == empty, "Reset retained a filtered Chaos snapshot");
+    }
+    constexpr int frames = 8192;
+    auto settings = cleanSettings(); settings.lfoShape[0] = 6;
+    settings.lfoAudioRateEnabled[0] = true; settings.lfoAudioRateHz[0] = 997;
+    SynthEngine engine; engine.setSettings (settings); engine.prepare (4096, 1);
+    anyvoc::ChaosLfoState model; model.reset (6, 0);
+    std::vector<std::array<float, 3>> possible { {} };
+    for (int n = 0; n < frames; ++n) { possible.push_back (model.point()); model.advance (997.0 / 4096); }
+    std::sort (possible.begin(), possible.end());
+    std::atomic<bool> done { false }, bad { false };
+    std::thread writer ([&]
+    {
+        juce::AudioBuffer<float> block (2, 1); juce::MidiBuffer midi;
+        for (int n = 0; n < frames; ++n) engine.render (block, midi);
+        done.store (true);
+    });
+    size_t reads = 0;
+    do
+    {
+        const auto point = engine.getLfoChaosPoint (0);
+        if (! std::binary_search (possible.begin(), possible.end(), point)) bad.store (true);
+        const auto filtered = engine.getLfoChaosPoint (0, 6, 0);
+        if (! std::binary_search (possible.begin(), possible.end(), filtered)
+            || engine.getLfoChaosPoint (0, 7, 0) != std::array<float, 3> {}) bad.store (true);
+        ++reads;
+    } while (! done.load());
+    writer.join();
+    require (! bad.load() && reads > 0, "Chaos UI telemetry combined coordinates from different DSP samples");
+}
+
 void testExpandedSourceIsolationAndInvalids()
 {
     auto legacy = cleanSettings();
@@ -2259,7 +2665,7 @@ void testExpandedSourceIsolationAndInvalids()
 
     auto invalid = cleanSettings(), valid = invalid;
     invalid.lfoRate[9] = 99; valid.lfoRate[9] = 40;
-    invalid.lfoShape[9] = 99; valid.lfoShape[9] = 5;
+    invalid.lfoShape[9] = 99; valid.lfoShape[9] = 7;
     invalid.lfoMode[9] = 99; valid.lfoMode[9] = 2;
     invalid.lfoDivision[9] = 99; valid.lfoDivision[9] = 11;
     invalid.lfoInterpolation[9] = 99; valid.lfoInterpolation[9] = 1;
@@ -3313,9 +3719,70 @@ int benchmarkAdvancedMatrix()
     return 0;
 }
 
+int benchmarkChaosLfos()
+{
+    constexpr int scenarios = 8, rounds = 3, rate = 48000, blockSize = 256, blocks = 375;
+    constexpr double audioSeconds = static_cast<double> (blocks * blockSize) / rate;
+    constexpr const char* labels[scenarios] { "Sine 10Hz Trigger", "Lorenz 10Hz Trigger", "Rossler 10Hz Trigger",
+        "Sine 1000Hz Trigger", "Lorenz 1000Hz Free", "Lorenz 1000Hz Trigger", "Rossler 1000Hz Trigger",
+        "Rossler 1000Hz Trigger unrouted" };
+    constexpr int shapes[scenarios] { 0, 6, 7, 0, 6, 6, 7, 7 };
+    std::array<std::array<double, rounds>, scenarios> elapsed {};
+    double checksum = 0;
+    std::cout << "Chaos benchmark: Release; 48 kHz; 16 sustained voices with staggered onsets; 10 LFOs; "
+        "10 small pan routes; one wavetable oscillator, unison1, filters/effects off; 256-sample blocks; "
+        "2 audio seconds/run, 3 rounds; setSettings each block; construction/warmup excluded. "
+        "Last case has zero routes but still integrates all 160 voice/LFO states.\n";
+    for (int round = 0; round < rounds; ++round)
+        for (int order = 0; order < scenarios; ++order)
+        {
+            const int scenario = (order + round) % scenarios;
+            auto settings = cleanSettings(); settings.filterEnabled = settings.filter2Enabled = false;
+            settings.osc[0].level = .12f; settings.osc[0].position = .37f;
+            settings.amp = { .005f, .02f, .8f, .05f };
+            settings.lfoShape.fill (shapes[scenario]);
+            settings.lfoMode.fill (scenario == 4 ? 0 : 1);
+            settings.lfoRate.fill (10); settings.lfoAudioRateEnabled.fill (scenario >= 3);
+            settings.lfoAudioRateHz.fill (1000);
+            if (scenario != 7)
+                for (int i = 0; i < 10; ++i) settings.routes[static_cast<size_t> (i)] = { anyvoc::lfoSourceId (i), 7, .025f };
+            SynthEngine engine; engine.setSettings (settings); engine.prepare (rate, blockSize);
+            juce::AudioBuffer<float> block (2, blockSize); juce::MidiBuffer midi;
+            for (int voice = 0; voice < 16; ++voice)
+            {
+                midi.addEvent (juce::MidiMessage::noteOn (1, 48 + voice, .5f + .02f * voice), (voice * 17) % blockSize);
+                engine.render (block, midi); midi.clear();
+            }
+            for (int warmup = 0; warmup < 48; ++warmup) engine.render (block, midi);
+            const auto start = std::chrono::steady_clock::now();
+            for (int n = 0; n < blocks; ++n)
+            {
+                engine.setSettings (settings); engine.render (block, midi);
+                checksum += block.getSample (0, blockSize - 1);
+            }
+            const double wall = std::chrono::duration<double> (std::chrono::steady_clock::now() - start).count();
+            elapsed[static_cast<size_t> (scenario)][static_cast<size_t> (round)] = wall;
+            require (inspect (block).rms > .001, "Chaos benchmark fixture is silent");
+            std::cout << std::fixed << std::setprecision (6) << "ROUND " << round + 1 << " " << labels[scenario]
+                      << ": wall=" << wall << "s, wall/audio=" << wall / audioSeconds << '\n';
+        }
+    for (size_t scenario = 0; scenario < elapsed.size(); ++scenario)
+    {
+        auto times = elapsed[scenario]; std::sort (times.begin(), times.end());
+        std::cout << "MEDIAN " << labels[scenario] << ": wall=" << times[1] << "s, wall/audio=" << times[1] / audioSeconds
+                  << ", real-time throughput=" << audioSeconds / times[1] << "x\n";
+    }
+    std::cout << "CHECKSUM " << checksum << '\n';
+    return 0;
+}
+
 int main (int argc, char* argv[])
 {
     juce::ScopedJuceInitialiser_GUI initialiseJuce;
+    if (argc > 1 && std::string (argv[1]) == "--benchmark-chaos")
+        try { return benchmarkChaosLfos(); }
+        catch (const std::exception& error)
+        { std::cerr << "FAIL Chaos benchmark: " << error.what() << '\n'; return 1; }
     if (argc > 1 && std::string (argv[1]) == "--benchmark-matrix")
         try { return benchmarkAdvancedMatrix(); }
         catch (const std::exception& error)
@@ -3377,6 +3844,13 @@ int main (int argc, char* argv[])
         , { "All phase destinations, unit-delay feedback and voice isolation", testLfoPhaseRoutesFeedbackAndVoices }
         , { "Audio-rate primary/auxiliary/phase chains and pitch/pan/filter oracles", testLfoAudioRateTargetOracles }
         , { "Advanced LFO legacy identity, random isolation, reset and invalid controls", testLfoAdvancedIdentityPartitionAndLifecycle }
+        , { "Chaos independent ODE, RK4 grid and Hermite off-grid reference", testChaosNumericalReference }
+        , { "Chaos long-run bounds, nonperiodic evolution and sample-rate invariance", testChaosLongRunAndSampleRates }
+        , { "Chaos trigger, stealing, one-shot clipping and Legato lifecycle", testChaosTriggerOneShotAndLegato }
+        , { "Chaos free transport/swing continuity and live mode/algorithm changes", testChaosTransportAndLiveModes }
+        , { "Chaos audio-rate primary/auxiliary and delayed phase-chain oracles", testChaosAudioRateOracles }
+        , { "Chaos unused identity, block partition, reset and inactive phase controls", testChaosIdentityPartitionAndReset }
+        , { "Chaos coherent concurrent XYZ telemetry", testChaosCoherentTelemetry }
         , { "Unused expanded source identity and invalid controls", testExpandedSourceIsolationAndInvalids }
     };
     int failures = 0;

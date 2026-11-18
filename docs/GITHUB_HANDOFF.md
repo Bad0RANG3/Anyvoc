@@ -18,9 +18,11 @@ Git 排除构建目录、发布产物、外部测试工具、本机设置与凭�
 
 整理前，生产 `Source/` 全部 14 个文件、`Tests/` 全部 4 个文件及 `CMakeLists.txt` 均与原 `Anyvoc-0.16.0-Source.zip` 内容逐字节比对通过。Git 统一文本换行不改变代码含义。
 
-0.17 的生产实现尚未开始；ProcessorTests 中少量未完成的 schema13/数量草稿先保存在本机被 Git 忽略的开发目录，再恢复为已验证的 schema12 测试。它们不纳入 `main`，没有任何混沌 LFO 可用性声明。
+初次整理时，0.17 的生产实现尚未开始；ProcessorTests 中少量未完成的 schema13/数量草稿先保存在本机被 Git 忽略的开发目录，再恢复为已验证的 schema12 测试。它们不纳入 0.16 基线，没有任何混沌 LFO 可用性声明。
 
 本机使用既有已验证二进制重跑了四套 CTest：Engine、Processor、Wavetable、PresetLibrary 全部通过，**112.05 秒，共 162 组**。见[完整复测摘要](ctest-github-handoff-0.16.txt)及[详细日志](test-details-github-handoff-0.16.txt)。这次复测不等于从干净环境重新构建；云端构建结果须另看[当前 Actions](https://github.com/Bad0RANG3/Anyvoc/actions)。
+
+推送完成后，GitHub Actions 对提交 `43cf082217a7799da0312b83ad58c6070bd36de6` 的干净检出、固定 JUCE、Release 构建和四套测试均成功：[对应运行](https://github.com/Bad0RANG3/Anyvoc/actions/runs/44241309810)。JUnit 记录 4 套、0 失败，四套累计约 124 秒；下载的[完整云端测试日志](test-details-github-ci-0.16.txt)含 162 个 PASS。整个 job 用时 12 分 31 秒。初始提交 `804f547` 的运行也成功；该补充证据仍针对 0.16，不能用于证明后续功能分支。
 
 本机保留二进制的 SHA-256 未变：
 
@@ -35,6 +37,6 @@ Git 排除构建目录、发布产物、外部测试工具、本机设置与凭�
 
 ## 接手后怎么继续
 
-先读 [STATUS](STATUS.md)，按 [BUILDING](BUILDING.md)构建，在 [TESTING](TESTING.md)记录当前环境的结果，再按 [ROADMAP](ROADMAP.md)选择一个阶段。下一轮优先完成 Chaos LFO 的真实算法、界面和完整验证；不要直接启用未完成的 schema13 草稿。
+先读 [STATUS](STATUS.md)，按 [BUILDING](BUILDING.md)构建，在 [TESTING](TESTING.md)记录当前环境的结果，再按 [ROADMAP](ROADMAP.md)选择一个阶段。0.16 初次交接时的下一步是完成 Chaos LFO；后续 0.17 的实际实现与验收单独记录在 [0.17 验证报告](VALIDATION-0.17.md)，不改写本页的历史基线。
 
 DAW 扫描、真实音频设备、完整听音、macOS/AU/AAX 和完整 Serum 2 等价均仍未完成，不能由本次推送或 CI 成功推导出来。

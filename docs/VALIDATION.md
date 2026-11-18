@@ -1,55 +1,75 @@
-# Anyvoc 0.16 validation — 2026-11-18 (Asia/Shanghai)
+# Anyvoc 0.17 验证记录 — 2026-11-18
 
-Release build, all 162 test groups, pluginval strictness 5, legacy audio identity and new audio comparisons passed. Previous release evidence is archived in [VALIDATION-0.15.md](VALIDATION-0.15.md). Package integrity is recorded in the external release report.
+Windows x64 0.17.0 的最终本机构建、自动回归、pluginval、音频分析、下述独立版原生操作和发布包完整性检查已完成。DAW、真人听音和跨设备实时表现仍未全面验收。上一版记录见 [0.16 验证归档](VALIDATION-0.16.md)。
 
-## LFO motion contract
+## 本版实现及兼容约定
 
-Ten LFOs gain a phase offset, Forward/Reverse/Ping Pong direction, Follow Swing, and an independently saved 20–1000 Hz audio-rate mode. Rate mode has three UI options: Free Hz, Tempo and Audio Rate. Legacy Sync takes precedence over AudioRateEnabled. The original .05–20 Hz parameters are unchanged. Random sample-and-hold ignores Phase/Direction, retaining their saved values and its original random sequence.
+十个 LFO 新增 Lorenz 和 Rössler，使用持续 ODE 积分、每名义周期 128 个 RK4 网格步及端点导数 Hermite 插值。调制源使用有界映射后的 X；图形读取引擎发布的一致 XYZ 快照。没有 UI 专用积分器、重复波表或隐式预热。速度、初态、输出映射、Free/Trigger/Envelope 和模式切换的完整定义见 [Chaos 模型及性能记录](CHAOS_LFO.md)。这些是 Anyvoc 自己的定义，不是 Serum 的 DSP 或听感标尺。
 
-Phase is a read offset, not a clock reset. Offset is added and wrapped before direction is applied. With u in [0,1], Forward reads u, Reverse reads 1-u, and Ping Pong reads 1-|2u-1|. One Ping Pong period is a complete outbound and return trip. Integer offsets preserve a one-shot's terminal coordinate 1, so an independent final Custom point remains reachable. At phase zero, one-shot Forward holds its right endpoint and Reverse/Ping Pong hold the left endpoint.
+0.16 的 1,182 个参数定义前缀保持不变，定义源文本 SHA-256 为 `08adeb0580fc1447defa29eb757959ce4551fe4e76555fd3af6af56acc36b631`。仅在尾部追加十个 `lfo1Chaos` 至 `lfo10Chaos`，Off/Lorenz/Rossler，默认 Off，VersionHint 13；共 1,192 个参数。旧 Shape 和 Kind 选项索引、默认值、范围不变。状态 schema 13 读取 schema 1–12 时缺省 Chaos 为 Off；新版音色应另存，旧程序不支持新格式。
 
-Swing warps one shared musical grid. The pair period P is one quarter-note beat for the 1/8 grid and half a beat for 1/16. With x=q/P, t=x-floor(x), a=.5+.25*s, the warped beat is P*(floor(x)+(t<a ? .5*t/a : .5+.5*(t-a)/(1-a))). Amount s=0 is a direct identity path; s=1 gives 75:25. Only Sync plus FollowSwing applies this mapping. Free/synced LFOs align to warped host PPQ; triggered and one-shot voices integrate warped per-sample deltas without retriggering on a seek. Without a playing host PPQ, a shared local beat clock continues.
+原 24 个工厂预设保留序号；新增索引 24 的 Motion / Butterfly Current 和索引 25 的 Texture / Spiral Drift。Chaos 忽略 Phase、Direction 与相位目标，保留其旧值；界面禁止相应拖放、曲线绘制和曲线预设操作。模式/算法变化清除旧轨迹快照，零表示本轮尚无实际读取。基础周期/Random 时钟继续推进，因此切回旧形状时不会冻结在进入 Chaos 的时刻。
 
-Phase destinations 18–27 correspond to LFO 1–10, with amount in turns. All sources read the preceding sample's per-voice offsets; the full matrix then writes the next offsets. Self-feedback and cyclic graphs therefore have one sample of delay and no recursive row-order dependency. Random targets ignore phase routes. Audio-rate sources, including auxiliaries and phase dependencies, update the affected pitch/pan/filter controls each sample; unrelated legacy controls retain their original 16-sample cadence. This adds bandwidth, not full anti-aliasing.
+## 构建与回归
 
-The complete 1,066-parameter 0.15 prefix is unchanged byte-for-byte in its parameter-definition source (SHA-256 f6f0d656093b03083d41f2692fe9cbce94b5c45187f1ac472a3a32c4523ba4c8). The 116 additions use version hint 12, total 1,182. Order: five controls per LFO (Phase, Direction, FollowSwing, AudioRateEnabled, AudioRateHz), SwingAmount/SwingDivision, then LfoPhaseEnabled/LfoPhaseTarget for each of 32 routes. Phase is continuous 0–1/default 0; direction defaults Forward; both flags default off; audio rate is continuous 20–1000/default100/skew .5; global swing is 0–1/default0 and grid defaults 1/8. Phase destination selectors default disabled/LFO1.
+Release 构建退出码 0；Windows x64、MSVC 19.44、SDK 10.0.26100.0、CMake 4.4.4、JUCE 8.0.12，固定提交 `29396c22c93392d6738e021b83196283d6e4d850`。EXE/VST3 文件版本均为 0.17.0。构建仍有类型转换与 JUCE 弃用提示，未宣称零警告。
 
-Each raw matrix row now has 17 fields. Effective destination priority is Phase, Warp, Filter, Original. Composite destination changes preserve inactive selectors and guard all seven selectors against host reentry; row copy/move/reset/reuse and UI snapshots cover all 17 fields. Rate-mode changes guard both switches and preserve all remembered rate/division values. Schema12 migrates schemas1–11 with defaults; malformed current states are rejected before sound publication. Factory indices0–21 remain unchanged; Swing Carousel and Phase Lantern append indices22/23.
+[首轮全量运行](ctest-0.17-initial.txt)用时 124.72 秒，记录 Engine 1 项和 Processor 2 项失败；Wavetable 和 PresetLibrary 通过。保留[首轮完整明细](test-details-0.17-initial.txt)，不覆盖为成功结果。
 
-The full-width LFO Lab provides curve editing, both rates, division, play mode, direction, phase, swing and interpolation. The curve edit guard covers45 related parameters plus history/editor lifetime. START shows the configured read start and LIVE uses actual engine read position, including phase/direction/swing/routing. Phase knobs accept source drops and route-depth rings. The source palette preserves an open LFO Lab so this drop target stays reachable.
+复位比较最初把效果器尚未完成首次 dry/wet 平滑的全新实例，与已运行、清空后的实例直接比较。JUCE 的 Chorus/Reverb 构造启动目标和平滑状态不同于运行后的 reset。两侧现在都先静音预热 4,096 样本，再 reset/prepare，音频断言保持或加强为逐样本完全相同，并增加 XYZ 精确比较；未为此更改生产 DSP 或放宽容差。早期 [Engine 定向复测](engine-0.17.txt)为 **61/61** 通过，最终结果以下述全量运行及其完整日志为准。
 
-## Build and automated verification
+另一项是真实界面缺陷：禁用 Phase 的底层写入已被挡住，但 Knob 的拖放兴趣判定仍返回接受。现在兴趣、悬停和实际 drop 入口均检查禁用及当前编辑权限，阻止宿主切换后的迟到事件。静态审查还修复了逐声部旧 LFO 时钟冻结，以及静音切换算法后沿用旧 XYZ 两个问题，并增加活动声部切回和空渲染回归。
 
-Windows x64 Release, MSVC 19.44, Windows SDK 10.0.26100.0, CMake 4.4.4, JUCE 8.0.12 pinned at 29396c22c93392d6738e021b83196283d6e4d850. Build exit code zero; both binary FileVersions are 0.16.0. Existing conversion/deprecation warnings remain.
+首轮原生检查另外发现 Rossler → Undo Lorenz 时，界面标签可能先于音频线程更新，把旧算法坐标连到新轨迹。现将 XYZ、算法和播放模式放入同一个原子代数快照，界面用本轮捕获的算法／模式过滤；全部为零的“尚无读数”哨兵清空历史，不作为新采样点入队。绘制也核对缓存模式。回归在不运行音频块、不等待 timer 的情况下切换 API／宿主算法／宿主模式／Undo，并覆盖显式标签读取不再次取 APVTS、旧标签拒绝新快照、新标签精确匹配新模型。LFO 1 和 10 均覆盖；此次原生复查未再出现旧轨迹连线。
 
-Engine: 54 groups passed. Independent references cover actual phase/direction/one-shot output, musical swing grids and seeks, per-voice unit-delay phase feedback, high-rate primary/auxiliary/phase chains, pitch phase integration, pan gain, and both filters' cutoff/resonance. Random sequence, inactive-control identity, block partition, reset and invalid-value checks pass. Wavetable: 10 groups passed. Preset library: 6 groups passed.
+[最终完整 CTest](ctest-0.17.txt)退出码 0，**四套共 175 组全部通过**：Engine 61（4.53 秒）、Processor 98（129.80 秒）、Wavetable 10（0.06 秒）、PresetLibrary 6（0.63 秒），合计 **135.03 秒**。[完整明细](test-details-0.17.txt)保留 CTest 原始输出，含 Windows 本地代码页时间文字；175 个 PASS 可独立计数。此前 133.32 秒的[原生修复前运行](ctest-0.17-before-native-fix.txt)及 133.69 秒的[标签参数补充前运行](ctest-0.17-before-label-fix.txt)也保留，均不冒充最后一次构建的结果。
 
-Processor: 92 groups passed in the [targeted final rerun](ctest-processor-0.16.txt), 108.02 seconds; [full Processor details](test-details-0.16.txt). Coverage includes all 116 parameter definitions, schema 1–11 migration and schema 12 rejection/roundtrips, all 24 factory programs, 50 LFO control audio paths, all 10 phase targets, composite mode/destination host callbacks, exact one-ULP curve conflicts, phase drag/drop, hidden-control gating, and lifetime/gesture balance. The [initial full run](ctest-0.16.txt) records passing Engine/Wavetable/Preset suites and four Processor failures subsequently resolved in this targeted rerun. No unresolved test failure remains.
+同一最终 VST3 通过 [pluginval strictness 5](pluginval-0.17.txt)，随机种子 `0x5f5ab2b`，版本 0.17.0，结果 SUCCESS。最终全量测试、音频与预览后未再修改生产源码。
 
-[pluginval](pluginval-0.16.txt) strictness 5 passed on the final rebuilt module (version 0.16.0). This does not substitute for tests in individual DAWs.
+## 音频、图形与开销
 
-The initial engine pitch reference omitted the existing 64-sample onset fade. Adding that known fade to the independent reference resolved the mismatch without widening its 2e-5 tolerance. A real telemetry edge was also fixed: the pending one-sample phase offset remains visible immediately after disabling its route. Processor regression exposed JUCE's convenience float constructor defaulting to a .01 interval; Phase and Swing now explicitly use continuous ranges. Two new UI fixtures addressed the hidden compact destination instead of the visible Detail control; the fixtures now navigate to the correct page and control.
+- 修改源码前，用留存的 0.16 测试二进制重新生成旧演示；最终 0.17 再次渲染的 15 秒文件逐字节一致，4,320,104 字节，SHA-256 `3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920`。
+- [独立标准库 PCM 分析](audio-analysis-0.17.json)通过。新演示 20 秒、48 kHz、24-bit、双声道，960,000 帧、5,760,104 字节，SHA-256 `4885d2a3de312d88bc890840560eff45139b5c4d43de694c9d9fdeb232d18488`。峰值 0.046174526（−26.712 dBFS），RMS 0.018976286，零个 PCM 满幅样本。
+- 0–10 秒为 Lorenz，10–20 秒为 Rössler；同 C4、名义速度 2、Trigger、音色和固定增益，只切算法。每段第 9 秒松音，20 ms 淡入、100 ms 淡出。两段差值 RMS 0.016332578。这说明受控输出不同，不等于主观听音或音质优劣。
+- 渲染器检查编码前浮点信号；整数 PCM 无 NaN/Inf 的分析不替代浮点检查。无满幅样本也不证明上游从未限幅。
+- 生成 80 张预览；逐张检查新增 Lorenz、Evolved、Rossler 的正常/最小尺寸六图，轨迹、XYZ、速度及禁用控件均可见，没有截断、控件重叠或遮挡琴键。图形为去重的近期 UI 快照，横轴间隔不是连续音频时间；高速度显示不是频谱分析。
+- [八种配置、三轮离线基准](benchmark-chaos-0.17.txt)：Ryzen 7 9800X3D、48 kHz、256 samples、16 声部、10 LFO、单振荡器/Unison 1、滤波与效果关闭，每轮 2 秒音频，排除构造和预热。1,000 Hz Trigger 的 Lorenz/Rössler 每秒音频中位耗时分别 0.605183/0.599409 秒；Rössler 无路由仍为 0.549767 秒，因为已启用的 160 个声部/LFO 状态仍积分。完整对照见模型文档。离线平均耗时不是系统 CPU 百分比、回调峰值或实时无掉音保证。
 
-## Audio and native UI verification
+## 独立版原生操作
 
-- A fresh 0.15 legacy demo was rendered with the retained processor-test binary before changing source. Final 0.16 output is byte-identical: 4,320,104 bytes, SHA-256 3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920.
-- [Independent audio report](audio-analysis-0.16.json): 20 seconds, 48 kHz, 24-bit stereo, 960,000 frames; 5,760,104 bytes; SHA-256 29a826a0882498a1935b90c00232e4db76ab11d77dc04b7c4aa3caae9aa3d7b6. Peak 0.155530810 (-16.164 dBFS), RMS 0.022782152, no PCM full-scale samples. Integer PCM does not independently certify pre-encoding float finiteness; rendering tests check finite output separately.
-- Five fixed-gain 4-second segments: Swing 0%, Swing 60%, Swing 60% with Reverse, Phase Lantern 110 Hz, and 220 Hz. Controlled waveform difference RMS: 0.009958185 for swing, 0.016287551 for direction, and 0.000493519 for audio rate. These numerical comparisons do not imply subjective listening or Serum equivalence.
-- Native standalone QA loaded Phase Lantern, opened LFO Lab, dragged Phase from 0 to 94 degrees and undid it, dragged Macro 5 from SOURCES onto Phase and undid the route, changed Audio Rate to Tempo and undid back to the saved 110 Hz, then played C4 and observed the output meter and LIVE cursor. Undo restored the user's previous Neon Skyline preset. This UI pass preceded the final continuous-range correction; automated final tests cover the corrected precise values.
-- Only the QA window was closed. The user's original settings were restored byte-for-byte: SHA-256 5000F1074D6B885621AFABB357A32E2BA2050F8661AD38C3FB92BC520674AB7E. No third-party app state was changed.
-- All 74 previews regenerated. The eight new standard/minimum-size Swing, Motion, Audio Rate and Phase Routing previews were individually inspected: no clipped labels, overlapping controls or obscured keyboard. Swing 60% shows 65:35; Ping Pong transforms 45 degrees to a 25% start reading and 135 degrees to 75%. Audio Rate shows 110 Hz and disables Follow Swing; Sine disables Custom Curve interpolation. Route Detail clearly shows LFO 2 to LFO 1 Phase at +22%. Random gating is verified by tests, not these eight images.
+使用最终 `Standalone/Anyvoc.exe` 和实际 Windows 窗口操作，覆盖如下。该检查由自动化鼠标输入及逐步截图观察完成，没有把离线预览当作原生窗口证据。
 
-## Release contents
+- 启动恢复原有 Lead / Neon Skyline；浏览器鼠标滚动并双击 Butterfly Current，打开 MOD → EDIT LFO 1，初始 Trigger 无音符时 XYZ 为零、轨迹为空。
+- 点击 C4，Lorenz 和切换后的 Rossler 均出现实际 XYZ 变化及绿色输出电平。切换后先清空旧轨迹；Rossler 松音后 Undo 恢复 Lorenz，XYZ 和轨迹清零，没有修复前的旧点连线。
+- Chaos 下拖动 Phase 仍为 0°；方向、绘图及曲线按钮呈禁用。速度从 1.80 拖到 7.29，一次 Undo 回到 1.80。
+- 切到 Free 后不按琴键也持续演化。切到 Envelope 时清空旧轨迹，短音后 XYZ 稳定在显示值 `(-0.484, -0.455, 0.149)`，连续观察未追加虚构运动。这一步只证明短音后的保持；完整一个名义周期的终点行为由自动测试覆盖。
+- 切回 Sine 后 Phase、Direction 及曲线按钮恢复；Undo 回到 Lorenz，再次清空轨迹。将原生窗口缩至最小尺寸，轨迹、模式、速度和琴键均完整可见。
+- 关闭本轮窗口并确认退出，恢复原设置文件，SHA-256 为 `5000f1074d6b885621afabb357a32e2ba2050f8661ad38c3fb92bc520674ab7e`，与开始前逐字节一致。
 
-- Standalone: 9,379,840 bytes, SHA-256 2C8B987BDFEDD833BD4B01CA6C5FEC4F6D1F2285AF4C5179714016DAE9611046.
-- VST3 module: 9,918,976 bytes, SHA-256 6CBFEB6340F40F59E6BEB11EB9A0B45D3B251C705755E8C3E86619EC81F9CBFF.
-- Release folders: dist/Anyvoc-0.16.0-Windows, Anyvoc-0.16.0-Windows-x64.zip and Anyvoc-0.16.0-Source.zip. Source includes pinned JUCE and LfoModel.h. Older releases remain available.
-- External report: dist/Anyvoc-0.16.0-PackageVerification.json. The verifier checks ZIP CRCs, unique safe paths, exact file sets, every file against current source bytes, binary versions/hashes, and the mandatory 20-second LFO motion demo. It runs after both packaging commands finish and remains outside both archives to avoid self-referential hashes.
+本轮没有进行主观真人听音、原生文件对话框保存／加载或外接 MIDI 设备验收。首次原生检查中自动化工具的搜索文字未进入输入框，故文字搜索输入记未确认；使用鼠标列表完成选音色。快捷键及这些未测项目不能因自动回归通过而视为原生通过。
 
-## Reference and remaining scope
+## 当前二进制与交付
 
-The [official Serum2 feature overview](https://static.xferrecords.com/Serum%202%20What%27s%20New.pdf), page14, describes phase and direction controls, swing following and LFO rates up to1000Hz. Anyvoc implements its own specified timing and transfer functions; the document is not a disclosure of Serum's DSP algorithms.
+| 文件 | 字节数 | SHA-256 |
+| --- | ---: | --- |
+| Standalone / Anyvoc.exe | 9,403,392 | `3e13835c91dfeec948c9284119e963d847ac034cf24f7f084955791d6c0f5d95` |
+| VST3 内部模块 | 9,943,040 | `112b73da60d4bde3232bef2ac304700767e3b7fe2a0230056713ebf738cae33c` |
 
-Still incomplete: chaos LFOs and additional drawing tools, macros as destinations, more modulation targets, multisample/SFZ, spectral oscillators, effects buses, Clip sequencing, MPE, further filter types, expanded wavetable/formula capabilities, library metadata, full accessibility and Chinese UI. Full Serum2 equivalence has not been achieved; its presets are unsupported.
+以下本地产物已生成并通过 `scripts/verify-release.py`：
 
-The user chose standalone. FL Studio and other DAWs remain unverified. AU/AAX/macOS are not provided. Nonlinear/high-rate aliasing and sample/granular pitch-shift limitations remain; imports are limited to20seconds,8–192kHz,mono/stereo. Earlier native Ctrl-key delivery and intermittent arp-sustain RMS issues are not claimed fixed by this work.
+| 产物 | 位置 | 校验范围 |
+| --- | --- | --- |
+| 可运行目录 | `dist/Anyvoc-0.17.0-Windows/` | EXE、完整 VST3、文档、许可和演示；每个文件与当前输入相同 |
+| Windows ZIP | `dist/Anyvoc-0.17.0-Windows-x64.zip` | 190 个文件；CRC、安全唯一路径、精确文件集合和逐文件字节全部通过 |
+| 完整对应源码 ZIP | `dist/Anyvoc-0.17.0-Source.zip` | 4,580 个文件；包括固定 JUCE、Chaos 模型、测试、脚本与 CI 配置；同上全部通过 |
+| 外置校验报告 | `dist/Anyvoc-0.17.0-PackageVerification.json` | 两个 ZIP 的大小／SHA-256、原包和构建二进制的四份版本信息、逐文件比对及必需 WAV 格式 |
+
+报告留在 ZIP 之外，避免把 ZIP 自身哈希写进被哈希的内容。最后文档更新后再次打包并校验；最终 ZIP 哈希以该报告为准。包内 EXE／VST3 与上表经过测试的最终构建逐字节一致。旧 0.16 包保留，不以新代码重新覆盖旧版发行文件。
+
+GitHub 仓库存放源码、文档、截图和原始测试记录；EXE、VST3、WAV、发行 ZIP 与外置包报告留在本地 `dist/`，本轮没有创建 GitHub Release 附件。云端 CI 必须按具体提交另行确认；[已成功的 0.16 CI](GITHUB_HANDOFF.md)不作为 0.17 的通过证据。
+
+## 尚未完成
+
+FL Studio 和其他 DAW 的扫描、实际演奏、自动化及工程重开仍待实测；用户选择先用独立版。macOS、AU、AAX 未提供。完整主观听音、不同设备和最坏负载下的实时表现没有全面验收。
+
+更多绘图工具、宏作为目标、多采样/SFZ、频谱振荡器、效果总线、Clip、MPE、更多滤波器、公式编辑、音色元数据、中文界面与无障碍仍在路线图。高速/非线性混叠、采样/颗粒变调边界未解决；导入仍限 20 秒、8–192 kHz、单/双声道。此前原生 Ctrl 组合键和间歇性琶音持续音 RMS 问题也不因本版而自动视为已修复。完整 Serum 2 等价尚未达到，Serum 预设不受支持。

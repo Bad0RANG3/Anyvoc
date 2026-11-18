@@ -1,10 +1,12 @@
-# Anyvoc 0.16 使用手册
+# Anyvoc 0.17 使用手册
 
 这是一个原创 Windows 64 位合成器，提供 VST3 插件和可独立运行的程序，优先面向 FL Studio 的调音体验。它不是 Serum 2，不兼容 Serum 的预设文件，也不承诺声音或功能与 Serum 2 一致。
 
+0.17 已完成 Release 构建、四套共 175 组自动测试、pluginval strictness 5、音频数值对比和本机独立版操作检查。具体证据及未测项目见 [VALIDATION.md](VALIDATION.md)，最终发行包以 `dist/Anyvoc-0.17.0-PackageVerification.json` 打包报告为准。0.16 历史记录保留在 [VALIDATION-0.16.md](VALIDATION-0.16.md)。
+
 ## 先听到声音
 
-1. 解压版本压缩包后双击 `Anyvoc.exe`，不需要启动 DAW。开发目录中的新版位于 `dist/Anyvoc-0.16.0-Windows/`；原来的 `dist/Anyvoc-Windows/` 保留 0.2 版，0.3–0.15 版也保留在单独文件夹。
+1. 解压 `Anyvoc-0.17.0-Windows-x64.zip` 后双击 `Anyvoc.exe`，不需要启动 DAW。本地打包输出为 `dist/Anyvoc-0.17.0-Windows/`；请以该版本的打包报告确认产物完整。Chaos 功能需要 0.17，旧版程序中没有。原来的 `dist/Anyvoc-Windows/` 保留 0.2 版，0.3–0.16 版也保留在单独文件夹。
 2. 点击顶部音色名称打开浏览器，搜索 `Northern Lights` 或 `Neon Skyline`，双击结果加载。
 3. 用鼠标按底部钢琴键。独立版的 Options / Audio settings 可选择输出设备，推荐 44.1 或 48 kHz、256 或 512 samples。
 4. 没声音时先检查电脑音量、输出设备、MASTER 和振荡器 LEVEL。PANIC 可以停止卡住的音符和效果尾音。
@@ -21,7 +23,7 @@
 
 如果当前用户目录没有自动出现在扫描路径中，用 Plugin search paths 左侧的文件夹加号添加该目录，再扫描。这是 [VST3 官方定义的用户目录](https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/Locations%2BFormat/Plugin%2BLocations.html)。
 
-插件向宿主提供的工程状态包含参数、导入/编辑的波表、采样、自绘 LFO、滤波路由、Warp、演奏与相位设置和音色名称。单独保存音色可点插件顶部 SAVE，生成 `.anyvoc` 文件，再用 LOAD 读取。0.16 可读取 0.1–0.15 的音色；旧文件缺少的新控制使用默认值。状态格式升级到 schema 12，所有新参数追加在原有参数后面，旧参数的选项及自动化映射保持不变。0.15 及更早版本不能读取新格式，请保留旧版音色文件。FL Studio 内的工程保存/重开仍待实测。
+插件向宿主提供的工程状态包含参数、导入/编辑的波表、采样、自绘 LFO、滤波路由、Warp、演奏与相位设置和音色名称。单独保存音色可点插件顶部 SAVE，生成 `.anyvoc` 文件，再用 LOAD 读取。0.17 使用 schema 13，支持读取 0.1–0.16 的音色；旧文件缺少的 Chaos 选项默认为 Off。新参数追加在原有参数后面，原 Shape / Kind 选项及宿主自动化映射保持不变。0.16 及更早版本不能读取新格式，请另存新音色并保留旧文件。状态迁移和保存/恢复已有自动测试；本次原生界面的 SAVE / LOAD 操作，以及 FL Studio 内的工程保存/重开仍待实测。
 
 安装步骤参考 [FL Studio 官方手册](https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/basics_externalplugins.htm)。Windows VST3 不能装进 Mac 的 Logic；AU/macOS 和 Pro Tools 的 AAX 尚未提供。其他支持 Windows VST3 的 DAW 需要分别实测。
 
@@ -95,13 +97,40 @@
 - **PHASE**：改变曲线的读取起点，0–360°；演奏中调整不会重新起音。**DIRECTION** 可选 Forward、Reverse、Ping Pong；Ping Pong 的一次完整往返占一个 Rate / Beat 周期。
 - **PLAY MODE**：Free 连续运行，Trigger 每次按键重开循环，Envelope 只走一个周期。相位为 0° 时，一次播放的 Forward 停在曲线右端，Reverse 与 Ping Pong 停在左端。
 - **FOLLOW SWING**：在 Tempo 模式启用后，跟随下方的全局 Swing 和 1/8 或 1/16 网格。0% 为均分，100% 为 75:25 长短交替。多个 LFO 共享同一个节拍网格，宿主内有 PPQ 时跟随宿主位置；独立版使用自己的连续节拍。
-- **Random** 没有可寻址的波形相位，因此 Phase / Direction 显示 N/A；以前的设置仍保留，切回其他波形后恢复。
+- **Random、Lorenz、Rossler** 没有可寻址的周期波形相位，因此 Phase / Direction 显示 N/A；以前的设置仍保留，切回周期波形后恢复。Chaos 的具体操作见下一节。
 
 可以把一个来源拖到 LFO Lab 的 **PHASE** 旋钮，或在矩阵中选 **LFO 1 Phase … LFO 10 Phase**。强度 100% 代表一整圈，允许正负方向。调制结果在下一个音频采样点应用，因此自己调自己、相互调制都不会形成递归计算；每个复音可以有不同的相位偏移。LIVE 游标显示实际读取位置，START 标记表示设定的起点。相位会绕回一圈，外圈弧线仍只是所选路由的名义范围。
 
 试 **Motion / Swing Carousel**：比较 Swing 0% 和 60%，再切换 Direction。试 **Keys / Phase Lantern**：比较 Audio Rate 110 Hz 和 220 Hz，查看第二行对 LFO 1 Phase 的调制。
 
 `Anyvoc-v0.16-Lfo-Motion-Demo.wav` 为 20 秒、每段 4 秒：Swing 0%、Swing 60%、60% 加反向、Phase Lantern 110 Hz、220 Hz。
+
+## 用 Chaos LFO 做持续演化的调制
+
+0.17 的 **SHAPE** 菜单共有八项：Sine、Triangle、Saw、Square、Random、Custom、Lorenz、Rossler。后两项是连续混沌运动，没有固定的重复波形；不会把周期曲线或随机跳点当成混沌轨迹。MOD 主卡和 LFO Lab 使用同一个波形选择，十个 LFO 均可独立设置。
+
+本次工厂音色从 24 个增至 26 个，原音色保留。先从这两个新预设开始：
+
+1. 在 **BROWSE** 搜索并加载 **Motion / Butterfly Current**，打开 **MOD → LFO 1 → EDIT LFO**。它使用 Lorenz、速度 1.80、Trigger，将 LFO 1 连到截止频率和 OSC A 波表位置。按住底部琴键，查看轨迹并听声音怎样变化；试着降低或提高 **EVOLUTION SPEED**，再用 **UNDO** 回到原值。
+2. 搜索 **Texture / Spiral Drift**。它使用 Rossler、速度 0.70、Free，调制截止频率与声像。保持发声，打开 LFO 1 的 Lab，对照左右运动和轨迹；切换 Lorenz / Rossler 可比较两种运动，再用 **UNDO** 恢复预设。
+
+Chaos 下的 **RATE MODE** 仍有 Free Hz、Tempo、Audio Rate 三项。这些是沿用的模式名称：普通周期波形以 Hz 表示频率；Lorenz / Rossler 将同一个数值用于控制**演化速度**，不是“每秒重复几次”。Lab 的数值标题改为 **EVOLUTION SPEED**，主卡显示 **SPEED / FAST SPEED**。Tempo 的节拍分割和 **FOLLOW SWING** 也会改变演化速度，但不会让 Chaos 变成每拍完全重复的曲线。关闭某个速度模式后，其原数值仍保留。
+
+**PLAY MODE** 决定何时开始和停止这段运动：
+
+- **Free**：共享的 Chaos 状态持续演化，不随每次按键重置。只要音频引擎继续处理，即使未按琴键，图形也可能继续变化。
+- **Trigger**：声部真正重新起音时从该 LFO 的初始状态开始，然后持续演化。它遵循当前 Mono / Legato 的重触发规则；连奏中没有重新起音的音符不会强制重置。不同声部可以处于不同进度。
+- **Envelope**：重新起音后运行一个由 Rate / Beat 决定的名义周期，然后保持最后的状态。这是限定演化时长，不表示轨迹绕回起点。音量仍由 Amp 包络控制。
+
+图左侧显示 **X-Y TRAJECTORY**，右侧显示 **X OUTPUT / RECENT SNAPSHOTS**，下方列出归一化的 X、Y、Z 当前读数。X 就是该 LFO 提供给主来源或 AUX 的输出。图形只记录引擎实际发布的点；Free 显示共享状态，Trigger / Envelope 显示最近活动声部的状态，没有活动声部时保持最后读数。
+
+这是界面刷新时取得的近期快照，连续相同的点会被省略，因此各点间的时间间隔不一定相同；横轴不是音频时间刻度，也不是逐采样的完整波形。主卡显示同类的简洁轨迹。切换算法、播放模式或恢复声音状态会清空显示历史，随后从匹配的新读数开始；尚无匹配读数时显示的全零 XYZ 不画成样点，不会把上一种算法的轨迹连到新轨迹。其他静止的非零读数仍会显示，只省略重复点。清空显示本身不会重置或推进声音引擎。实时轨迹不保存到音色文件。
+
+Chaos 下 **START PHASE、DIRECTION、Custom Curve 插值、画布绘制和五个曲线按钮**不可用；相位拖放也不会新建路由。以前的相位、方向、自绘点和已有相位路由仍保留，但相位路由对 Chaos 不产生作用。选择 **Custom** 可继续编辑已保存的自绘曲线；选择周期波形后可重新使用 Phase / Direction。要让 Chaos 改变声音，使用它作为来源调制 CUTOFF、WAVE 或其他有效目标。
+
+`Anyvoc-v0.17-Chaos-Demo.wav` 是 20 秒对比：前 10 秒 Lorenz，后 10 秒 Rossler，使用相同音符、速度和增益条件。音频已完成独立 PCM 分析，旧声音示例与留存 0.16 程序重新渲染的结果一致；这不等于已完成人耳听音评价。
+
+本机独立版已检查两种算法的实际 XYZ 与输出表、波形切换后撤销清空旧轨迹、速度修改与撤销、Free 无按键演化、Envelope 短音后读数保持，以及最小窗口布局。Envelope 整个名义周期的行为由自动测试验证，本次原生检查未单独计时完整周期。详细记录见 [VALIDATION.md](VALIDATION.md)。
 
 ## 在矩阵里控制调制
 
@@ -266,18 +295,20 @@ DAW 自动化不进入这个历史。如果自动化已改过某条记录涉及�
 
 ## 已有能力与边界
 
-已有：3 个波表/采样/颗粒振荡器、波形/1023 阶谐波强度与相位编辑、波形或频谱渐变与 32 帧波表管理、每个波表振荡器两层 Warp（6 种经典变形及 FM/PM/AM/RM）、每振荡器 1–7 重 Unison、16 复音与单音/连奏/滑音、波表起始相位与随机范围、Sub/Noise、双滤波器串并联与声源路由（各 3 类、12/24 dB）、四组可图形编辑、延迟/保持/曲率/节拍同步包络、10 个可绘制/节拍同步 LFO（相位、方向、Swing、20–1000 Hz 高速模式）、32 条调制路由、旁通、响应曲线、辅助源与拖放分配、LFO 相位目标、8 个 Macro、4 类效果、琶音器、24 个工厂预设、音色浏览/搜索/分类/收藏、64 步全局撤销/重做、WAV 导入/波表导出、参数自动化、MIDI 弯音（±2 半音）/调制轮/延音踏板、工程状态保存。
+0.16 已有并保留的能力：3 个波表/采样/颗粒振荡器、波形/1023 阶谐波强度与相位编辑、波形或频谱渐变与 32 帧波表管理、每个波表振荡器两层 Warp（6 种经典变形及 FM/PM/AM/RM）、每振荡器 1–7 重 Unison、16 复音与单音/连奏/滑音、波表起始相位与随机范围、Sub/Noise、双滤波器串并联与声源路由（各 3 类、12/24 dB）、四组可图形编辑、延迟/保持/曲率/节拍同步包络、10 个可绘制/节拍同步 LFO（相位、方向、Swing、20–1000 Hz 高速模式）、32 条调制路由、旁通、响应曲线、辅助源与拖放分配、LFO 相位目标、8 个 Macro、4 类效果、琶音器、24 个工厂预设、音色浏览/搜索/分类/收藏、64 步全局撤销/重做、WAV 导入/波表导出、参数自动化、MIDI 弯音（±2 半音）/调制轮/延音踏板、工程状态保存。
+
+0.17 新增：十个 LFO 的 Lorenz / Rossler 模式、真实 Chaos 轨迹显示，以及 Butterfly Current / Spiral Drift 两个工厂音色，总数 26 个。
 
 尚未实现：多重采样映射、频谱振荡器引擎、MPE、Serum 预设互通、AU/AAX、完整的可访问性/中文界面。波表仍使用固定 2048 点帧长、最多 32 帧，没有公式编辑；频谱编辑只生成波表，不等同于实时频谱重合成振荡器。琶音器跟随 BPM，但不做宿主小节相位锁定。采样/颗粒的高音移调目前采用插值，未做多级抗混叠。高密度颗粒和高复音可能增加 CPU；请保留工程备份。
 
 0.6 同时修正了延迟缓冲区边界的越界读取，并提高了读指针精度。旧音色参数可以恢复，但启用 Delay 的回声尾音可能与旧版不同；不会保留原来的错误读取结果。
 
-完整复刻目标尚未达成。[Serum 2 官方功能概览](https://static.xferrecords.com/Serum%202%20What's%20New.pdf)还包含多重采样/SFZ、频谱模式、混沌 LFO、更多 LFO 绘制工具、Macro 作为调制目标、更广泛的 Warp 来源与目标、效果总线、Clip 编曲和更完整的浏览功能。当前这些方面仍有差距，滤波器模型种类也较少。Warp 的波表降采样层选择仅降低部分高频能量，Sync、Mirror、Fold、跨声源及高速 LFO 调制并非完全抗混叠。声音等价、所有 DAW 兼容、macOS/AU 和 AAX 均没有验证证据，不能用本项目测试通过代替这些验收。
+完整复刻目标尚未达成。[Serum 2 官方功能概览](https://static.xferrecords.com/Serum%202%20What's%20New.pdf)还包含多重采样/SFZ、频谱模式、更多 LFO 绘制工具、Macro 作为调制目标、更广泛的 Warp 来源与目标、效果总线、Clip 编曲和更完整的浏览功能。当前这些方面仍有差距，滤波器模型种类也较少。加入 Lorenz / Rossler 不意味着实现了 Serum 的相同算法、声音或所有调制行为。Warp 的波表降采样层选择仅降低部分高频能量，Sync、Mirror、Fold、跨声源及高速 LFO 调制并非完全抗混叠。声音等价、所有 DAW 兼容、macOS/AU 和 AAX 均没有验证证据，不能用本项目测试通过代替这些验收。
 
 ## 源码和重新构建
 
 主要源文件在仓库的 `Source`，测试在 `Tests`。依赖固定为 JUCE 8.0.12（commit `29396c22c93392d6738e021b83196283d6e4d850`）。
 
-开发环境：Visual Studio 2022 C++ Build Tools、Windows SDK、CMake ≥3.22、Git。运行 `scripts/build.ps1` 编译并测试；运行 `scripts/package.ps1` 打包。项目使用 AGPL-3.0，详见 LICENSE 与 THIRD_PARTY_NOTICES.md。GitHub 源码仓库提供构建和测试说明；历史音频与发布 ZIP 不纳入 Git。
+开发环境：Visual Studio 2022 C++ Build Tools、Windows SDK、CMake ≥3.22、Git；打包和分析另需 Python 3。运行 `scripts/build.ps1` 编译并测试；按 [BUILDING.md](BUILDING.md) 先渲染 Motion 与 Chaos 试听，再生成 Windows 包、源码包并校验。项目使用 AGPL-3.0，详见 LICENSE 与 THIRD_PARTY_NOTICES.md。GitHub 源码仓库提供构建和测试说明；历史音频与发布 ZIP 不纳入 Git。
 
 具体验证记录见 [VALIDATION.md](VALIDATION.md)，不要将未测试的宿主视为已经兼容。

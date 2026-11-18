@@ -1,0 +1,34 @@
+Chaos benchmark: Release; 48 kHz; 16 sustained voices with staggered onsets; 10 LFOs; 10 small pan routes; one wavetable oscillator, unison1, filters/effects off; 256-sample blocks; 2 audio seconds/run, 3 rounds; setSettings each block; construction/warmup excluded. Last case has zero routes but still integrates all 160 voice/LFO states.
+ROUND 1 Sine 10Hz Trigger: wall=0.256302s, wall/audio=0.128151
+ROUND 1 Lorenz 10Hz Trigger: wall=0.348807s, wall/audio=0.174403
+ROUND 1 Rossler 10Hz Trigger: wall=0.350398s, wall/audio=0.175199
+ROUND 1 Sine 1000Hz Trigger: wall=0.297445s, wall/audio=0.148723
+ROUND 1 Lorenz 1000Hz Free: wall=0.300455s, wall/audio=0.150228
+ROUND 1 Lorenz 1000Hz Trigger: wall=1.210177s, wall/audio=0.605088
+ROUND 1 Rossler 1000Hz Trigger: wall=1.198819s, wall/audio=0.599409
+ROUND 1 Rossler 1000Hz Trigger unrouted: wall=1.102610s, wall/audio=0.551305
+ROUND 2 Lorenz 10Hz Trigger: wall=0.355390s, wall/audio=0.177695
+ROUND 2 Rossler 10Hz Trigger: wall=0.351029s, wall/audio=0.175514
+ROUND 2 Sine 1000Hz Trigger: wall=0.293575s, wall/audio=0.146787
+ROUND 2 Lorenz 1000Hz Free: wall=0.300800s, wall/audio=0.150400
+ROUND 2 Lorenz 1000Hz Trigger: wall=1.210367s, wall/audio=0.605183
+ROUND 2 Rossler 1000Hz Trigger: wall=1.199500s, wall/audio=0.599750
+ROUND 2 Rossler 1000Hz Trigger unrouted: wall=1.099535s, wall/audio=0.549767
+ROUND 2 Sine 10Hz Trigger: wall=0.260752s, wall/audio=0.130376
+ROUND 3 Rossler 10Hz Trigger: wall=0.348851s, wall/audio=0.174426
+ROUND 3 Sine 1000Hz Trigger: wall=0.294062s, wall/audio=0.147031
+ROUND 3 Lorenz 1000Hz Free: wall=0.299667s, wall/audio=0.149834
+ROUND 3 Lorenz 1000Hz Trigger: wall=1.214206s, wall/audio=0.607103
+ROUND 3 Rossler 1000Hz Trigger: wall=1.198298s, wall/audio=0.599149
+ROUND 3 Rossler 1000Hz Trigger unrouted: wall=1.097171s, wall/audio=0.548585
+ROUND 3 Sine 10Hz Trigger: wall=0.255941s, wall/audio=0.127971
+ROUND 3 Lorenz 10Hz Trigger: wall=0.350042s, wall/audio=0.175021
+MEDIAN Sine 10Hz Trigger: wall=0.256302s, wall/audio=0.128151, real-time throughput=7.803282x
+MEDIAN Lorenz 10Hz Trigger: wall=0.350042s, wall/audio=0.175021, real-time throughput=5.713605x
+MEDIAN Rossler 10Hz Trigger: wall=0.350398s, wall/audio=0.175199, real-time throughput=5.707794x
+MEDIAN Sine 1000Hz Trigger: wall=0.294062s, wall/audio=0.147031, real-time throughput=6.801278x
+MEDIAN Lorenz 1000Hz Free: wall=0.300455s, wall/audio=0.150228, real-time throughput=6.656571x
+MEDIAN Lorenz 1000Hz Trigger: wall=1.210367s, wall/audio=0.605183, real-time throughput=1.652391x
+MEDIAN Rossler 1000Hz Trigger: wall=1.198819s, wall/audio=0.599409, real-time throughput=1.668309x
+MEDIAN Rossler 1000Hz Trigger unrouted: wall=1.099535s, wall/audio=0.549767, real-time throughput=1.818951x
+CHECKSUM 0.162728

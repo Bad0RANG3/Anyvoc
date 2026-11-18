@@ -59,7 +59,7 @@ struct SynthSettings
     EnvelopeSettings amp, filter;
     std::array<EnvelopeSettings, 2> extraEnvelopes {}; // Env3/Env4; Amp determines voice lifetime.
     std::array<float, lfoCount> lfoRate { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    std::array<int, lfoCount> lfoShape {};
+    std::array<int, lfoCount> lfoShape {}; // Sine/Triangle/Saw/Square/Random/Custom/Lorenz/Rossler.
     std::array<bool, lfoCount> lfoSync {};
     std::array<int, lfoCount> lfoDivision { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
     std::array<int, lfoCount> lfoMode {}; // Free/global, per-note trigger, per-note one-shot
@@ -116,6 +116,14 @@ public:
     // UI-safe actual last read position, including offset/direction/swing and
     // preceding-sample phase modulation. Voice-specific modes show the newest voice.
     float getLfoPhase (int zeroBased) const;
+    // Coherent UI snapshot of the last actual Chaos read, normalized to [-1,1].
+    // Free shows the shared trajectory; Trigger/Envelope show the newest voice.
+    // Optional expected shape/mode filter the same coherent snapshot. A UI
+    // selection can precede its audio-block update; mismatches return zero.
+    // Negative expectations are wildcards. Non-Chaos/invalid indices return
+    // zero. UI-only: the reader may retry; the audio writer never waits.
+    std::array<float, 3> getLfoChaosPoint (int zeroBased, int expectedShape = -1,
+                                         int expectedMode = -1) const noexcept;
     void render (juce::AudioBuffer<float>& output, juce::MidiBuffer& midi);
 
     // Construct/import tables off the audio thread. A null table restores the factory waves.

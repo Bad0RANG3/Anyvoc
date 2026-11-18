@@ -461,8 +461,8 @@ void testEditedWavetableStateAndExport()
                  "Edited additive frame was clipped or normalized");
     }
     auto tree = stateTree (source);
-    require (static_cast<int> (tree.getProperty ("schemaVersion")) == 12,
-             "Edited table state did not use schema version 11");
+    require (static_cast<int> (tree.getProperty ("schemaVersion")) == 13,
+             "Edited table state did not use schema version 13");
     int tables = 0;
     for (int child = 0; child < tree.getNumChildren(); ++child)
         if (const auto table = tree.getChild (child); table.hasType ("WAVETABLE"))
@@ -630,8 +630,8 @@ void testEmbeddedSampleState()
     const auto sampleName = source.getSampleName (0);
     const auto data = save (source);
     const auto tree = stateTree (source);
-    require (static_cast<int> (tree.getProperty ("schemaVersion")) == 12,
-             "Current state was not stored with schema version 11");
+    require (static_cast<int> (tree.getProperty ("schemaVersion")) == 13,
+             "Current state was not stored with schema version 13");
     int samples = 0;
     for (int child = 0; child < tree.getNumChildren(); ++child)
         if (tree.getChild (child).hasType ("SAMPLE"))
@@ -738,6 +738,14 @@ bool isVoicingParameter (const juce::String& id)
 constexpr int advancedMatrixParameterCount = 24 * 7 + 32 * 6;
 constexpr int expandedSourceParameterCount = 8 * 40 + 2 * 4 + 4 + 32 * 2;
 constexpr int advancedEnvelopeParameterCount = 4 * 12;
+constexpr int chaosParameterCount = 10;
+
+bool isChaosParameter (const juce::String& id)
+{
+    for (int lfo = 1; lfo <= 10; ++lfo) if (id == "lfo" + juce::String (lfo) + "Chaos") return true;
+    return false;
+}
+
 constexpr int lfoMotionParameterCount = 10 * 5 + 2 + 32 * 2;
 const std::array<const char*, 5> lfoMotionFields { "Phase", "Direction", "FollowSwing", "AudioRateEnabled", "AudioRateHz" };
 
@@ -820,8 +828,8 @@ void testVoicingStateAndPresetDefaults()
     AnyvocAudioProcessor restored;
     restored.setStateInformation (state.getData(), static_cast<int> (state.getSize()));
     expectParameters (restored, expected);
-    require (static_cast<int> (stateTree (restored).getProperty ("schemaVersion")) == 12,
-             "Voicing state did not use the current schema 12");
+    require (static_cast<int> (stateTree (restored).getProperty ("schemaVersion")) == 13,
+             "Voicing state did not use the current schema 13");
     juce::TemporaryFile file (".anyvoc");
     require (source.savePreset (file.getFile()) && restored.loadPreset (file.getFile()),
              "Voicing user preset did not save/load");
@@ -842,7 +850,7 @@ void testVoicingStateAndPresetDefaults()
     for (int index = 0; index < order.size(); ++index)
     {
         const auto* parameter = dynamic_cast<const juce::RangedAudioParameter*> (
-            all[all.size() - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 12 - order.size() + index]);
+            all[all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 12 - order.size() + index]);
         require (parameter != nullptr && parameter->getParameterID() == order[index],
                  "New voicing parameters were inserted into the old host automation order");
     }
@@ -3326,7 +3334,7 @@ void testCrossModulationStateAndParameterCompatibility()
     const auto& all = source.getParameters();
     require (all.size() > 12, "Cross-modulation parameters were not appended");
     const auto* previousLast = dynamic_cast<const juce::RangedAudioParameter*> (
-        all[all.size() - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 13]);
+        all[all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 13]);
     require (previousLast != nullptr && previousLast->getParameterID() == "osc3RandomUnison",
              "Cross-modulation controls were inserted into preexisting host automation order");
     int appended = 0;
@@ -3344,7 +3352,7 @@ void testCrossModulationStateAndParameterCompatibility()
             {
                 auto* parameter = source.apvts.getParameter (prefix + suffix);
                 const auto* atIndex = dynamic_cast<const juce::RangedAudioParameter*> (
-                    all[all.size() - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 12 + appended]);
+                    all[all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount - advancedMatrixParameterCount - 12 + appended]);
                 require (parameter != nullptr && parameter == atIndex && parameter->getNumSteps() == 5
                              && parameter->getVersionHint() == 8 && parameter->getDefaultValue() == 0,
                          "Cross-modulation parameter order, choice range, version hint or default changed");
@@ -3366,8 +3374,8 @@ void testCrossModulationStateAndParameterCompatibility()
         }
     const auto expected = parameters (source);
     const auto state = save (source);
-    require (static_cast<int> (stateTree (source).getProperty ("schemaVersion")) == 12,
-             "Cross-modulation state did not advertise schema 12");
+    require (static_cast<int> (stateTree (source).getProperty ("schemaVersion")) == 13,
+             "Cross-modulation state did not advertise schema 13");
     AnyvocAudioProcessor restored;
     restored.setStateInformation (state.getData(), static_cast<int> (state.getSize()));
     expectParameters (restored, expected);
@@ -3384,7 +3392,7 @@ void testCrossModulationStateAndParameterCompatibility()
         if (auto* parameter = dynamic_cast<juce::RangedAudioParameter*> (base);
             parameter != nullptr && isCrossModulationParameter (parameter->getParameterID()))
             require (parameter->getValue() == parameter->getDefaultValue(), "Init retained a cross mode or source");
-    require (restored.getNumPrograms() == 24 && restored.getProgramName (16) == "Keys / Phase Alloy"
+    require (restored.getNumPrograms() == 26 && restored.getProgramName (16) == "Keys / Phase Alloy"
                  && restored.getProgramName (17) == "Bass / Vector Steel",
              "The new cross-modulation presets displaced previous program indices");
     setParameter (restored, "osc1Warp1Mode", 6);
@@ -3720,7 +3728,7 @@ void testAdvancedMatrixParameterCompatibility()
     for (int osc = 1; osc <= 3; ++osc) for (int slot = 1; slot <= 2; ++slot)
         append ("osc" + juce::String (osc) + "Warp" + juce::String (slot), { "CrossMode", "CrossSource" });
     const auto& all = processor.getParameters();
-    require (all.size() == legacy.size() + advancedMatrixParameterCount + expandedSourceParameterCount + advancedEnvelopeParameterCount + lfoMotionParameterCount,
+    require (all.size() == legacy.size() + advancedMatrixParameterCount + expandedSourceParameterCount + advancedEnvelopeParameterCount + lfoMotionParameterCount + chaosParameterCount,
              "Advanced matrix did not append exactly 360 host controls");
     for (int index = 0; index < legacy.size(); ++index)
     {
@@ -3762,7 +3770,7 @@ void testAdvancedMatrixParameterCompatibility()
                 require (parameter->getNumSteps() == (enabled ? 2 : field == 10 ? 10 : 3),
                          "Advanced source/polarity/bypass choice count changed");
         }
-    require (next == all.size() - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount, "The complete v0.13 host prefix changed");
+    require (next == all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount, "The complete v0.13 host prefix changed");
     for (int route = 1; route <= 8; ++route)
     {
         const auto prefix = "mod" + juce::String (route);
@@ -3789,8 +3797,8 @@ void testAdvancedMatrixStateAndMigration()
     setParameter (source, "master", .41f);
     const auto expected = parameters (source);
     const auto state = save (source);
-    require (static_cast<int> (stateTree (source).getProperty ("schemaVersion")) == 12,
-             "Advanced matrix state did not advertise schema 12");
+    require (static_cast<int> (stateTree (source).getProperty ("schemaVersion")) == 13,
+             "Advanced matrix state did not advertise schema 13");
     AnyvocAudioProcessor restored;
     restored.setStateInformation (state.getData(), static_cast<int> (state.getSize()));
     expectParameters (restored, expected);
@@ -3825,13 +3833,13 @@ void testAdvancedMatrixStateAndMigration()
     setParameter (legacySource, "mod8Amount", -.23f);
     const auto legacyExpected = parameters (legacySource);
     const auto current = stateTree (legacySource);
-    for (int version = 1; version <= 11; ++version)
+    for (int version = 1; version <= 12; ++version)
     {
         auto legacy = current.createCopy(); legacy.setProperty ("schemaVersion", version, nullptr);
         for (int child = legacy.getNumChildren(); --child >= 0;)
         {
             const auto id = legacy.getChild (child).getProperty ("id").toString();
-            if (isLfoMotionParameter (id) || (version < 11 && isAdvancedEnvelopeParameter (id)) || (version < 10 && isExpandedSourceParameter (id))
+            if (isChaosParameter (id) || (version < 12 && isLfoMotionParameter (id)) || (version < 11 && isAdvancedEnvelopeParameter (id)) || (version < 10 && isExpandedSourceParameter (id))
                 || (version < 9 && isAdvancedMatrixParameter (id)) || (version < 8 && isCrossModulationParameter (id))
                 || (version < 7 && isVoicingParameter (id)) || (version < 6 && isWarpParameter (id))
                 || (version < 5 && isDualFilterParameter (id)) || (version < 3 && isDrawableLfoParameter (id))
@@ -3842,7 +3850,7 @@ void testAdvancedMatrixStateAndMigration()
         for (auto* base : target.getParameters())
             if (auto* parameter = dynamic_cast<juce::RangedAudioParameter*> (base);
                 parameter != nullptr && (isAdvancedEnvelopeParameter (parameter->getParameterID())
-                    || isLfoMotionParameter (parameter->getParameterID()))) parameter->setValueNotifyingHost (1);
+                    || isLfoMotionParameter (parameter->getParameterID()) || isChaosParameter (parameter->getParameterID()))) parameter->setValueNotifyingHost (1);
         restore (target, legacy);
         expectParameters (target, legacyExpected);
         const auto retained = save (target);
@@ -4429,7 +4437,7 @@ void testExpandedSourceParameterCompatibility()
     require (anyvoc::lfoCount == 10 && anyvoc::macroCount == 8 && anyvoc::modulationSourceCount == 25,
              "Expanded modulator/source counts changed");
     const auto& all = processor.getParameters();
-    int next = all.size() - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount;
+    int next = all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount - expandedSourceParameterCount;
     const auto parameter = [&] (const juce::String& id)
     {
         auto* result = dynamic_cast<juce::RangedAudioParameter*> (all[next++]);
@@ -4488,7 +4496,7 @@ void testExpandedSourceParameterCompatibility()
                 require (old->convertFrom0to1 (value / 9.0f) == value, "A legacy source index was renumbered");
         }
     }
-    require (next == all.size() - lfoMotionParameterCount - advancedEnvelopeParameterCount, "The v0.14 source controls moved from their frozen 396-parameter block");
+    require (next == all.size() - chaosParameterCount - lfoMotionParameterCount - advancedEnvelopeParameterCount, "The v0.14 source controls moved from their frozen 396-parameter block");
 }
 
 void testExpandedSourceStateValidation()
@@ -4540,7 +4548,7 @@ void testExpandedSourceStateValidation()
     for (int child = v9.getNumChildren(); --child >= 0;)
         if (isExpandedSourceParameter (v9.getChild (child).getProperty ("id").toString())
             || isAdvancedEnvelopeParameter (v9.getChild (child).getProperty ("id").toString())
-            || isLfoMotionParameter (v9.getChild (child).getProperty ("id").toString())) v9.removeChild (child, nullptr);
+            || (isLfoMotionParameter (v9.getChild (child).getProperty ("id").toString()) || isChaosParameter (v9.getChild (child).getProperty ("id").toString()))) v9.removeChild (child, nullptr);
     restore (target, current); restore (target, v9); expectParameters (target, legacyExpected);
     require (target.getModulationSource (31) == 9 && target.getModulationSource (31, true) == 2,
              "Schema 9 migration shadowed its old primary/auxiliary source");
@@ -4748,9 +4756,9 @@ void testExpandedSourcesReachAudio()
 void testExpandedFactoryPresets()
 {
     AnyvocAudioProcessor processor;
-    require (processor.getNumPrograms() == 24 && processor.getProgramName (18) == "Motion / Prism Weave"
+    require (processor.getNumPrograms() == 26 && processor.getProgramName (18) == "Motion / Prism Weave"
                  && processor.getProgramName (19) == "Pad / Four Horizons", "Expanded source presets displaced the old factory bank");
-    for (int program = 0; program < 24; ++program)
+    for (int program = 0; program < processor.getNumPrograms(); ++program)
     {
         processor.setCurrentProgram (program); processor.prepareToPlay (48000, 512);
         const auto audio = render (processor, 24000, { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } }, 257);
@@ -4781,6 +4789,14 @@ void testExpandedFactoryPresets()
                  && std::abs (plainParameter (processor, "lfo1AudioRateHz") - 110) < .001f
                  && processor.getModulationDestination (1) == 18 && processor.getModulationSource (1) == 2,
              "Phase Lantern did not expose its audio-rate LFO and second-LFO phase routing");
+    processor.setCurrentProgram (24);
+    require (processor.getLfoShape (0) == 6 && processor.getModulationSource (0) == 1
+                 && processor.getModulationDestination (0) == 1 && processor.getModulationDestination (1) == 2,
+             "Butterfly Current did not route its Lorenz source to cutoff and wavetable position");
+    processor.setCurrentProgram (25);
+    require (processor.getLfoShape (0) == 7 && processor.getModulationSource (0) == 1
+                 && processor.getModulationDestination (0) == 1 && processor.getModulationDestination (1) == 7,
+             "Spiral Drift did not route its Rossler source to cutoff and pan");
 }
 
 void testExpandedSourceEditorNavigation()
@@ -4936,7 +4952,7 @@ void testExpandedLfoCurveHostCallbacks()
 {
     PresetTestDirectory files;
     for (const bool preset : { false, true }) for (int boundary = 0; boundary < 3; ++boundary)
-        for (int action = 0; action < 8; ++action)
+        for (int action = 0; action < 9; ++action)
         {
             AnyvocAudioProcessor processor;
             processor.setLfoShape (9, 5); setParameter (processor, "lfo10Phase", .25f); clearMatrixHistory (processor);
@@ -4963,6 +4979,7 @@ void testExpandedLfoCurveHostCallbacks()
                     auto* phase = processor.apvts.getParameter ("lfo10Phase");
                     phase->setValueNotifyingHost (std::nextafter (phase->getValue(), 1.0f));
                 }
+                else if (action == 8) setParameter (processor, "lfo10Chaos", 1);
                 else setParameter (processor, action == 4 ? "lfo10Direction" : action == 5 ? "lfo10FollowSwing"
                                                : action == 6 ? "lfo10AudioRateEnabled" : "lfo10AudioRateHz", action == 7 ? 500 : 1);
                 expected = parameters (processor);
@@ -5026,7 +5043,7 @@ void testExpandedLfoShapeUiHostCallbacks()
         else basic.onEnd = callback;
         auto* detail = findComponent<juce::Component> (*editor, "LfoDetail10");
         auto* box = findComponent<juce::ComboBox> (*detail, "lfo10ShapeChoice");
-        require (modulationControlVisible (box) && box->getNumItems() == 6, "LFO 10 composite shape control was missing");
+        require (modulationControlVisible (box) && box->getNumItems() == 8, "LFO 10 composite shape control was missing");
         box->setSelectedItemIndex (2, juce::sendNotificationSync);
         require (! expected.empty(), "LFO shape UI host callback did not run");
         expectParameters (processor, expected, "LFO shape UI boundary=" + std::to_string (boundary) + " action=" + std::to_string (action));
@@ -5105,7 +5122,7 @@ void testAdvancedEnvelopeParameterCompatibility()
 {
     AnyvocAudioProcessor processor;
     const auto& all = processor.getParameters();
-    require (all.size() == 1018 + advancedEnvelopeParameterCount + lfoMotionParameterCount, "Advanced envelopes did not append exactly 48 controls after v0.14");
+    require (all.size() == 1018 + advancedEnvelopeParameterCount + lfoMotionParameterCount + chaosParameterCount, "Advanced envelopes did not append exactly 48 controls after v0.14");
     int next = 1018;
     const std::array<int, 5> divisionDefaults { 0, 3, 0, 5, 5 };
     const juce::StringArray divisions { "Instant", "1/64", "1/32", "1/16", "1/8", "1/4", "1/2", "1 bar", "2 bars", "4 bars",
@@ -5152,7 +5169,7 @@ void testAdvancedEnvelopeParameterCompatibility()
                      "An existing ADSR parameter changed its host range/version: " + id.toStdString());
         }
     }
-    require (next == all.size() - lfoMotionParameterCount, "Advanced envelope verification missed a tail parameter");
+    require (next == all.size() - chaosParameterCount - lfoMotionParameterCount, "Advanced envelope verification missed a tail parameter");
 }
 
 void testAdvancedEnvelopeStateAndMigration()
@@ -5168,7 +5185,7 @@ void testAdvancedEnvelopeStateAndMigration()
     setParameter (source, "ampAttack", .12345f); setParameter (source, "env4Release", .45678f);
     const auto expected = parameters (source);
     const auto current = stateTree (source);
-    require (static_cast<int> (current.getProperty ("schemaVersion")) == 12, "Envelope state did not advertise schema 12");
+    require (static_cast<int> (current.getProperty ("schemaVersion")) == 13, "Envelope state did not advertise schema 13");
     AnyvocAudioProcessor restored;
     restore (restored, current); expectParameters (restored, expected, "Advanced envelope DAW roundtrip");
     juce::TemporaryFile file (".anyvoc");
@@ -5187,16 +5204,16 @@ void testAdvancedEnvelopeStateAndMigration()
     auto v10 = stateTree (legacy); v10.setProperty ("schemaVersion", 10, nullptr);
     for (int child = v10.getNumChildren(); --child >= 0;)
         if (isAdvancedEnvelopeParameter (v10.getChild (child).getProperty ("id").toString())
-            || isLfoMotionParameter (v10.getChild (child).getProperty ("id").toString())) v10.removeChild (child, nullptr);
+            || (isLfoMotionParameter (v10.getChild (child).getProperty ("id").toString()) || isChaosParameter (v10.getChild (child).getProperty ("id").toString()))) v10.removeChild (child, nullptr);
     restore (restored, current); restore (restored, v10); expectParameters (restored, legacyExpected, "Authentic schema 10 envelope migration");
     const auto retained = save (restored);
     for (const auto* prefix : envelopePrefixes) for (const auto* suffix : advancedEnvelopeFields)
     {
         const auto id = juce::String (prefix) + suffix;
         auto missing = current.createCopy(); missing.removeChild (missing.getChildWithProperty ("id", id), nullptr);
-        restore (restored, missing); require (save (restored) == retained, "Schema 12 accepted missing " + id.toStdString());
+        restore (restored, missing); require (save (restored) == retained, "Schema 13 accepted missing " + id.toStdString());
         auto duplicate = current.createCopy(); duplicate.addChild (duplicate.getChildWithProperty ("id", id).createCopy(), -1, nullptr);
-        restore (restored, duplicate); require (save (restored) == retained, "Schema 12 accepted duplicate " + id.toStdString());
+        restore (restored, duplicate); require (save (restored) == retained, "Schema 13 accepted duplicate " + id.toStdString());
     }
     for (const auto* prefix : envelopePrefixes) for (const auto* suffix : { "Delay", "AttackCurve", "TempoSync", "ReleaseDivision", "RetriggerLegato" })
         for (const auto* bad : { "NaN", "Infinity", "invalid" })
@@ -5529,7 +5546,7 @@ void testLfoMotionParameterCompatibility()
 {
     AnyvocAudioProcessor processor;
     const auto& all = processor.getParameters();
-    require (all.size() == 1066 + lfoMotionParameterCount, "LFO motion must append 116 parameters after the frozen v0.15 prefix");
+    require (all.size() == 1066 + lfoMotionParameterCount + chaosParameterCount, "LFO motion must append 116 parameters after the frozen v0.15 prefix");
     int next = 1066;
     const auto parameter = [&] (const juce::String& id)
     {
@@ -5577,7 +5594,7 @@ void testLfoMotionParameterCompatibility()
         const auto prefix = "mod" + juce::String (route);
         toggle (prefix + "LfoPhaseEnabled"); choice (prefix + "LfoPhaseTarget", destinations);
     }
-    require (next == all.size(), "LFO motion parameter verification missed appended controls");
+    require (next == all.size() - chaosParameterCount, "LFO motion parameter verification missed appended controls");
 }
 
 void testLfoMotionStateAndMigration()
@@ -5593,7 +5610,7 @@ void testLfoMotionStateAndMigration()
     require (count == lfoMotionParameterCount, "LFO motion state fixture missed appended controls");
     const auto expected = parameters (source);
     const auto current = stateTree (source);
-    require (static_cast<int> (current.getProperty ("schemaVersion")) == 12, "LFO motion state must use schema 12");
+    require (static_cast<int> (current.getProperty ("schemaVersion")) == 13, "LFO motion state must use schema 13");
     AnyvocAudioProcessor restored; restore (restored, current); expectParameters (restored, expected, "LFO motion DAW roundtrip");
     juce::TemporaryFile preset (".anyvoc");
     require (source.savePreset (preset.getFile()) && restored.loadPreset (preset.getFile()), "LFO motion preset file failed to roundtrip");
@@ -5606,7 +5623,7 @@ void testLfoMotionStateAndMigration()
     AnyvocAudioProcessor legacy; legacy.setCurrentProgram (20); setParameter (legacy, "lfo10Rate", 7.4321f);
     const auto oldValues = parameters (legacy); auto v11 = stateTree (legacy); v11.setProperty ("schemaVersion", 11, nullptr);
     for (int child = v11.getNumChildren(); --child >= 0;)
-        if (isLfoMotionParameter (v11.getChild (child).getProperty ("id").toString())) v11.removeChild (child, nullptr);
+        if ((isLfoMotionParameter (v11.getChild (child).getProperty ("id").toString()) || isChaosParameter (v11.getChild (child).getProperty ("id").toString()))) v11.removeChild (child, nullptr);
     restore (restored, current); restore (restored, v11); expectParameters (restored, oldValues, "Authentic schema 11 migration");
     const auto retained = save (restored);
     for (auto* base : source.getParameters())
@@ -5614,9 +5631,9 @@ void testLfoMotionStateAndMigration()
         {
             const auto id = p->getParameterID();
             auto missing = current.createCopy(); missing.removeChild (missing.getChildWithProperty ("id", id), nullptr);
-            restore (restored, missing); require (save (restored) == retained, "Schema 12 accepted missing " + id.toStdString());
+            restore (restored, missing); require (save (restored) == retained, "Schema 13 accepted missing " + id.toStdString());
             auto duplicate = current.createCopy(); duplicate.addChild (duplicate.getChildWithProperty ("id", id).createCopy(), -1, nullptr);
-            restore (restored, duplicate); require (save (restored) == retained, "Schema 12 accepted duplicate " + id.toStdString());
+            restore (restored, duplicate); require (save (restored) == retained, "Schema 13 accepted duplicate " + id.toStdString());
             for (const auto* bad : { "NaN", "Infinity", "not numeric" })
             {
                 auto invalid = current.createCopy(); invalid.getChildWithProperty ("id", id).setProperty ("value", bad, nullptr);
@@ -6022,6 +6039,436 @@ void testLfoPhaseDropHostCallbacks()
         }
 }
 
+void testChaosParameterCompatibilityAndState()
+{
+    AnyvocAudioProcessor source;
+    const auto& all = source.getParameters();
+    require (all.size() == 1192, "Chaos must append ten parameters after the frozen 1182-parameter prefix");
+    for (int index = 0; index < 10; ++index)
+    {
+        const auto prefix = "lfo" + juce::String (index + 1);
+        auto* p = dynamic_cast<juce::RangedAudioParameter*> (all[1182 + index]);
+        auto* choice = dynamic_cast<juce::AudioParameterChoice*> (p);
+        require (p != nullptr && p->getParameterID() == prefix + "Chaos" && p->getVersionHint() == 13
+                     && choice != nullptr && choice->choices == juce::StringArray { "Off", "Lorenz", "Rossler" }
+                     && p->getNumSteps() == 3 && p->getDefaultValue() == 0,
+                 "Chaos tail order, mapping or default changed at " + prefix.toStdString());
+        auto* shape = dynamic_cast<juce::AudioParameterChoice*> (source.apvts.getParameter (prefix + "Shape"));
+        auto* kind = dynamic_cast<juce::AudioParameterChoice*> (source.apvts.getParameter (prefix + "Kind"));
+        require (shape != nullptr && shape->choices == juce::StringArray { "Sine", "Triangle", "Saw", "Square" }
+                     && kind != nullptr && kind->choices == juce::StringArray { "Basic", "Random", "Custom" },
+                 "Chaos reinterpreted existing normalized shape/kind automation");
+        for (int value = 0; value < 3; ++value)
+            require (p->convertFrom0to1 (value * .5f) == value, "Chaos choice changed its host mapping");
+        setParameter (source, (prefix + "Shape").toRawUTF8(), static_cast<float> (index % 4));
+        setParameter (source, (prefix + "Kind").toRawUTF8(), static_cast<float> (index % 3));
+        setParameter (source, (prefix + "Chaos").toRawUTF8(), static_cast<float> (1 + index % 2));
+    }
+    const auto current = stateTree (source);
+    const auto expected = parameters (source);
+    require (static_cast<int> (current.getProperty ("schemaVersion")) == 13, "Chaos state must use schema 13");
+    AnyvocAudioProcessor restored; restore (restored, current); expectParameters (restored, expected, "Chaos DAW roundtrip");
+    juce::TemporaryFile file (".anyvoc");
+    require (source.savePreset (file.getFile()) && restored.loadPreset (file.getFile()), "Chaos preset file roundtrip failed");
+    expectParameters (restored, expected, "Chaos file roundtrip");
+    restored.setCurrentProgram (0);
+    for (int index = 0; index < 10; ++index)
+        require (plainParameter (restored, "lfo" + juce::String (index + 1) + "Chaos") == 0, "Init retained Chaos");
+    AnyvocAudioProcessor legacy; legacy.setCurrentProgram (23);
+    const auto legacyExpected = parameters (legacy); auto v12 = stateTree (legacy); v12.setProperty ("schemaVersion", 12, nullptr);
+    for (int child = v12.getNumChildren(); --child >= 0;)
+        if (isChaosParameter (v12.getChild (child).getProperty ("id").toString())) v12.removeChild (child, nullptr);
+    restore (restored, current); restore (restored, v12); expectParameters (restored, legacyExpected, "Authentic schema 12 migration over active Chaos");
+    const auto retained = save (restored);
+    for (int index = 1; index <= 10; ++index)
+    {
+        const auto id = "lfo" + juce::String (index) + "Chaos";
+        auto missing = current.createCopy(); missing.removeChild (missing.getChildWithProperty ("id", id), nullptr);
+        restore (restored, missing); require (save (restored) == retained, "Schema 13 accepted missing " + id.toStdString());
+        auto duplicate = current.createCopy(); duplicate.addChild (duplicate.getChildWithProperty ("id", id).createCopy(), -1, nullptr);
+        restore (restored, duplicate); require (save (restored) == retained, "Schema 13 accepted duplicate " + id.toStdString());
+        for (const auto* invalid : { "NaN", "Infinity", "invalid" })
+        {
+            auto bad = current.createCopy(); bad.getChildWithProperty ("id", id).setProperty ("value", invalid, nullptr);
+            restore (restored, bad); require (save (restored) == retained, "Malformed Chaos partially replaced the live state");
+        }
+    }
+    auto future = current.createCopy(); future.setProperty ("schemaVersion", 14, nullptr);
+    restore (restored, future); require (save (restored) == retained, "Unknown future schema was accepted");
+    require (source.getProgramName (24) == "Motion / Butterfly Current" && source.getProgramName (25) == "Texture / Spiral Drift",
+             "Chaos presets displaced existing factory indices");
+}
+
+void testChaosShapeHistoryAndHostBoundaries()
+{
+    AnyvocAudioProcessor processor;
+    for (int index = 0; index < 10; ++index)
+    {
+        const auto prefix = "lfo" + juce::String (index + 1);
+        setParameter (processor, (prefix + "Shape").toRawUTF8(), 2); processor.setLfoShape (index, 5);
+        for (const int selected : { 6, 7, 0, 1, 2, 3, 4, 5, 6 })
+        {
+            clearMatrixHistory (processor); const auto before = parameters (processor);
+            const auto oldShape = plainParameter (processor, prefix + "Shape"), oldKind = plainParameter (processor, prefix + "Kind");
+            processor.setLfoShape (index, selected); const auto after = parameters (processor);
+            require (processor.getLfoShape (index) == selected && processor.getUndoCount() == 1, "Chaos selection split its history or chose the wrong LFO");
+            if (selected >= 6)
+                require (plainParameter (processor, prefix + "Shape") == oldShape && plainParameter (processor, prefix + "Kind") == oldKind,
+                         "Entering Chaos discarded remembered legacy selectors");
+            else require (plainParameter (processor, prefix + "Chaos") == 0, "Leaving Chaos retained its override");
+            expectHistoryResult (processor.undoUserEdit(), "Undo Chaos shape"); expectParameters (processor, before);
+            expectHistoryResult (processor.redoUserEdit(), "Redo Chaos shape"); expectParameters (processor, after);
+            const auto unchanged = save (processor); processor.setLfoShape (index, selected);
+            require (save (processor) == unchanged && processor.getUndoCount() == 1, "Repeated Chaos shape created history");
+        }
+    }
+    const auto unchanged = save (processor);
+    processor.setLfoShape (-1, 6); processor.setLfoShape (10, 7); processor.setLfoShape (0, -1); processor.setLfoShape (0, 8);
+    require (save (processor) == unchanged, "Invalid Chaos selection changed state");
+    for (int scenario = 0; scenario < 4; ++scenario) for (int boundary = 0; boundary < 3; ++boundary)
+        for (int action = 0; action < 3; ++action)
+        {
+            AnyvocAudioProcessor p; setParameter (p, "lfo10Shape", 2); p.setLfoShape (9, 5);
+            if (scenario != 0) p.setLfoShape (9, 6);
+            clearMatrixHistory (p); const auto replacement = save (p); bool alive = true;
+            ModulationGestureProbe basic (*p.apvts.getParameter ("lfo10Shape")), kind (*p.apvts.getParameter ("lfo10Kind")), chaos (*p.apvts.getParameter ("lfo10Chaos"));
+            auto& trigger = scenario == 1 ? basic : scenario == 2 ? kind : chaos;
+            std::vector<float> expected;
+            const auto callback = [&]
+            {
+                if (action == 0) p.setStateInformation (replacement.getData(), static_cast<int> (replacement.getSize()));
+                else if (action == 1) setParameter (p, scenario == 1 ? "lfo10Chaos" : scenario == 3 ? "lfo10Kind" : "lfo10Shape", scenario == 1 ? 2 : scenario == 3 ? 1 : 3);
+                else alive = false;
+                expected = parameters (p);
+            };
+            if (boundary == 0) trigger.onStart = callback; else if (boundary == 1) trigger.onValue = callback; else trigger.onEnd = callback;
+            p.setLfoShape (9, scenario == 0 ? 6 : scenario == 1 ? 3 : scenario == 2 ? 4 : 7, [&] { return alive; });
+            const auto context = "Chaos helper scenario=" + std::to_string (scenario) + " boundary=" + std::to_string (boundary) + " action=" + std::to_string (action);
+            require (! expected.empty() && parameters (p) == expected && ! p.isUserEditActive(), "Stale compound write after " + context);
+            require (basic.starts == basic.ends && kind.starts == kind.ends && chaos.starts == chaos.ends, "Unbalanced gesture after " + context);
+        }
+}
+
+void testChaosAllSourcesReachEvolvingAudio()
+{
+    const std::vector<Event> note { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } };
+    for (int index = 0; index < 10; ++index) for (int shape : { 6, 7 })
+    {
+        AnyvocAudioProcessor actual, partitioned, dry;
+        for (auto* p : { &actual, &partitioned, &dry })
+        {
+            prepareLfoMotionAudio (*p, index); p->setLfoShape (index, shape);
+        }
+        setParameter (dry, "mod32Amount", 0);
+        const auto resetAfterEffectWarmup = [] (AnyvocAudioProcessor& p)
+        {
+            // JUCE's reverb dry/wet gains begin at their constructor targets and
+            // retain settled targets across prepare/reset. Settle them without
+            // a voice, then reset the synth so both recordings start alike.
+            p.prepareToPlay (48000, 512);
+            render (p, 4096, {}, 127);
+            p.prepareToPlay (48000, 512);
+        };
+        for (auto* p : { &actual, &partitioned, &dry }) resetAfterEffectWarmup (*p);
+        const auto a = render (actual, 24000, note, 64), b = render (partitioned, 24000, note, 257), d = render (dry, 24000, note, 127);
+        const auto initialPoint = actual.getLfoChaosPoint (index);
+        const auto context = "LFO " + std::to_string (index + 1) + " shape=" + std::to_string (shape);
+        require (rms (a) > .005 && crossAudioDifference (a, d) > .0001, "Chaos source did not reach audio: " + context);
+        require (crossAudioDifference (a, b) < 2.0e-6, "Chaos audio depended on block partition: " + context);
+        auto previous = actual.getLfoChaosPoint (index); int changed = 0;
+        for (int step = 0; step < 12; ++step)
+        {
+            render (actual, 2048, {}, 127); const auto point = actual.getLfoChaosPoint (index);
+            for (float value : point) require (std::isfinite (value) && std::abs (value) <= 1.00001f, "Chaos telemetry was nonfinite or unbounded: " + context);
+            if (point != previous) ++changed;
+            previous = point;
+        }
+        require (changed >= 10, "Chaos telemetry froze instead of continuing its trajectory: " + context);
+        resetAfterEffectWarmup (actual);
+        const auto repeated = render (actual, 24000, note, 257);
+        const auto repeatedDifference = crossAudioDifference (a, repeated);
+        require (repeatedDifference == 0 && actual.getLfoChaosPoint (index) == initialPoint,
+                 "Preparing the processor did not reproduce the same Chaos trajectory: " + context
+                     + " audio difference=" + juce::String (repeatedDifference, 12).toStdString());
+    }
+    AnyvocAudioProcessor lorenz, rossler;
+    for (auto* p : { &lorenz, &rossler }) { prepareLfoMotionAudio (*p, 9); p->setLfoShape (9, p == &lorenz ? 6 : 7); p->prepareToPlay (48000, 512); }
+    require (crossAudioDifference (render (lorenz, 48000, note, 127), render (rossler, 48000, note, 127)) > .0001,
+             "Lorenz and Rossler produced the same modulation audio");
+}
+
+void testChaosRateBindingsAndInactivePhase()
+{
+    const std::vector<Event> note { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } };
+    for (int shape : { 6, 7 }) for (int feature = 0; feature < 5; ++feature)
+    {
+        AnyvocAudioProcessor actual, reference;
+        for (auto* p : { &actual, &reference }) { prepareLfoMotionAudio (*p, 9); p->setLfoShape (9, shape); }
+        if (feature == 0)
+        {
+            setParameter (actual, "lfo10Phase", .713f); setParameter (actual, "lfo10Direction", 2);
+            setParameter (actual, "macro1", .9f); actual.setModulationSource (0, 6); actual.setModulationDestination (0, 27); setParameter (actual, "mod1Amount", .7f);
+        }
+        else if (feature == 1) { actual.setLfoRateMode (9, 2); setParameter (actual, "lfo10AudioRateHz", 137); }
+        else
+        {
+            for (auto* p : { &actual, &reference }) p->setLfoRateMode (9, 1);
+            if (feature == 2) setParameter (actual, "tempo", 83);
+            if (feature == 3) { setParameter (actual, "lfo10FollowSwing", 1); setParameter (actual, "swingAmount", .8f); }
+            if (feature == 4) { setParameter (actual, "lfo10AudioRateEnabled", 1); setParameter (actual, "lfo10AudioRateHz", 997); }
+        }
+        for (auto* p : { &actual, &reference }) p->prepareToPlay (48000, 512);
+        const auto a = render (actual, 48000, note, 127), b = render (reference, 48000, note, 127);
+        const auto difference = crossAudioDifference (a, b);
+        require ((feature == 0 || feature == 4) ? difference == 0 : difference > .0001,
+                 "Chaos rate/phase binding mismatch shape=" + std::to_string (shape) + " feature=" + std::to_string (feature) + " difference=" + std::to_string (difference));
+    }
+    for (int shape = 0; shape < 6; ++shape)
+    {
+        AnyvocAudioProcessor visited, legacy;
+        for (auto* p : { &visited, &legacy }) { prepareLfoMotionAudio (*p, 9); p->setLfoShape (9, shape); }
+        visited.setLfoShape (9, 6); visited.setLfoShape (9, 7); visited.setLfoShape (9, shape);
+        for (auto* p : { &visited, &legacy }) p->prepareToPlay (48000, 512);
+        require (crossAudioDifference (render (visited, 12000, note, 127), render (legacy, 12000, note, 127)) == 0,
+                 "Returning from Chaos changed legacy shape " + std::to_string (shape));
+    }
+}
+
+void testChaosEditorGatingAndRealTrajectory()
+{
+    PresetTestDirectory files; AnyvocAudioProcessor processor;
+    prepareLfoMotionAudio (processor, 9);
+    std::unique_ptr<juce::AudioProcessorEditor> editor (new AnyvocAudioProcessorEditor (
+        processor, files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml")));
+    editor->setVisible (true); editor->setSize (1008, 684);
+    for (int index = 0; index < 10; ++index)
+    {
+        const auto prefix = "lfo" + juce::String (index + 1);
+        setParameter (processor, (prefix + "Phase").toRawUTF8(), .213f); setParameter (processor, (prefix + "Direction").toRawUTF8(), 2);
+        const auto beforeNavigation = save (processor); openLfoMotionLab (*editor, index);
+        require (save (processor) == beforeNavigation, "Opening a Chaos Lab changed sound");
+        auto* detail = findComponent<juce::Component> (*editor, "LfoDetail" + juce::String (index + 1));
+        auto* choice = findComponent<juce::ComboBox> (*detail, prefix + "ShapeChoice");
+        auto* curve = findComponent<juce::Component> (*detail, prefix + "Curve");
+        auto* phase = findComponent<juce::Slider> (*detail, prefix + "Phase");
+        auto* direction = findComponent<juce::ComboBox> (*detail, prefix + "Direction");
+        require (modulationControlVisible (choice) && choice->getNumItems() == 8 && modulationControlVisible (curve)
+                     && modulationControlVisible (phase) && modulationControlVisible (direction), "Chaos Lab omitted an expected control");
+        for (int shape : { 6, 7 })
+        {
+            const auto context = "LFO " + std::to_string (index + 1) + " shape=" + std::to_string (shape);
+            choice->setSelectedItemIndex (shape, juce::sendNotificationSync); refreshEditorTimers();
+            require (processor.getLfoShape (index) == shape && ! phase->isEnabled() && ! direction->isEnabled()
+                         && std::abs (plainParameter (processor, prefix + "Phase") - .213f) < 1.0e-6f
+                         && plainParameter (processor, prefix + "Direction") == 2, "Chaos UI did not preserve and disable ineffective phase/direction");
+            const auto unchanged = save (processor);
+            phase->setValue (.8, juce::sendNotificationSync); direction->setSelectedItemIndex (0, juce::sendNotificationSync);
+            require (save (processor) == unchanged, "Inactive Chaos phase/direction callback changed sound: " + context);
+            for (int preset = 0; preset < 5; ++preset)
+            {
+                auto* button = findComponent<juce::Button> (*detail, prefix + "CurvePreset" + juce::String (preset));
+                require (modulationControlVisible (button) && ! button->isEnabled(), "Chaos retained an enabled curve preset");
+                if (button->onClick) button->onClick();
+                require (save (processor) == unchanged,
+                         "Inactive Chaos curve preset changed sound: " + context + " preset=" + std::to_string (preset));
+            }
+            const juce::Point<float> start { 1, 1 }, end { 600, 100 };
+            curve->mouseDown (modulationMouseEvent (*curve, start, start));
+            curve->mouseDrag (modulationMouseEvent (*curve, end, start)); curve->mouseUp (modulationMouseEvent (*curve, end, start));
+            require (save (processor) == unchanged, "Inactive Chaos drawing callback changed sound: " + context);
+            auto* drop = dynamic_cast<juce::DragAndDropTarget*> (phase->getParentComponent());
+            require (drop != nullptr, "Phase lost its real drop interface");
+            const juce::DragAndDropTarget::SourceDetails source { juce::String ("anyvoc.mod:6"), curve, { 20, 20 } };
+            require (! drop->isInterestedInDragSource (source), "Chaos Phase accepted a modulation drag: " + context);
+            drop->itemDropped (source);
+            require (save (processor) == unchanged && ! processor.isUserEditActive(), "A disabled Chaos drawing, preset, phase or drop callback changed sound: " + context);
+            setParameter (processor, (prefix + "Chaos").toRawUTF8(), 0);
+            require (choice->getSelectedItemIndex() == processor.getLfoShape (index), "Shape UI read stale legacy values while host disabled Chaos");
+            setParameter (processor, (prefix + "Chaos").toRawUTF8(), static_cast<float> (shape - 5));
+            require (choice->getSelectedItemIndex() == shape, "Shape UI read stale APVTS cache during Chaos host publication");
+        }
+    }
+    auto* detail = findComponent<juce::Component> (*editor, "LfoDetail10");
+    auto* curve = findComponent<juce::Component> (*detail, "lfo10Curve");
+    for (int shape : { 6, 7 })
+    {
+        processor.setLfoShape (9, shape); processor.prepareToPlay (48000, 512); refreshEditorTimers();
+        const auto saved = save (processor);
+        for (int tick = 0; tick < 12; ++tick)
+        {
+            render (processor, 2048, tick == 0 ? std::vector<Event> { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } } : std::vector<Event> {}, 127);
+            refreshEditorTimers();
+            const auto point = processor.getLfoChaosPoint (9); const auto& props = curve->getProperties();
+            require (static_cast<int> (props["chaosTraceShape"]) == shape
+                         && std::abs (static_cast<double> (props["chaosTraceX"]) - point[0]) < 1.0e-7
+                         && std::abs (static_cast<double> (props["chaosTraceY"]) - point[1]) < 1.0e-7
+                         && std::abs (static_cast<double> (props["chaosTraceZ"]) - point[2]) < 1.0e-7,
+                     "Chaos graph did not display actual processor XYZ telemetry");
+        }
+        const int samples = static_cast<int> (curve->getProperties()["chaosTraceSamples"]);
+        require (samples >= 10, "Chaos display did not retain an evolving trajectory");
+        refreshEditorTimers(); refreshEditorTimers();
+        require (static_cast<int> (curve->getProperties()["chaosTraceSamples"]) == samples && save (processor) == saved,
+                 "Idle Chaos display fabricated motion or modified the preset");
+    }
+    setParameter (processor, "lfo10Mode", 2); processor.prepareToPlay (48000, 512);
+    render (processor, 96000, { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } }, 127); refreshEditorTimers();
+    const auto held = processor.getLfoChaosPoint (9);
+    const int heldCount = static_cast<int> (curve->getProperties()["chaosTraceTotalSamples"]);
+    render (processor, 12000, {}, 127); refreshEditorTimers();
+    require (processor.getLfoChaosPoint (9) == held && static_cast<int> (curve->getProperties()["chaosTraceTotalSamples"]) == heldCount,
+             "A held Chaos envelope acquired artificial UI motion");
+    auto* choice = findComponent<juce::ComboBox> (*detail, "lfo10ShapeChoice");
+    clickMatrixControl (*editor, "LfoDetailClose10"); const auto hidden = save (processor);
+    choice->setSelectedItemIndex (0, juce::sendNotificationSync);
+    require (save (processor) == hidden, "A delayed hidden Chaos selector changed sound");
+
+    // Exercise the interval between a message-thread parameter change and the
+    // next audio block. Waiting for a timer or processing audio before the first
+    // read would hide a stale snapshot from the previous algorithm/play mode.
+    const std::array<float, 3> noPoint {};
+    const auto refreshLabImmediately = [&] (int index)
+    {
+        const auto number = juce::String (index + 1);
+        if (auto* close = findComponent<juce::Button> (*editor, "LfoDetailClose" + number);
+            modulationControlVisible (close))
+            close->onClick();
+        findButton (*editor, "MOD")->onClick();
+        findComponent<juce::ComboBox> (*editor, "LfoCardSelect1")->setSelectedItemIndex (index, juce::sendNotificationSync);
+        auto* open = findComponent<juce::Button> (*editor, "lfo" + number + "Edit");
+        require (modulationControlVisible (open) && static_cast<bool> (open->onClick), "Missing synchronous Chaos Lab open action");
+        open->onClick(); // openLfoDetail synchronously refreshes the real canvas.
+        auto* page = findComponent<juce::Component> (*editor, "LfoDetail" + number);
+        auto* canvas = findComponent<juce::Component> (*page, "lfo" + number + "Curve");
+        require (modulationControlVisible (canvas), "Chaos snapshot canvas was not visible");
+        return canvas;
+    };
+    const auto expectSnapshot = [&] (juce::Component& canvas, const std::array<float, 3>& expected,
+                                     int shape, int mode, int samples, const std::string& context)
+    {
+        const auto& properties = canvas.getProperties();
+        require (static_cast<int> (properties["chaosTraceShape"]) == shape
+                     && static_cast<int> (properties["chaosTraceMode"]) == mode
+                     && static_cast<int> (properties["chaosTraceSamples"]) == samples
+                     && static_cast<int> (properties["chaosTraceTotalSamples"]) == samples
+                     && static_cast<double> (properties["chaosTraceX"]) == expected[0]
+                     && static_cast<double> (properties["chaosTraceY"]) == expected[1]
+                     && static_cast<double> (properties["chaosTraceZ"]) == expected[2],
+                 "Chaos UI retained a mismatched snapshot or fabricated a zero-point trace: " + context);
+    };
+    for (int index : { 0, 9 })
+    {
+        const auto prefix = "lfo" + juce::String (index + 1);
+        for (int action = 0; action < 4; ++action)
+        {
+            const auto context = "LFO " + std::to_string (index + 1) + " publication action=" + std::to_string (action);
+            prepareLfoMotionAudio (processor, index);
+            processor.setLfoShape (index, 6); clearMatrixHistory (processor);
+            const int oldShape = action == 1 ? 6 : 7;
+            processor.setLfoShape (index, oldShape);
+            processor.prepareToPlay (48000, 512);
+            for (int tick = 0; tick < 3; ++tick)
+            {
+                render (processor, 2048, tick == 0 ? std::vector<Event> { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } } : std::vector<Event> {}, 127);
+                refreshLabImmediately (index);
+            }
+            const auto oldPoint = processor.getLfoChaosPoint (index);
+            require (processor.getLfoChaosPoint (index, oldShape, 1) == oldPoint,
+                     "Explicit Chaos labels did not select the current snapshot: " + context);
+            auto* canvas = refreshLabImmediately (index);
+            require (oldPoint != noPoint && static_cast<int> (canvas->getProperties()["chaosTraceSamples"]) >= 3,
+                     "Chaos publication fixture did not establish a real old trajectory: " + context);
+
+            const int nextShape = action == 1 ? 7 : action == 2 ? 7 : 6;
+            const int nextMode = action == 2 ? 2 : 1;
+            if (action == 0) processor.setLfoShape (index, nextShape);
+            else if (action == 1) setParameter (processor, (prefix + "Chaos").toRawUTF8(), 2);
+            else if (action == 2) setParameter (processor, (prefix + "Mode").toRawUTF8(), 2);
+            else expectHistoryResult (processor.undoUserEdit(), "Undo Rossler before the next audio block");
+
+            require (processor.getLfoShape (index) == nextShape && plainParameter (processor, prefix + "Mode") == nextMode,
+                     "Chaos publication fixture did not change the intended model: " + context);
+            require (processor.getLfoChaosPoint (index) == noPoint,
+                     "Getter returned the previous model before its next audio block: " + context);
+            require (processor.getLfoChaosPoint (index, nextShape, nextMode) == noPoint
+                         && processor.getLfoChaosPoint (index, oldShape, 1) == oldPoint,
+                     "Explicit Chaos snapshot filtering reread the newer APVTS labels: " + context);
+            canvas = refreshLabImmediately (index);
+            expectSnapshot (*canvas, noPoint, nextShape, nextMode, 0, context + " before audio");
+            expectSnapshot (*refreshLabImmediately (index), noPoint, nextShape, nextMode, 0, context + " repeated UI refresh");
+
+            // A freshly prepared instance provides the new model's same-index
+            // read position, independently of the old active voice's history.
+            AnyvocAudioProcessor reference;
+            prepareLfoMotionAudio (reference, index); reference.setLfoShape (index, nextShape);
+            setParameter (reference, (prefix + "Mode").toRawUTF8(), static_cast<float> (nextMode));
+            reference.prepareToPlay (48000, 512);
+            render (reference, 4096, { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } }, 127);
+            render (processor, 4096, {}, 127);
+            const auto newPoint = processor.getLfoChaosPoint (index);
+            require (newPoint != noPoint && newPoint == reference.getLfoChaosPoint (index),
+                     "Newly processed Chaos snapshot did not match its algorithm and play mode: " + context);
+            // The UI may have captured its labels just before the audio thread
+            // publishes a different model. Filter against those captured labels,
+            // rather than silently substituting a second APVTS read here.
+            require (processor.getLfoChaosPoint (index, oldShape, 1) == noPoint
+                         && processor.getLfoChaosPoint (index, nextShape, nextMode) == newPoint,
+                     "Captured old Chaos labels accepted a newly published model: " + context);
+            expectSnapshot (*refreshLabImmediately (index), newPoint, nextShape, nextMode, 1, context + " after audio");
+        }
+
+        processor.setLfoShape (index, 6); setParameter (processor, (prefix + "Mode").toRawUTF8(), 1);
+        processor.prepareToPlay (48000, 512); render (processor, 4096, {}, 127);
+        require (processor.getLfoChaosPoint (index) == noPoint, "Idle Trigger Chaos fabricated a voice snapshot");
+        expectSnapshot (*refreshLabImmediately (index), noPoint, 6, 1, 0, "idle Trigger");
+        expectSnapshot (*refreshLabImmediately (index), noPoint, 6, 1, 0, "idle Trigger repeated refresh");
+
+        setParameter (processor, (prefix + "Mode").toRawUTF8(), 2);
+        require (processor.getLfoChaosPoint (index) == noPoint, "An idle mode change exposed an old snapshot");
+        expectSnapshot (*refreshLabImmediately (index), noPoint, 6, 2, 0, "Envelope before its first voice");
+        render (processor, 96000, { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } }, 127);
+        const auto heldPoint = processor.getLfoChaosPoint (index);
+        require (heldPoint != noPoint, "Completed Chaos Envelope lost its actual held point");
+        expectSnapshot (*refreshLabImmediately (index), heldPoint, 6, 2, 1, "Envelope held point");
+        render (processor, 4096, {}, 127);
+        require (processor.getLfoChaosPoint (index) == heldPoint, "Completed Chaos Envelope changed its held point");
+        expectSnapshot (*refreshLabImmediately (index), heldPoint, 6, 2, 1, "Envelope held repeated refresh");
+    }
+}
+
+void testChaosShapeUiHostCallbacks()
+{
+    PresetTestDirectory files;
+    for (int scenario = 0; scenario < 3; ++scenario) for (int boundary = 0; boundary < 3; ++boundary)
+        for (int action = 0; action < 4; ++action)
+        {
+            AnyvocAudioProcessor p; setParameter (p, "lfo10Shape", 2); p.setLfoShape (9, 5);
+            if (scenario != 0) p.setLfoShape (9, 6);
+            clearMatrixHistory (p);
+            ModulationGestureProbe basic (*p.apvts.getParameter ("lfo10Shape")), kind (*p.apvts.getParameter ("lfo10Kind")), chaos (*p.apvts.getParameter ("lfo10Chaos"));
+            std::unique_ptr<juce::AudioProcessorEditor> editor (new AnyvocAudioProcessorEditor (p, files.directory.getChildFile ("Library"), files.directory.getChildFile ("Settings.xml")));
+            editor->setVisible (true); editor->setSize (1008, 684); openLfoMotionLab (*editor, 9);
+            const auto replacement = save (p); std::vector<float> expected;
+            const auto callback = [&]
+            {
+                if (action == 0) p.setStateInformation (replacement.getData(), static_cast<int> (replacement.getSize()));
+                else if (action == 1) setParameter (p, scenario == 1 ? "lfo10Chaos" : "lfo10Shape", scenario == 1 ? 2 : 3);
+                else if (action == 2) editor.reset();
+                else findComponent<juce::Component> (*editor, "LfoDetail10")->setVisible (false);
+                expected = parameters (p);
+            };
+            auto& trigger = scenario == 0 ? chaos : scenario == 1 ? basic : kind;
+            if (boundary == 0) trigger.onStart = callback; else if (boundary == 1) trigger.onValue = callback; else trigger.onEnd = callback;
+            auto* detail = findComponent<juce::Component> (*editor, "LfoDetail10");
+            auto* box = findComponent<juce::ComboBox> (*detail, "lfo10ShapeChoice");
+            require (modulationControlVisible (box) && box->getNumItems() == 8, "Chaos unified shape control was unavailable");
+            box->setSelectedItemIndex (scenario == 0 ? 6 : scenario == 1 ? 3 : 4, juce::sendNotificationSync);
+            const auto context = "Chaos UI scenario=" + std::to_string (scenario) + " boundary=" + std::to_string (boundary) + " action=" + std::to_string (action);
+            require (! expected.empty() && parameters (p) == expected && ! p.isUserEditActive(), "Stale shape UI write after " + context);
+            require (basic.starts == basic.ends && kind.starts == kind.ends && chaos.starts == chaos.ends, "Unbalanced UI gesture after " + context);
+        }
+}
+
 void createPreviews (const juce::File& directory)
 {
     require (directory.createDirectory().wasOk(), "Could not create preview output directory");
@@ -6286,6 +6733,24 @@ void createPreviews (const juce::File& directory)
     editor->setSize (1120, 760); clickMatrixControl (*editor, "LfoDetailClose1"); clickMatrixControl (*editor, "mod2Edit");
     capture ("LFO-Phase-Routing.png");
     editor->setSize (1008, 684); capture ("LFO-Phase-Routing-small.png");
+    const auto evolveChaosPreview = [&] (int blocks, bool noteOn)
+    {
+        for (int block = 0; block < blocks; ++block)
+        {
+            render (processor, 2048, noteOn && block == 0 ? std::vector<Event> { { 0, juce::MidiMessage::noteOn (1, 60, .8f) } } : std::vector<Event> {}, 256);
+            juce::MessageManager::getInstance()->runDispatchLoopUntil (40);
+            juce::Timer::callPendingTimersSynchronously();
+        }
+        refreshEditorTimers();
+    };
+    openProgram (24); openLfoMotionLab (*editor, 0); processor.prepareToPlay (48000, 512);
+    evolveChaosPreview (64, true); capture ("LFO-Chaos-Lorenz.png");
+    editor->setSize (1008, 684); capture ("LFO-Chaos-Lorenz-small.png");
+    editor->setSize (1120, 760); evolveChaosPreview (128, false); capture ("LFO-Chaos-Evolved.png");
+    editor->setSize (1008, 684); capture ("LFO-Chaos-Evolved-small.png");
+    openProgram (25); openLfoMotionLab (*editor, 0); processor.prepareToPlay (48000, 512);
+    evolveChaosPreview (64, true); capture ("LFO-Chaos-Rossler.png");
+    editor->setSize (1008, 684); capture ("LFO-Chaos-Rossler-small.png");
 }
 
 void createPresetDemo (const juce::File& file)
@@ -6637,6 +7102,35 @@ void createLfoMotionDemo (const juce::File& file)
                  "12-16s Phase Lantern audio LFO 110 Hz, 16-20s 220 Hz; fixed gain)\n";
 }
 
+void createChaosDemo (const juce::File& file)
+{
+    require (file.getParentDirectory().createDirectory().wasOk(), "Could not create Chaos demo directory");
+    constexpr int rate = 48000, sectionLength = rate * 10;
+    juce::AudioBuffer<float> output (2, sectionLength * 2); output.clear();
+    for (int section = 0; section < 2; ++section)
+    {
+        AnyvocAudioProcessor processor;
+        // One identical voice and gain: only the chaos algorithm changes between sections.
+        prepareLfoMotionAudio (processor, 0); processor.setLfoShape (0, section + 6);
+        setParameter (processor, "lfo1Rate", 2); setParameter (processor, "ampRelease", .3f);
+        processor.prepareToPlay (rate, 512);
+        auto audio = render (processor, sectionLength,
+            { { 0, juce::MidiMessage::noteOn (1, 60, .8f) }, { rate * 9, juce::MidiMessage::noteOff (1, 60) } }, 512);
+        require (rms (audio) > .001 && audio.getMagnitude (0, sectionLength) < .99f, "Chaos demo section was silent or clipped");
+        audio.applyGainRamp (0, 960, 0.0f, 1.0f); audio.applyGainRamp (sectionLength - 4800, 4800, 1.0f, 0.0f);
+        for (int channel = 0; channel < 2; ++channel) output.copyFrom (channel, section * sectionLength, audio, channel, 0, sectionLength);
+    }
+    std::unique_ptr<juce::OutputStream> stream = file.createOutputStream();
+    require (stream != nullptr, "Could not open Chaos demo output"); stream->setPosition (0);
+    if (auto* disk = dynamic_cast<juce::FileOutputStream*> (stream.get())) disk->truncate();
+    juce::WavAudioFormat format;
+    auto writer = format.createWriterFor (stream, juce::AudioFormatWriterOptions{}
+        .withSampleRate (rate).withNumChannels (2).withBitsPerSample (24));
+    require (writer != nullptr && writer->writeFromAudioSampleBuffer (output, 0, output.getNumSamples()), "Could not encode Chaos demo WAV");
+    writer.reset();
+    std::cout << "DEMO " << file.getFullPathName() << " (0-10s Lorenz, 10-20s Rossler; same C4 voice, 2 Hz nominal rate, fixed gain)\n";
+}
+
 void createVoicingDemo (const juce::File& file)
 {
     require (file.getParentDirectory().createDirectory().wasOk(), "Could not create voicing demo directory");
@@ -6699,9 +7193,9 @@ int main (int argc, char* argv[])
                           && std::string (argv[1]) != "--warp-demo" && std::string (argv[1]) != "--voicing-demo"
                           && std::string (argv[1]) != "--crossmod-demo" && std::string (argv[1]) != "--matrix-demo"
                           && std::string (argv[1]) != "--sources-demo" && std::string (argv[1]) != "--envelopes-demo"
-                          && std::string (argv[1]) != "--lfo-motion-demo"))
+                          && std::string (argv[1]) != "--lfo-motion-demo" && std::string (argv[1]) != "--chaos-demo"))
         {
-            std::cerr << "Usage: AnyvocProcessorTests [--preview <directory> | --demo <wav-file> | --warp-demo <wav-file> | --voicing-demo <wav-file> | --crossmod-demo <wav-file> | --matrix-demo <wav-file> | --sources-demo <wav-file> | --envelopes-demo <wav-file> | --lfo-motion-demo <wav-file>]\n";
+            std::cerr << "Usage: AnyvocProcessorTests [--preview <directory> | --demo <wav-file> | --warp-demo <wav-file> | --voicing-demo <wav-file> | --crossmod-demo <wav-file> | --matrix-demo <wav-file> | --sources-demo <wav-file> | --envelopes-demo <wav-file> | --lfo-motion-demo <wav-file> | --chaos-demo <wav-file>]\n";
             return 2;
         }
         try
@@ -6715,6 +7209,7 @@ int main (int argc, char* argv[])
             else if (std::string (argv[1]) == "--sources-demo") createSourcesDemo (output);
             else if (std::string (argv[1]) == "--envelopes-demo") createEnvelopeDemo (output);
             else if (std::string (argv[1]) == "--lfo-motion-demo") createLfoMotionDemo (output);
+            else if (std::string (argv[1]) == "--chaos-demo") createChaosDemo (output);
             else createPresetDemo (output);
             return 0;
         }
@@ -6773,7 +7268,7 @@ int main (int argc, char* argv[])
         { "Unified warp mode history and reentrant project boundaries", testUnifiedWarpModeHistoryAndHostBoundaries },
         { "Cross-modulation host parameters reach muted-source carrier audio", testCrossModulationProcessorAudio },
         { "Advanced matrix appends 360 controls after the complete legacy host prefix", testAdvancedMatrixParameterCompatibility },
-        { "Schema 1-11 matrix migration and complete schema 12 preset validation", testAdvancedMatrixStateAndMigration },
+        { "Schema 1-12 matrix migration and complete schema 13 preset validation", testAdvancedMatrixStateAndMigration },
         { "Thirty-two matrix rows preserve bypassed routes and reset reused slots", testAdvancedMatrixCapacityAndReuse },
         { "Complete matrix payloads move and clear as single undoable edits", testAdvancedMatrixResetAndReorderHistory },
         { "Matrix compound helpers stop at host restore and automation boundaries", testAdvancedMatrixHostBoundaries },
@@ -6786,14 +7281,14 @@ int main (int argc, char* argv[])
         { "Every source bank preserves legacy choices, compound history and effective assignment", testExpandedSourceSelectionAndAssignment },
         { "Paired source/LFO selectors preserve synchronous host edits and project replacements", testExpandedSourceHostBoundaries },
         { "All fifteen new primary and auxiliary sources match independent legacy audio references", testExpandedSourcesReachAudio },
-        { "All twenty-four factory programs sound and new presets use expanded sources", testExpandedFactoryPresets },
+        { "All twenty-six factory programs sound and new presets use expanded sources", testExpandedFactoryPresets },
         { "Ten LFOs, four envelopes, eight macros and source palette are editable at minimum size", testExpandedSourceEditorNavigation },
         { "Composite matrix source controls survive host callbacks and editor destruction", testExpandedSourceUiHostCallbacks },
         { "LFO 10 drawing and curve presets preserve host state and survive editor destruction", testExpandedLfoCurveHostCallbacks },
         { "LFO 10 composite shape UI survives host callbacks and editor destruction", testExpandedLfoShapeUiHostCallbacks },
         { "Actual LFO 10 knob drops and duplicate re-enable survive host callbacks and editor teardown", testExpandedSourceDropHostCallbacks },
         { "Advanced envelopes append 48 controls after the complete v0.14 host prefix", testAdvancedEnvelopeParameterCompatibility },
-        { "Advanced envelope schema 12 roundtrips, schema 10 migration and atomic validation", testAdvancedEnvelopeStateAndMigration },
+        { "Advanced envelope schema 13 roundtrips, schema 10 migration and atomic validation", testAdvancedEnvelopeStateAndMigration },
         { "Delay, hold and three curves reach all four independent envelope source outputs", testAdvancedEnvelopesReachAudio },
         { "Four envelopes synchronize all timed stages to manual/host BPM with invalid-clock fallback", testAdvancedEnvelopeTempoAudio },
         { "Each envelope independently retriggers only its routed legato sound", testAdvancedEnvelopeLegatoIsolation },
@@ -6801,7 +7296,7 @@ int main (int argc, char* argv[])
         { "Envelope graph gestures stop across host restore, related automation and editor teardown", testAdvancedEnvelopeGraphHostCallbacks },
         { "Envelope curve, division and flag controls survive host callbacks and editor teardown", testAdvancedEnvelopeControlHostCallbacks },
         { "LFO motion appends 116 host parameters after the unchanged v0.15 prefix", testLfoMotionParameterCompatibility },
-        { "LFO motion schema 12 roundtrips, schema 11 migration and strict atomic validation", testLfoMotionStateAndMigration },
+        { "LFO motion schema 13 roundtrips, schema 11 migration and strict atomic validation", testLfoMotionStateAndMigration },
         { "LFO rate modes and all phase destinations preserve complete history and remembered selectors", testLfoRateModesAndPhaseDestinationHistory },
         { "LFO rate and phase destination helpers stop at host and lifetime boundaries", testLfoMotionHelperHostBoundaries },
         { "All ten LFO motion controls reach audio and preserve legacy/tempo rate precedence", testLfoMotionControlsReachAudio },
@@ -6809,6 +7304,12 @@ int main (int argc, char* argv[])
         { "LFO motion Lab controls and phase matrix targets work at minimum size", testLfoMotionEditorControls },
         { "LFO motion controls and composite rate/destination selectors survive host callbacks", testLfoMotionUiHostCallbacks },
         { "Real LFO phase drops and duplicate re-enable survive host callbacks and editor teardown", testLfoPhaseDropHostCallbacks },
+        { "Chaos appends ten parameters, preserves legacy mappings and validates schema 13 atomically", testChaosParameterCompatibilityAndState },
+        { "All Chaos shape selectors preserve compound history and synchronous host boundaries", testChaosShapeHistoryAndHostBoundaries },
+        { "All twenty Chaos source paths reach evolving audio, reproduce reset and preserve block partition", testChaosAllSourcesReachEvolvingAudio },
+        { "Chaos rate and swing bindings work while phase routing and remembered legacy controls stay isolated", testChaosRateBindingsAndInactivePhase },
+        { "All Chaos Labs gate inactive edits and display only actual evolving or held DSP trajectories", testChaosEditorGatingAndRealTrajectory },
+        { "Chaos unified shape UI survives host changes, project restore, destruction and hidden pages", testChaosShapeUiHostCallbacks },
         { "Unified warp editor modes, sources and host automation", testUnifiedWarpEditorControls },
         { "Host BPM, PPQ and manual tempo fallback", testProcessorHostAndManualTempo },
         { "Invalid sample imports and embedded sample rollback", testSampleImportRejection },
