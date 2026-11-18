@@ -95,3 +95,6 @@ docs/github-ci-0.20.3-runner-tests.txt -text -whitespace
 
 # Preserve isolated 0.20.4 MIDI allocation evidence and exact diagnostic inputs.
 docs/midi-allocation-0.20.4/** -text -whitespace
+
+# Preserve uninstrumented 0.20.4 production validation originals.
+docs/validation-0.20.4/** -text -whitespace

@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "version": "0.20.4",
+  "scope": "20 original files copied byte-for-byte; README and this mapping are authored archive metadata",
+  "files": [
+    {
+      "path": "configure-production-0.20.4.txt",
+      "source_path": "build/validation-midi-allocation-tooling/configure-production-0.20.4.txt",
+      "bytes": 310,
+      "sha256": "248c04f464eddb155e1cf1999187075c2960c6f848c6b62b437767ff8f818193",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "build-production-0.20.4.txt",
+      "source_path": "build/validation-midi-allocation-tooling/build-production-0.20.4.txt",
+      "bytes": 17596,
+      "sha256": "3614dca4b024e642273addcf6a09039854cf7d2616988daef16043468911f220",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "ctest-0.20.4.txt",
+      "source_path": "build/validation-midi-allocation-tooling/ctest-0.20.4.txt",
+      "bytes": 496,
+      "sha256": "c1be1b67b06dd7c2b0b3da74703f79f9570a6bc8839145b990348777513ec70f",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "ctest-0.20.4.xml",
+      "source_path": "build/validation-midi-allocation-tooling/ctest-0.20.4.xml",
+      "bytes": 4237,
+      "sha256": "6e184b31bb01f0c6a08b74ab692d7fd221cdcc8b2ff78bbcab705a8c3e15a38e",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "pluginval-0.20.4.txt",
+      "source_path": "build/validation-midi-allocation-tooling/pluginval-0.20.4.txt",
+      "bytes": 6140,
+      "sha256": "ba7bbbf50578d00703b3a3255ded21618511b7edde757c3ba76d4c281d70f5c4",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "pluginval-0.20.4-stderr.txt",
+      "source_path": "build/validation-midi-allocation-tooling/pluginval-0.20.4-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "pluginval-result-0.20.4.json",
+      "source_path": "build/validation-midi-allocation-tooling/pluginval-result-0.20.4.json",
+      "bytes": 623,
+      "sha256": "9c01d26aecd808a27a0b28e6144213cd30aa071840223e433becbab1df1f2d9d",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "run-pluginval-0.20.4.ps1",
+      "source_path": "build/validation-midi-allocation-tooling/run-pluginval-0.20.4.ps1",
+      "bytes": 1699,
+      "sha256": "70e88c0e72194582674553b8bfcdcc42bb1b1d6f9f54f5c446a1db0678b4d9fc",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "binaries-0.20.4.json",
+      "source_path": "build/validation-midi-allocation-tooling/binaries-0.20.4.json",
+      "bytes": 1780,
+      "sha256": "1c3eef5a2c5aaa6819cc846a4ff79eeca7ff2694970fd6ac8e66e88768efa258",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "source-production-0.20.4.json",
+      "source_path": "build/validation-midi-allocation-tooling/source-production-0.20.4.json",
+      "bytes": 275,
+      "sha256": "1053e27983bcce1a76435a9a921fa18b81e58c577bdd7ca8dbc21270789b1c9e",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "demo-compatibility-0.20.4.json",
+      "source_path": "build/validation-midi-allocation-tooling/demo-compatibility-0.20.4.json",
+      "bytes": 1237,
+      "sha256": "9451d934608aaadf61e0dff1df2d44b3f408e221bfcf6ad800fb6eba0040e993",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "audio-analysis-0.20.4.json",
+      "source_path": "build/validation-midi-allocation-tooling/audio-analysis-0.20.4.json",
+      "bytes": 6619,
+      "sha256": "7902a6dd7180ab4bee33343eee2eb0fe102d6fcbd168347d2b0e1bb77b63bae0",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "old-frozen-integrity.json",
+      "source_path": "build/validation-midi-allocation-tooling/old-frozen-integrity.json",
+      "bytes": 1187,
+      "sha256": "4c468e40f8a6fe19e6d91551b47c7036a86f78becab835f58f0aa02e7cabfc9a",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "LastTest.log",
+      "source_path": "build/Testing/Temporary/LastTest.log",
+      "bytes": 19918,
+      "sha256": "6a8dbf0edabd640ad2e9c708de960b017fc9e8602af9b8a03239dd82fb64b69d",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "CTestCostData.txt",
+      "source_path": "build/Testing/Temporary/CTestCostData.txt",
+      "bytes": 120,
+      "sha256": "e8c9a96b95e4984966841470d1ee307e62544e005c1bbf50bc5745c5f9addb3e",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "render-0.20.4/legacy.txt",
+      "source_path": "build/validation-midi-allocation-tooling/render-0.20.4/legacy.txt",
+      "bytes": 124,
+      "sha256": "f6c4420c885ce3e1242cee33efffa1c80f1af645f62751813f6754bd0f4e8aa1",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "render-0.20.4/motion.txt",
+      "source_path": "build/validation-midi-allocation-tooling/render-0.20.4/motion.txt",
+      "bytes": 233,
+      "sha256": "de2a9ce1c51004b5d9747c2c90b0a86336472d5651ffa57f09eb2e6682455318",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "render-0.20.4/chaos.txt",
+      "source_path": "build/validation-midi-allocation-tooling/render-0.20.4/chaos.txt",
+      "bytes": 158,
+      "sha256": "c348e895cd53be2ba5f89f302fae26c6a377b278c98606eb8446722b58729dc0",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "render-0.20.4/macro.txt",
+      "source_path": "build/validation-midi-allocation-tooling/render-0.20.4/macro.txt",
+      "bytes": 289,
+      "sha256": "fbe99ef0cd3fa84793754177f628999cc0566a75589b245ecb5de878047ba165",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    },
+    {
+      "path": "compiled-inputs/CMakeLists.txt",
+      "source_path": "CMakeLists.txt",
+      "bytes": 9207,
+      "sha256": "5a57c1bed1d1bfa401c3b6e287a0b268291d7f5dfb8bd0a1cabe0a58a45c768a",
+      "copy_mode": "raw bytes; no newline or encoding normalization"
+    }
+  ]
+}

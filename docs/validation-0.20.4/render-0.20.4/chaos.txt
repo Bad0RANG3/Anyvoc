@@ -1,0 +1,1 @@
+DEMO D:\Anyvoc\build\validation-midi-allocation-tooling\render-0.20.4\Chaos.wav (0-10s Lorenz, 10-20s Rossler; same C4 voice, 2 Hz nominal rate, fixed gain)

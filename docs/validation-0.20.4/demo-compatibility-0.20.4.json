@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "version": "0.20.4",
+  "baseline_version": "0.20.3",
+  "baseline_zip_sha256": "077c4e958ecb2ae33d150e3e8aac914c2a4005986d8361773666e02467fbdd99",
+  "renderer_sha256": "4dafbd7f6ce5836724d3e3bb79665b73592eca166c40712c345768bf7be5525c",
+  "demos": [
+    {
+      "name": "Legacy",
+      "baseline_zip_member": "Anyvoc-Demo.wav",
+      "bytes": 4320104,
+      "sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+      "byte_identical": true
+    },
+    {
+      "name": "Motion",
+      "baseline_zip_member": "Anyvoc-v0.16-Lfo-Motion-Demo.wav",
+      "bytes": 5760104,
+      "sha256": "29a826a0882498a1935b90c00232e4db76ab11d77dc04b7c4aa3caae9aa3d7b6",
+      "byte_identical": true
+    },
+    {
+      "name": "Chaos",
+      "baseline_zip_member": "Anyvoc-v0.17-Chaos-Demo.wav",
+      "bytes": 5760104,
+      "sha256": "4885d2a3de312d88bc890840560eff45139b5c4d43de694c9d9fdeb232d18488",
+      "byte_identical": true
+    },
+    {
+      "name": "Macro",
+      "baseline_zip_member": "Anyvoc-v0.19-Macro-Demo.wav",
+      "bytes": 5760104,
+      "sha256": "1d5e9aa554bbaea088eb89b47e6ccafced972c4c06b43d60926e5696b24c8621",
+      "byte_identical": true
+    }
+  ]
+}

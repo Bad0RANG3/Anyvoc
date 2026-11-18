@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "path": "docs/modulation-cache-0.20.3",
+      "count": 161,
+      "bytes": 8433112,
+      "set_sha256": "5e09d86a986733e6f0c31547d3f32d08e156b093c8bf181606ef0ee706badc43",
+      "unchanged": true
+    },
+    {
+      "path": "docs/realtime-probe-0.20.2",
+      "count": 205,
+      "bytes": 35964797,
+      "set_sha256": "3e183debdbf9abd2ab3420e802ae9ea8463896728f557d876aae2f41eb03ef6a",
+      "unchanged": true
+    },
+    {
+      "path": "dist/Anyvoc-0.20.2-Windows-x64.zip",
+      "sha256": "ead89cbff8cc2878d0c6e0bf1cfba8a8f1a004ad4476fec9bfe7f1c4768bc2c6",
+      "unchanged": true
+    },
+    {
+      "path": "dist/Anyvoc-0.20.2-Source.zip",
+      "sha256": "2bec745db8f1c9df8f49574226d43e4356e4b73a0ae8ded8b1d9dcfb015d2e81",
+      "unchanged": true
+    },
+    {
+      "path": "dist/Anyvoc-0.20.3-Windows-x64.zip",
+      "sha256": "077c4e958ecb2ae33d150e3e8aac914c2a4005986d8361773666e02467fbdd99",
+      "unchanged": true
+    },
+    {
+      "path": "dist/Anyvoc-0.20.3-Source.zip",
+      "sha256": "25796391901b3e71b21aec19d128b3b1ea177f7a90c917ede39e03649dd56ac2",
+      "unchanged": true
+    }
+  ]
+}

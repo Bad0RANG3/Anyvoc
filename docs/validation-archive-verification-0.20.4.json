@@ -1,0 +1,552 @@
+{
+  "schema": 1,
+  "version": "0.20.4",
+  "passed": true,
+  "checked_at_utc": "2026-11-18T12:03:35.889246+00:00",
+  "archive_root": "docs/validation-0.20.4",
+  "count": 22,
+  "bytes": 82579,
+  "set_sha256": "1664bc1e44d3ebbc5c0d9caff5e7c69dffe465247e2f0fca78ad85d181fd1cc7",
+  "set_hash_format": "SHA256 of case-sensitive sorted UTF-8 relative-path TAB decimal-bytes TAB lowercase-sha256 LF",
+  "raw_original_count": 20,
+  "raw_originals_byte_identical": true,
+  "source_map": "docs/validation-0.20.4/original-file-map.json",
+  "checks": {
+    "ctest": {
+      "groups": {
+        "EngineTests": 75,
+        "ProcessorTests": 129,
+        "WavetableTests": 10,
+        "PresetLibraryTests": 6
+      },
+      "total_groups": 220,
+      "suite_count": 4,
+      "failures": 0,
+      "console_wall_seconds": 210.62,
+      "junit_suite_time_attribute": "210",
+      "junit_case_seconds": {
+        "EngineTests": 4.9454,
+        "ProcessorTests": 204.953,
+        "WavetableTests": 0.079499,
+        "PresetLibraryTests": 0.636504
+      },
+      "junit_case_seconds_sum": 210.614403,
+      "complete_LastTest_PASS_lines": 220,
+      "junit_output_truncation_preserved": true
+    },
+    "pluginval": {
+      "strictness": 5,
+      "seed": "0xc83e3a",
+      "exit_code": 0,
+      "stdout_final_SUCCESS": true,
+      "stderr_bytes": 0,
+      "module": {
+        "path": "build/Anyvoc_artefacts/Release/VST3/Anyvoc.vst3/Contents/x86_64-win/Anyvoc.vst3",
+        "bytes": 10219520,
+        "file_version": "0.20.4",
+        "sha256": "cc32e87dfc6b297cc1cb9d8134dcd739d77479c7f30e92a312f58bdeca60f522"
+      },
+      "validator": {
+        "path": "tools/pluginval/pluginval.exe",
+        "bytes": 5909504,
+        "sha256": "f4ac5c31c5544a434f73e686b816861d92c22ae849d69ad693681cbc9522fcd8"
+      }
+    },
+    "source_production": {
+      "reported_pass": true,
+      "independent_current_Source_Tests_match_fixed_snapshot": true,
+      "source_and_test_files": [
+        {
+          "path": "Source/ChaosLfoModel.h",
+          "bytes": 5551,
+          "sha256": "ab86808e750242675560b63fbb3f2582e09da531f8cbd0713937aa7e3aaed760",
+          "fixed_snapshot_sha256": "ab86808e750242675560b63fbb3f2582e09da531f8cbd0713937aa7e3aaed760"
+        },
+        {
+          "path": "Source/EnvelopeModel.h",
+          "bytes": 2406,
+          "sha256": "bfd2fbff74879847f8d7bbc4428456b1b4d2b33b8d4d05e8069d9b08c139ef5f",
+          "fixed_snapshot_sha256": "bfd2fbff74879847f8d7bbc4428456b1b4d2b33b8d4d05e8069d9b08c139ef5f"
+        },
+        {
+          "path": "Source/LfoCurveDocument.cpp",
+          "bytes": 13250,
+          "sha256": "9493955958762b154af417245fb3405e7b9e72bf28072269a281d28208a87d2f",
+          "fixed_snapshot_sha256": "9493955958762b154af417245fb3405e7b9e72bf28072269a281d28208a87d2f"
+        },
+        {
+          "path": "Source/LfoCurveDocument.h",
+          "bytes": 2999,
+          "sha256": "3776f35d3c6b4b5c26620307e4e8f7eb855a0768e6ee030cca64e724923b7576",
+          "fixed_snapshot_sha256": "3776f35d3c6b4b5c26620307e4e8f7eb855a0768e6ee030cca64e724923b7576"
+        },
+        {
+          "path": "Source/LfoModel.h",
+          "bytes": 1605,
+          "sha256": "78c28454083260eea5c313b64c81aec11c82080e556acf0e20701976cd5bd71e",
+          "fixed_snapshot_sha256": "78c28454083260eea5c313b64c81aec11c82080e556acf0e20701976cd5bd71e"
+        },
+        {
+          "path": "Source/ModulationRoute.h",
+          "bytes": 5802,
+          "sha256": "97756e999cb37ba498096c25a14ea855a5e78156306902e6fe81d75ffa6f802a",
+          "fixed_snapshot_sha256": "97756e999cb37ba498096c25a14ea855a5e78156306902e6fe81d75ffa6f802a"
+        },
+        {
+          "path": "Source/ModulationView.h",
+          "bytes": 2529,
+          "sha256": "2078efc485b12d192067d5d5ca588ce87491cce888a15c773dab8cf29e86e07c",
+          "fixed_snapshot_sha256": "2078efc485b12d192067d5d5ca588ce87491cce888a15c773dab8cf29e86e07c"
+        },
+        {
+          "path": "Source/PluginEditor.cpp",
+          "bytes": 399371,
+          "sha256": "cdf2c15418890b8c069c6f8bb49c04eb4937a76c65746908010fc05791c7bbcc",
+          "fixed_snapshot_sha256": "cdf2c15418890b8c069c6f8bb49c04eb4937a76c65746908010fc05791c7bbcc"
+        },
+        {
+          "path": "Source/PluginEditor.h",
+          "bytes": 1320,
+          "sha256": "2b98b7d3d766165f2118b10969dd46670dacf22f16865531b3fa0329a5a548d7",
+          "fixed_snapshot_sha256": "2b98b7d3d766165f2118b10969dd46670dacf22f16865531b3fa0329a5a548d7"
+        },
+        {
+          "path": "Source/PluginProcessor.cpp",
+          "bytes": 129092,
+          "sha256": "03add87333a1f4b12e8d1c5ccd3668ba0fbe25e86aeb58e23f612204a34b86c4",
+          "fixed_snapshot_sha256": "03add87333a1f4b12e8d1c5ccd3668ba0fbe25e86aeb58e23f612204a34b86c4"
+        },
+        {
+          "path": "Source/PluginProcessor.h",
+          "bytes": 11592,
+          "sha256": "154886ac6015d21b365445ca9112d68e912d8878e1564e715ee4044eef0f6d2b",
+          "fixed_snapshot_sha256": "154886ac6015d21b365445ca9112d68e912d8878e1564e715ee4044eef0f6d2b"
+        },
+        {
+          "path": "Source/PresetLibrary.cpp",
+          "bytes": 18700,
+          "sha256": "71461c681c94f197405bf072dfda501f585edd2b0a8770eb8535858664214149",
+          "fixed_snapshot_sha256": "71461c681c94f197405bf072dfda501f585edd2b0a8770eb8535858664214149"
+        },
+        {
+          "path": "Source/PresetLibrary.h",
+          "bytes": 1641,
+          "sha256": "1f2839dd2bc62fa3a4d6aaaa3d27e72cc940a2f86e57584cf98e1867e88b5d66",
+          "fixed_snapshot_sha256": "1f2839dd2bc62fa3a4d6aaaa3d27e72cc940a2f86e57584cf98e1867e88b5d66"
+        },
+        {
+          "path": "Source/SynthEngine.cpp",
+          "bytes": 134311,
+          "sha256": "45b74235f10c26fc0ea0577b1a116b715f0138e68b9f7af292be5645be94136f",
+          "fixed_snapshot_sha256": "45b74235f10c26fc0ea0577b1a116b715f0138e68b9f7af292be5645be94136f"
+        },
+        {
+          "path": "Source/SynthEngine.h",
+          "bytes": 7955,
+          "sha256": "598a3be7ed90acd7cface7df7548609c764798041f590c6785d644c52f9d558c",
+          "fixed_snapshot_sha256": "598a3be7ed90acd7cface7df7548609c764798041f590c6785d644c52f9d558c"
+        },
+        {
+          "path": "Source/WavetableDocument.cpp",
+          "bytes": 18831,
+          "sha256": "c22900e5b3ec7b221f0c95be7846a12158d7357240230735a4cd8533ed3b5115",
+          "fixed_snapshot_sha256": "c22900e5b3ec7b221f0c95be7846a12158d7357240230735a4cd8533ed3b5115"
+        },
+        {
+          "path": "Source/WavetableDocument.h",
+          "bytes": 2737,
+          "sha256": "6a3fb47a7e9b8227b83d9b0ca138e8f7edfe60be69b1047465c54702f4eb632e",
+          "fixed_snapshot_sha256": "6a3fb47a7e9b8227b83d9b0ca138e8f7edfe60be69b1047465c54702f4eb632e"
+        },
+        {
+          "path": "Tests/EngineTests.cpp",
+          "bytes": 275405,
+          "sha256": "9fe4e478ca1981ec846079e19c5bfbde1f380859260f29f577511c07b9f1a083",
+          "fixed_snapshot_sha256": "9fe4e478ca1981ec846079e19c5bfbde1f380859260f29f577511c07b9f1a083"
+        },
+        {
+          "path": "Tests/MidiAllocationComparatorTests.py",
+          "bytes": 22886,
+          "sha256": "d3b05b9b17db9e70dd734c164900cdcf1e96ade7f3db0a4baccdc950edc286cf",
+          "fixed_snapshot_sha256": "d3b05b9b17db9e70dd734c164900cdcf1e96ade7f3db0a4baccdc950edc286cf"
+        },
+        {
+          "path": "Tests/MidiAllocationProbe.cpp",
+          "bytes": 29992,
+          "sha256": "fbfe7e7b32f4844d0d3f066d0bb556c72df5e405b8d457b00e70dd71dec0937c",
+          "fixed_snapshot_sha256": "fbfe7e7b32f4844d0d3f066d0bb556c72df5e405b8d457b00e70dd71dec0937c"
+        },
+        {
+          "path": "Tests/MidiAllocationRecorder.h",
+          "bytes": 2260,
+          "sha256": "3bc24ca094510a64832c4a30851728be45d1650c948f66c9faf528ae5a128b16",
+          "fixed_snapshot_sha256": "3bc24ca094510a64832c4a30851728be45d1650c948f66c9faf528ae5a128b16"
+        },
+        {
+          "path": "Tests/PresetLibraryTests.cpp",
+          "bytes": 15695,
+          "sha256": "815c2abd52e572964c7482f3ba6fa793450da6b44ebac1b6694c8cd5974041c0",
+          "fixed_snapshot_sha256": "815c2abd52e572964c7482f3ba6fa793450da6b44ebac1b6694c8cd5974041c0"
+        },
+        {
+          "path": "Tests/ProcessorTests.cpp",
+          "bytes": 627178,
+          "sha256": "c9094f59879e21a505c7646261e9c910a98a31d811d45570e717d720b5df6e2d",
+          "fixed_snapshot_sha256": "c9094f59879e21a505c7646261e9c910a98a31d811d45570e717d720b5df6e2d"
+        },
+        {
+          "path": "Tests/RealtimeProbe.cpp",
+          "bytes": 37413,
+          "sha256": "bd76ec4fae1c979665105063afb3af77748485522d8be3d04c557b125deccc91",
+          "fixed_snapshot_sha256": "bd76ec4fae1c979665105063afb3af77748485522d8be3d04c557b125deccc91"
+        },
+        {
+          "path": "Tests/RealtimeRunnerTests.py",
+          "bytes": 12473,
+          "sha256": "330d27c3c470f84c8c431dd045d3b9bde2a8fba112d39c5ece0cc5100bfcbe98",
+          "fixed_snapshot_sha256": "330d27c3c470f84c8c431dd045d3b9bde2a8fba112d39c5ece0cc5100bfcbe98"
+        },
+        {
+          "path": "Tests/WavetableTests.cpp",
+          "bytes": 31680,
+          "sha256": "ad1410f621793fa8a7b68fb82c36af387ce517318d7d9615088eaad14f3748a3",
+          "fixed_snapshot_sha256": "ad1410f621793fa8a7b68fb82c36af387ce517318d7d9615088eaad14f3748a3"
+        }
+      ],
+      "fixed_snapshot_manifest": "build/validation-midi-allocation-after/manifest.json",
+      "fixed_snapshot_manifest_sha256": "e7e3548813c9a510b6e411a9299dfd3538f34de16041c0d4d8683284a32b1cea",
+      "cmake_only_version_replacement": {
+        "from": "0.20.3",
+        "to": "0.20.4",
+        "fixed_sha256": "86b7c559a56c91eb389bc938c5ecd428d5e0844150c7fca76fc0c310687806cf",
+        "current_and_archived_sha256": "5a57c1bed1d1bfa401c3b6e287a0b268291d7f5dfb8bd0a1cabe0a58a45c768a"
+      },
+      "normal_release_runtime": "MultiThreaded (/MT)",
+      "normal_diagnostic_option": "OFF",
+      "normal_diagnostic_macro_and_forced_include_absent": true,
+      "original_JUCE_hook_files_match_unmodified_hashes": true,
+      "tracked_JUCE_status_empty": true
+    },
+    "binaries": [
+      {
+        "path": "build/Anyvoc_artefacts/Release/Standalone/Anyvoc.exe",
+        "bytes": 9681408,
+        "file_version": "0.20.4",
+        "sha256": "3d55bd6f7a1679242139bdbee6d993d22f1d43647c4f93f25b3baf91d5ae895a"
+      },
+      {
+        "path": "build/Anyvoc_artefacts/Release/VST3/Anyvoc.vst3/Contents/x86_64-win/Anyvoc.vst3",
+        "bytes": 10219520,
+        "file_version": "0.20.4",
+        "sha256": "cc32e87dfc6b297cc1cb9d8134dcd739d77479c7f30e92a312f58bdeca60f522"
+      },
+      {
+        "path": "build/AnyvocEngineTests_artefacts/Release/AnyvocEngineTests.exe",
+        "bytes": 9177600,
+        "file_version": "0.20.4",
+        "sha256": "173da3ff564ebf147a6ecf2569258e731e861c0940539d430e7119bbaafd564c"
+      },
+      {
+        "path": "build/AnyvocProcessorTests_artefacts/Release/AnyvocProcessorTests.exe",
+        "bytes": 10964480,
+        "file_version": "0.20.4",
+        "sha256": "4dafbd7f6ce5836724d3e3bb79665b73592eca166c40712c345768bf7be5525c"
+      },
+      {
+        "path": "build/AnyvocWavetableTests_artefacts/Release/AnyvocWavetableTests.exe",
+        "bytes": 8406016,
+        "file_version": "0.20.4",
+        "sha256": "e4b400e0d108d10bc9b6795f92688cbc8ea81aa422459efc168ef748f48d6d2b"
+      },
+      {
+        "path": "build/AnyvocPresetLibraryTests_artefacts/Release/AnyvocPresetLibraryTests.exe",
+        "bytes": 1190400,
+        "file_version": "0.20.4",
+        "sha256": "6fae15acbfb3787e83e7a1a25a7e37be9863eb2a7f71e0961fb2e2fd3c454a7a"
+      },
+      {
+        "path": "build/AnyvocRealtimeProbe_artefacts/Release/AnyvocRealtimeProbe.exe",
+        "bytes": 9796096,
+        "file_version": "0.20.4",
+        "sha256": "1bcf5d5987841fce00935635a2437b7789c67589ee530623ea4c1fcf3ddc06ac"
+      }
+    ],
+    "renderer": {
+      "path": "build/AnyvocProcessorTests_artefacts/Release/AnyvocProcessorTests.exe",
+      "bytes": 10964480,
+      "file_version": "0.20.4",
+      "sha256": "4dafbd7f6ce5836724d3e3bb79665b73592eca166c40712c345768bf7be5525c"
+    },
+    "demos": [
+      {
+        "name": "Legacy",
+        "baseline_zip_member": "Anyvoc-Demo.wav",
+        "bytes": 4320104,
+        "sha256": "3140a2896cd0954762e6406b4b344c22a185fb3f493dc3a96e7b0e9ce8747920",
+        "byte_identical": true,
+        "path": "build/validation-midi-allocation-tooling/render-0.20.4/Legacy.wav",
+        "current_file_hash_verified": true,
+        "baseline_zip_member_bytes_verified": true
+      },
+      {
+        "name": "Motion",
+        "baseline_zip_member": "Anyvoc-v0.16-Lfo-Motion-Demo.wav",
+        "bytes": 5760104,
+        "sha256": "29a826a0882498a1935b90c00232e4db76ab11d77dc04b7c4aa3caae9aa3d7b6",
+        "byte_identical": true,
+        "path": "build/validation-midi-allocation-tooling/render-0.20.4/Motion.wav",
+        "current_file_hash_verified": true,
+        "baseline_zip_member_bytes_verified": true
+      },
+      {
+        "name": "Chaos",
+        "baseline_zip_member": "Anyvoc-v0.17-Chaos-Demo.wav",
+        "bytes": 5760104,
+        "sha256": "4885d2a3de312d88bc890840560eff45139b5c4d43de694c9d9fdeb232d18488",
+        "byte_identical": true,
+        "path": "build/validation-midi-allocation-tooling/render-0.20.4/Chaos.wav",
+        "current_file_hash_verified": true,
+        "baseline_zip_member_bytes_verified": true
+      },
+      {
+        "name": "Macro",
+        "baseline_zip_member": "Anyvoc-v0.19-Macro-Demo.wav",
+        "bytes": 5760104,
+        "sha256": "1d5e9aa554bbaea088eb89b47e6ccafced972c4c06b43d60926e5696b24c8621",
+        "byte_identical": true,
+        "path": "build/validation-midi-allocation-tooling/render-0.20.4/Macro.wav",
+        "current_file_hash_verified": true,
+        "baseline_zip_member_bytes_verified": true
+      }
+    ],
+    "baseline_zip": {
+      "path": "dist/Anyvoc-0.20.3-Windows-x64.zip",
+      "sha256": "077c4e958ecb2ae33d150e3e8aac914c2a4005986d8361773666e02467fbdd99"
+    },
+    "macro_analysis": {
+      "reported_status": "PASS",
+      "current_artifact_hash_bound": true,
+      "pcm_statistics_not_recomputed_by_archiver": true
+    },
+    "old_frozen_integrity_independently_rechecked": [
+      {
+        "path": "docs/modulation-cache-0.20.3",
+        "count": 161,
+        "bytes": 8433112,
+        "set_sha256": "5e09d86a986733e6f0c31547d3f32d08e156b093c8bf181606ef0ee706badc43",
+        "unchanged": true
+      },
+      {
+        "path": "docs/realtime-probe-0.20.2",
+        "count": 205,
+        "bytes": 35964797,
+        "set_sha256": "3e183debdbf9abd2ab3420e802ae9ea8463896728f557d876aae2f41eb03ef6a",
+        "unchanged": true
+      },
+      {
+        "path": "dist/Anyvoc-0.20.2-Windows-x64.zip",
+        "sha256": "ead89cbff8cc2878d0c6e0bf1cfba8a8f1a004ad4476fec9bfe7f1c4768bc2c6",
+        "unchanged": true
+      },
+      {
+        "path": "dist/Anyvoc-0.20.2-Source.zip",
+        "sha256": "2bec745db8f1c9df8f49574226d43e4356e4b73a0ae8ded8b1d9dcfb015d2e81",
+        "unchanged": true
+      },
+      {
+        "path": "dist/Anyvoc-0.20.3-Windows-x64.zip",
+        "sha256": "077c4e958ecb2ae33d150e3e8aac914c2a4005986d8361773666e02467fbdd99",
+        "unchanged": true
+      },
+      {
+        "path": "dist/Anyvoc-0.20.3-Source.zip",
+        "sha256": "25796391901b3e71b21aec19d128b3b1ea177f7a90c917ede39e03649dd56ac2",
+        "unchanged": true
+      }
+    ]
+  },
+  "scope": "Byte-preserving local production evidence archive and independent identity/summary checks; no new build, DSP run, device/native/DAW/CI test or package acceptance.",
+  "not_archived": [
+    "WAV audio",
+    "EXE/VST3 binaries",
+    "stale LastTestsFailed.log",
+    "MIDI diagnostic helper failures and tool self-tests already in separate specialty archive",
+    "release package verification"
+  ],
+  "files": [
+    {
+      "path": "CTestCostData.txt",
+      "bytes": 120,
+      "sha256": "e8c9a96b95e4984966841470d1ee307e62544e005c1bbf50bc5745c5f9addb3e",
+      "source_path": "build/Testing/Temporary/CTestCostData.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "LastTest.log",
+      "bytes": 19918,
+      "sha256": "6a8dbf0edabd640ad2e9c708de960b017fc9e8602af9b8a03239dd82fb64b69d",
+      "source_path": "build/Testing/Temporary/LastTest.log",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3902,
+      "sha256": "6c10ba0fc507998c2e83ef81935f9a0be4ca42d2837592286a2ea032b78c3774",
+      "source_path": null,
+      "kind": "authored-readme"
+    },
+    {
+      "path": "audio-analysis-0.20.4.json",
+      "bytes": 6619,
+      "sha256": "7902a6dd7180ab4bee33343eee2eb0fe102d6fcbd168347d2b0e1bb77b63bae0",
+      "source_path": "build/validation-midi-allocation-tooling/audio-analysis-0.20.4.json",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "binaries-0.20.4.json",
+      "bytes": 1780,
+      "sha256": "1c3eef5a2c5aaa6819cc846a4ff79eeca7ff2694970fd6ac8e66e88768efa258",
+      "source_path": "build/validation-midi-allocation-tooling/binaries-0.20.4.json",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "build-production-0.20.4.txt",
+      "bytes": 17596,
+      "sha256": "3614dca4b024e642273addcf6a09039854cf7d2616988daef16043468911f220",
+      "source_path": "build/validation-midi-allocation-tooling/build-production-0.20.4.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "compiled-inputs/CMakeLists.txt",
+      "bytes": 9207,
+      "sha256": "5a57c1bed1d1bfa401c3b6e287a0b268291d7f5dfb8bd0a1cabe0a58a45c768a",
+      "source_path": "CMakeLists.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "configure-production-0.20.4.txt",
+      "bytes": 310,
+      "sha256": "248c04f464eddb155e1cf1999187075c2960c6f848c6b62b437767ff8f818193",
+      "source_path": "build/validation-midi-allocation-tooling/configure-production-0.20.4.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "ctest-0.20.4.txt",
+      "bytes": 496,
+      "sha256": "c1be1b67b06dd7c2b0b3da74703f79f9570a6bc8839145b990348777513ec70f",
+      "source_path": "build/validation-midi-allocation-tooling/ctest-0.20.4.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "ctest-0.20.4.xml",
+      "bytes": 4237,
+      "sha256": "6e184b31bb01f0c6a08b74ab692d7fd221cdcc8b2ff78bbcab705a8c3e15a38e",
+      "source_path": "build/validation-midi-allocation-tooling/ctest-0.20.4.xml",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "demo-compatibility-0.20.4.json",
+      "bytes": 1237,
+      "sha256": "9451d934608aaadf61e0dff1df2d44b3f408e221bfcf6ad800fb6eba0040e993",
+      "source_path": "build/validation-midi-allocation-tooling/demo-compatibility-0.20.4.json",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "old-frozen-integrity.json",
+      "bytes": 1187,
+      "sha256": "4c468e40f8a6fe19e6d91551b47c7036a86f78becab835f58f0aa02e7cabfc9a",
+      "source_path": "build/validation-midi-allocation-tooling/old-frozen-integrity.json",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "original-file-map.json",
+      "bytes": 6429,
+      "sha256": "0e0db6f170df195886698e9af21b6e330bba8731b1a679a9e04a645377df8839",
+      "source_path": null,
+      "kind": "generated-original-file-map"
+    },
+    {
+      "path": "pluginval-0.20.4-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "build/validation-midi-allocation-tooling/pluginval-0.20.4-stderr.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "pluginval-0.20.4.txt",
+      "bytes": 6140,
+      "sha256": "ba7bbbf50578d00703b3a3255ded21618511b7edde757c3ba76d4c281d70f5c4",
+      "source_path": "build/validation-midi-allocation-tooling/pluginval-0.20.4.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "pluginval-result-0.20.4.json",
+      "bytes": 623,
+      "sha256": "9c01d26aecd808a27a0b28e6144213cd30aa071840223e433becbab1df1f2d9d",
+      "source_path": "build/validation-midi-allocation-tooling/pluginval-result-0.20.4.json",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "render-0.20.4/chaos.txt",
+      "bytes": 158,
+      "sha256": "c348e895cd53be2ba5f89f302fae26c6a377b278c98606eb8446722b58729dc0",
+      "source_path": "build/validation-midi-allocation-tooling/render-0.20.4/chaos.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "render-0.20.4/legacy.txt",
+      "bytes": 124,
+      "sha256": "f6c4420c885ce3e1242cee33efffa1c80f1af645f62751813f6754bd0f4e8aa1",
+      "source_path": "build/validation-midi-allocation-tooling/render-0.20.4/legacy.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "render-0.20.4/macro.txt",
+      "bytes": 289,
+      "sha256": "fbe99ef0cd3fa84793754177f628999cc0566a75589b245ecb5de878047ba165",
+      "source_path": "build/validation-midi-allocation-tooling/render-0.20.4/macro.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "render-0.20.4/motion.txt",
+      "bytes": 233,
+      "sha256": "de2a9ce1c51004b5d9747c2c90b0a86336472d5651ffa57f09eb2e6682455318",
+      "source_path": "build/validation-midi-allocation-tooling/render-0.20.4/motion.txt",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "run-pluginval-0.20.4.ps1",
+      "bytes": 1699,
+      "sha256": "70e88c0e72194582674553b8bfcdcc42bb1b1d6f9f54f5c446a1db0678b4d9fc",
+      "source_path": "build/validation-midi-allocation-tooling/run-pluginval-0.20.4.ps1",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    },
+    {
+      "path": "source-production-0.20.4.json",
+      "bytes": 275,
+      "sha256": "1053e27983bcce1a76435a9a921fa18b81e58c577bdd7ca8dbc21270789b1c9e",
+      "source_path": "build/validation-midi-allocation-tooling/source-production-0.20.4.json",
+      "byte_identical_to_source": true,
+      "kind": "raw-original"
+    }
+  ]
+}

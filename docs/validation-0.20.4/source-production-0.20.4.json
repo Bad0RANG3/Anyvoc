@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "all_Source_and_Tests_match_fixed_diagnostic_snapshot": true,
+  "cmake_only_version_changed_from_fixed_snapshot": true,
+  "original_JUCE_hook_files_match_unmodified_hashes": true,
+  "normal_release_mt_no_diagnostic_macro_or_forced_include": true
+}

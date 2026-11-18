@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "started_utc": "2026-11-18T11:55:33.6835098Z",
+  "completed_utc": "2026-11-18T11:55:37.8722141Z",
+  "exit_code": 0,
+  "seed": "0xc83e3a",
+  "arguments": "--strictness-level 5 --validate \"D:\\Anyvoc\\build\\Anyvoc_artefacts\\Release\\VST3\\Anyvoc.vst3\"",
+  "validator": "D:\\Anyvoc\\tools\\pluginval\\pluginval.exe",
+  "bundle": "D:\\Anyvoc\\build\\Anyvoc_artefacts\\Release\\VST3\\Anyvoc.vst3",
+  "stdout": "D:\\Anyvoc\\build\\validation-midi-allocation-tooling\\pluginval-0.20.4.txt",
+  "stderr": "D:\\Anyvoc\\build\\validation-midi-allocation-tooling\\pluginval-0.20.4-stderr.txt"
+}
