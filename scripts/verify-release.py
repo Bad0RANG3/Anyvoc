@@ -90,6 +90,20 @@ FEATURE_POLICIES = {
                     "Source/PluginEditor.cpp", "Source/SynthEngine.cpp",
                     "Tests/EngineTests.cpp", "scripts/compare-cache-regression.py"),
     },
+    "0.20.4": {
+        "demos": (MOTION_DEMO, CHAOS_DEMO, MACRO_DEMO),
+        "headers": ("Source/ModulationRoute.h", "Source/EnvelopeModel.h",
+                    "Source/LfoModel.h", "Source/ChaosLfoModel.h",
+                    "Source/LfoCurveDocument.h", "Source/LfoCurveDocument.cpp",
+                    "Source/PluginProcessor.h", "Source/PluginProcessor.cpp",
+                    "Source/PluginEditor.cpp", "Source/SynthEngine.cpp",
+                    "Tests/EngineTests.cpp", "scripts/compare-cache-regression.py",
+                    "Tests/MidiAllocationProbe.cpp", "Tests/MidiAllocationRecorder.h",
+                    "Tests/MidiAllocationComparatorTests.py",
+                    "scripts/prepare-midi-allocation-probe.py",
+                    "scripts/compare-midi-allocation-probe.py",
+                    "docs/MIDI_ALLOCATION_PROFILING.md"),
+    },
 }
 CHUNK_SIZE = 1024 * 1024
 
@@ -97,6 +111,17 @@ CHUNK_SIZE = 1024 * 1024
 def require(condition, message):
     if not condition:
         raise RuntimeError(message)
+
+
+def require_uninstrumented_inputs(root):
+    marker = root / "third_party/JUCE/ANYVOC_MIDI_ALLOCATION_DIAGNOSTIC.json"
+    require(not marker.exists() and not marker.is_symlink(),
+            "Refusing diagnostic inputs: JUCE allocation instrumentation marker is present")
+    cache = root / "build/CMakeCache.txt"
+    if cache.is_file():
+        require(re.search(r"^\s*ANYVOC_BUILD_MIDI_ALLOCATION_PROBE:BOOL\s*=\s*(?:ON|TRUE|YES|Y|1)\s*$",
+                          cache.read_text(encoding="utf-8"), re.MULTILINE | re.IGNORECASE) is None,
+                "Refusing diagnostic inputs: ANYVOC_BUILD_MIDI_ALLOCATION_PROBE is enabled in build/CMakeCache.txt")
 
 
 def release_version():
@@ -286,6 +311,7 @@ def main():
         self_test_paths()
         return
 
+    require_uninstrumented_inputs(ROOT)
     version = release_version()
     policy = FEATURE_POLICIES.get(version)
     release = DIST / f"Anyvoc-{version}-Windows"

@@ -1050,11 +1050,11 @@ void AnyvocAudioProcessor::clearArp()
     arpNote=-1;arpChannel=1;arpIndex=0;stepRemaining=0;gateRemaining=0;
 }
 
-void AnyvocAudioProcessor::processArp(juce::MidiBuffer& midi,int samples,double bpm)
+juce::MidiBuffer& AnyvocAudioProcessor::processArp(juce::MidiBuffer& midi,int samples,double bpm)
 {
     const bool enabled=v(arpEnabled)>.5f;
     if(enabled!=arpWasEnabled){resetEngine();clearArp();arpWasEnabled=enabled;}
-    if(!enabled)return;
+    if(!enabled)return midi;
     arpMidi.clear();
     auto it=midi.cbegin(),end=midi.cend();
     const double step=sampleRate*60.0/juce::jlimit(20.0,400.0,bpm)/std::pow(2.0,v(arpRate));
@@ -1129,7 +1129,8 @@ void AnyvocAudioProcessor::processArp(juce::MidiBuffer& midi,int samples,double 
         if(count==0){stepRemaining=0;arpIndex=0;}else --stepRemaining;
         --gateRemaining;
     }
-    midi.swapWith(arpMidi);
+    // Render directly so the processor retains its reserved MIDI storage across callbacks.
+    return arpMidi;
 }
 
 void AnyvocAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,juce::MidiBuffer& midi)
@@ -1152,7 +1153,9 @@ void AnyvocAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,juce::M
         wasPlaying=playing;
     }
     actualTempo.store(static_cast<float>(bpm));hostTempo.store(fromHost);
-    engine.setSettings(readSettings());processArp(midi,buffer.getNumSamples(),bpm);engine.setTransport(bpm,ppq,playing,hasPpq);engine.render(buffer,midi);
+    engine.setSettings(readSettings());
+    auto& renderMidi=processArp(midi,buffer.getNumSamples(),bpm);
+    engine.setTransport(bpm,ppq,playing,hasPpq);engine.render(buffer,renderMidi);
     float peak=0;for(int c=0;c<buffer.getNumChannels();++c)peak=juce::jmax(peak,buffer.getMagnitude(c,0,buffer.getNumSamples()));
     outputLevel.store(juce::jmax(peak,outputLevel.load()*.85f));midi.clear();
 }

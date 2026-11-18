@@ -43,6 +43,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Cache audio comparator self-test failed' }
           python Tests/RealtimeRunnerTests.py 2>&1 | Tee-Object -FilePath build/realtime-runner-tests.txt
           if ($LASTEXITCODE -ne 0) { throw 'Profiler runner tests failed' }
+          python Tests/MidiAllocationComparatorTests.py 2>&1 | Tee-Object -FilePath build/midi-allocation-comparator-tests.txt
+          if ($LASTEXITCODE -ne 0) { throw 'Synthetic MIDI allocation comparator tests failed' }
       - name: Keep test evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -54,4 +56,5 @@ jobs:
             build/realtime-probe-analyzer-self-test.json
             build/cache-comparator-self-test.json
             build/realtime-runner-tests.txt
+            build/midi-allocation-comparator-tests.txt
           if-no-files-found: warn

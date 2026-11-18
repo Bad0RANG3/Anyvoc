@@ -1,5 +1,14 @@
 ﻿$ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
+$diagnosticMarker = Join-Path $projectRoot 'third_party/JUCE/ANYVOC_MIDI_ALLOCATION_DIAGNOSTIC.json'
+if (Test-Path -LiteralPath $diagnosticMarker) {
+    throw 'Refusing to package an instrumented JUCE diagnostic source tree.'
+}
+$buildCache = Join-Path $projectRoot 'build/CMakeCache.txt'
+if ((Test-Path -LiteralPath $buildCache) -and
+    (Get-Content -LiteralPath $buildCache -Raw) -match '(?m)^\s*ANYVOC_BUILD_MIDI_ALLOCATION_PROBE:BOOL\s*=\s*(?:ON|TRUE|YES|Y|1)\s*$') {
+    throw 'Refusing to package a MIDI allocation diagnostic build. Configure the normal Release build with ANYVOC_BUILD_MIDI_ALLOCATION_PROBE=OFF.'
+}
 $projectText = Get-Content -LiteralPath (Join-Path $projectRoot 'CMakeLists.txt') -Raw
 $version = [regex]::Match($projectText, 'project\(Anyvoc VERSION ([0-9.]+)').Groups[1].Value
 if (!$version) { throw 'Project version not found.' }
@@ -54,7 +63,7 @@ Copy-Item -LiteralPath $motionDemo -Destination $destination -Force
 $chaosDemo = Join-Path $projectRoot 'dist/Anyvoc-v0.17-Chaos-Demo.wav'
 if (!(Test-Path -LiteralPath $chaosDemo)) { throw 'Render the Chaos demo before packaging.' }
 Copy-Item -LiteralPath $chaosDemo -Destination $destination -Force
-if ($version -in @('0.19.0', '0.20.0', '0.20.1', '0.20.2', '0.20.3')) {
+if ($version -in @('0.19.0', '0.20.0', '0.20.1', '0.20.2', '0.20.3', '0.20.4')) {
     $macroDemo = Join-Path $projectRoot 'dist/Anyvoc-v0.19-Macro-Demo.wav'
     if (!(Test-Path -LiteralPath $macroDemo)) { throw 'Render the Macro demo before packaging.' }
     Copy-Item -LiteralPath $macroDemo -Destination $destination -Force

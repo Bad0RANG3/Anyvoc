@@ -106,7 +106,7 @@ private:
     void readAudioModulationRoutes(std::array<anyvoc::ModRoute, anyvoc::modulationRouteCount>&);
     void publishModulationParameter(int parameterIndex) noexcept;
     class RoutePublicationScope;
-    void processArp(juce::MidiBuffer&, int, double);
+    juce::MidiBuffer& processArp(juce::MidiBuffer&, int, double);
     void clearArp();
     void resetEngine();
     juce::ValueTree createState() const;

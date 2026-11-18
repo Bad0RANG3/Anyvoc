@@ -4,9 +4,14 @@ from zipfile import ZipFile, ZIP_DEFLATED
 import re
 
 root = Path(__file__).resolve().parent.parent
+diagnostic_marker = root / 'third_party/JUCE/ANYVOC_MIDI_ALLOCATION_DIAGNOSTIC.json'
+if diagnostic_marker.exists() or diagnostic_marker.is_symlink():
+    raise RuntimeError('Refusing to package an instrumented JUCE diagnostic source tree.')
 version = re.search(r'project\(Anyvoc VERSION ([\d.]+)', (root / 'CMakeLists.txt').read_text()).group(1)
 destination = root / 'dist' / f'Anyvoc-{version}-Source.zip'
 destination.parent.mkdir(exist_ok=True)
+# Explicit roots exclude build/dist, including isolated diagnostic source trees,
+# their instrumented JUCE copies and diagnostic executables.
 roots = ['Source', 'Tests', 'scripts', 'docs', 'third_party/JUCE']
 files = [root / name for name in ['CMakeLists.txt', 'README.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', '.gitignore']]
 files.extend(root / name for name in ['.gitattributes', '.gitmodules'] if (root / name).is_file())
